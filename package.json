@@ -4,12 +4,15 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:dev": "nodemon --require babel-register app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-flow": "^6.23.0",
+    "babel-register": "^6.26.0",
     "bunyan": "^1.8.12",
     "bunyan-debug-stream": "^1.0.8",
     "config": "^1.30.0",
@@ -17,5 +20,20 @@
     "koa-bodyparser": "^4.2.1",
     "koa-morgan": "^1.0.1",
     "koa-router": "^7.4.0"
+  },
+  "babel": {
+    "presets": [
+      [
+        "env",
+        {
+          "targets": {
+            "node": "current"
+          },
+          "useBuiltIns": "usage",
+          "loose": true
+        }
+      ],
+      "flow"
+    ]
   }
 }

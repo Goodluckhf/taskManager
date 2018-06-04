@@ -10,3 +10,12 @@ services:
       - ./:/home/www:cached
     ports:
       - 81:3000
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - mongo-data:/data/db
+    logging:
+      driver: none
+volumes:
+  mongo-data:

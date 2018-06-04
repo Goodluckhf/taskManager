@@ -1,0 +1,11 @@
+{
+	"db": {
+		"host": "mongo",
+		"port": 27017,
+		"name": "tasks"
+	},
+	
+	"server": {
+		"port": "3000"
+	}
+}

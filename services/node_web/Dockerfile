@@ -6,4 +6,4 @@ ENV NODE_ENV=development \
 
 RUN npm i -g nodemon
 
-CMD nodemon app.js
+CMD npm run start:dev

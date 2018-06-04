@@ -1,14 +1,13 @@
-const Koa        = require('koa');
-const morgan     = require('koa-morgan');
-const bodyParser = require('koa-bodyparser');
-const logger     = require('lib/logger');
-const routes     = require('routes');
+import Koa        from 'koa';
+import morgan     from 'koa-morgan';
+import bodyParser from 'koa-bodyparser';
+import logger     from 'lib/logger';
+import routes     from 'routes';
+import config     from 'config';
 
-
-const app    = new Koa();
+const app = new Koa();
 
 app.silent = false;
-app.proxy  = true;
 
 app.use(morgan('dev'));
 app.use(bodyParser());
@@ -29,4 +28,4 @@ app.on('error', (err, ctx) => {
 	});
 });
 
-app.listen(3000);
+app.listen(config.get('server.port'));
