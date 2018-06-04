@@ -1,8 +1,6 @@
 {
 	"db": {
-		"host": "mongo",
-		"port": "27017",
-		"name": "tasks"
+		"connectionURI": "mongodb://mongo/tasks"
 	},
 	
 	"server": {
