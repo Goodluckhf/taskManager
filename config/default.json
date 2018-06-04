@@ -1,7 +1,7 @@
 {
 	"db": {
 		"host": "mongo",
-		"port": 27017,
+		"port": "27017",
 		"name": "tasks"
 	},
 	
