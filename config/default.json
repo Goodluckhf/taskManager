@@ -1,6 +1,7 @@
 {
 	"db": {
-		"connectionURI": "mongodb://mongo/tasks"
+		"connectionURI": "mongodb://mongo/tasks",
+		"reconnectInterval": 1000
 	},
 	
 	"server": {
