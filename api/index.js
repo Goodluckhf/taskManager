@@ -1,6 +1,6 @@
 // @flow
 import mongoose          from 'mongoose';
-import type { TaskPropsType } from 'model/Task';
+import type { TaskPropsType } from '../model/Task';
 
 
 export const list = async (): Promise<?Mongoose$Document> => {

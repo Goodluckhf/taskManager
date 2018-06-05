@@ -1,12 +1,12 @@
 import Koa        from 'koa';
 import morgan     from 'koa-morgan';
 import bodyParser from 'koa-bodyparser';
-import logger     from 'lib/logger';
+import logger     from './lib/logger';
 import routes     from 'routes';
 import config     from 'config';
 import initModels from 'model';
 
-import db from 'lib/db';
+import db from './lib/db';
 
 // Подключаемся к бд
 const dbConnection = db.connect();
