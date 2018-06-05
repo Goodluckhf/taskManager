@@ -26,7 +26,8 @@
   },
   "devDependencies": {
     "bunyan-debug-stream": "^1.0.8",
-    "flow-bin": "0.73.0"
+    "flow-bin": "0.73.0",
+    "flow-typed": "^2.4.0"
   },
   "babel": {
     "presets": [

@@ -23,14 +23,12 @@ class Task {
 	title     : string;
 	createdAt : moment;
 	
-	static createInstance(opts : props) {
+	static createInstance(opts : TaskPropsType) {
 		return new this(opts);
 	};
 }
 
 schema.loadClass(Task);
 
-export default (connection: mongoose) => {
-	return connection.model('Task', schema);
-};
+export default schema;
 

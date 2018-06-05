@@ -1,10 +1,11 @@
 // @flow
-import mongoose from 'mongoose';
 
-export default (connection: mongoose) => {
-	const createModel = (name: string)  => {
-		const modelFactory = require(`./${name}`).default;
-		return modelFactory(connection);
+// Initialise mongoose models
+export default (connection: Mongoose$Connection) => {
+	
+	const createModel = (name: string): Class<Mongoose$Document>  => {
+		const schema = require(`./${name}`).default;
+		return connection.model(name, schema);
 	};
 	
 	createModel('Task');
