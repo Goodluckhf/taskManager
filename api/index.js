@@ -9,5 +9,5 @@ export const list = async (): Promise<?Mongoose$Document> => {
 
 export const create = async ({ title }: TaskPropsType): Promise<Array<Mongoose$Document>> => {
 	const task = mongoose.model('Task').createInstance({ title });
-	return await task.save();
+	return task.save();
 };

@@ -11,7 +11,6 @@ const schema = new mongoose.Schema({
 		type    : Date,
 		default : moment.now,
 	},
-	
 });
 
 export type TaskPropsType = {
@@ -25,10 +24,9 @@ class Task {
 	
 	static createInstance(opts : TaskPropsType) {
 		return new this(opts);
-	};
+	}
 }
 
 schema.loadClass(Task);
 
 export default schema;
-
