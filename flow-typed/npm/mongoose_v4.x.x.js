@@ -1,3 +1,4 @@
+// @flow
 // flow-typed signature: 3cd672601feb11af16a65b401db53789
 // flow-typed version: 19b76d9de0/mongoose_v4.x.x/flow_>=v0.50.x
 
@@ -143,6 +144,7 @@ declare class Mongoose$Schema<Doc> {
     hookType: Mongoose$SchemaHookTypes,
     serialCb: (doc: Doc, next: Function) => any
   ): void;
+  // eslint-disable-next-line
   // post(hookType: Mongoose$SchemaHookTypes, serialCb: (error: Error, doc: Doc, next: Function) => any): void;
   plugin<Opts>(plugin: Mongoose$SchemaPlugin<Opts>, opts: Opts): void;
   add(fields: SchemaFields, prefix?: string): void;
@@ -169,6 +171,7 @@ declare class Mongoose$Schema<Doc> {
   indexTypes(): string[];
   reserved: string[];
   obj: SchemaOpts<Doc>;
+  // eslint-disable-next-line flowtype/generic-spacing
   _indexes: Array<
     [{ [fieldName: string]: number | string }, { [optionName: string]: mixed }]
   >;
@@ -497,7 +500,7 @@ declare class Mongoose$Connection {
   getMaxListeners(): number;
 }
 
-declare module "mongoose" {
+declare module 'mongoose' {
   declare export type MongooseConnection = Mongoose$Connection;
   declare export type MongoId = MongoId;
   declare export type BSONObjectId = bson$ObjectId;
@@ -506,10 +509,8 @@ declare module "mongoose" {
   declare export type MongooseDocument = Mongoose$Document;
   declare export type MongooseModel = typeof Mongoose$Document;
   declare export type MongooseSchema<Doc> = Mongoose$Schema<Doc>;
-  declare export type MongooseSchemaField<Schema> = Mongoose$SchemaField<
-    Schema
-  >;
-
+  declare export type MongooseSchemaField<Schema> = Mongoose$SchemaField<Schema>;
+	
   declare module.exports: {
     Schema: typeof Mongoose$Schema,
     Types: Mongoose$Types,
