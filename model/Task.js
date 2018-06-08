@@ -4,23 +4,23 @@ import moment   from 'moment';
 
 export type TaskPropsType = {
 	title     : string;
-	createdAt : ?moment;
+	createdAt? : moment;
 };
 
 const schema = new mongoose.Schema({
 	title: {
-		type    : String,
-		default : '',
+		type   : String,
+		default: '',
 	},
 	createdAt: {
-		type    : Date,
-		default : moment.now,
+		type   : Date,
+		default: moment.now,
 	},
 });
 
 export class TaskDocumentT /* :: extends Mongoose$Document */ {
 	title     : string;
-	createdAt : ?moment;
+	createdAt : moment;
 	
 	static createInstance(opts : $Exact<TaskPropsType>): this {
 		return new this(opts);

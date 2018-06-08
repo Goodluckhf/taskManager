@@ -1,10 +1,11 @@
-import Koa        from 'koa';
-import morgan     from 'koa-morgan';
-import bodyParser from 'koa-bodyparser';
-import config     from 'config';
-import logger     from './lib/logger';
-import routes     from './routes';
-import initModels from './model';
+import Koa          from 'koa';
+import morgan       from 'koa-morgan';
+import bodyParser   from 'koa-bodyparser';
+import config       from 'config';
+import logger       from './lib/logger';
+import routes       from './routes';
+import errorHandler from './routes/api/errorHandler';
+import initModels   from './model';
 
 import db from './lib/db';
 
@@ -20,10 +21,12 @@ app.silent = false;
 
 app.use(morgan('dev'));
 app.use(bodyParser());
+app.use(errorHandler);
 app.use(routes.routes());
 
 
 app.use((ctx, next) => {
+	console.log(123);
 	ctx.response.status = 404;
 	ctx.response.body   = 'Not found';
 	next();
@@ -32,8 +35,8 @@ app.use((ctx, next) => {
 app.on('error', (err, ctx) => {
 	logger.error({
 		err,
-		req : ctx.req,
-		res : ctx.res,
+		req: ctx.req,
+		res: ctx.res,
 	});
 });
 
