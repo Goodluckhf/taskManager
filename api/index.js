@@ -1,7 +1,6 @@
 // @flow
-import mongoose               from 'mongoose';
+import mongoose from 'mongoose';
 import { type TaskDocumentT, type TaskPropsType }  from '../model/Task';
-
 
 export const list = async (): Promise<Array<TaskDocumentT>> => {
 	return mongoose.model('Task').find().exec();

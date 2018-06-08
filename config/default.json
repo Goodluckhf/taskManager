@@ -3,7 +3,7 @@
 		"connectionURI": "mongodb://mongo/tasks",
 		"reconnectInterval": 1000
 	},
-	
+
 	"server": {
 		"port": "3000"
 	}

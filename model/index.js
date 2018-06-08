@@ -1,6 +1,6 @@
 // @flow
 
-const schema = require('./Task').default;
+import schema from './Task';
 
 // Initialise mongoose models
 export default (connection: Mongoose$Connection): void => {
