@@ -1,14 +1,15 @@
 import Router from 'koa-router';
-import { create, list }    from 'api';
+import { create, list } from '../../api';
+
 const router = new Router({ prefix: '/api' });
 
-router.get('/tasks', async ctx => {
+router.get('/tasks', async (ctx) => {
 	ctx.body = await list();
 });
 
-router.post('/task', async ctx => {
-	const title = ctx.request.body.title;
-	if (! title) {
+router.post('/task', async (ctx) => {
+	const { title } = ctx.request.body;
+	if (!title) {
 		return;
 	}
 	
