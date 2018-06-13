@@ -31,9 +31,9 @@ app.use((ctx, next) => {
 	next();
 });
 
-app.on('error', (err, ctx) => {
+app.on('error', (error, ctx) => {
 	logger.error({
-		err,
+		error,
 		req: ctx.req,
 		res: ctx.res,
 	});
@@ -43,9 +43,9 @@ app.listen(config.get('server.port'));
 logger.info(`server listening on port: ${config.get('server.port')}`);
 
 process.on('uncaughtException', (error) => {
-	logger.error(error);
+	logger.error({ error });
 });
 
 process.on('unhandledRejection', (error) => {
-	logger.error(error);
+	logger.error({ error });
 });

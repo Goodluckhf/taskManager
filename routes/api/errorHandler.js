@@ -15,7 +15,6 @@ export default async (ctx, next) => {
 			return;
 		}
 		
-		ctx.app.emit('error', error, ctx);
-		ctx.throw(500, 'Error Message');
+		ctx.throw(500, error);
 	}
 };
