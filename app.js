@@ -26,7 +26,6 @@ app.use(routes.routes());
 
 
 app.use((ctx, next) => {
-	console.log(123);
 	ctx.response.status = 404;
 	ctx.response.body   = 'Not found';
 	next();

@@ -19,6 +19,7 @@
     "bluebird": "^3.5.1",
     "bunyan": "^1.8.12",
     "bunyan-debug-stream": "^1.0.8",
+    "cli-color": "^1.2.0",
     "config": "^1.30.0",
     "koa": "^2.5.1",
     "koa-bodyparser": "^4.2.1",

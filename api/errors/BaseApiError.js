@@ -7,6 +7,7 @@ export interface Jsonable {
 export type objectErrorT = {
 	success: boolean,
 	message: string,
+	status: number,
 };
 
 export interface Objectable {
@@ -14,10 +15,20 @@ export interface Objectable {
 }
 
 export default class BaseApiError extends Error implements Jsonable, Objectable {
+	status : number;
+	success: boolean;
+	
+	constructor(message: string, status: number) {
+		super(message);
+		this.status  = status || 400;
+		this.success = false;
+	}
+	
 	toObject(): objectErrorT {
 		return {
-			success: false,
+			success: this.success,
 			message: this.message,
+			status : this.status,
 		};
 	}
 	
