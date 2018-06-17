@@ -31,9 +31,6 @@ router.post('/task', async (ctx) => {
 });
 
 router.post('/task/:id/finish', async (ctx) => {
-	logger.info({
-		param: ctx.params,
-	});
 	const { id } : { id: string } = ctx.params;
 	
 	if (!id || id.length === 0) {
