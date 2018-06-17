@@ -13,8 +13,15 @@ export const create = async ({ title }: TaskPropsType): Promise<TaskDocumentT> =
 	const task: TaskDocumentT = mongoose.model('Task').createInstance({ title });
 	await task.save();
 	
+	const message: string = JSON.stringify({
+		id: task.id,
+	});
+	
 	const channel = await amqp.createChannel();
-	const queue = channel.assertQueue(config.get('taskQueue.name'));
+	await channel.assertQueue(config.get('taskQueue.name'));
+	await channel.sendToQueue(config.get('taskQueue.name'), Buffer.from(message));
+	
+	return task;
 };
 
 export const list = async (): Promise<Array<TaskDocumentT>> => {
