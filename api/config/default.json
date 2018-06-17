@@ -6,5 +6,10 @@
 
 	"server": {
 		"port": 3000
-	}
+	},
+
+	"rabbit": {
+        "host": "rabbit",
+        "port": 5672
+    }
 }

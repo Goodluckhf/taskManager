@@ -2,7 +2,6 @@ version: '3.2'
 
 services:
   api:
-    container_name: web
     build:
       context: ./api
       dockerfile: Dockerfile
@@ -10,8 +9,19 @@ services:
       - ./api:/home/www:cached
     ports:
       - 81:3000
+  taskConsumer:
+    build:
+      context: ./taskConsumer
+      dockerfile: Dockerfile
+    volumes:
+      - ./taskConsumer:/home/www:cached
+  rabbit:
+    image: rabbitmq
+    ports:
+      - 5672:5672
+    volumes:
+      - rabbit-data:/var/lib/rabbitmq:cached
   mongo:
-    container_name: mongo
     image: mongo
     ports:
       - 27017:27017
@@ -21,3 +31,4 @@ services:
       driver: none
 volumes:
   mongo-data:
+  rabbit-data:

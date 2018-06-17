@@ -11,7 +11,8 @@ export type TaskPropsType = {
 	createdAt? : moment;
 };
 
-const statuses = ['pending', 'finished', 'skipped'];
+const statuses   = ['pending', 'finished', 'skipped'];
+const statusHash = arrayToHash(statuses);
 const schema = new mongoose.Schema({
 	title: {
 		type   : String,
@@ -24,8 +25,9 @@ const schema = new mongoose.Schema({
 	},
 	
 	status: {
-		type: String,
-		enum: statuses,
+		type   : String,
+		enum   : statuses,
+		default: statusHash.pending,
 	},
 });
 
@@ -35,7 +37,7 @@ export class TaskDocumentT /* :: extends Mongoose$Document */ {
 	status    : string;
 	
 	static get status(): ArrayToHashT<string> {
-		return arrayToHash(statuses);
+		return statusHash;
 	}
 	
 	static createInstance(opts : $Exact<TaskPropsType>): this {
