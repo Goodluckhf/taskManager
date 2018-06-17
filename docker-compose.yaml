@@ -4,10 +4,10 @@ services:
   web:
     container_name: web
     build:
-      context: ./
-      dockerfile: ./services/node_web/Dockerfile
+      context: ./api
+      dockerfile: Dockerfile
     volumes:
-      - ./:/home/www:cached
+      - ./api:/home/www:cached
     ports:
       - 81:3000
   mongo:

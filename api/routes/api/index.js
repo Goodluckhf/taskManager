@@ -18,8 +18,8 @@ router.get('/tasks', async (ctx) => {
 
 router.post('/task', async (ctx) => {
 	const { title } = ctx.request.body;
-	if (!title) {
-		return;
+	if (!title || title.length === 0) {
+		throw new ValidationError();
 	}
 	
 	ctx.body = {
@@ -29,6 +29,7 @@ router.post('/task', async (ctx) => {
 });
 
 router.post('/task/:id', async (ctx) => {
+	console.log('ro');
 	const { id } : { id: string } = ctx.request.params;
 	const data: TaskPropsType     = ctx.request.body;
 	
