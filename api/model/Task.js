@@ -41,6 +41,11 @@ export class TaskDocumentT /* :: extends Mongoose$Document */ {
 	static createInstance(opts : $Exact<TaskPropsType>): this {
 		return new this(opts);
 	}
+	
+	finish(): this {
+		this.status = TaskDocumentT.status.finished;
+		return this;
+	}
 }
 
 schema.loadClass(TaskDocumentT);
