@@ -11,7 +11,71 @@
   "dependencies": {
     "amqplib": "^0.5.2",
     "babel-register": "^6.26.0",
+    "bluebird": "^3.5.1",
+    "bunyan": "^1.8.12",
+    "bunyan-stdout-stream": "^1.0.5",
+    "config": "^1.30.0",
     "request": "^2.87.0",
     "request-promise": "^4.2.2"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "eslint-config-airbnb-base",
+      "plugin:flowtype/recommended"
+    ],
+    "parser": "babel-eslint",
+    "plugins": [
+      "flowtype"
+    ],
+    "rules": {
+      "no-multi-spaces": 0,
+      "indent": [
+        "error",
+        "tab"
+      ],
+      "no-tabs": 0,
+      "key-spacing": [
+        "error",
+        {
+          "align": {
+            "beforeColon": false,
+            "afterColon": true,
+            "on": "colon"
+          }
+        }
+      ],
+      "spaced-comment": 0,
+      "no-trailing-spaces": 0,
+      "arrow-body-style": [
+        1,
+        "as-needed"
+      ],
+      "flowtype/space-before-type-colon": 0,
+      "flowtype/space-after-type-colon": 0
+    }
+  },
+  "babel": {
+    "presets": [
+      [
+        "env",
+        {
+          "targets": {
+            "node": "current"
+          },
+          "useBuiltIns": "usage",
+          "loose": true
+        }
+      ],
+      "flow"
+    ],
+    "plugins": [
+      [
+        "syntax-object-rest-spread"
+      ]
+    ]
   }
 }

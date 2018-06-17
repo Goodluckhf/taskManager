@@ -17,7 +17,8 @@ export const create = async ({ title }: TaskPropsType): Promise<TaskDocumentT> =
 		id: task.id,
 	});
 	
-	const channel = await amqp.createChannel();
+	const connection = await amqp;
+	const channel = await connection.createChannel();
 	await channel.assertQueue(config.get('taskQueue.name'));
 	await channel.sendToQueue(config.get('taskQueue.name'), Buffer.from(message));
 	
