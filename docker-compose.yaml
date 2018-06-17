@@ -17,10 +17,10 @@ services:
       - ./taskConsumer:/home/www:cached
   rabbit:
     image: rabbitmq
-    ports:
-      - 5672:5672
     volumes:
       - rabbit-data:/var/lib/rabbitmq:cached
+    logging:
+      driver: none
   mongo:
     image: mongo
     ports:
