@@ -3,7 +3,7 @@ import StdoutStream from 'bunyan-stdout-stream';
 
 // @TODO: Сделать для прод режима
 const logger = bunyan.createLogger({
-	name: 'taskConsumer',
+	name   : 'taskConsumer',
 	streams: [
 		{
 			level : 'trace',

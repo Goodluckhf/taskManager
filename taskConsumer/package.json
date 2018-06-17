@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "node --require babel-register index.js"
+    "start:dev": "nodemon --require babel-register index.js"
   },
   "author": "",
   "license": "ISC",

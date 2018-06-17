@@ -6,6 +6,7 @@
     },
 
     "taskQueue": {
-        "name": "tasks"
+        "name": "tasks",
+        "prefetch": 1
     }
 }

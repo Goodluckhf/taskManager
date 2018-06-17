@@ -5,10 +5,12 @@ import {
 	create,
 	list,
 	update,
+	finish,
 } from '../../api/task';
 
 import { ValidationError }     from '../../api/errors';
 import  { type TaskPropsType } from '../../model/Task';
+import logger from '../../lib/logger';
 
 const router = new Router({ prefix: '/api' });
 
@@ -28,18 +30,21 @@ router.post('/task', async (ctx) => {
 	};
 });
 
-router.post('/task/:id', async (ctx) => {
-	console.log('ro');
-	const { id } : { id: string } = ctx.request.params;
-	const data: TaskPropsType     = ctx.request.body;
+router.post('/task/:id/finish', async (ctx) => {
+	logger.info({
+		param: ctx.params,
+	});
+	const { id } : { id: string } = ctx.params;
 	
 	if (!id || id.length === 0) {
 		throw new ValidationError();
 	}
 	
+	const task = await finish(id);
+	
 	ctx.response.body = {
 		success: true,
-		data   : update(id, data),
+		data   : task,
 	};
 });
 

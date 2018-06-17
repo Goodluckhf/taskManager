@@ -7,7 +7,11 @@ const connectionURI = `amqp://${config.get('rabbit.host')}:${config.get('rabbit.
 
 const connect = async () => {
 	try {
-		const connection = await amqp.connect(connectionURI);
+		let connection = await amqp.connect(connectionURI);
+		connection.on('error', (error) => {
+			logger.error({ error });
+			connection = connect();
+		});
 		logger.info(`successfully connected to rabbit via: ${connectionURI}`);
 		return connection;
 	} catch (error) {
