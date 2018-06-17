@@ -4,4 +4,4 @@ WORKDIR /home/www
 ENV NODE_ENV=development \
 	NODE_PATH=.
 
-RUN npm run start:dev
+CMD npm run start:dev

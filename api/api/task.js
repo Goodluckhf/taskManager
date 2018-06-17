@@ -1,11 +1,20 @@
 // @flow
-import mongoose                                   from 'mongoose';
-import { type TaskDocumentT, type TaskPropsType } from '../model/Task';
-import { NotFoundError }                          from './errors';
+import mongoose from 'mongoose';
+import config   from 'config';
+import {
+	type TaskDocumentT,
+	type TaskPropsType,
+} from '../model/Task';
+
+import { NotFoundError } from './errors';
+import amqp              from '../lib/amqp';
 
 export const create = async ({ title }: TaskPropsType): Promise<TaskDocumentT> => {
 	const task: TaskDocumentT = mongoose.model('Task').createInstance({ title });
-	return task.save();
+	await task.save();
+	
+	const channel = await amqp.createChannel();
+	const queue = channel.assertQueue(config.get('taskQueue.name'));
 };
 
 export const list = async (): Promise<Array<TaskDocumentT>> => {

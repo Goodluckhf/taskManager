@@ -10,6 +10,11 @@
 
 	"rabbit": {
         "host": "rabbit",
-        "port": 5672
+        "port": 5672,
+        "reconnectInterval": 3000
+    },
+
+    "taskQueue": {
+        "name": "tasks"
     }
 }

@@ -9,7 +9,7 @@ services:
       - ./api:/home/www:cached
     ports:
       - 81:3000
-  taskConsumer:
+  task-consumer:
     build:
       context: ./taskConsumer
       dockerfile: Dockerfile
