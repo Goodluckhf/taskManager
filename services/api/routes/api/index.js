@@ -4,13 +4,10 @@ import Router from 'koa-router';
 import {
 	create,
 	list,
-	update,
 	finish,
 } from '../../api/task';
 
 import { ValidationError }     from '../../api/errors';
-import  { type TaskPropsType } from '../../model/Task';
-import logger from '../../lib/logger';
 
 const router = new Router({ prefix: '/api' });
 

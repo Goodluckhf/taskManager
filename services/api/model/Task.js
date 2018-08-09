@@ -4,7 +4,7 @@ import moment   from 'moment';
 import {
 	arrayToHash,
 	type ArrayToHashT,
-} from '../lib/helper';
+} from '../../../lib/helper';
 
 export type TaskPropsType = {
 	title     : string;

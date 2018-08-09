@@ -7,7 +7,7 @@ import {
 } from '../model/Task';
 
 import { NotFoundError } from './errors';
-import amqp              from '../lib/amqp';
+import amqp              from '../../../lib/amqp';
 
 export const create = async ({ title }: TaskPropsType): Promise<TaskDocumentT> => {
 	const task: TaskDocumentT = mongoose.model('Task').createInstance({ title });

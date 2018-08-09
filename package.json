@@ -1,34 +1,66 @@
 {
-  "name": "taskconsumer",
+  "name": "www",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start:dev": "nodemon --require babel-register index.js"
+    "start:dev": "nodemon --require babel-register app.js",
+    "precommit": "flow check && lint-staged",
+    "flow": "flow"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "amqplib": "^0.5.2",
     "babel-plugin-syntax-object-rest-spread": "^6.13.0",
     "babel-preset-env": "^1.7.0",
+    "babel-preset-flow": "^6.23.0",
     "babel-register": "^6.26.0",
     "bluebird": "^3.5.1",
     "bunyan": "^1.8.12",
-    "bunyan-stdout-stream": "^1.0.5",
+    "bunyan-debug-stream": "^1.0.8",
+    "bunyan-stdout-stream": "^1.0.4",
+    "cli-color": "^1.2.0",
     "config": "^1.30.0",
-    "request": "^2.87.0",
-    "request-promise": "^4.2.2"
+    "koa": "^2.5.1",
+    "koa-bodyparser": "^4.2.1",
+    "koa-morgan": "^1.0.1",
+    "koa-router": "^7.4.0",
+    "moment": "^2.22.2",
+    "mongoose": "^5.1.3",
+    "mongoose-paginate": "^5.0.3"
   },
+  "devDependencies": {
+    "babel-eslint": "^8.2.3",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-flowtype": "^2.49.3",
+    "eslint-plugin-import": "^2.12.0",
+    "flow-bin": "0.73.0",
+    "flow-typed": "^2.4.0",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.1.3"
+  },
+  "lint-staged": {
+    "*.js": "eslint --quiet"
+  },
+  "eslintIgnore": [
+    "flow-typed/**/*.js"
+  ],
   "eslintConfig": {
     "root": true,
     "env": {
       "node": true
     },
     "extends": [
-      "eslint-config-airbnb-base"
+      "eslint-config-airbnb-base",
+      "plugin:flowtype/recommended"
     ],
     "parser": "babel-eslint",
+    "plugins": [
+      "flowtype"
+    ],
     "rules": {
       "no-multi-spaces": 0,
       "indent": [
@@ -51,7 +83,9 @@
       "arrow-body-style": [
         1,
         "as-needed"
-      ]
+      ],
+      "flowtype/space-before-type-colon": 0,
+      "flowtype/space-after-type-colon": 0
     }
   },
   "babel": {
@@ -65,7 +99,8 @@
           "useBuiltIns": "usage",
           "loose": true
         }
-      ]
+      ],
+      "flow"
     ],
     "plugins": [
       [

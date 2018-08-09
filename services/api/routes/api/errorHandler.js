@@ -1,5 +1,5 @@
 import BaseApiError from '../../api/errors/BaseApiError';
-import logger from '../../lib/logger';
+import logger       from '../../../../lib/logger';
 
 export default async (ctx, next) => {
 	try {
