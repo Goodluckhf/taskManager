@@ -1,5 +1,6 @@
 import config   from 'config';
 import bluebird from 'bluebird';
+import request  from 'request-promise';
 import amqp     from '../../lib/amqp';
 import logger   from '../../lib/logger';
 
@@ -12,14 +13,14 @@ const processMessage = async (msg) => {
 	
 	await bluebird.delay(5000);
 	
-	/*const result = await request(`http://api:3000/api/task/${data.id}/finish`, {
+	const result = await request(`http://api:3000/api/task/${data.id}/finish`, {
 		method: 'POST',
 		json  : true,
 	});
 	logger.info({
 		message: `task "${data.id}" has successfully completed`,
 		result,
-	});*/
+	});
 };
 
 (async () => {

@@ -3,18 +3,18 @@ version: '3.2'
 services:
   api:
     build:
-      context: ./api
+      context: ./services/api
       dockerfile: Dockerfile
     volumes:
-      - ./api:/home/www:cached
+      - .:/home/www:cached
     ports:
       - 81:3000
   task-consumer:
     build:
-      context: ./taskConsumer
+      context: ./services/taskConsumer
       dockerfile: Dockerfile
     volumes:
-      - ./taskConsumer:/home/www:cached
+      - .:/home/www:cached
   rabbit:
     image: rabbitmq
     volumes:

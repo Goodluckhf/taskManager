@@ -15,6 +15,7 @@
     },
 
     "taskQueue": {
-        "name": "tasks"
+        "name": "tasks",
+		"prefetch": 2
     }
 }

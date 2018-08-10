@@ -6,4 +6,4 @@ ENV NODE_ENV=development \
 
 RUN npm i -g nodemon
 
-CMD npm run start:dev
+CMD nodemon services/taskManager/index.js
