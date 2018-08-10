@@ -6,4 +6,4 @@ ENV NODE_ENV=development \
 
 RUN npm i -g nodemon
 
-CMD nodemon ./services/api/app.js
+CMD nodemon --require babel-register ./services/api/app.js

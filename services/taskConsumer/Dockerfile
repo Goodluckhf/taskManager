@@ -6,4 +6,4 @@ ENV NODE_ENV=development \
 
 RUN npm i -g nodemon
 
-CMD nodemon services/taskManager/index.js
+CMD nodemon --require babel-register services/taskConsumer/index.js
