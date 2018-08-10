@@ -1,8 +1,12 @@
-// @flow
+import taskSchema from './Task';
+import likesTaskSchema from './TaskType/Likes';
 
-import schema from './Task';
+import publicSchema from './Public';
+
 
 // Initialise mongoose models
-export default (connection: Mongoose$Connection): void => {
-	connection.model('Task', schema);
+export default (connection) => {
+	connection.model('Task', taskSchema);
+	connection.model('Public', publicSchema);
+	connection.model('Task').discriminator('LikesTask', likesTaskSchema);
 };

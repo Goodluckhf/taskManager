@@ -1,19 +1,18 @@
-// @flow
 import mongoose from 'mongoose';
 import config   from 'config';
-import {
-	type TaskDocumentT,
-	type TaskPropsType,
-} from '../model/Task';
 
 import { NotFoundError } from './errors';
 import amqp              from '../../../lib/amqp';
 
-export const create = async ({ title }: TaskPropsType): Promise<TaskDocumentT> => {
-	const task: TaskDocumentT = mongoose.model('Task').createInstance({ title });
+/**
+ * @param data
+ * @return {Promise<TaskDocument>}
+ */
+export const createLikes = async (data) => {
+	const task = mongoose.model('Task').createInstance(data);
 	await task.save();
 	
-	const message: string = JSON.stringify({
+	const message = JSON.stringify({
 		id: task.id,
 	});
 	
@@ -25,8 +24,11 @@ export const create = async ({ title }: TaskPropsType): Promise<TaskDocumentT> =
 	return task;
 };
 
-export const list = async (): Promise<Array<TaskDocumentT>> => {
-	const tasks: Array<TaskDocumentT> = await mongoose.model('Task').find().exec();
+/**
+ * @return {Promise<Array<TaskDocument>>}
+ */
+export const list = async () => {
+	const tasks = await mongoose.model('Task').find().exec();
 	if (tasks.length === 0) {
 		throw new NotFoundError();
 	}
@@ -34,36 +36,15 @@ export const list = async (): Promise<Array<TaskDocumentT>> => {
 	return tasks;
 };
 
-export const getById = async (id: string): Promise<TaskDocumentT> => {
-	const task: TaskDocumentT = await mongoose.model('Task').findById(id);
+/**
+ * @param {String} id
+ * @return {Promise<TaskDocument>}
+ */
+export const getById = async (id) => {
+	const task = await mongoose.model('Task').findById(id);
 	if (!task) {
 		throw new NotFoundError();
 	}
 	
 	return task;
-};
-
-export const finish = async (id: string): Promise<TaskDocumentT> => {
-	const task: TaskDocumentT = await mongoose.model('Task').findById(id);
-	if (!task) {
-		throw new NotFoundError();
-	}
-	
-	return task.finish().save();
-};
-
-export const update = async (id: string, { title }: TaskPropsType): Promise<TaskDocumentT> => {
-	const task: TaskDocumentT = await mongoose.model('Task').findOne({ _id: id });
-	
-	if (!task) {
-		throw NotFoundError();
-	}
-	
-	task.title = title;
-	return task.save();
-};
-
-
-export type removePropsT = {
-	id: string
 };

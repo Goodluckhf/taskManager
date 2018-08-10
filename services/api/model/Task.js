@@ -1,18 +1,10 @@
-// @flow
 import mongoose from 'mongoose';
 import moment   from 'moment';
-import {
-	arrayToHash,
-	type ArrayToHashT,
-} from '../../../lib/helper';
-
-export type TaskPropsType = {
-	title     : string;
-	createdAt? : moment;
-};
+import { arrayToHash } from '../../../lib/helper';
 
 const statuses   = ['pending', 'finished', 'skipped'];
 const statusHash = arrayToHash(statuses);
+
 const schema = new mongoose.Schema({
 	title: {
 		type   : String,
@@ -31,25 +23,31 @@ const schema = new mongoose.Schema({
 	},
 });
 
-export class TaskDocumentT /* :: extends Mongoose$Document */ {
-	title     : string;
-	createdAt : moment;
-	status    : string;
-	
-	static get status(): ArrayToHashT<string> {
+export class TaskDocument {
+	/**
+	 * @return {Object.<*>}
+	 */
+	static get status() {
 		return statusHash;
 	}
 	
-	static createInstance(opts : $Exact<TaskPropsType>): this {
+	/**
+	 * @param {Object.<*>} opts
+	 * @return {TaskDocument}
+	 */
+	static createInstance(opts) {
 		return new this(opts);
 	}
 	
-	finish(): this {
-		this.status = TaskDocumentT.status.finished;
+	/**
+	 * @return {TaskDocument}
+	 */
+	finish() {
+		this.status = TaskDocument.status.finished;
 		return this;
 	}
 }
 
-schema.loadClass(TaskDocumentT);
+schema.loadClass(TaskDocument);
 
 export default schema;
