@@ -54,6 +54,7 @@
     "parser": "babel-eslint",
     "rules": {
       "no-multi-spaces": 0,
+      "no-underscore-dangle": "warn",
       "indent": [
         "error",
         "tab"
