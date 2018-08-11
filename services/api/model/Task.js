@@ -28,14 +28,9 @@ const schema = new mongoose.Schema({
 	},
 });
 
+schema.statics.status = statuses;
+
 export class TaskDocument {
-	/**
-	 * @return {Object.<*>}
-	 */
-	static get status() {
-		return statuses;
-	}
-	
 	/**
 	 * @param {Function} Constructor
 	 * @param {Object.<*>} opts

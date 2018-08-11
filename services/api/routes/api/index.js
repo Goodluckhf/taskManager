@@ -20,4 +20,11 @@ router.post('/task', async (ctx) => {
 	};
 });
 
+router.get('/task', async (ctx) => {
+	ctx.body = {
+		success: true,
+		data   : await  taskApi.getActual(),
+	};
+});
+
 export default router;

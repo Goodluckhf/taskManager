@@ -61,6 +61,40 @@ class TaskApi extends BaseApi {
 			throw validationError;
 		}
 	}
+	
+	/**
+	 * @description Список актуальных задач
+	 * @return {Promise<*>}
+	 */
+	// eslint-disable-next-line class-methods-use-this
+	async getActual() {
+		const LikesTask = mongoose.model('LikesTask');
+		const likeTasks = await LikesTask.find({
+			$or: [
+				{ status: LikesTask.status.waiting },
+				{ status: LikesTask.status.pending },
+			],
+		});
+		
+		const groupIds = likeTasks.map(task => task.publicId);
+		const groups = await mongoose.model('Group').find({
+			_id: { $in: groupIds },
+		});
+		
+		const groupsHash = groups.reduce((hash, group) => {
+			return {
+				...hash,
+				[group.id]: group.toObject(),
+			};
+		}, {});
+		
+		return likeTasks.map((task) => {
+			return {
+				...task.toObject(),
+				group: groupsHash[task.publicId.toString()],
+			};
+		});
+	}
 }
 
 export default TaskApi;
