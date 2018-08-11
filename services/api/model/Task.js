@@ -1,9 +1,19 @@
 import mongoose from 'mongoose';
 import moment   from 'moment';
-import { arrayToHash } from '../../../lib/helper';
 
-const statuses   = ['pending', 'finished', 'skipped'];
-const statusHash = arrayToHash(statuses);
+const statuses = {
+	// Ожидает взятия в работу
+	waiting: 0,
+	
+	// Выполняется
+	pending: 1,
+	
+	// Задача завершена
+	finished: 2,
+	
+	// Прорущена
+	skipped: 3,
+};
 
 const schema = new mongoose.Schema({
 	title: {
@@ -18,8 +28,8 @@ const schema = new mongoose.Schema({
 	
 	status: {
 		type   : String,
-		enum   : statuses,
-		default: statusHash.pending,
+		enum   : Object.keys(statuses),
+		default: statuses.waiting,
 	},
 });
 
@@ -28,7 +38,7 @@ export class TaskDocument {
 	 * @return {Object.<*>}
 	 */
 	static get status() {
-		return statusHash;
+		return statuses;
 	}
 	
 	/**
@@ -37,14 +47,6 @@ export class TaskDocument {
 	 */
 	static createInstance(opts) {
 		return new this(opts);
-	}
-	
-	/**
-	 * @return {TaskDocument}
-	 */
-	finish() {
-		this.status = TaskDocument.status.finished;
-		return this;
 	}
 }
 
