@@ -49,3 +49,8 @@ process.on('uncaughtException', (error) => {
 process.on('unhandledRejection', (error) => {
 	logger.error({ error });
 });
+
+// @TODO: Для прод мода убрать
+process.on('SIGTERM', () => {
+	process.exit(0);
+});
