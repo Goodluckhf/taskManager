@@ -7,7 +7,15 @@ export class NotFound extends BaseApiError {
 }
 
 export class ValidationError extends BaseApiError {
-	constructor() {
+	constructor(invalidParams) {
 		super('Validation error. Please check data');
+		this.invalidParams = invalidParams;
+	}
+	
+	toObject() {
+		return {
+			...super.toObject(),
+			invalidParams: this.invalidParams,
+		};
 	}
 }

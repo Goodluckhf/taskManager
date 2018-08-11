@@ -1,7 +1,7 @@
 export default class BaseApiError extends Error {
 	/**
 	 * @param {String} message
-	 * @param {Number} status
+	 * @param {Number} [status]
 	 */
 	constructor(message, status) {
 		super(message);
