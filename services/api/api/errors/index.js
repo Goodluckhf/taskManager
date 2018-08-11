@@ -19,3 +19,19 @@ export class ValidationError extends BaseApiError {
 		};
 	}
 }
+
+export class VkApiError extends BaseApiError {
+	constructor(error, request) {
+		super('Vk Api error');
+		this.vkError = error;
+		this.request = request;
+	}
+	
+	toObject() {
+		return {
+			...super.toObject(),
+			vkError: this.vkError,
+			request: this.request,
+		};
+	}
+}
