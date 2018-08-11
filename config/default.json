@@ -17,5 +17,10 @@
     "taskQueue": {
         "name": "tasks",
 		"prefetch": 2
-    }
+    },
+
+	"vkApi": {
+		"token": "!token!",
+		"timeout": 10000
+	}
 }
