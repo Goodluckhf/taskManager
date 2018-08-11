@@ -3,6 +3,7 @@ import BaseApiError from './BaseApiError';
 export class NotFound extends BaseApiError {
 	constructor() {
 		super('Nothing found');
+		this.status = 404;
 	}
 }
 
