@@ -1,12 +1,12 @@
 import taskSchema from './Task';
 import likesTaskSchema from './TaskType/Likes';
 
-import publicSchema from './Public';
+import groupSchema from './Group';
 
 
 // Initialise mongoose models
 export default (connection) => {
 	connection.model('Task', taskSchema);
-	connection.model('Public', publicSchema);
+	connection.model('Group', groupSchema);
 	connection.model('Task').discriminator('LikesTask', likesTaskSchema);
 };
