@@ -16,11 +16,6 @@ const statuses = {
 };
 
 const schema = new mongoose.Schema({
-	title: {
-		type   : String,
-		default: '',
-	},
-	
 	createdAt: {
 		type   : Date,
 		default: moment.now,
@@ -28,7 +23,7 @@ const schema = new mongoose.Schema({
 	
 	status: {
 		type   : String,
-		enum   : Object.keys(statuses),
+		enum   : Object.values(statuses),
 		default: statuses.waiting,
 	},
 });
@@ -42,11 +37,12 @@ export class TaskDocument {
 	}
 	
 	/**
+	 * @param {Function} Constructor
 	 * @param {Object.<*>} opts
 	 * @return {TaskDocument}
 	 */
-	static createInstance(opts) {
-		return new this(opts);
+	static createInstance(Constructor, opts) {
+		return new Constructor(opts);
 	}
 }
 

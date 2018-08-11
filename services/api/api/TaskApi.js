@@ -1,5 +1,6 @@
-import { ValidationError } from './errors';
-import BaseApi             from './BaseApi';
+import mongoose                      from 'mongoose';
+import { NotFound, ValidationError } from './errors';
+import BaseApi                       from './BaseApi';
 
 class TaskApi extends BaseApi {
 	/**
@@ -11,7 +12,7 @@ class TaskApi extends BaseApi {
 	 * @param {String} data.targetLink
 	 * @param {Number} data.likesCount
 	 * @param {String} data.schedule
-	 * @return {Promise<TaskDocument>}
+	 * @return {Promise<*>}
 	 */
 	async createLikes(data) {
 		this.validate({
@@ -30,14 +31,35 @@ class TaskApi extends BaseApi {
 			throw new ValidationError(['publicId', 'publicHref']);
 		}
 		
+		let group;
 		if (data.publicHref) {
-			const group = await this.vkApi.groupByHref(data.publicHref);
+			const vkGroup = await this.vkApi.groupByHref(data.publicHref);
 			this.logger.info({
-				group,
+				vkGroup,
 			});
-			return group;
+			group = await mongoose.model('Group').findOrCreateById(vkGroup.id, vkGroup);
+		} else {
+			group = await mongoose.model('Group').findOne({ publicId: data.publicId });
+			if  (!group) {
+				throw new NotFound();
+			}
 		}
-		return;
+		
+		try {
+			const likesTask = mongoose.model('LikesTask').createInstance({
+				...data,
+				publicId: group._id,
+			});
+			await likesTask.save();
+			return {
+				...likesTask.toObject(),
+				group: group.toObject(),
+			};
+		} catch (error) {
+			const validationError = new ValidationError(data);
+			validationError.error = error;
+			throw validationError;
+		}
 	}
 }
 
