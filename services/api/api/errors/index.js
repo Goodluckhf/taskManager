@@ -1,9 +1,19 @@
 import BaseApiError from './BaseApiError';
 
 export class NotFound extends BaseApiError {
-	constructor() {
+	constructor({ what, query }) {
 		super('Nothing found');
+		this.what   = what;
+		this.query  = query;
 		this.status = 404;
+	}
+	
+	toObject() {
+		return {
+			...super.toObject(),
+			what : this.what,
+			query: this.query,
+		};
 	}
 }
 
