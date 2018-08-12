@@ -11,7 +11,6 @@ class TaskApi extends BaseApi {
 	 * @param {String} data.admin
 	 * @param {String} data.targetLink
 	 * @param {Number} data.likesCount
-	 * @param {String} data.schedule
 	 * @return {Promise<*>}
 	 */
 	async createLikes(data) {
@@ -19,12 +18,11 @@ class TaskApi extends BaseApi {
 			properties: {
 				targetLink: { type: 'string' },
 				likesCount: { type: 'string' }, // @TODO: Разобраться, чтобы сам конверитил в int
-				schedule  : { type: 'string' },
 				publicHref: { type: 'string' },
 				admin     : { type: 'string' },
 				publicId  : { type: 'string' },
 			},
-			required: ['targetLink', 'likesCount', 'schedule'],
+			required: ['targetLink', 'likesCount'],
 		}, data);
 		
 		if (!data.publicId && !data.publicHref) {
@@ -102,7 +100,6 @@ class TaskApi extends BaseApi {
 	 * @param {String} data.publicId
 	 * @param {String} data.targetLink
 	 * @param {Number} data.likesCount
-	 * @param {String} data.schedule
 	 * @return {Promise<*>}
 	 */
 	async updateLikes(_id, data) {
@@ -111,7 +108,6 @@ class TaskApi extends BaseApi {
 				publicId  : { type: 'string' },
 				targetLink: { type: 'string' },
 				likesCount: { type: 'string' }, // @TODO: Разобраться, чтобы сам конверитил в int
-				schedule  : { type: 'string' },
 			},
 		}, data);
 		
