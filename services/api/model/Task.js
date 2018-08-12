@@ -30,6 +30,10 @@ const schema = new mongoose.Schema({
 
 schema.statics.status = statuses;
 
+/**
+ * @property {Date} createdAt
+ * @property {Object<*>} status
+ */
 export class TaskDocument {
 	/**
 	 * @param {Function} Constructor
@@ -38,6 +42,14 @@ export class TaskDocument {
 	 */
 	static createInstance(Constructor, opts) {
 		return new Constructor(opts);
+	}
+	
+	/**
+	 * @return {Boolean}
+	 */
+	get active() {
+		return this.status === statuses.waiting
+			|| this.status === statuses.pending;
 	}
 }
 

@@ -115,12 +115,7 @@ class TaskApi extends BaseApi {
 			},
 		}, data);
 		
-		let likesTask;
-		try {
-			likesTask = await mongoose.model('LikesTask').findOne({ _id });
-		} catch (error) {
-			throw (new ValidationError({ _id })).combine({ error });
-		}
+		const likesTask = await mongoose.model('LikesTask').findOne({ _id });
 		
 		if (!likesTask) {
 			throw new NotFound({ query: { _id: _id.toString() }, what: 'LikesTask' });
@@ -129,6 +124,11 @@ class TaskApi extends BaseApi {
 		const group = await mongoose.model('Group').findOne({ _id: data.publicId || likesTask.publicId });
 		if (data.publicId && !group) {
 			throw new NotFound({ query: { _id: data.publicId.toString() }, what: 'Group' });
+		}
+		
+		if (!likesTask.active) {
+			// @TODO: Пока бросаю ошибку валидации, потом сделать нормально
+			throw (new ValidationError({ likesTaskId: _id })).combine({ message: 'Задачу уже нельзя изменять' });
 		}
 		
 		likesTask.fill(data);
