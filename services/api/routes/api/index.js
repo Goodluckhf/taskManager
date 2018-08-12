@@ -23,7 +23,16 @@ router.post('/task', async (ctx) => {
 router.get('/task', async (ctx) => {
 	ctx.body = {
 		success: true,
-		data   : await  taskApi.getActual(),
+		data   : await taskApi.getActual(),
+	};
+});
+
+router.put('/task/:id', async (ctx) => {
+	const { id } = ctx.params;
+	
+	ctx.body = {
+		success: true,
+		data   : await taskApi.updateLikes(id, ctx.request.body),
 	};
 });
 

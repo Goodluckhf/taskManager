@@ -56,6 +56,35 @@ export class LikesTaskDocument {
 			.split(',')
 			.map(d => moment(d, 'DD/MM@HH:mm'));
 	}
+	
+	/**
+	 * @param {Object} opts
+	 * @param {Number} opts.likesCount
+	 * @param {String} opts.targetLink
+	 * @param {Number} opts.publicId
+	 * @param {String} opts.schedule
+	 * @return {LikesTaskDocument}
+	 */
+	// eslint-disable-next-line object-curly-newline
+	fill({ likesCount, targetLink, publicId, schedule }) {
+		if (likesCount) {
+			this.likesCount = likesCount;
+		}
+		
+		if (targetLink) {
+			this.targetLink = targetLink;
+		}
+		
+		if (publicId) {
+			this.publicId = publicId;
+		}
+		
+		if (schedule) {
+			this.schedule = LikesTaskDocument.getScheduleDatesFromString(schedule);
+		}
+		
+		return this;
+	}
 }
 
 likesSchema.loadClass(LikesTaskDocument);

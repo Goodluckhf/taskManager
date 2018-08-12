@@ -56,9 +56,7 @@ class TaskApi extends BaseApi {
 				group: group.toObject(),
 			};
 		} catch (error) {
-			const validationError = new ValidationError(data);
-			validationError.error = error;
-			throw validationError;
+			throw (new ValidationError(data)).combine({ error });
 		}
 	}
 	
@@ -94,6 +92,52 @@ class TaskApi extends BaseApi {
 				group: groupsHash[task.publicId.toString()],
 			};
 		});
+	}
+	
+	
+	/**
+	 * @description Обновляет задание
+	 * @param {String} _id
+	 * @param {Object} data
+	 * @param {String} data.publicId
+	 * @param {String} data.targetLink
+	 * @param {Number} data.likesCount
+	 * @param {String} data.schedule
+	 * @return {Promise<*>}
+	 */
+	async updateLikes(_id, data) {
+		this.validate({
+			properties: {
+				publicId  : { type: 'string' },
+				targetLink: { type: 'string' },
+				likesCount: { type: 'string' }, // @TODO: Разобраться, чтобы сам конверитил в int
+				schedule  : { type: 'string' },
+			},
+		}, data);
+		
+		let likesTask;
+		try {
+			likesTask = await mongoose.model('LikesTask').findOne({ _id });
+		} catch (error) {
+			throw (new ValidationError({ _id })).combine({ error });
+		}
+		
+		if (!likesTask) {
+			throw new NotFound({ query: { _id: _id.toString() }, what: 'LikesTask' });
+		}
+		
+		const group = await mongoose.model('Group').findOne({ _id: data.publicId || likesTask.publicId });
+		if (data.publicId && !group) {
+			throw new NotFound({ query: { _id: data.publicId.toString() }, what: 'Group' });
+		}
+		
+		likesTask.fill(data);
+		await likesTask.save();
+		
+		return {
+			...likesTask.toObject(),
+			group: group.toObject(),
+		};
 	}
 }
 
