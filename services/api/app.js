@@ -39,8 +39,8 @@ app.on('error', (error, ctx) => {
 	});
 });
 
-app.listen(config.get('server.port'));
-logger.info(`server listening on port: ${config.get('server.port')}`);
+app.listen(config.get('api.port'));
+logger.info(`server listening on port: ${config.get('api.port')}`);
 
 process.on('uncaughtException', (error) => {
 	logger.error({ error });
