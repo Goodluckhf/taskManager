@@ -29,6 +29,20 @@ export class ValidationError extends BaseApiError {
 			invalidParams: this.invalidParams,
 		};
 	}
+	
+	/**
+	 * @param {mongoose.Error.ValidationError} error
+	 * @return {ValidationError}
+	 */
+	static createFromMongoose(_error) {
+		const errors = Object.keys(_error.errors).map((error) => {
+			return {
+				field  : error,
+				message: _error.errors[error].message,
+			};
+		});
+		return new this(errors);
+	}
 }
 
 export class VkApiError extends BaseApiError {
