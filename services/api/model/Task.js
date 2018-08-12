@@ -22,7 +22,7 @@ const schema = new mongoose.Schema({
 	},
 	
 	status: {
-		type   : String,
+		type   : Number,
 		enum   : Object.values(statuses),
 		default: statuses.waiting,
 	},
@@ -50,6 +50,14 @@ export class TaskDocument {
 	get active() {
 		return this.status === statuses.waiting
 			|| this.status === statuses.pending;
+	}
+	
+	/**
+	 * @return {TaskDocument}
+	 */
+	stop() {
+		this.status = statuses.skipped;
+		return this;
 	}
 }
 

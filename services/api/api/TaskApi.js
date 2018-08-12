@@ -139,6 +139,29 @@ class TaskApi extends BaseApi {
 			group: group.toObject(),
 		};
 	}
+	
+	/**
+	 * @description Останавливает задачу
+	 * @param {String} _id
+	 */
+	// eslint-disable-next-line class-methods-use-this
+	async stop(_id) {
+		if (!_id) {
+			throw new ValidationError({ _id });
+		}
+		
+		const task = await mongoose.model('LikesTask').findOne({ _id });
+		if (!task) {
+			throw new NotFound({ query: { _id }, what: 'LikesTask' });
+		}
+		
+		if (!task.active) {
+			// @TODO: Пока бросаю ошибку валидации, потом сделать нормально
+			throw (new ValidationError({ likesTaskId: _id })).combine({ message: 'Задачу уже нельзя остановить' });
+		}
+		
+		await task.stop().save();
+	}
 }
 
 export default TaskApi;

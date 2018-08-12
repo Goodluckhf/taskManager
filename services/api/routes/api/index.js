@@ -27,6 +27,15 @@ router.get('/task', async (ctx) => {
 	};
 });
 
+router.post('/task/stop/:id', async (ctx) => {
+	const { id } = ctx.params;
+	
+	ctx.body = {
+		success: true,
+		data   : await taskApi.stop(id),
+	};
+});
+
 router.put('/task/:id', async (ctx) => {
 	const { id } = ctx.params;
 	
