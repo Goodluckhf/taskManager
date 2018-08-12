@@ -9,12 +9,18 @@ services:
       - .:/home/www:cached
     ports:
       - 81:3000
-  task-consumer:
+  cron:
     build:
-      context: ./services/taskConsumer
+      context: ./services/cron
       dockerfile: Dockerfile
     volumes:
       - .:/home/www:cached
+#  task-consumer:
+#    build:
+#      context: ./services/taskConsumer
+#      dockerfile: Dockerfile
+#    volumes:
+#      - .:/home/www:cached
   rabbit:
     image: rabbitmq
     volumes:
