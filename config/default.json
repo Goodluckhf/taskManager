@@ -3,22 +3,22 @@
 		"connectionURI": "mongodb://mongo/tasks",
 		"reconnectInterval": 1000
 	},
-
+	
 	"server": {
 		"port": 3000
 	},
-
+	
 	"rabbit": {
-        "host": "rabbit",
-        "port": 5672,
-        "reconnectInterval": 3000
-    },
-
-    "taskQueue": {
-        "name": "tasks",
+		"host": "rabbit",
+		"port": 5672,
+		"reconnectInterval": 3000
+	},
+	
+	"taskQueue": {
+		"name": "tasks",
 		"prefetch": 2
-    },
-
+	},
+	
 	"vkApi": {
 		"token": "!token!",
 		"timeout": 10000
