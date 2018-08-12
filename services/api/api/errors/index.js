@@ -31,10 +31,10 @@ export class ValidationError extends BaseApiError {
 	}
 	
 	/**
-	 * @param {mongoose.Error.ValidationError} error
+	 * @param {mongoose.Error.ValidationError} _error
 	 * @return {ValidationError}
 	 */
-	static createFromMongoose(_error) {
+	static createFromMongooseValidationError(_error) {
 		const errors = Object.keys(_error.errors).map((error) => {
 			return {
 				field  : error,
@@ -42,6 +42,17 @@ export class ValidationError extends BaseApiError {
 			};
 		});
 		return new this(errors);
+	}
+	
+	/**
+	 * @param {mongoose.Error.CastError} _error
+	 * @return {ValidationError}
+	 */
+	static createFromMongooseCastError(_error) {
+		return new this([{
+			field  : _error.path,
+			message: _error.message,
+		}]);
 	}
 }
 

@@ -10,7 +10,11 @@ export default async (ctx, next) => {
 	} catch (_error) {
 		let error = _error;
 		if (error instanceof mongoose.Error.ValidationError) {
-			error = ValidationError.createFromMongoose(error);
+			error = ValidationError.createFromMongooseValidationError(error);
+		}
+		
+		if (error instanceof mongoose.Error.CastError) {
+			error = ValidationError.createFromMongooseCastError(error);
 		}
 		
 		if (error instanceof BaseApiError) {
