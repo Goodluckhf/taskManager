@@ -12,16 +12,6 @@ const amqp = new Amqp(logger, {
 	retry: false,
 });
 
-/**
- * @param {Number} ms,
- * @param {Number} code
- */
-const forceExit = (ms = 500, code = 1) => {
-	setTimeout(() => {
-		process.exit(code);
-	}, ms);
-};
-
 class TaskResponse extends Response {
 	async process(method, data) {
 		this.logger.info({
@@ -37,17 +27,25 @@ class TaskResponse extends Response {
 	}
 }
 
+const response = new TaskResponse(logger, {
+	queue   : config.get('taskQueue.name'),
+	prefetch: config.get('taskQueue.prefetch'),
+});
+
+const rpcServer = new RpcServer(amqp, logger, response);
+
+/**
+ * @param {Number} ms,
+ * @param {Number} code
+ */
+const forceExit = (ms = 500, code = 1) => {
+	setTimeout(() => {
+		process.exit(code);
+	}, ms);
+};
+
 (async () => {
 	try {
-		const connection = await amqp.connect();
-		
-		const response = new TaskResponse(logger, {
-			queue   : config.get('taskQueue.name'),
-			prefetch: config.get('taskQueue.prefetch'),
-		});
-		
-		const rpcServer = new RpcServer(connection, logger, response);
-		
 		await rpcServer.start();
 		logger.info({
 			message: 'rpc server started',
