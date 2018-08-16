@@ -17,7 +17,7 @@
 	
 	"taskQueue": {
 		"name": "tasks",
-		"prefetch": 2
+		"prefetch": 1
 	},
 	
 	"vkApi": {
