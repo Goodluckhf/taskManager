@@ -19,6 +19,7 @@ services:
     build:
       context: ./services/taskConsumer
       dockerfile: Dockerfile
+    stop_grace_period: 20s
     volumes:
       - .:/home/www:cached
     restart: on-failure
