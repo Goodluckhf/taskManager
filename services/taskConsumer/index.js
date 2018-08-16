@@ -20,7 +20,7 @@ class TaskResponse extends Response {
 			data,
 		});
 		
-		await bluebird.delay(5000);
+		await bluebird.delay(2000);
 		return {
 			testValue: Math.random(),
 		};

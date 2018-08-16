@@ -56,19 +56,22 @@ router.put('/task/:id', async (ctx) => {
 });
 
 router.get('/produce', async (ctx) => {
-	const request = new Request({
-		queue  : config.get('taskQueue.name'),
-		timeout: 30000,
-	});
-	
-	request.setMethod('produce', {
-		a           : 10,
-		testArgument: false,
-	});
+	const tasks = Promise.all(Array.from({ length: 20 }).map((_, index) => {
+		const request = new Request({
+			queue  : config.get('taskQueue.name'),
+			timeout: 30000,
+		});
+		
+		request.setMethod('produce', {
+			index,
+			testArgument: false,
+		});
+		return rpcClient.call(request);
+	}));
 	
 	ctx.body = {
 		success: true,
-		data   : await rpcClient.call(request),
+		data   : await tasks,
 	};
 });
 
