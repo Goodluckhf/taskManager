@@ -68,6 +68,14 @@ class GroupDocument {
 		const newGroup = this.createInstance(data);
 		return newGroup.save();
 	}
+	
+	/**
+	 * @param {String} publicId
+	 * @return {String}
+	 */
+	static getLinkByPublicId(publicId) {
+		return `https://vk.com/club${publicId}`;
+	}
 }
 /* eslint-enable camelcase */
 
