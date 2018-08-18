@@ -26,6 +26,12 @@ const schema = new mongoose.Schema({
 		enum   : Object.values(statuses),
 		default: statuses.waiting,
 	},
+	
+	// Задача повторяется по крону
+	repeated: {
+		type   : Boolean,
+		default: false,
+	},
 });
 
 schema.statics.status = statuses;
