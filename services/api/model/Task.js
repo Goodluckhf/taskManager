@@ -65,6 +65,18 @@ export class TaskDocument {
 		this.status = statuses.skipped;
 		return this;
 	}
+	
+	/**
+	 * @return {Promise.<Array.<TaskDocument>>}
+	 */
+	static findActive() {
+		return this.find({
+			$or: [
+				{ status: statuses.waiting },
+				{ status: statuses.pending },
+			],
+		});
+	}
 }
 
 schema.loadClass(TaskDocument);
