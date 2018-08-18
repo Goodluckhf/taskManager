@@ -46,6 +46,13 @@ router.post('/task/stop/:id', async (ctx) => {
 	};
 });
 
+router.get('/task/handleActive', async (ctx) => {
+	ctx.body = {
+		success: true,
+		data   : await taskApi.handleActiveTasks(),
+	};
+});
+
 router.put('/task/:id', async (ctx) => {
 	const { id } = ctx.params;
 	

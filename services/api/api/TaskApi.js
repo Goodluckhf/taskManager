@@ -1,4 +1,7 @@
 import mongoose                      from 'mongoose';
+import bluebird                      from 'bluebird';
+import { JSDOM }                     from 'jsdom';
+
 import { NotFound, ValidationError } from './errors';
 import BaseApi                       from './BaseApi';
 
@@ -219,6 +222,35 @@ class TaskApi extends BaseApi {
 		}
 		
 		await task.stop().save();
+	}
+	
+	async handleActiveTasks() {
+		const tasks = await mongoose.model('LikesTask').findActive();
+		return bluebird.map(
+			tasks,
+			async (task) => {
+				const group = await mongoose.model('Group').findOne({
+					_id: task.publicId,
+				}).lean().exec();
+				
+				const link = mongoose.model('Group').getLinkByPublicId(group.publicId);
+				const jsDom = await JSDOM.fromURL(link);
+				
+				const $post = jsDom.window.document.querySelectorAll('#page_wall_posts .post .wall_post_text a.mem_link')[0];
+				if (!$post) {
+					return;
+				}
+				
+				const mentionId = $post.attributes.getNamedItem('mention_id');
+				const publicName = `club${group.publicId}`;
+				this.logger.info({
+					mentionId: mentionId.value,
+					publicId : publicName,
+					hasLink  : mentionId.value === publicName,
+				});
+			},
+			{ concurrency: 5 },
+		);
 	}
 }
 
