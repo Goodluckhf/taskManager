@@ -24,11 +24,13 @@ services:
       - .:/home/www:cached
     restart: always
   rabbit:
-    image: rabbitmq
+    image: rabbitmq:3-management
     volumes:
       - rabbit-data:/var/lib/rabbitmq:cached
     logging:
       driver: none
+    ports:
+      - 8081:15672
   mongo:
     image: mongo
     ports:
