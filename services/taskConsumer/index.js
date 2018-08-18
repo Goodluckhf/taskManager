@@ -68,22 +68,6 @@ const rpcServer = new RpcServer(amqp, logger, response);
 	}
 })();
 
-process.on('SIGUSR1', () => {
-	logger.warn('usr1');
-});
-
-process.on('SIGHUP', () => {
-	logger.warn('SIGHUP');
-});
-
-process.on('SIGUSR2', () => {
-	logger.warn('usr2');
-});
-
-process.on('SIGINT', () => {
-	logger.warn('int');
-});
-
 process.on('SIGTERM', () => {
 	logger.warn({ message: 'Graceful shutdown' });
 	if (!processing) {
