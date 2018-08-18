@@ -5,15 +5,16 @@ import BaseApi                       from './BaseApi';
 class TaskApi extends BaseApi {
 	/**
 	 * @description Создает задание на лайкание постов по расписанию
-	 * @param {Object} data
-	 * @param {String} [data.publicId] Если publicId нет - будет создана новая группа
-	 * @param {String} data.publicHref
-	 * @param {String} data.admin
-	 * @param {String} data.targetPublicIds
-	 * @param {Number} data.likesCount
+	 * @param {Object} _data
+	 * @param {String} [_data.publicId] Если publicId нет - будет создана новая группа
+	 * @param {String} _data.publicHref
+	 * @param {String} _data.admin
+	 * @param {String} _data.targetPublicIds
+	 * @param {Number} _data.likesCount
 	 * @return {Promise<*>}
 	 */
-	async createLikes(data) {
+	async createLikes(_data) {
+		const data = { ..._data };
 		this.validate({
 			properties: {
 				targetPublicIds: { type: 'string' },
@@ -46,6 +47,7 @@ class TaskApi extends BaseApi {
 			}
 		}
 		
+		data.targetPublicIds = data.targetPublicIds.split(',');
 		const targetPublics = await mongoose.model('Group').find({
 			_id: { $in: data.targetPublicIds },
 		}).lean().exec();
