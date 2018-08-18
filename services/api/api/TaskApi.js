@@ -9,20 +9,20 @@ class TaskApi extends BaseApi {
 	 * @param {String} [data.publicId] Если publicId нет - будет создана новая группа
 	 * @param {String} data.publicHref
 	 * @param {String} data.admin
-	 * @param {String} data.targetLink
+	 * @param {String} data.targetPublicIds
 	 * @param {Number} data.likesCount
 	 * @return {Promise<*>}
 	 */
 	async createLikes(data) {
 		this.validate({
 			properties: {
-				targetLink: { type: 'string' },
-				likesCount: { type: 'string' }, // @TODO: Разобраться, чтобы сам конверитил в int
-				publicHref: { type: 'string' },
-				admin     : { type: 'string' },
-				publicId  : { type: 'string' },
+				targetPublicIds: { type: 'string' },
+				likesCount     : { type: 'string' }, // @TODO: Разобраться, чтобы сам конверитил в int
+				publicHref     : { type: 'string' },
+				admin          : { type: 'string' },
+				publicId       : { type: 'string' },
 			},
-			required: ['targetLink', 'likesCount'],
+			required: ['targetPublicIds', 'likesCount'],
 		}, data);
 		
 		if (!data.publicId && !data.publicHref) {
@@ -35,12 +35,26 @@ class TaskApi extends BaseApi {
 			this.logger.info({
 				vkGroup,
 			});
-			group = await mongoose.model('Group').findOrCreateById(vkGroup.id, vkGroup);
+			group = await mongoose.model('Group').findOrCreateByPublicId(vkGroup.id, vkGroup);
 		} else {
-			group = await mongoose.model('Group').findOne({ publicId: data.publicId });
+			group = await mongoose.model('Group').findOne({ _id: data.publicId });
 			if  (!group) {
-				throw new NotFound();
+				throw new NotFound({
+					what : 'Group',
+					query: { _id: data.publicId },
+				});
 			}
+		}
+		
+		const targetPublics = await mongoose.model('Group').find({
+			_id: { $in: data.targetPublicIds },
+		}).lean().exec();
+		
+		if (targetPublics.length !== data.targetPublicIds.length) {
+			throw new NotFound({
+				what : 'Group | targetPublics',
+				query: { publicIds: data.targetPublicIds },
+			});
 		}
 		
 		try {
@@ -52,6 +66,7 @@ class TaskApi extends BaseApi {
 			return {
 				...likesTask.toObject(),
 				group: group.toObject(),
+				targetPublics,
 			};
 		} catch (error) {
 			throw (new ValidationError(data)).combine({ error });
@@ -96,18 +111,20 @@ class TaskApi extends BaseApi {
 	/**
 	 * @description Обновляет задание
 	 * @param {String} _id
-	 * @param {Object} data
-	 * @param {String} data.publicId
-	 * @param {String} data.targetLink
-	 * @param {Number} data.likesCount
+	 * @param {Object} _data
+	 * @param {String} _data.publicId
+	 * @param {String} _data.targetPublicIds
+	 * @param {Number} _data.likesCount
 	 * @return {Promise<*>}
 	 */
-	async updateLikes(_id, data) {
+	async updateLikes(_id, _data) {
+		const data = { ..._data };
+		
 		this.validate({
 			properties: {
-				publicId  : { type: 'string' },
-				targetLink: { type: 'string' },
-				likesCount: { type: 'string' }, // @TODO: Разобраться, чтобы сам конверитил в int
+				publicId       : { type: 'string' },
+				targetPublicIds: { type: 'string' },
+				likesCount     : { type: 'string' }, // @TODO: Разобраться, чтобы сам конверитил в int
 			},
 		}, data);
 		
@@ -125,6 +142,21 @@ class TaskApi extends BaseApi {
 		if (!likesTask.active) {
 			// @TODO: Пока бросаю ошибку валидации, потом сделать нормально
 			throw (new ValidationError({ likesTaskId: _id })).combine({ message: 'Задачу уже нельзя изменять' });
+		}
+		
+		if (data.targetPublicIds) {
+			data.targetPublicIds = data.targetPublicIds.split(',');
+		}
+		
+		const targetPublics = await mongoose.model('Group').find({
+			_id: { $in: data.targetPublicIds },
+		}).lean().exec();
+		
+		if (targetPublics.length !== data.targetPublicIds.length) {
+			throw new NotFound({
+				what : 'Group | targetPublics',
+				query: { publicIds: data.targetPublicIds },
+			});
 		}
 		
 		likesTask.fill(data);

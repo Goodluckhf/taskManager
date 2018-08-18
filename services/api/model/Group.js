@@ -58,7 +58,7 @@ class GroupDocument {
 	 * @param {Object} data
 	 * @return {GroupDocument}
 	 */
-	static async findOrCreateById(id, data) {
+	static async findOrCreateByPublicId(id, data) {
 		const group = await this.findOne({ publicId: id });
 		
 		if (group) {

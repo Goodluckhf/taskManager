@@ -8,7 +8,7 @@ const likesSchema = new mongoose.Schema({
 	
 	// Ссылка которая будет искаться в тексте поста
 	targetPublicIds: {
-		type    : String,
+		type    : [Number],
 		required: true,
 	},
 	
