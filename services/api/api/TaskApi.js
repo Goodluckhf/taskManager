@@ -89,6 +89,7 @@ class TaskApi extends BaseApi {
 			],
 		});
 		
+		// Собираем группы по publicId
 		const groupIds = likeTasks.map(task => task.publicId);
 		const groups = await mongoose.model('Group').find({
 			_id: { $in: groupIds },
@@ -101,9 +102,36 @@ class TaskApi extends BaseApi {
 			};
 		}, {});
 		
+		//Собираем группы для targetPublics
+		const targetPublicIdsHash = likeTasks.reduce((object, task) => {
+			task.targetPublicIds.forEach((id) => {
+				if (object[id.toString()]) {
+					return;
+				}
+				
+				object[id.toString()] = true; // eslint-disable-line no-param-reassign
+			});
+			
+			return object;
+		}, {});
+		
+		const allTargetGroups = await mongoose.model('Group').find({
+			_id: { $in: Object.keys(targetPublicIdsHash) },
+		});
+		
+		const allTargetGroupsHash = allTargetGroups.reduce((object, group) => {
+			return {
+				...object,
+				[group.id]: group.toObject(),
+			};
+		}, {});
+		
 		return likeTasks.map((task) => {
+			const targetGroups = task.targetPublicIds.map(id => allTargetGroupsHash[id.toString()]);
+			
 			return {
 				...task.toObject(),
+				targetGroups,
 				group: groupsHash[task.publicId.toString()],
 			};
 		});
