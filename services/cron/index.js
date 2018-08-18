@@ -1,37 +1,16 @@
-import bluebird                      from 'bluebird';
-import config                        from 'config';
-import logger                        from '../../lib/logger';
-import { getActualTasks, processTask } from './tasks/likes';
-import { connect }                   from '../../lib/amqp';
+import config   from 'config';
+import axios    from 'axios';
+import logger   from '../../lib/logger';
 
-(async () => {
-	try {
-		await connect();
-		setInterval(async () => {
-			const tasks = await getActualTasks();
-			if (!tasks.length) {
-				return;
-			}
-			
-			await bluebird.map(
-				tasks,
-				async (task) => {
-					if (task.__t !== 'LikesTask') {
-						return logger.warn({
-							message: 'there is no task processor',
-							task,
-						});
-					}
-					
-					return processTask(task);
-				},
-				{ concurrency: 1 },
-			);
-		}, config.get('cron.interval'));
-	} catch (error) {
-		logger.error({ error });
-	}
-})();
+const baseUrl = `http://${config.get('api.host')}:${config.get('api.port')}/api`;
+
+setInterval(async () => {
+	const { data: { data } } = await axios.get(`${baseUrl}/task/doActual`);
+	logger.info({
+		data,
+		message: 'cron task sent',
+	});
+}, config.get('cron.interval'));
 
 process.on('uncaughtException', (error) => {
 	logger.error({ error });
