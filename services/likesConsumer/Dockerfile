@@ -4,6 +4,4 @@ WORKDIR /home/www
 ENV NODE_ENV=development \
 	NODE_PATH=.
 
-RUN npm i -g nodemon
-
 CMD ["node", "--require", "babel-register", "./services/likesConsumer/index.js"]
