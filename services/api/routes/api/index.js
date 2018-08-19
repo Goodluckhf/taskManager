@@ -1,11 +1,11 @@
-import Router    from 'koa-router';
-import config    from 'config';
-import TaskApi   from '../../api/TaskApi';
-import VkApi     from '../../../../lib/VkApi';
-import logger    from '../../../../lib/logger';
-import RpcClient from '../../../../lib/amqp/RpcClient';
-import Amqp      from '../../../../lib/amqp/Amqp';
-import Request   from '../../../../lib/amqp/Request';
+import Router      from 'koa-router';
+import config      from 'config';
+import TaskApi     from '../../api/TaskApi';
+import VkApi       from '../../../../lib/VkApi';
+import logger      from '../../../../lib/logger';
+import RpcClient   from '../../../../lib/amqp/RpcClient';
+import Amqp        from '../../../../lib/amqp/Amqp';
+import LikeRequest from '../../api/amqpRequests/LikeRequest';
 
 const vkApi = new VkApi(config.get('vkApi.token'), {
 	timeout: config.get('vkApi.timeout'),
@@ -65,22 +65,16 @@ router.put('/task/:id', async (ctx) => {
 });
 
 router.get('/produce', async (ctx) => {
-	const tasks = Promise.all(Array.from({ length: 20 }).map((_, index) => {
-		const request = new Request({
-			queue  : config.get('taskQueue.name'),
-			timeout: 30000,
-		});
-		
-		request.setMethod('produce', {
-			index,
-			testArgument: false,
-		});
-		return rpcClient.call(request);
-	}));
+	const request = new LikeRequest(config, {
+		args: {
+			postLink  : ctx.request.body.postLink,
+			likesCount: ctx.request.body.likesCount,
+		},
+	});
 	
 	ctx.body = {
 		success: true,
-		data   : await tasks,
+		data   : await rpcClient.call(request),
 	};
 });
 
