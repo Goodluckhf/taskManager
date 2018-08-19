@@ -1,11 +1,9 @@
 import config    from 'config';
-import puppeteer from 'puppeteer';
 
 import Amqp          from '../../lib/amqp/Amqp';
 import logger        from '../../lib/logger';
 import RpcServer     from '../../lib/amqp/RpcServer';
 import LikesResponse from './LikesResponse';
-import login         from './login';
 
 const rabbitConfig = config.get('rabbit');
 const amqp = new Amqp(logger, {
@@ -26,13 +24,10 @@ const forceExit = (ms = 500, code = 1) => {
 
 (async () => {
 	try {
-		const browser  = await puppeteer.launch({ headless: false });
-		await login(browser, {
+		const response = new LikesResponse({
+			logger,
 			login   : config.get('likePro.login'),
 			password: config.get('likePro.password'),
-		});
-		
-		const response = new LikesResponse(browser, logger, {
 			queue   : config.get('likesTask.queue'),
 			prefetch: config.get('likesTask.prefetch'),
 		});
