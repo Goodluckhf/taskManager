@@ -76,6 +76,14 @@ class GroupDocument {
 	static getLinkByPublicId(publicId) {
 		return `https://vk.com/club${publicId}`;
 	}
+	
+	/**
+	 * @param {String} postId
+	 * @return {String}
+	 */
+	static getPostLinkById(postId) {
+		return `https://vk.com/wall${postId}`;
+	}
 }
 /* eslint-enable camelcase */
 
