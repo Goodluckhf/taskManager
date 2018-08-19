@@ -5,10 +5,12 @@ import Amqp          from '../../lib/amqp/Amqp';
 import logger        from '../../lib/logger';
 import RpcServer     from '../../lib/amqp/RpcServer';
 import LikesResponse from './LikesResponse';
+import login         from './login';
 
 const rabbitConfig = config.get('rabbit');
 const amqp = new Amqp(logger, {
-	...rabbitConfig,
+	host : process.env.NODE_ENV === 'development' ? 'localhost' : rabbitConfig.host,
+	port : rabbitConfig.port,
 	retry: false,
 });
 
@@ -24,8 +26,12 @@ const forceExit = (ms = 500, code = 1) => {
 
 (async () => {
 	try {
-		// @TODO: Для прод режима включить headless
 		const browser  = await puppeteer.launch({ headless: false });
+		await login(browser, {
+			login   : config.get('likePro.login'),
+			password: config.get('likePro.password'),
+		});
+		
 		const response = new LikesResponse(browser, logger, {
 			queue   : config.get('likesTask.queue'),
 			prefetch: config.get('likesTask.prefetch'),

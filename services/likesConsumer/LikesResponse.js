@@ -11,9 +11,8 @@ class LikesResponse extends Response {
 	
 	//eslint-disable-next-line
 	async process(method, data) {
-		if (!this.browser) {
-			throw new Error('Browser must me injected');
-		}
+		const page = await this.browser.newPage();
+		await page.goto('https://likepro.org/cabinet', { waitUntil: 'networkidle2' });
 	}
 }
 
