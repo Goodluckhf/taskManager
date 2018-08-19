@@ -16,6 +16,12 @@ const likesSchema = new mongoose.Schema({
 		type    : Number,
 		required: true,
 	},
+	
+	// Время последнего проставления лайков в этой группе
+	lastLikedAt: {
+		type   : Date,
+		default: null,
+	},
 });
 
 /**
