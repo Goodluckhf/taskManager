@@ -4,8 +4,17 @@ import { JSDOM }                     from 'jsdom';
 
 import { NotFound, ValidationError } from './errors';
 import BaseApi                       from './BaseApi';
+import LikeRequest                   from './amqpRequests/LikeRequest';
 
+/**
+ * @property {RpcClient} rpcClient
+ */
 class TaskApi extends BaseApi {
+	constructor(rpcClient, ...args) {
+		super(...args);
+		this.rpcClient = rpcClient;
+	}
+	
 	/**
 	 * @description Создает задание на лайкание постов по расписанию
 	 * @param {Object} _data
@@ -224,32 +233,57 @@ class TaskApi extends BaseApi {
 		await task.stop().save();
 	}
 	
+	/**
+	 * @description Выполняет актуальные задачи (используется в кроне)
+	 * @return {Promise<*>}
+	 */
+	//@TODO: Вынести в отдельный класс для тасков
 	async handleActiveTasks() {
+		const Group = mongoose.model('Group');
 		const tasks = await mongoose.model('LikesTask').findActive();
 		return bluebird.map(
 			tasks,
 			async (task) => {
-				const group = await mongoose.model('Group').findOne({
+				const group = await Group.findOne({
 					_id: task.publicId,
 				}).lean().exec();
 				
-				const link = mongoose.model('Group').getLinkByPublicId(group.publicId);
+				const targetGroups = await Group.find({
+					_id: { $in: task.targetPublicIds },
+				}).lean().exec();
+				
+				const link  = Group.getLinkByPublicId(group.publicId);
 				const jsDom = await JSDOM.fromURL(link);
 				
-				const $post = jsDom.window.document.querySelectorAll('#page_wall_posts .post .wall_post_text a.mem_link')[0];
-				if (!$post) {
+				const $mentionLink = jsDom.window.document.querySelectorAll('#page_wall_posts .post .wall_post_text a.mem_link')[0];
+				if (!$mentionLink) {
 					return;
 				}
 				
-				const mentionId = $post.attributes.getNamedItem('mention_id');
-				const publicName = `club${group.publicId}`;
-				this.logger.info({
-					mentionId: mentionId.value,
-					publicId : publicName,
-					hasLink  : mentionId.value === publicName,
+				// Ссылка на пост
+				const $post    = jsDom.window.document.querySelectorAll('#page_wall_posts .post')[0];
+				const $postId  = $post.attributes.getNamedItem('data-post-id');
+				const postLink = Group.getPostLinkById($postId.value);
+				
+				const mentionId  = $mentionLink.attributes.getNamedItem('mention_id');
+				
+				const hasTargetGroupInTask = targetGroups.some((targetGroup) => {
+					return `club${targetGroup.publicId}` === mentionId.value;
 				});
+				
+				if (!hasTargetGroupInTask) {
+					return;
+				}
+				
+				const request = new LikeRequest(this.config, {
+					postLink,
+					likesCount: task.likesCount,
+				});
+				this.logger.info({ request });
+				
+				//eslint-disable-next-line consistent-return
+				return this.rpcClient.call(request);
 			},
-			{ concurrency: 5 },
 		);
 	}
 }
