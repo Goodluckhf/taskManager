@@ -16,9 +16,9 @@ services:
 #      dockerfile: Dockerfile
 #    volumes:
 #      - .:/home/www:cached
-  task-consumer:
+  likes-consumer:
     build:
-      context: ./services/taskConsumer
+      context: services/likesConsumer
       dockerfile: Dockerfile
     stop_grace_period: 20s
     volumes:
