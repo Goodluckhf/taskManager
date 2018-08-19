@@ -22,6 +22,11 @@
 		"prefetch": 1
 	},
 	
+	"likePro": {
+		"login": "!login!",
+		"password": "!password!"
+	},
+	
 	"vkApi": {
 		"token": "!token!",
 		"timeout": 10000
