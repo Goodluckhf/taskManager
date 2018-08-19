@@ -1,18 +1,56 @@
-import Response from '../../lib/amqp/Response';
+import puppeteer from 'puppeteer';
+
+import Response  from '../../lib/amqp/Response';
+import loginAction from './login';
 
 /**
- * @property {Puppeteer.Browser} browser
+ * @property {String} login
+ * @property {String} password
  */
 class LikesResponse extends Response {
-	constructor(browser, ...args) {
-		super(...args);
-		this.browser = browser;
+	constructor({ login, password, ...args }) {
+		super(args);
+		this.login    = login;
+		this.password = password;
 	}
 	
 	//eslint-disable-next-line
-	async process(method, data) {
-		const page = await this.browser.newPage();
+	async process(method, { postLink, likesCount }) {
+		const browser = await puppeteer.launch({ headless: false });
+		const page    = await browser.newPage();
+		await loginAction(page, {
+			login   : this.login,
+			password: this.password,
+		});
 		await page.goto('https://likepro.org/cabinet', { waitUntil: 'networkidle2' });
+		this.logger.info({ postLink, likesCount });
+		
+		// Ставим лайки
+		const urlInput = await page.$('.widget__addtask form input[name="url"]');
+		await urlInput.type(postLink);
+		
+		const likesCountInput = await page.$('.widget__addtask form input[name="like_count"]');
+		await likesCountInput.type(likesCount);
+		
+		await page.click('button.ant-btn.ant-btn-primary.ant-btn-lg');
+		await page.waitForSelector('.ant-message .ant-message-notice-content');
+		
+		const result = await page.evaluate(() => {
+			const _result = {};
+			const error   = document.querySelector('.ant-message .ant-message-custom-content.ant-message-error span');
+			const success = document.querySelector('.ant-message .ant-message-custom-content.ant-message-success span');
+			
+			if (error) {
+				_result.error = error.innerText;
+			} else {
+				_result.success = success.innerText;
+			}
+			return _result;
+		});
+		
+		await browser.close();
+		
+		return result;
 	}
 }
 
