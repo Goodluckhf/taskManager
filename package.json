@@ -29,6 +29,7 @@
     "moment": "^2.22.2",
     "mongoose": "^5.2.7",
     "mongoose-paginate": "^5.0.3",
+    "puppeteer": "^1.7.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
