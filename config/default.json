@@ -18,11 +18,7 @@
 	"likesTask": {
 		"likesInterval": 70,
 		"queue": "tasks.likes",
-		"timeout": 60000
-	},
-	
-	"taskQueue": {
-		"name": "tasks",
+		"timeout": 60000,
 		"prefetch": 1
 	},
 	
