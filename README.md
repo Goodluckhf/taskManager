@@ -1,9 +1,9 @@
 # Запуск в dev режиме
 Пока просто запускать консумеры не в докере
 
-
-
-
+```bash
+$ NODE_ENV=development node --require babel-register ./services/likesConsumer/index.js
+```
 
 ##TODO: Все таки разобраться как запускать нормально в докере
 На macOs запустить браузер через командную строку
