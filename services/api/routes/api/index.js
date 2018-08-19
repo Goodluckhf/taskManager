@@ -66,10 +66,8 @@ router.put('/task/:id', async (ctx) => {
 
 router.get('/produce', async (ctx) => {
 	const request = new LikeRequest(config, {
-		args: {
-			postLink  : ctx.request.body.postLink,
-			likesCount: ctx.request.body.likesCount,
-		},
+		postLink  : ctx.request.query.postLink,
+		likesCount: ctx.request.query.likesCount,
 	});
 	
 	ctx.body = {
