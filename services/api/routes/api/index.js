@@ -11,15 +11,17 @@ const vkApi = new VkApi(config.get('vkApi.token'), {
 	timeout: config.get('vkApi.timeout'),
 });
 
-const taskApi = new TaskApi(config, vkApi, logger);
-
+// rabbit, RPC client
 const rabbitConfig = config.get('rabbit');
-const amqp = new Amqp(logger, rabbitConfig);
-
-const rpcClient = new RpcClient(amqp, logger);
+const amqp         = new Amqp(logger, rabbitConfig);
+const rpcClient    = new RpcClient(amqp, logger);
 rpcClient.start().catch((error) => {
 	logger.error({ error });
 });
+
+// Сам классс Api
+const taskApi = new TaskApi(rpcClient, config, vkApi, logger);
+
 
 const router = new Router({ prefix: '/api' });
 
