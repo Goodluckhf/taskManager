@@ -5,11 +5,12 @@ import logger   from '../../lib/logger';
 const baseUrl = `http://${config.get('api.host')}:${config.get('api.port')}/api`;
 
 setInterval(async () => {
-	const { data: { data } } = await axios.get(`${baseUrl}/task/doActual`);
+	const { data: { data } } = await axios.get(`${baseUrl}/task/handleActive`);
 	logger.info({
 		data,
 		message: 'cron task sent',
 	});
+	//@TODO: Если не будет успевать за интервал, можно сделать пропуск
 }, config.get('cron.interval'));
 
 process.on('uncaughtException', (error) => {
