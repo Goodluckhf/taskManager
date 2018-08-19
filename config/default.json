@@ -15,6 +15,12 @@
 		"reconnectInterval": 3000
 	},
 	
+	"likesTask": {
+		"likesInterval": 70,
+		"queue": "tasks.likes",
+		"timeout": 60000
+	},
+	
 	"taskQueue": {
 		"name": "tasks",
 		"prefetch": 1
