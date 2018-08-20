@@ -21,7 +21,6 @@ class TaskApi extends BaseApi {
 	 * @param {String} [_data.publicId] Если publicId нет - будет создана новая группа
 	 * @param {String} _data.publicHref
 	 * @param {String} _data.admin
-	 * @param {String} _data.targetPublicIds
 	 * @param {Number} _data.likesCount
 	 * @return {Promise<*>}
 	 */
@@ -29,13 +28,12 @@ class TaskApi extends BaseApi {
 		const data = { ..._data };
 		this.validate({
 			properties: {
-				targetPublicIds: { type: 'string' },
-				likesCount     : { type: 'string' }, // @TODO: Разобраться, чтобы сам конверитил в int
-				publicHref     : { type: 'string' },
-				admin          : { type: 'string' },
-				publicId       : { type: 'string' },
+				likesCount: { type: 'string' }, // @TODO: Разобраться, чтобы сам конверитил в int
+				publicHref: { type: 'string' },
+				admin     : { type: 'string' },
+				publicId  : { type: 'string' },
 			},
-			required: ['targetPublicIds', 'likesCount'],
+			required: ['likesCount'],
 		}, data);
 		
 		if (!data.publicId && !data.publicHref) {
@@ -59,18 +57,6 @@ class TaskApi extends BaseApi {
 			}
 		}
 		
-		data.targetPublicIds = data.targetPublicIds.split(',');
-		const targetPublics = await mongoose.model('Group').find({
-			_id: { $in: data.targetPublicIds },
-		}).lean().exec();
-		
-		if (targetPublics.length !== data.targetPublicIds.length) {
-			throw new NotFound({
-				what : 'Group | targetPublics',
-				query: { publicIds: data.targetPublicIds },
-			});
-		}
-		
 		try {
 			const likesTask = mongoose.model('LikesTask').createInstance({
 				...data,
@@ -80,7 +66,6 @@ class TaskApi extends BaseApi {
 			return {
 				...likesTask.toObject(),
 				group: group.toObject(),
-				targetPublics,
 			};
 		} catch (error) {
 			throw (new ValidationError(data)).combine({ error });
@@ -114,36 +99,9 @@ class TaskApi extends BaseApi {
 			};
 		}, {});
 		
-		//Собираем группы для targetPublics
-		const targetPublicIdsHash = likeTasks.reduce((object, task) => {
-			task.targetPublicIds.forEach((id) => {
-				if (object[id.toString()]) {
-					return;
-				}
-				
-				object[id.toString()] = true; // eslint-disable-line no-param-reassign
-			});
-			
-			return object;
-		}, {});
-		
-		const allTargetGroups = await mongoose.model('Group').find({
-			_id: { $in: Object.keys(targetPublicIdsHash) },
-		});
-		
-		const allTargetGroupsHash = allTargetGroups.reduce((object, group) => {
-			return {
-				...object,
-				[group.id]: group.toObject(),
-			};
-		}, {});
-		
 		return likeTasks.map((task) => {
-			const targetGroups = task.targetPublicIds.map(id => allTargetGroupsHash[id.toString()]);
-			
 			return {
 				...task.toObject(),
-				targetGroups,
 				group: groupsHash[task.publicId.toString()],
 			};
 		});
@@ -155,7 +113,6 @@ class TaskApi extends BaseApi {
 	 * @param {String} _id
 	 * @param {Object} _data
 	 * @param {String} _data.publicId
-	 * @param {String} _data.targetPublicIds
 	 * @param {Number} _data.likesCount
 	 * @return {Promise<*>}
 	 */
@@ -164,9 +121,8 @@ class TaskApi extends BaseApi {
 		
 		this.validate({
 			properties: {
-				publicId       : { type: 'string' },
-				targetPublicIds: { type: 'string' },
-				likesCount     : { type: 'string' }, // @TODO: Разобраться, чтобы сам конверитил в int
+				publicId  : { type: 'string' },
+				likesCount: { type: 'string' }, // @TODO: Разобраться, чтобы сам конверитил в int
 			},
 		}, data);
 		
@@ -184,21 +140,6 @@ class TaskApi extends BaseApi {
 		if (!likesTask.active) {
 			// @TODO: Пока бросаю ошибку валидации, потом сделать нормально
 			throw (new ValidationError({ likesTaskId: _id })).combine({ message: 'Задачу уже нельзя изменять' });
-		}
-		
-		if (data.targetPublicIds) {
-			data.targetPublicIds = data.targetPublicIds.split(',');
-		}
-		
-		const targetPublics = await mongoose.model('Group').find({
-			_id: { $in: data.targetPublicIds },
-		}).lean().exec();
-		
-		if (targetPublics.length !== data.targetPublicIds.length) {
-			throw new NotFound({
-				what : 'Group | targetPublics',
-				query: { publicIds: data.targetPublicIds },
-			});
 		}
 		
 		likesTask.fill(data);
@@ -248,9 +189,15 @@ class TaskApi extends BaseApi {
 					_id: task.publicId,
 				}).lean().exec();
 				
-				const targetGroups = await Group.find({
-					_id: { $in: task.targetPublicIds },
-				}).lean().exec();
+				const targetPublics = await mongoose
+					.model('Group')
+					.find({ isTarget: true })
+					.lean()
+					.exec();
+				
+				if (!targetPublics.length) {
+					return;
+				}
 				
 				const link  = Group.getLinkByPublicId(group.publicId);
 				const jsDom = await JSDOM.fromURL(link);
@@ -267,7 +214,7 @@ class TaskApi extends BaseApi {
 				
 				const mentionId  = $mentionLink.attributes.getNamedItem('mention_id');
 				
-				const hasTargetGroupInTask = targetGroups.some((targetGroup) => {
+				const hasTargetGroupInTask = targetPublics.some((targetGroup) => {
 					return `club${targetGroup.publicId}` === mentionId.value;
 				});
 				
