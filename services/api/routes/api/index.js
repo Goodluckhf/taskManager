@@ -5,7 +5,6 @@ import VkApi       from '../../../../lib/VkApi';
 import logger      from '../../../../lib/logger';
 import RpcClient   from '../../../../lib/amqp/RpcClient';
 import Amqp        from '../../../../lib/amqp/Amqp';
-import LikeRequest from '../../api/amqpRequests/LikeRequest';
 
 const vkApi = new VkApi(config.get('vkApi.token'), {
 	timeout: config.get('vkApi.timeout'),
@@ -55,24 +54,19 @@ router.get('/task/handleActive', async (ctx) => {
 	};
 });
 
+router.put('/task/likes', async (ctx) => {
+	ctx.body = {
+		success: true,
+		data   : await taskApi.setLikes(ctx.request.body),
+	};
+});
+
 router.put('/task/:id', async (ctx) => {
 	const { id } = ctx.params;
 	
 	ctx.body = {
 		success: true,
 		data   : await taskApi.updateLikes(id, ctx.request.body),
-	};
-});
-
-router.get('/produce', async (ctx) => {
-	const request = new LikeRequest(config, {
-		postLink  : ctx.request.query.postLink,
-		likesCount: ctx.request.query.likesCount,
-	});
-	
-	ctx.body = {
-		success: true,
-		data   : await rpcClient.call(request),
 	};
 });
 
