@@ -2,9 +2,9 @@ import mongoose                      from 'mongoose';
 import bluebird                      from 'bluebird';
 import { JSDOM }                     from 'jsdom';
 
-import { NotFound, ValidationError } from './errors';
-import BaseApi                       from './BaseApi';
-import LikeRequest                   from './amqpRequests/LikeRequest';
+import { NotFound, TaskApiError, ValidationError } from './errors';
+import BaseApi                                     from './BaseApi';
+import LikeRequest                                 from './amqpRequests/LikeRequest';
 
 /**
  * @property {RpcClient} rpcClient
@@ -179,12 +179,14 @@ class TaskApi extends BaseApi {
 	 * @return {Promise<*>}
 	 */
 	//@TODO: Вынести в отдельный класс для тасков
+	//@TODO: Проверить что map вернет при ошибке
 	async handleActiveTasks() {
 		const Group = mongoose.model('Group');
 		const tasks = await mongoose.model('LikesTask').findActive();
 		return bluebird.map(
 			tasks,
 			async (task) => {
+				// @TODO: Добавить проверку разницы во времени для лайков
 				const group = await Group.findOne({
 					_id: task.publicId,
 				}).lean().exec();
@@ -229,7 +231,16 @@ class TaskApi extends BaseApi {
 				this.logger.info({ request });
 				
 				//eslint-disable-next-line consistent-return
-				return this.rpcClient.call(request);
+				const result = await this.rpcClient.call(request);
+				
+				if (result.error) {
+					throw new TaskApiError(request, result.error);
+				}
+				
+				//eslint-disable-next-line no-param-reassign
+				task.lastLikedAt = new Date();
+				//eslint-disable-next-line consistent-return
+				return task.save();
 			},
 		);
 	}
