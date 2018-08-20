@@ -71,3 +71,23 @@ export class VkApiError extends BaseApiError {
 		};
 	}
 }
+
+/**
+ * @property {Request} request
+ * @property {Object} error
+ */
+export class TaskApiError extends BaseApiError {
+	constructor(request, error) {
+		super('During task handling error occurred');
+		this.request = request;
+		this.error   = error;
+	}
+	
+	toObject() {
+		return {
+			...super.toObject(),
+			error  : this.error,
+			request: this.request,
+		};
+	}
+}
