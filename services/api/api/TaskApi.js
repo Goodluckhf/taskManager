@@ -1,6 +1,7 @@
-import mongoose                      from 'mongoose';
-import bluebird                      from 'bluebird';
-import { JSDOM }                     from 'jsdom';
+import mongoose  from 'mongoose';
+import bluebird  from 'bluebird';
+import moment    from 'moment';
+import { JSDOM } from 'jsdom';
 
 import { NotFound, TaskApiError, ValidationError } from './errors';
 import BaseApi                                     from './BaseApi';
@@ -186,7 +187,12 @@ class TaskApi extends BaseApi {
 		return bluebird.map(
 			tasks,
 			async (task) => {
-				// @TODO: Добавить проверку разницы во времени для лайков
+				// Проверяем, что прошло 70 минут, чтобы не лайкать уже лайкнутый пост
+				const likesInterval = parseInt(this.config.get('likesTask.likesInterval'), 10);
+				if (moment().diff(moment(task.lastLikedAt), 'minutes') < likesInterval) {
+					return;
+				}
+				
 				const group = await Group.findOne({
 					_id: task.publicId,
 				}).lean().exec();
@@ -239,8 +245,7 @@ class TaskApi extends BaseApi {
 				
 				//eslint-disable-next-line no-param-reassign
 				task.lastLikedAt = new Date();
-				//eslint-disable-next-line consistent-return
-				return task.save();
+				await task.save();
 			},
 		);
 	}
