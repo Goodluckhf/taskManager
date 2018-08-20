@@ -236,7 +236,6 @@ class TaskApi extends BaseApi {
 				});
 				this.logger.info({ request });
 				
-				//eslint-disable-next-line consistent-return
 				const result = await this.rpcClient.call(request);
 				
 				if (result.error) {
@@ -248,6 +247,37 @@ class TaskApi extends BaseApi {
 				await task.save();
 			},
 		);
+	}
+	
+	/**
+	 * Ставит лайки для поста
+	 * @param {Object} data
+	 * @param {String} data.postLink
+	 * @param {Number} data.likesCount
+	 * @return {Promise<*>}
+	 */
+	async setLikes(data) {
+		this.validate({
+			properties: {
+				postLink  : { type: 'string' },
+				likesCount: { type: 'string' }, // @TODO: Разобраться, чтобы сам конверитил в int
+			},
+			required: ['postHref', 'likesCount'],
+		}, data);
+		
+		const request = new LikeRequest(this.config, {
+			postLink  : data.postLink,
+			likesCount: data.likesCount,
+		});
+		this.logger.info({ request });
+		
+		const result = await this.rpcClient.call(request);
+		
+		if (result.error) {
+			throw new TaskApiError(request, result.error);
+		}
+		
+		return result.success;
 	}
 }
 
