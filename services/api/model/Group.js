@@ -25,6 +25,12 @@ const schema = new mongoose.Schema({
 		type   : String,
 		default: null,
 	},
+	
+	// Флаг, определеяющий проверять ли в задаче на лайки
+	isTarget: {
+		type   : Boolean,
+		default: false,
+	},
 });
 
 /**
