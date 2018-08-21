@@ -262,7 +262,7 @@ class TaskApi extends BaseApi {
 				postLink  : { type: 'string' },
 				likesCount: { type: 'string' }, // @TODO: Разобраться, чтобы сам конверитил в int
 			},
-			required: ['postHref', 'likesCount'],
+			required: ['postLink', 'likesCount'],
 		}, data);
 		
 		const request = new LikeRequest(this.config, {
