@@ -23,5 +23,29 @@ const accountSchema = new mongoose.Schema({
 	},
 });
 
+/**
+ * @property {String} login
+ * @property {String} password
+ * @property {String} link
+ * @property {Boolean} isActive
+ */
+class AccountDocument {
+	/**
+	 * @param {String} login
+	 * @param {String} password
+	 * @param {String} link
+	 * @return AccountDocument
+	 */
+	static createInstance({ login, password, link }) {
+		const account = new this();
+		
+		account.login    = login;
+		account.password = password;
+		account.link     = link;
+		return account;
+	}
+}
+
+accountSchema.loadClass(AccountDocument);
 
 export default accountSchema;
