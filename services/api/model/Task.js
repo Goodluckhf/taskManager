@@ -75,7 +75,7 @@ export class TaskDocument {
 				{ status: statuses.waiting },
 				{ status: statuses.pending },
 			],
-		});
+		}).populate('group').exec();
 	}
 }
 

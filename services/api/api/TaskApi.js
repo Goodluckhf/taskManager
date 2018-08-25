@@ -166,6 +166,7 @@ class TaskApi extends BaseApi {
 	async handleActiveTasks() {
 		const Group = mongoose.model('Group');
 		const tasks = await mongoose.model('LikesTask').findActive();
+		
 		return bluebird.map(
 			tasks,
 			async (task) => {
@@ -175,13 +176,15 @@ class TaskApi extends BaseApi {
 					return;
 				}
 				
-				const group = await Group.findOne({
-					_id: task.publicId,
-				}).lean().exec();
+				if (!task.group) {
+					this.logger.warn({
+						message: 'Like task hash no group',
+						taskId : task._id,
+					});
+					return;
+				}
 				
-				const targetPublics = await mongoose
-					.model('Group')
-					.find({ isTarget: true })
+				const targetPublics = await Group.find({ isTarget: true })
 					.lean()
 					.exec();
 				
@@ -189,7 +192,7 @@ class TaskApi extends BaseApi {
 					return;
 				}
 				
-				const link  = Group.getLinkByPublicId(group.publicId);
+				const link  = Group.getLinkByPublicId(task.group.publicId);
 				const jsDom = await JSDOM.fromURL(link);
 				
 				const $mentionLink = jsDom.window.document.querySelectorAll('#page_wall_posts .post .wall_post_text a.mem_link')[0];
