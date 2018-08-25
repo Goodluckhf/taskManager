@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 
 const likesSchema = new mongoose.Schema({
-	publicId: {
+	group: {
 		type    : mongoose.Schema.Types.ObjectId,
 		required: true,
+		ref     : 'Group',
 	},
 	
 	likesCount: {
