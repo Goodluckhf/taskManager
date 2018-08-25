@@ -95,7 +95,7 @@ class TaskApi extends BaseApi {
 	 * @description Обновляет задание
 	 * @param {String} _id
 	 * @param {Object} _data
-	 * @param {String} _data.publicId
+	 * @param {String} _data.groupId
 	 * @param {Number} _data.likesCount
 	 * @return {Promise<*>}
 	 */
@@ -104,20 +104,23 @@ class TaskApi extends BaseApi {
 		
 		this.validate({
 			properties: {
-				publicId  : { type: 'string' },
+				groupId   : { type: 'string' },
 				likesCount: { type: 'string' }, // @TODO: Разобраться, чтобы сам конверитил в int
 			},
 		}, data);
 		
-		const likesTask = await mongoose.model('LikesTask').findOne({ _id });
+		const likesTask = await mongoose
+			.model('LikesTask')
+			.findOne({ _id })
+			.exec();
 		
 		if (!likesTask) {
 			throw new NotFound({ query: { _id: _id.toString() }, what: 'LikesTask' });
 		}
 		
-		const group = await mongoose.model('Group').findOne({ _id: data.publicId || likesTask.publicId });
-		if (data.publicId && !group) {
-			throw new NotFound({ query: { _id: data.publicId.toString() }, what: 'Group' });
+		const group = await mongoose.model('Group').findOne({ _id: data.groupId || likesTask.group });
+		if (data.groupId && !group) {
+			throw new NotFound({ query: { _id: data.groupId }, what: 'Group' });
 		}
 		
 		if (!likesTask.active) {
@@ -127,11 +130,8 @@ class TaskApi extends BaseApi {
 		
 		likesTask.fill(data);
 		await likesTask.save();
-		
-		return {
-			...likesTask.toObject(),
-			group: group.toObject(),
-		};
+		await likesTask.populate('group').execPopulate();
+		return likesTask.toObject();
 	}
 	
 	/**

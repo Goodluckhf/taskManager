@@ -20,14 +20,14 @@ const likesSchema = new mongoose.Schema({
 });
 
 /**
- * @property {ObjectId} publicId
+ * @property {ObjectId|GroupDocument} group
  * @property {Number} likesCount
  */
 export class LikesTaskDocument {
 	/**
 	 * @param {Object} opts
 	 * @param {Number} opts.likesCount
-	 * @param {Number} opts.group
+	 * @param {ObjectId} opts.group
 	 * @return {LikesTaskDocument}
 	 */
 	static createInstance(opts) {
@@ -40,17 +40,17 @@ export class LikesTaskDocument {
 	/**
 	 * @param {Object} opts
 	 * @param {Number} opts.likesCount
-	 * @param {Number} opts.publicId
+	 * @param {Number} opts.groupId
 	 * @return {LikesTaskDocument}
 	 */
 	// eslint-disable-next-line object-curly-newline
-	fill({ likesCount, publicId }) {
+	fill({ likesCount, groupId }) {
 		if (likesCount) {
 			this.likesCount = likesCount;
 		}
 		
-		if (publicId) {
-			this.publicId = publicId;
+		if (groupId) {
+			this.group = groupId;
 		}
 		
 		return this;
