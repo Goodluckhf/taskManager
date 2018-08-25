@@ -3,17 +3,24 @@ import bluebird  from 'bluebird';
 import moment    from 'moment';
 import { JSDOM } from 'jsdom';
 
-import { NotFound, TaskApiError, ValidationError } from './errors';
-import BaseApi                                     from './BaseApi';
-import LikeRequest                                 from './amqpRequests/LikeRequest';
+import {
+	NotFound,
+	TaskApiError,
+	ValidationError,
+} from './errors';
+
+import BaseApi     from './BaseApi';
+import LikeRequest from './amqpRequests/LikeRequest';
 
 /**
  * @property {RpcClient} rpcClient
+ * @property {VkApi} vkApi
  */
 class TaskApi extends BaseApi {
-	constructor(rpcClient, ...args) {
+	constructor(rpcClient, vkApi, ...args) {
 		super(...args);
 		this.rpcClient = rpcClient;
+		this.vkApi     = vkApi;
 	}
 	
 	/**
