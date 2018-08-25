@@ -3,13 +3,11 @@ import { ValidationError } from './errors';
 
 /**
  * @property {String} config
- * @property {VkApi} vkApi
  * @property {Logger} logger
  */
 class BaseApi {
-	constructor(config, vkApi, logger) {
+	constructor(config, logger) {
 		this.config = config;
-		this.vkApi  = vkApi;
 		this.logger = logger;
 	}
 	
