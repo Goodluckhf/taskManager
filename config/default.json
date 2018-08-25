@@ -22,6 +22,12 @@
 		"prefetch": 1
 	},
 	
+	"accountTask": {
+		"queue": "tasks.account",
+		"timeout": 60000,
+		"prefetch": 1
+	},
+	
 	"likePro": {
 		"login": "!login!",
 		"password": "!password!"
