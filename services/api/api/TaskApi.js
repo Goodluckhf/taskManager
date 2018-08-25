@@ -85,27 +85,9 @@ class TaskApi extends BaseApi {
 				{ status: LikesTask.status.waiting },
 				{ status: LikesTask.status.pending },
 			],
-		});
+		}).populate('group').exec();
 		
-		// Собираем группы по publicId
-		const groupIds = likeTasks.map(task => task.publicId);
-		const groups = await mongoose.model('Group').find({
-			_id: { $in: groupIds },
-		});
-		
-		const groupsHash = groups.reduce((hash, group) => {
-			return {
-				...hash,
-				[group.id]: group.toObject(),
-			};
-		}, {});
-		
-		return likeTasks.map((task) => {
-			return {
-				...task.toObject(),
-				group: groupsHash[task.publicId.toString()],
-			};
-		});
+		return likeTasks.map(task => task.toObject());
 	}
 	
 	
