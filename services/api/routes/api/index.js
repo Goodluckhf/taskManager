@@ -1,9 +1,9 @@
-import config          from 'config';
-import Router          from 'koa-router';
+import config from 'config';
+import Router from 'koa-router';
 
-import logger          from '../../../../lib/logger';
-import RpcClient       from '../../../../lib/amqp/RpcClient';
-import Amqp            from '../../../../lib/amqp/Amqp';
+import logger    from '../../../../lib/logger';
+import RpcClient from '../../../../lib/amqp/RpcClient';
+import Amqp      from '../../../../lib/amqp/Amqp';
 
 import createTaskRoute    from './task';
 import createAccountRoute from './account';
