@@ -19,7 +19,7 @@ class TaskApi extends BaseApi {
 	/**
 	 * @description Создает задание на лайкание постов по расписанию
 	 * @param {Object} _data
-	 * @param {String} [_data.publicId] Если publicId нет - будет создана новая группа
+	 * @param {String} [_data.groupId] Если groupId нет - будет создана новая группа
 	 * @param {String} _data.publicHref
 	 * @param {String} _data.admin
 	 * @param {Number} _data.likesCount
@@ -32,13 +32,13 @@ class TaskApi extends BaseApi {
 				likesCount: { type: 'string' }, // @TODO: Разобраться, чтобы сам конверитил в int
 				publicHref: { type: 'string' },
 				admin     : { type: 'string' },
-				publicId  : { type: 'string' },
+				groupId   : { type: 'string' },
 			},
 			required: ['likesCount'],
 		}, data);
 		
-		if (!data.publicId && !data.publicHref) {
-			throw new ValidationError(['publicId', 'publicHref']);
+		if (!data.groupId && !data.publicHref) {
+			throw new ValidationError(['groupId', 'publicHref']);
 		}
 		
 		let group;
@@ -49,11 +49,11 @@ class TaskApi extends BaseApi {
 			});
 			group = await mongoose.model('Group').findOrCreateByPublicId(vkGroup.id, vkGroup);
 		} else {
-			group = await mongoose.model('Group').findOne({ _id: data.publicId });
+			group = await mongoose.model('Group').findOne({ _id: data.groupId });
 			if  (!group) {
 				throw new NotFound({
 					what : 'Group',
-					query: { _id: data.publicId },
+					query: { _id: data.groupId },
 				});
 			}
 		}
@@ -61,7 +61,7 @@ class TaskApi extends BaseApi {
 		try {
 			const likesTask = mongoose.model('LikesTask').createInstance({
 				...data,
-				publicId: group._id,
+				group: group._id,
 			});
 			await likesTask.save();
 			return {

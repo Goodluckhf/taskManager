@@ -27,13 +27,13 @@ export class LikesTaskDocument {
 	/**
 	 * @param {Object} opts
 	 * @param {Number} opts.likesCount
-	 * @param {Number} opts.publicId
+	 * @param {Number} opts.group
 	 * @return {LikesTaskDocument}
 	 */
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
-		baseTask.likesCount      = opts.likesCount;
-		baseTask.publicId        = opts.publicId;
+		baseTask.likesCount = opts.likesCount;
+		baseTask.group      = opts.group;
 		return baseTask;
 	}
 	
