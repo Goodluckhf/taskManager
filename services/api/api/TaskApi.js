@@ -122,7 +122,7 @@ class TaskApi extends BaseApi {
 			.exec();
 		
 		if (!likesTask) {
-			throw new NotFound({ query: { _id: _id.toString() }, what: 'LikesTask' });
+			throw new NotFound({ query: { _id }, what: 'LikesTask' });
 		}
 		
 		const group = await mongoose.model('Group').findOne({ _id: data.groupId || likesTask.group });
