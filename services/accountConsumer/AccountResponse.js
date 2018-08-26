@@ -28,15 +28,30 @@ class AccountResponse extends Response {
 		await page.click('input[type="submit"]');
 		await navigationPromise;
 		
+		const error = await page.evaluate(() => {
+			const warnElement = document.querySelector('.service_msg.service_msg_warning');
+			if (!warnElement) {
+				return null;
+			}
+			
+			return warnElement.innerText;
+		});
+		if (error) {
+			return { error };
+		}
+		
 		await page.goto('https://vk.com', { waitUntil: 'networkidle2' });
 		
-		return page.evaluate(() => {
+		const response = await page.evaluate(() => {
 			const $a    = document.querySelector('#side_bar_inner li a');
 			const result  = {};
 			result.data   = { link: `https://vk.com${$a.attributes.href.value}` };
 			
 			return result;
 		});
+		
+		await browser.close();
+		return response;
 	}
 }
 
