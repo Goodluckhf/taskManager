@@ -1,4 +1,4 @@
-version: '3.2'
+version: '2.2'
 
 x-default-logging:
   &default-logging
@@ -7,6 +7,7 @@ x-default-logging:
     max-size: '5m'
     max-file: '1'
 
+
 services:
   nginx:
     build:
@@ -14,7 +15,14 @@ services:
       dockerfile: Dockerfile
     ports:
       - 81:80
-  logging: *default-logging
+    logging: *default-logging
+  web:
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile
+    volumes:
+      - ./services/web/public:/home/www:cached
+    logging: *default-logging
   api:
     build:
       context: ./services/api
@@ -22,7 +30,7 @@ services:
     volumes:
       - .:/home/www:cached
     restart: always
-  logging: *default-logging
+    logging: *default-logging
 #  cron:
 #    build:
 #      context: ./services/cron
