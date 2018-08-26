@@ -1,6 +1,20 @@
 version: '3.2'
 
+x-default-logging:
+  &default-logging
+  driver: json-file
+  options:
+    max-size: '5m'
+    max-file: '1'
+
 services:
+  nginx:
+    build:
+      context: ./services/nginx
+      dockerfile: Dockerfile
+    ports:
+      - 81:80
+  logging: *default-logging
   api:
     build:
       context: ./services/api
@@ -8,8 +22,7 @@ services:
     volumes:
       - .:/home/www:cached
     restart: always
-    ports:
-      - 81:3000
+  logging: *default-logging
 #  cron:
 #    build:
 #      context: ./services/cron
