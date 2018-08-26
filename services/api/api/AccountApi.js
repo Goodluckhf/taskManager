@@ -32,13 +32,13 @@ class AccountApi extends BaseApi {
 			password: data.password,
 		});
 		
-		const result = await this.rpcClient.call(request);
-		if (result.error) {
-			throw new TaskApiError(request, result.error);
+		const response = await this.rpcClient.call(request);
+		if (response.error) {
+			throw new TaskApiError(request, response.error);
 		}
 		
 		const account = mongoose.model('Account').createInstance({
-			link    : result.link,
+			link    : response.data.link,
 			login   : data.login,
 			password: data.password,
 		});
