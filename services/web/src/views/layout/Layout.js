@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
-import { Container } from 'reactstrap';
+import PropTypes from 'prop-types';
 
 import {
-	AppBreadcrumb,
 	AppFooter,
 	AppHeader,
 	AppSidebar,
@@ -15,8 +13,6 @@ import {
 }                    from '@coreui/react';
 // sidebar nav config
 import navigation    from '../../_nav';
-// routes config
-import routes        from '../../routes';
 import Footer        from './Footer';
 import Header        from './Header';
 
@@ -31,28 +27,11 @@ class Layout extends Component {
 					<AppSidebar fixed display="lg">
 						<AppSidebarHeader />
 						<AppSidebarForm />
-						<AppSidebarNav navConfig={navigation} {...this.props} />
+						<AppSidebarNav navConfig={navigation} />
 						<AppSidebarFooter />
 						<AppSidebarMinimizer />
 					</AppSidebar>
-					<main className="main">
-						<AppBreadcrumb appRoutes={routes}/>
-						<Container fluid>
-							<Switch>
-								{routes.map((route, idx) => {
-									return route.component ?
-										<Route
-											key={idx}
-											path={route.path}
-											exact={route.exact}
-											name={route.name}
-											render={props => (<route.component {...props} />)}
-										/> : null;
-								})}
-								<Redirect from="/" to="/dashboard" />
-							</Switch>
-						</Container>
-					</main>
+					<main className="main">{this.props.children}</main>
 				</div>
 				<AppFooter>
 					<Footer />
@@ -61,5 +40,9 @@ class Layout extends Component {
 		);
 	}
 }
+
+Layout.propTypes = {
+	children: PropTypes.node,
+};
 
 export default Layout;

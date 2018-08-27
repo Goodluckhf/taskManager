@@ -11,8 +11,7 @@ import 'simple-line-icons/css/simple-line-icons.css';
 // Import Main styles for this application
 import './scss/style.css';
 
-import Layout      from './views/layout/Layout';
-import { Page404 } from './views/pages';
+import { Page404, HomePage } from './views/pages';
 
 class App extends Component {
 	//eslint-disable-next-line class-methods-use-this
@@ -21,7 +20,8 @@ class App extends Component {
 			<HashRouter>
 				<Switch>
 					<Route exact path="/404" name="Page 404" component={Page404} />
-					<Route path="/" name="Home" component={Layout} />
+					<Route path="/" exact name="Home" component={HomePage} />
+					<Route component={Page404} />
 				</Switch>
 			</HashRouter>
 		);
