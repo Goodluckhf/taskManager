@@ -3,7 +3,6 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import { Container } from 'reactstrap';
 
 import {
-	AppAside,
 	AppBreadcrumb,
 	AppFooter,
 	AppHeader,
@@ -18,7 +17,6 @@ import {
 import navigation    from '../../_nav';
 // routes config
 import routes        from '../../routes';
-import Aside         from './Aside';
 import Footer        from './Footer';
 import Header        from './Header';
 
@@ -41,17 +39,20 @@ class Layout extends Component {
 						<AppBreadcrumb appRoutes={routes}/>
 						<Container fluid>
 							<Switch>
-								{routes.map((route, idx) => (route.component ? (<Route key={idx} path={route.path} exact={route.exact} name={route.name} render={props => (
-									<route.component {...props} />
-								)} />)
-									: (null)))}
+								{routes.map((route, idx) => {
+									return route.component ?
+										<Route
+											key={idx}
+											path={route.path}
+											exact={route.exact}
+											name={route.name}
+											render={props => (<route.component {...props} />)}
+										/> : null;
+								})}
 								<Redirect from="/" to="/dashboard" />
 							</Switch>
 						</Container>
 					</main>
-					<AppAside fixed hidden>
-						<Aside />
-					</AppAside>
 				</div>
 				<AppFooter>
 					<Footer />
