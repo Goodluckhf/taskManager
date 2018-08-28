@@ -91,3 +91,20 @@ export class TaskApiError extends BaseApiError {
 		};
 	}
 }
+
+
+export class GroupAlreadyExist extends BaseApiError {
+	constructor({ id, name }) {
+		super('Group has already exists');
+		this.id   = id;
+		this.name = name;
+	}
+	
+	toObject() {
+		return {
+			...super.toObject(),
+			id  : this.id,
+			name: this.name,
+		};
+	}
+}
