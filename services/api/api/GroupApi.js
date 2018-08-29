@@ -44,6 +44,16 @@ class GroupApi extends BaseApi {
 		
 		return newGroup.save();
 	}
+	
+	/**
+	 * @description Возвращает список групп
+	 * @return {Promise.<Array.<GroupDocument>>}
+	 */
+	//eslint-disable-next-line class-methods-use-this
+	async list() {
+		const Group  = mongoose.model('Group');
+		return Group.find().sort({ isTarget: -1 }).exec();
+	}
 }
 
 export default GroupApi;

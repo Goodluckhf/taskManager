@@ -17,4 +17,11 @@ export default (router) => {
 			data   : await groupApi.add(ctx.request.body),
 		};
 	});
+	
+	router.get('/groups', async (ctx) => {
+		ctx.body = {
+			success: true,
+			data   : await groupApi.list(),
+		};
+	});
 };
