@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import PropTypes            from 'prop-types';
+import { connect }          from 'react-redux';
 
 import {
 	AppFooter,
@@ -12,12 +13,12 @@ import {
 	AppSidebarNav,
 }                    from '@coreui/react';
 // sidebar nav config
-import navigation    from '../../_nav';
 import Footer        from './Footer';
 import Header        from './Header';
 
 class Layout extends Component {
 	render() {
+		console.log(this.props);
 		return (
 			<div className="app">
 				<AppHeader fixed>
@@ -27,7 +28,7 @@ class Layout extends Component {
 					<AppSidebar fixed display="lg">
 						<AppSidebarHeader />
 						<AppSidebarForm />
-						<AppSidebarNav navConfig={navigation} />
+						<AppSidebarNav navConfig={this.props.routes} />
 						<AppSidebarFooter />
 						<AppSidebarMinimizer />
 					</AppSidebar>
@@ -43,6 +44,14 @@ class Layout extends Component {
 
 Layout.propTypes = {
 	children: PropTypes.node,
+	routes  : PropTypes.object,
 };
 
-export default Layout;
+const mapStateToProps = (state) => {
+	console.log(state);
+	return {
+		routes: state.routes,
+	};
+};
+
+export default connect(mapStateToProps)(Layout);
