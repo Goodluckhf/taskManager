@@ -10,6 +10,7 @@
     "classnames": "^2.2.6",
     "flag-icon-css": "^3.0.0",
     "font-awesome": "^4.7.0",
+    "immutable": "^3.8.2",
     "prop-types": "^15.6.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
