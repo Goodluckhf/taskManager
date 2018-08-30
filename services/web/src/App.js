@@ -1,6 +1,11 @@
-import React, { Component }            	from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { Provider }                     from 'react-redux';
+import React, { Component } from 'react';
+import {
+	BrowserRouter,
+	Route,
+	Switch,
+	Redirect,
+} from 'react-router-dom';
+import { Provider } from 'react-redux';
 
 // CoreUI Icons Set
 import '@coreui/icons/css/coreui-icons.min.css';
@@ -27,7 +32,8 @@ class App extends Component {
 				<BrowserRouter>
 					<Switch>
 						<Route exact path="/404" name="Page 404" component={Page404} />
-						<Route path="/" exact name="Home" component={HomePage} />
+						<Redirect exact from="/" to='/groups' />
+						<Route path="/groups" exact name="Groups" component={HomePage} />
 						<Route component={Page404} />
 					</Switch>
 				</BrowserRouter>
