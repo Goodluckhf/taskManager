@@ -48,7 +48,7 @@ Layout.propTypes = {
 };
 
 const mapStateToProps = state => ({
-	routes: state.routes,
+	routes: state.get('routes'),
 });
 
 export default connect(mapStateToProps)(Layout);
