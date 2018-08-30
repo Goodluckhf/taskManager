@@ -1,20 +1,20 @@
-import { fromJS } from 'immutable';
+import { List, Map } from 'immutable';
 
-export const routes = fromJS({
-	items: [
-		{
+export const routes = Map({
+	items: List([
+		Map({
 			name : 'Паблики',
 			url  : '/groups',
 			icon : 'icon-speedometer',
-			badge: {
+			badge: Map({
 				variant: 'info',
 				text   : 'NEW',
-			},
-		},
-	],
+			}),
+		}),
+	]),
 });
 
-export default fromJS({
+export default Map({
 	routes,
 });
 
