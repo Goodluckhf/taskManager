@@ -18,7 +18,6 @@ import Header        from './Header';
 
 class Layout extends Component {
 	render() {
-		console.log(this.props);
 		return (
 			<div className="app">
 				<AppHeader fixed>
@@ -28,7 +27,8 @@ class Layout extends Component {
 					<AppSidebar fixed display="lg">
 						<AppSidebarHeader />
 						<AppSidebarForm />
-						<AppSidebarNav navConfig={this.props.routes} />
+						{/*Такой костыль, потому что шаблон не умеет в immutable*/}
+						<AppSidebarNav navConfig={this.props.routes.toJS()} />
 						<AppSidebarFooter />
 						<AppSidebarMinimizer />
 					</AppSidebar>
@@ -48,7 +48,6 @@ Layout.propTypes = {
 };
 
 const mapStateToProps = (state) => {
-	console.log(state);
 	return {
 		routes: state.routes,
 	};
