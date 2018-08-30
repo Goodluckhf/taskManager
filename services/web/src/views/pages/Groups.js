@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
 	Card, CardHeader, CardBody,
-	Container, Row, Col,
+	Container,
 } from 'reactstrap';
 
 import Layout from '../layout/Layout';
@@ -12,14 +12,10 @@ class Groups extends Component {
 		return (
 			<Layout>
 				<Container fluid={true}>
-					<Row>
-						<Col xs={12}>
-							<Card>
-								<CardHeader><b>Паблики</b></CardHeader>
-								<CardBody>Тут текст</CardBody>
-							</Card>
-						</Col>
-					</Row>
+					<Card>
+						<CardHeader><b>Паблики</b></CardHeader>
+						<CardBody>Тут текст</CardBody>
+					</Card>
 				</Container>
 			</Layout>
 		);
