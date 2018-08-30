@@ -18,7 +18,7 @@ import 'simple-line-icons/css/simple-line-icons.css';
 // Import Main styles for this application
 import './scss/style.css';
 
-import { Page404, HomePage }            from './views/pages';
+import { Page404, Groups }              from './views/pages';
 import { configureStore, initialState } from './store';
 
 const store = configureStore(initialState);
@@ -33,7 +33,7 @@ class App extends Component {
 					<Switch>
 						<Route exact path="/404" name="Page 404" component={Page404} />
 						<Redirect exact from="/" to='/groups' />
-						<Route path="/groups" exact name="Groups" component={HomePage} />
+						<Route path="/groups" exact name="Groups" component={Groups} />
 						<Route component={Page404} />
 					</Switch>
 				</BrowserRouter>

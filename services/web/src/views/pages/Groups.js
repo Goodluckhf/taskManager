@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import Layout      from '../layout/Layout';
 
-class HomePage extends Component {
+class Groups extends Component {
 	//eslint-disable-next-line class-methods-use-this
 	render() {
 		return (
 			<Layout>
-				<h1>Главная страница</h1>
+				<h1>Паблики</h1>
 			</Layout>
 		);
 	}
 }
 
-export default HomePage;
+export default Groups;

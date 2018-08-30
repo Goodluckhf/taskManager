@@ -3,7 +3,7 @@ import { fromJS } from 'immutable';
 export const routes = fromJS({
 	items: [
 		{
-			name : 'Группы',
+			name : 'Паблики',
 			url  : '/groups',
 			icon : 'icon-speedometer',
 			badge: {
