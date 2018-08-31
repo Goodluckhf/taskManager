@@ -25,7 +25,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-	groups: state.get('groups'),
+	groups: state.groups,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Groups);

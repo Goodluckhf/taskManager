@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux-immutable';
+import { combineReducers } from 'redux';
 import { routes } from '../store/initialState';
 import groups     from './groups';
 

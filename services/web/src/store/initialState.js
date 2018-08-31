@@ -16,8 +16,8 @@ export const routes = Map({
 
 export const groups = List([]);
 
-export default Map({
+export default {
 	routes,
 	groups,
-});
+};
 

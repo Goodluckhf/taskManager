@@ -10,7 +10,9 @@ class List extends Component {
 	
 	render() {
 		const groupsElements = this.props.groups.map(group => (
-			<Card key={group}><CardText>{group}</CardText></Card>
+			<Card key={group}>
+				<CardText>{group}</CardText>
+			</Card>
 		));
 		
 		return (
