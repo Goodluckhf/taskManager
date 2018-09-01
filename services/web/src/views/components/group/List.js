@@ -1,18 +1,18 @@
 import Immutable from 'immutable';
 import React, { Component } from 'react';
 import propTyes from 'prop-types';
-import { Card, CardHeader, CardBody, CardText } from 'reactstrap';
+import { Card, CardHeader, CardBody } from 'reactstrap';
+import GroupCard from './Item';
 
 class List extends Component {
 	static propTypes = {
-		groups: propTyes.instanceOf(Immutable.List).isRequired,
+		items  : propTyes.instanceOf(Immutable.List).isRequired,
+		loading: propTyes.bool.isRequired,
 	};
 	
 	render() {
-		const groupsElements = this.props.groups.map(group => (
-			<Card key={group}>
-				<CardText>{group}</CardText>
-			</Card>
+		const groupsElements = this.props.items.map(group => (
+			<GroupCard key={group} {...group} />
 		));
 		
 		return (
