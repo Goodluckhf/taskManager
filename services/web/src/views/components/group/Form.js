@@ -10,12 +10,13 @@ import {
 class Form extends Component {
 	constructor(props) {
 		super(props);
-		
 		this.state = { link: '' };
 	}
 	
 	static propTypes = {
 		addGroup: PropTypes.func.isRequired,
+		loading : PropTypes.bool,
+		error   : PropTypes.string,
 	};
 	
 	handleInput = (e) => {
@@ -35,11 +36,12 @@ class Form extends Component {
 						<FormGroup>
 							<Label>Ссылка на паблик</Label>
 							<Input onChange={this.handleInput} type='text' placeholder='https://vk.com/nice.advice'/>
+							{this.props.error ? <span>{this.props.error.message || this.props.error.toString()}</span> : ''}
 						</FormGroup>
 					</BootstrapForm>
 				</CardBody>
 				<CardFooter>
-					<Button onClick={this.onClick}>Добавить</Button>
+					<Button color='success' disabled={this.props.loading} onClick={this.onClick}>Добавить</Button>
 				</CardFooter>
 			</Card>
 		);
