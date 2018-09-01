@@ -1,9 +1,37 @@
-import { groups }    from '../store/initialState';
-import { ADD_GROUP } from '../actions/groups';
+import { groupPage }                             from '../store/initialState';
+import { CREATE, CREATE_FAILED, REQUEST_CREATE } from '../actions/groups';
 
-export default (groupState = groups, action) => {
-	if (action.type === ADD_GROUP) {
-		return groupState.push([action.payload.link]);
+export default (groupState = groupPage, action) => {
+	if (action.type === CREATE) {
+		groupState
+			.updateIn(
+				['list', 'items'],
+				items => items.push(action.payload.group),
+			)
+			.updateIn(
+				['form'],
+				form => form
+					.set('loading', false)
+					.set('error', null),
+			);
+	}
+	
+	if (action.type === REQUEST_CREATE) {
+		return groupState.updateIn(
+			['form'],
+			form => form
+				.set('loading', true)
+				.set('error', null),
+		);
+	}
+	
+	if (action.type === CREATE_FAILED) {
+		return groupState.updateIn(
+			['form'],
+			form => form
+				.set('loading', false)
+				.set('error', action.payload.error),
+		);
 	}
 	
 	return groupState;
