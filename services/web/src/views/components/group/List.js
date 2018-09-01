@@ -12,7 +12,7 @@ class List extends Component {
 	
 	render() {
 		const groupsElements = this.props.items.map(group => (
-			<GroupCard key={group} {...group} />
+			<GroupCard key={group.toString()} {...group} />
 		));
 		
 		return (
