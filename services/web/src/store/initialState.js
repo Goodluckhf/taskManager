@@ -14,10 +14,20 @@ export const routes = Map({
 	]),
 });
 
-export const groups = List([]);
+export const groupPage = Map({
+	list: Map({
+		items  : List([]),
+		loading: false,
+	}),
+	
+	form: Map({
+		loading: false,
+		error  : null,
+	}),
+});
 
 export default {
 	routes,
-	groups,
+	groupPage,
 };
 
