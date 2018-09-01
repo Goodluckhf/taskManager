@@ -3,7 +3,7 @@ import { CREATE, CREATE_FAILED, REQUEST_CREATE } from '../actions/groups';
 
 export default (groupState = groupPage, action) => {
 	if (action.type === CREATE) {
-		groupState
+		return groupState
 			.updateIn(
 				['list', 'items'],
 				items => items.push(action.payload.group),
