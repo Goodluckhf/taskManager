@@ -12,8 +12,8 @@ import List         from '../components/group/List';
 class Groups extends Component {
 	static propTypes = {
 		addGroup: propTypes.func,
-		form    : Immutable.Map,
-		groups  : Immutable.Map,
+		form    : propTypes.instanceOf(Immutable.Map),
+		groups  : propTypes.instanceOf(Immutable.Map),
 	};
 	
 	render() {
