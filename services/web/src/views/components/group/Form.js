@@ -8,7 +8,6 @@ import {
 }                           from 'reactstrap';
 import LoadingButton, { S } from '../ui/LoadingButton';
 import ApiError             from '../ui/ApiError';
-//import LoadingButton from '../ui/LoadingButton';
 
 class Form extends Component {
 	constructor(props) {
@@ -22,7 +21,7 @@ class Form extends Component {
 	static propTypes = {
 		addGroup: PropTypes.func.isRequired,
 		loading : PropTypes.bool,
-		error   : PropTypes.string,
+		error   : PropTypes.object,
 	};
 	
 	handleInput = (e) => {

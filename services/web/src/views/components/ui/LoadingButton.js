@@ -20,6 +20,7 @@ class LoadingButton extends PureComponent {
 	static propTypes = {
 		loading     : propTypes.bool.isRequired,
 		children    : propTypes.node,
+		onClick     : propTypes.func,
 		'data-size' : propTypes.oneOf(SIZES),
 		'data-color': propTypes.oneOf(['green', 'red', 'blue', 'purple', 'mint']),
 	};
@@ -51,7 +52,7 @@ class LoadingButton extends PureComponent {
 		return (
 			<button
 				ref={this.setNode}
-				{...this.props}
+				onClick={this.props.onClick}
 				className='ladda-button'
 				data-style='zoom-in'
 				data-size={this.props['data-size']}
