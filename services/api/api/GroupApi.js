@@ -63,12 +63,29 @@ class GroupApi extends BaseApi {
 	
 	/**
 	 * @description Возвращает список групп
+	 * @property {String} search
+	 * @property {boolean} isTarget
 	 * @return {Promise.<Array.<GroupDocument>>}
 	 */
 	//eslint-disable-next-line class-methods-use-this
-	async list() {
+	async list({ search, isTarget: _isTarget }) {
 		const Group  = mongoose.model('Group');
-		return Group.find().sort({ isTarget: -1 }).exec();
+		const isTarget = _isTarget === 'true' || _isTarget === true;
+		
+		const query = {};
+		if (search) {
+			query.$or = [
+				{ name: RegExp(search, 'i') },
+				{ domain: RegExp(search, 'i') },
+				{ publicId: RegExp(search, 'i') },
+			];
+		}
+		
+		if (isTarget) {
+			query.isTarget = true;
+		}
+		
+		return Group.find(query).sort({ isTarget: -1 }).exec();
 	}
 }
 

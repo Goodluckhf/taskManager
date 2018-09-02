@@ -21,7 +21,7 @@ export default (router) => {
 	router.get('/groups', async (ctx) => {
 		ctx.body = {
 			success: true,
-			data   : await groupApi.list(),
+			data   : await groupApi.list(ctx.request.query),
 		};
 	});
 	
