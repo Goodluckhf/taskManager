@@ -11,10 +11,11 @@ import {
 	AppSidebarHeader,
 	AppSidebarMinimizer,
 	AppSidebarNav,
-}                    from '@coreui/react';
+}               from '@coreui/react';
 // sidebar nav config
-import Footer        from './Footer';
-import Header        from './Header';
+import Footer   from './Footer';
+import Header   from './Header';
+import ApiError from '../components/ui/ApiError';
 
 class Layout extends Component {
 	render() {
@@ -32,7 +33,10 @@ class Layout extends Component {
 						<AppSidebarFooter />
 						<AppSidebarMinimizer />
 					</AppSidebar>
-					<main className="main">{this.props.children}</main>
+					<main className="main">
+						{this.props.fatalError.size ? <ApiError error={this.props.fatalError.toJS()}/> : ''}
+						{this.props.children}
+					</main>
 				</div>
 				<AppFooter>
 					<Footer />
@@ -43,12 +47,14 @@ class Layout extends Component {
 }
 
 Layout.propTypes = {
-	children: PropTypes.node,
-	routes  : PropTypes.object,
+	children  : PropTypes.node,
+	routes    : PropTypes.object,
+	fatalError: PropTypes.object,
 };
 
 const mapStateToProps = state => ({
-	routes: state.routes,
+	routes    : state.routes,
+	fatalError: state.fatalError,
 });
 
 export default connect(mapStateToProps)(Layout);

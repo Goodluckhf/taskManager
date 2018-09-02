@@ -4,7 +4,7 @@ import { Alert } from 'reactstrap';
 
 class ApiError extends PureComponent {
 	static propTypes = {
-		error: propTypes.string.object,
+		error: propTypes.object,
 	};
 	
 	render() {
