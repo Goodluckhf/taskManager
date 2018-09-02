@@ -18,3 +18,17 @@ export const requestCreate  = link => ({
 	type   : REQUEST_CREATE,
 	payload: { link },
 });
+
+
+export const REQUEST_LIST = 'GROUP__REQUEST_LIST';
+export const requestList  = () => ({
+	type   : REQUEST_LIST,
+	payload: {},
+});
+
+export const LIST = 'GROUP__LIST';
+export const list = groups => ({
+	type   : LIST,
+	payload: { groups },
+});
+
