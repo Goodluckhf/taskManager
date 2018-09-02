@@ -26,8 +26,11 @@ export const groupPage = Map({
 	}),
 });
 
+export const fatalError = Map({});
+
 export default {
 	routes,
 	groupPage,
+	fatalError,
 };
 
