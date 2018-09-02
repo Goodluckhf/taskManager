@@ -4,7 +4,8 @@ import axios from 'axios';
 
 import {
 	REQUEST_CREATE, REQUEST_LIST,
-	createFailed, create, list, CHANGE_IS_TARGET,
+	CHANGE_IS_TARGET, REQUEST_FILTER_CHANGE,
+	createFailed, create, list,
 } from '../actions/groups';
 
 import { fatalError } from '../actions/fatalError';
@@ -41,6 +42,15 @@ export default function* () {
 	yield takeEvery(CHANGE_IS_TARGET, function* ({ payload: { id, isTarget } }) {
 		try {
 			yield call(axios.put, `/api/group/${id}/target`, { isTarget });
+		} catch (error) {
+			yield put(fatalError(error));
+		}
+	});
+	
+	yield takeEvery(REQUEST_FILTER_CHANGE, function* ({ payload: { filterState } }) {
+		try {
+			const { data: result } = yield call(axios.get, '/api/groups', { params: filterState });
+			yield put(list(result.data));
 		} catch (error) {
 			yield put(fatalError(error));
 		}
