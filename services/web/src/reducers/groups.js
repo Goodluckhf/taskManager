@@ -1,12 +1,15 @@
-import { groupPage }                             from '../store/initialState';
-import { CREATE, CREATE_FAILED, REQUEST_CREATE } from '../actions/groups';
+import { groupPage }                                               from '../store/initialState';
+import {
+	CREATE, CREATE_FAILED, LIST,
+	REQUEST_CREATE, REQUEST_LIST,
+} from '../actions/groups';
 
-export default (groupState = groupPage, action) => {
-	if (action.type === CREATE) {
+export default (groupState = groupPage, { type, payload }) => {
+	if (type === CREATE) {
 		return groupState
 			.updateIn(
 				['list', 'items'],
-				items => items.push(action.payload.group),
+				items => items.push(payload.group),
 			)
 			.updateIn(
 				['form'],
@@ -16,7 +19,7 @@ export default (groupState = groupPage, action) => {
 			);
 	}
 	
-	if (action.type === REQUEST_CREATE) {
+	if (type === REQUEST_CREATE) {
 		return groupState.updateIn(
 			['form'],
 			form => form
@@ -25,14 +28,31 @@ export default (groupState = groupPage, action) => {
 		);
 	}
 	
-	if (action.type === CREATE_FAILED) {
+	if (type === CREATE_FAILED) {
 		return groupState.updateIn(
 			['form'],
 			form => form
 				.set('loading', false)
-				.set('error', action.payload.error),
+				.set('error', payload.error),
 		);
 	}
 	
+	if (type === REQUEST_LIST) {
+		return groupState.updateIn(
+			['list'],
+			list => list
+				.set('loading', true),
+		);
+	}
+	
+	if (type === LIST) {
+		return groupState.updateIn(
+			['list'],
+			list => list.set('loading', false),
+		).updateIn(
+			['list', 'items'],
+			items => items.clear().concat(payload.groups),
+		);
+	}
 	return groupState;
 };
