@@ -32,3 +32,9 @@ export const list = groups => ({
 	payload: { groups },
 });
 
+export const CHANGE_IS_TARGET = 'GROUP__CHANGE_IS_TARGET';
+export const changeIsTarget = (id, isTarget) => ({
+	type   : CHANGE_IS_TARGET,
+	payload: { id, isTarget },
+});
+
