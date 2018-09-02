@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 import React, { Component } from 'react';
 import propTyes from 'prop-types';
-import { Card, CardHeader, CardBody } from 'reactstrap';
+import { Card, CardHeader, CardBody, Col, Row } from 'reactstrap';
 import GroupCard from './Item';
 
 class List extends Component {
@@ -12,14 +12,18 @@ class List extends Component {
 	
 	render() {
 		const groupsElements = this.props.items.map(group => (
-			<GroupCard key={group._id} {...group} />
+			<Col lg={3} sm={4} xs={12} key={group._id}>
+				<GroupCard {...group} />
+			</Col>
 		));
 		
 		return (
 			<Card>
 				<CardHeader>Список пабликов</CardHeader>
 				<CardBody>
-					{groupsElements}
+					<Row>
+						{groupsElements}
+					</Row>
 				</CardBody>
 			</Card>
 		);

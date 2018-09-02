@@ -16,10 +16,10 @@ class Item extends PureComponent {
 	render() {
 		return (
 			<Card>
-				<CardImg top style={{ width: '300px' }} src={this.props.image} />
+				<CardImg top src={this.props.image} />
 				<CardBody>
 					<CardTitle>
-						<a href={`https://vk.com/club${this.props.publicId}`}>
+						<a rel='noopener noreferrer' target='_blank' href={`https://vk.com/club${this.props.publicId}`}>
 							{this.props.name}
 						</a>
 					</CardTitle>
