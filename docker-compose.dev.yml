@@ -15,6 +15,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - 81:80
+    volumes:
+      - /dev/null:/var/log/nginx/access.log
     logging: *default-logging
   web:
     build:
@@ -22,6 +24,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./services/web/public:/home/www:cached
+      - /dev/null:/var/log/nginx/access.log
     logging: *default-logging
   api:
     build:
