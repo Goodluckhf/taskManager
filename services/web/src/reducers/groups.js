@@ -1,5 +1,7 @@
-import { groupPage }                                               from '../store/initialState';
+import { Map, fromJS } from 'immutable';
+import { groupPage } from '../store/initialState';
 import {
+	CHANGE_IS_TARGET,
 	CREATE, CREATE_FAILED, LIST,
 	REQUEST_CREATE, REQUEST_LIST,
 } from '../actions/groups';
@@ -9,7 +11,7 @@ export default (groupState = groupPage, { type, payload }) => {
 		return groupState
 			.updateIn(
 				['list', 'items'],
-				items => items.push(payload.group),
+				items => items.push(Map(payload.group)),
 			)
 			.updateIn(
 				['form'],
@@ -51,7 +53,15 @@ export default (groupState = groupPage, { type, payload }) => {
 			list => list.set('loading', false),
 		).updateIn(
 			['list', 'items'],
-			items => items.clear().concat(payload.groups),
+			items => items.clear().concat(fromJS(payload.groups)),
+		);
+	}
+	
+	if (type === CHANGE_IS_TARGET) {
+		const index = groupState.getIn(['list', 'items']).findIndex(item => item.get('_id') === payload.id);
+		return groupState.updateIn(
+			['list', 'items', index],
+			item => item.set('isTarget', payload.isTarget),
 		);
 	}
 	return groupState;
