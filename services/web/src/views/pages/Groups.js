@@ -1,18 +1,19 @@
-import React, { Component } from 'react';
-import { Container } from 'reactstrap';
-import { connect }   from 'react-redux';
-import Immutable from 'immutable';
-import propTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import { Container }                     from 'reactstrap';
+import { connect }                       from 'react-redux';
+import Immutable                         from 'immutable';
+import propTypes                         from 'prop-types';
 
 import Form         from '../components/group/Form';
 import Layout       from '../layout/Layout';
-import { requestCreate, changeIsTarget } from '../../actions/groups';
+import { requestCreate, changeIsTarget, requestFilterChange } from '../../actions/groups';
 import List         from '../components/group/List';
 
-class Groups extends Component {
+class Groups extends PureComponent {
 	static propTypes = {
 		addGroup      : propTypes.func,
 		changeIsTarget: propTypes.func,
+		filterChange  : propTypes.func,
 		form          : propTypes.instanceOf(Immutable.Map),
 		groups        : propTypes.instanceOf(Immutable.Map),
 	};
@@ -30,6 +31,7 @@ class Groups extends Component {
 						items={this.props.groups.get('items')}
 						loading={this.props.groups.get('loading')}
 						changeIsTarget={this.props.changeIsTarget}
+						filterChange={this.props.filterChange}
 					/>
 				</Container>
 			</Layout>
@@ -40,6 +42,7 @@ class Groups extends Component {
 const mapDispatchToProps = dispatch => ({
 	addGroup      : data => dispatch(requestCreate(data)),
 	changeIsTarget: (id, isTarget) => dispatch(changeIsTarget(id, isTarget)),
+	filterChange  : filterState => dispatch(requestFilterChange(filterState)),
 });
 
 const mapStateToProps = state => ({
