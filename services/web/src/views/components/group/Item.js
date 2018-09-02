@@ -3,14 +3,21 @@ import propTypes                from 'prop-types';
 
 import {
 	Card, CardImg, CardBody,
-	CardTitle, Button,
+	CardTitle, Button, CustomInput,
 } from 'reactstrap';
 
 class Item extends PureComponent {
 	static propTypes = {
-		publicId: propTypes.string,
-		name    : propTypes.string,
-		image   : propTypes.string,
+		publicId      : propTypes.string,
+		name          : propTypes.string,
+		image         : propTypes.string,
+		isTarget      : propTypes.bool,
+		changeIsTarget: propTypes.func,
+		_id           : propTypes.string,
+	};
+	
+	handleCheckbox = (e) => {
+		this.props.changeIsTarget(this.props._id, e.target.checked);
 	};
 	
 	render() {
@@ -23,7 +30,9 @@ class Item extends PureComponent {
 							{this.props.name}
 						</a>
 					</CardTitle>
-					<Button>Button</Button>
+					<hr/>
+					<CustomInput checked={this.props.isTarget} id={`isTarget_${this.props._id}`} onChange={this.handleCheckbox} type='checkbox' label='Учавствует в лайках'/>
+					<Button>Удалить</Button>
 				</CardBody>
 			</Card>
 		);
