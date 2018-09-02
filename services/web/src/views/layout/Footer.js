@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import PropTypes                from 'prop-types';
 
 const propTypes = {
 	children: PropTypes.node,
@@ -7,11 +7,10 @@ const propTypes = {
 
 const defaultProps = {};
 
-class Footer extends Component {
+class Footer extends PureComponent {
 	render() {
-		// eslint-disable-next-line
+	// eslint-disable-next-line
     const { children, ...attributes } = this.props;
-
 		return (
 			<React.Fragment>
 				<span><a href="https://coreui.io">CoreUI</a> &copy; 2018 creativeLabs.</span>

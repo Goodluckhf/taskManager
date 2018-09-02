@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes            from 'prop-types';
 import { connect }          from 'react-redux';
 
@@ -11,13 +11,13 @@ import {
 	AppSidebarHeader,
 	AppSidebarMinimizer,
 	AppSidebarNav,
-}               from '@coreui/react';
+} from '@coreui/react';
 // sidebar nav config
 import Footer   from './Footer';
 import Header   from './Header';
 import ApiError from '../components/ui/ApiError';
 
-class Layout extends Component {
+class Layout extends PureComponent {
 	render() {
 		return (
 			<div className="app">

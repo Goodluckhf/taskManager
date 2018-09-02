@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent }  from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import PropTypes from 'prop-types';
 
@@ -12,7 +12,7 @@ const propTypes = {
 
 const defaultProps = {};
 
-class Header extends Component {
+class Header extends PureComponent {
 	render() {
 		// eslint-disable-next-line
     const { children, ...attributes } = this.props;

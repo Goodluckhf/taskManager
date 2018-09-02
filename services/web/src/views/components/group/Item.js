@@ -3,7 +3,7 @@ import propTypes                from 'prop-types';
 
 import {
 	Card, CardImg, CardBody,
-	CardTitle, Button, CustomInput,
+	CardTitle, CustomInput,
 } from 'reactstrap';
 
 class Item extends PureComponent {
@@ -32,7 +32,6 @@ class Item extends PureComponent {
 					</CardTitle>
 					<hr/>
 					<CustomInput checked={this.props.isTarget} id={`isTarget_${this.props._id}`} onChange={this.handleCheckbox} type='checkbox' label='Учавствует в лайках'/>
-					<Button>Удалить</Button>
 				</CardBody>
 			</Card>
 		);

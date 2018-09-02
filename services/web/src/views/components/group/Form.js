@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import PropTypes            from 'prop-types';
+import React, { PureComponent } from 'react';
+import PropTypes                from 'prop-types';
 
 import {
 	Card, CardHeader, CardBody,
@@ -9,7 +9,7 @@ import {
 import LoadingButton, { S } from '../ui/LoadingButton';
 import ApiError             from '../ui/ApiError';
 
-class Form extends Component {
+class Form extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
