@@ -20,9 +20,11 @@ import './scss/style.css';
 
 import { Page404, Groups }              from './views/pages';
 import { configureStore, initialState } from './store';
+import { requestList }                  from './actions/groups';
 
 const store = configureStore(initialState);
 
+store.dispatch(requestList());
 
 class App extends Component {
 	//eslint-disable-next-line class-methods-use-this
