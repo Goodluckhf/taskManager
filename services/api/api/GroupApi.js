@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
-import BaseApi               from './BaseApi';
-import { GroupAlreadyExist } from './errors';
+import BaseApi                         from './BaseApi';
+import { GroupAlreadyExist, NotFound } from './errors';
 
 /**
  * @property {VkApi} vkApi
@@ -25,7 +25,7 @@ class GroupApi extends BaseApi {
 			properties: {
 				link    : { type: 'string' },
 				admin   : { type: 'string' },
-				isTarget: { type: 'string' },
+				isTarget: { oneOf: [{ type: 'string' }, { type: 'boolean' }] },
 			},
 			required: ['link'],
 		}, data);
@@ -43,6 +43,22 @@ class GroupApi extends BaseApi {
 		}
 		
 		return newGroup.save();
+	}
+	
+	/**
+	 * @param {String} _id
+	 * @param {boolean} isTarget
+	 * @return {Promise<void>}
+	 */
+	//eslint-disable-next-line class-methods-use-this
+	async changeIsTarget(_id, isTarget) {
+		const Group = mongoose.model('Group');
+		const group = await Group.findOne({ _id });
+		if (!group) {
+			throw new NotFound({ query: { _id }, what: 'Group' });
+		}
+		group.isTarget = Boolean(isTarget);
+		return group.save();
 	}
 	
 	/**

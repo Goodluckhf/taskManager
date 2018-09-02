@@ -24,4 +24,12 @@ export default (router) => {
 			data   : await groupApi.list(),
 		};
 	});
+	
+	router.put('/group/:id/target', async (ctx) => {
+		const { id } = ctx.params;
+		ctx.body = {
+			success: true,
+			data   : await groupApi.changeIsTarget(id, ctx.request.body.isTarget),
+		};
+	});
 };
