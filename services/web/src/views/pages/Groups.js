@@ -6,14 +6,15 @@ import propTypes from 'prop-types';
 
 import Form         from '../components/group/Form';
 import Layout       from '../layout/Layout';
-import { requestCreate } from '../../actions/groups';
+import { requestCreate, changeIsTarget } from '../../actions/groups';
 import List         from '../components/group/List';
 
 class Groups extends Component {
 	static propTypes = {
-		addGroup: propTypes.func,
-		form    : propTypes.instanceOf(Immutable.Map),
-		groups  : propTypes.instanceOf(Immutable.Map),
+		addGroup      : propTypes.func,
+		changeIsTarget: propTypes.func,
+		form          : propTypes.instanceOf(Immutable.Map),
+		groups        : propTypes.instanceOf(Immutable.Map),
 	};
 	
 	render() {
@@ -28,6 +29,7 @@ class Groups extends Component {
 					<List
 						items={this.props.groups.get('items')}
 						loading={this.props.groups.get('loading')}
+						changeIsTarget={this.props.changeIsTarget}
 					/>
 				</Container>
 			</Layout>
@@ -36,7 +38,8 @@ class Groups extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-	addGroup: link => dispatch(requestCreate(link)),
+	addGroup      : data => dispatch(requestCreate(data)),
+	changeIsTarget: (id, isTarget) => dispatch(changeIsTarget(id, isTarget)),
 });
 
 const mapStateToProps = state => ({
