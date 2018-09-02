@@ -7,6 +7,7 @@ import {
 	Input, CardFooter,
 }                           from 'reactstrap';
 import LoadingButton, { S } from '../ui/LoadingButton';
+import ApiError             from '../ui/ApiError';
 //import LoadingButton from '../ui/LoadingButton';
 
 class Form extends Component {
@@ -38,7 +39,7 @@ class Form extends Component {
 						<FormGroup>
 							<Label>Ссылка на паблик</Label>
 							<Input onChange={this.handleInput} type='text' placeholder='https://vk.com/nice.advice'/>
-							{this.props.error ? <span>{this.props.error.message || this.props.error.toString()}</span> : ''}
+							{this.props.error ? <ApiError style={{ marginTop: '24px' }} error={this.props.error}/> : ''}
 						</FormGroup>
 					</BootstrapForm>
 				</CardBody>
