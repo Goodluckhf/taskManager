@@ -7,6 +7,8 @@ import {
 	createFailed, create, list, CHANGE_IS_TARGET,
 } from '../actions/groups';
 
+import { fatalError } from '../actions/fatalError';
+
 export default function* () {
 	yield takeEvery(REQUEST_CREATE, function* ({ payload: data }) {
 		try {
@@ -23,18 +25,24 @@ export default function* () {
 				return;
 			}
 			
-			yield put(createFailed(error));
+			yield put(fatalError(error));
 		}
 	});
 	
 	yield takeEvery(REQUEST_LIST, function* () {
-		const { data: result } = yield call(axios.get, '/api/groups');
-		//@TODO: Добавить обработку ошибки
-		yield put(list(result.data));
+		try {
+			const { data: result } = yield call(axios.get, '/api/groups');
+			yield put(list(result.data));
+		} catch (error) {
+			yield put(fatalError(error));
+		}
 	});
 	
 	yield takeEvery(CHANGE_IS_TARGET, function* ({ payload: { id, isTarget } }) {
-		// @TODO: Сделать обработку ошибки
-		yield call(axios.put, `/api/group/${id}/target`, { isTarget });
+		try {
+			yield call(axios.put, `/api/group/${id}/target`, { isTarget });
+		} catch (error) {
+			yield put(fatalError(error));
+		}
 	});
 }
