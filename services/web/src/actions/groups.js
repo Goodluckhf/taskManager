@@ -38,3 +38,8 @@ export const changeIsTarget = (id, isTarget) => ({
 	payload: { id, isTarget },
 });
 
+export const REQUEST_FILTER_CHANGE = 'GROUP__FILTER_CHANGE';
+export const requestFilterChange   = filterState => ({
+	type   : REQUEST_FILTER_CHANGE,
+	payload: { filterState },
+});
