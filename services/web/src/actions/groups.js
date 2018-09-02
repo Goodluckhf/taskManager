@@ -14,9 +14,9 @@ export const createFailed  = error => ({
 
 // Для редьюсера
 export const REQUEST_CREATE = 'GROUPS__REQUEST_CREATE_GROUP';
-export const requestCreate  = link => ({
+export const requestCreate  = data => ({
 	type   : REQUEST_CREATE,
-	payload: { link },
+	payload: data,
 });
 
 
