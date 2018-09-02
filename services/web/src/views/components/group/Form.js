@@ -4,8 +4,10 @@ import PropTypes            from 'prop-types';
 import {
 	Card, CardHeader, CardBody,
 	Form as BootstrapForm, FormGroup, Label,
-	Input, Button, CardFooter,
-} from 'reactstrap';
+	Input, CardFooter,
+}                           from 'reactstrap';
+import LoadingButton, { S } from '../ui/LoadingButton';
+//import LoadingButton from '../ui/LoadingButton';
 
 class Form extends Component {
 	constructor(props) {
@@ -41,7 +43,14 @@ class Form extends Component {
 					</BootstrapForm>
 				</CardBody>
 				<CardFooter>
-					<Button color='success' disabled={this.props.loading} onClick={this.onClick}>Добавить</Button>
+					<LoadingButton
+						data-size={S}
+						data-color='green'
+						loading={this.props.loading}
+						onClick={this.onClick}
+					>
+						Добавить
+					</LoadingButton>
 				</CardFooter>
 			</Card>
 		);
