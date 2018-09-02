@@ -4,7 +4,7 @@ import PropTypes            from 'prop-types';
 import {
 	Card, CardHeader, CardBody,
 	Form as BootstrapForm, FormGroup, Label,
-	Input, CardFooter,
+	Input, CardFooter, CustomInput,
 }                           from 'reactstrap';
 import LoadingButton, { S } from '../ui/LoadingButton';
 import ApiError             from '../ui/ApiError';
@@ -13,7 +13,10 @@ import ApiError             from '../ui/ApiError';
 class Form extends Component {
 	constructor(props) {
 		super(props);
-		this.state = { link: '' };
+		this.state = {
+			link    : '',
+			isTarget: false,
+		};
 	}
 	
 	static propTypes = {
@@ -26,8 +29,15 @@ class Form extends Component {
 		this.setState({ link: e.target.value.trim() });
 	};
 	
+	handleCheckbox = (e) => {
+		this.setState({ isTarget: e.target.checked });
+	};
+	
 	onClick = () => {
-		this.props.addGroup(this.state.link);
+		this.props.addGroup({
+			link    : this.state.link,
+			isTarget: this.state.isTarget,
+		});
 	};
 	
 	render() {
@@ -39,6 +49,7 @@ class Form extends Component {
 						<FormGroup>
 							<Label>Ссылка на паблик</Label>
 							<Input onChange={this.handleInput} type='text' placeholder='https://vk.com/nice.advice'/>
+							<CustomInput id='isTarget' onChange={this.handleCheckbox} type='checkbox' label='Учавствует в лайках'/>
 							{this.props.error ? <ApiError style={{ marginTop: '24px' }} error={this.props.error}/> : ''}
 						</FormGroup>
 					</BootstrapForm>
