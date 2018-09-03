@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 import BaseApi                         from './BaseApi';
 import { GroupAlreadyExist, NotFound } from './errors';
+import { groupForVkApiByHref } from '../../../lib/helper';
 
 /**
  * @property {VkApi} vkApi
@@ -72,13 +73,18 @@ class GroupApi extends BaseApi {
 		const Group  = mongoose.model('Group');
 		const isTarget = _isTarget === 'true' || _isTarget === true;
 		
+		
 		const query = {};
 		if (search) {
-			query.$or = [
-				{ name: RegExp(search, 'i') },
-				{ domain: RegExp(search, 'i') },
-				{ publicId: RegExp(search, 'i') },
-			];
+			const $or   = [{ name: RegExp(search, 'i') }];
+			const group = groupForVkApiByHref(search, false);
+			
+			if (group.owner_id) {
+				$or.push({ publicId: RegExp(group.owner_id, 'i') });
+			} else {
+				$or.push({ domain: RegExp(group.domain, 'i') });
+			}
+			query.$or = $or;
 		}
 		
 		if (isTarget) {
