@@ -11,6 +11,15 @@ export const routes = Map({
 				text   : 'NEW',
 			}),
 		}),
+		Map({
+			name : 'Автолайки',
+			url  : '/autolikes',
+			icon : 'icon-heart',
+			badge: Map({
+				variant: 'info',
+				text   : 'NEW',
+			}),
+		}),
 	]),
 });
 
@@ -26,11 +35,19 @@ export const groupPage = Map({
 	}),
 });
 
+export const autoLikesPage = Map({
+	form: Map({
+		loading: false,
+		error  : null,
+	}),
+});
+
 export const fatalError = Map({});
 
 export default {
 	routes,
 	groupPage,
+	autoLikesPage,
 	fatalError,
 };
 
