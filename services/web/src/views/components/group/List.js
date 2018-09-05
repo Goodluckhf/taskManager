@@ -1,6 +1,6 @@
 import Immutable                from 'immutable';
 import React, { PureComponent } from 'react';
-import propTyes                 from 'prop-types';
+import propTypes                from 'prop-types';
 import {
 	Card, CardHeader,
 	CardBody, Col, Row,
@@ -11,10 +11,10 @@ import FormFilter from './FormFilter';
 
 class List extends PureComponent {
 	static propTypes = {
-		items         : propTyes.instanceOf(Immutable.List).isRequired,
-		loading       : propTyes.bool.isRequired,
-		changeIsTarget: propTyes.func.isRequired,
-		filterChange  : propTyes.func.isRequired,
+		items         : propTypes.instanceOf(Immutable.List).isRequired,
+		loading       : propTypes.bool.isRequired,
+		changeIsTarget: propTypes.func.isRequired,
+		filterChange  : propTypes.func.isRequired,
 	};
 	
 	render() {
