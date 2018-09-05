@@ -23,6 +23,12 @@ export const requestList  = () => ({
 	payload: {},
 });
 
+export const REQUEST_FILTER_CHANGE = 'AUTO_LIKES__FILTER_CHANGE';
+export const requestFilterChange   = filterState => ({
+	type   : REQUEST_FILTER_CHANGE,
+	payload: { filterState },
+});
+
 export const LIST = 'AUTO_LIKES__LIST';
 export const list = tasks => ({
 	type   : LIST,
