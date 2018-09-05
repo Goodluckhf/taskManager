@@ -10,8 +10,7 @@ export default (state = autoLikesPage, { type, payload }) => {
 		);
 	}
 	
-	if (type === CREATE_FAILED || type === CREATE) {
-		console.log(payload);
+	if (type === CREATE_FAILED) {
 		return state.updateIn(
 			['form'],
 			form => form
@@ -19,6 +18,17 @@ export default (state = autoLikesPage, { type, payload }) => {
 				.set('error', payload.error),
 		);
 	}
+	
+	if (type === CREATE) {
+		return state.updateIn(
+			['list', 'items'],
+			items => items.push(payload.task),
+		).updateIn(
+			['form'],
+			form => form.set('loading', false),
+		);
+	}
+	
 	
 	return state;
 };
