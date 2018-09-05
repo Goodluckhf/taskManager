@@ -1,7 +1,10 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import propTypes                from 'prop-types';
 import Immutable                from 'immutable';
-import { ListGroup } from 'reactstrap';
+import {
+	Card, CardBody,
+	CardHeader, Row, Col,
+} from 'reactstrap';
 import Item from './Item';
 import GroupItem from '../group/Item';
 
@@ -12,14 +15,25 @@ class List extends PureComponent {
 	
 	render() {
 		const items = this.props.items.map(item => (
-			<Item key={item._id} {...item}>
-				<GroupItem {...item.group} />
-			</Item>
+			<Fragment key={item._id}>
+				<Item {...item}>
+					<GroupItem {...item.group} />
+				</Item>
+				<hr/>
+			</Fragment>
 		));
 		return (
-			<ListGroup>
-				{items}
-			</ListGroup>
+			<Card>
+				<CardHeader>
+					<Row>
+						<Col><b>Список задач на автолайкинг</b></Col>
+						{/*<FormFilter change={this.props.filterChange}/>*/}
+					</Row>
+				</CardHeader>
+				<CardBody>
+					{items}
+				</CardBody>
+			</Card>
 		);
 	}
 }
