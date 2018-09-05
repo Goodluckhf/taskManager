@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
+import { Provider }         from 'react-redux';
+import { ConnectedRouter }  from 'connected-react-router';
 import {
-	BrowserRouter,
-	Route,
-	Switch,
-	Redirect,
-} from 'react-router-dom';
-import { Provider } from 'react-redux';
+	Route, Redirect,
+	Switch, withRouter,
+} from 'react-router';
+import createHistory from 'history/createBrowserHistory';
 
 // CoreUI Icons Set
 import '@coreui/icons/css/coreui-icons.min.css';
@@ -18,28 +18,25 @@ import 'simple-line-icons/css/simple-line-icons.css';
 // Import Main styles for this application
 import './scss/style.css';
 
-import { Page404, Groups, AutoLikes }   from './views/pages';
-import { configureStore, initialState } from './store';
-import { requestList }                  from './actions/groups';
+import { Page404, Groups, AutoLikes } from './views/pages';
+import { configureStore }             from './store';
 
-const store = configureStore(initialState);
-
-store.dispatch(requestList());
-
+const history = createHistory();
+const store   = configureStore(history);
 class App extends Component {
 	//eslint-disable-next-line class-methods-use-this
 	render() {
 		return (
 			<Provider store={store}>
-				<BrowserRouter>
+				<ConnectedRouter history={history}>
 					<Switch>
-						<Route exact path="/404" name="Page 404" component={Page404} />
+						<Route exact path="/404" name="Page 404" component={withRouter(Page404)} />
 						<Redirect exact from="/" to='/groups' />
-						<Route path="/groups" exact name="Groups" component={Groups} />
-						<Route path="/autolikes" exact name="AutoLikes" component={AutoLikes} />
+						<Route path="/groups" exact name="Groups" component={withRouter(Groups)} />
+						<Route path="/autolikes" exact name="AutoLikes" component={withRouter(AutoLikes)} />
 						<Route component={Page404} />
 					</Switch>
-				</BrowserRouter>
+				</ConnectedRouter>
 			</Provider>
 		);
 	}
