@@ -1,18 +1,19 @@
-import React, { PureComponent }        from 'react';
-import propTypes                       from 'prop-types';
-import { connect }                     from 'react-redux';
-import { Container }                   from 'reactstrap';
-import Immutable                       from 'immutable';
-import Layout                          from '../layout/Layout';
-import Form                            from '../components/autoLikes/Form';
-import List                            from '../components/autoLikes/List';
-import { requestCreate } from '../../actions/autolikes';
+import React, { PureComponent }     from 'react';
+import propTypes                    from 'prop-types';
+import { connect }                  from 'react-redux';
+import { Container }                from 'reactstrap';
+import Immutable                    from 'immutable';
+import Layout                       from '../layout/Layout';
+import Form                         from '../components/autoLikes/Form';
+import List                         from '../components/autoLikes/List';
+import { requestCreate, requestFilterChange } from '../../actions/autolikes';
 
 class AutoLikes extends PureComponent {
 	static propTypes = {
 		form          : propTypes.instanceOf(Immutable.Map),
 		list          : propTypes.instanceOf(Immutable.Map),
 		createAutoLike: propTypes.func,
+		filterChange  : propTypes.func,
 	};
 	
 	
@@ -26,7 +27,7 @@ class AutoLikes extends PureComponent {
 						loading={this.props.form.get('loading')}
 						createAutoLike={this.props.createAutoLike}
 					/>
-					<List items={this.props.list.get('items')} />
+					<List filterChange={this.props.filterChange} items={this.props.list.get('items')} />
 				</Container>
 			</Layout>
 		);
@@ -35,6 +36,7 @@ class AutoLikes extends PureComponent {
 
 const mapDispatchToProps = dispatch => ({
 	createAutoLike: data => dispatch(requestCreate(data)),
+	filterChange  : filter => dispatch(requestFilterChange(filter)),
 });
 
 const mapStateToProps = state => ({

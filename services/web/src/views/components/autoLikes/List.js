@@ -7,10 +7,12 @@ import {
 } from 'reactstrap';
 import Item from './Item';
 import GroupItem from '../group/Item';
+import FormFilter from './FormFilter';
 
 class List extends PureComponent {
 	static propTypes = {
-		items: propTypes.instanceOf(Immutable.List).isRequired,
+		items       : propTypes.instanceOf(Immutable.List).isRequired,
+		filterChange: propTypes.func.isRequired,
 	};
 	
 	render() {
@@ -27,7 +29,7 @@ class List extends PureComponent {
 				<CardHeader>
 					<Row>
 						<Col><b>Список задач на автолайкинг</b></Col>
-						{/*<FormFilter change={this.props.filterChange}/>*/}
+						<FormFilter change={this.props.filterChange}/>
 					</Row>
 				</CardHeader>
 				<CardBody>
