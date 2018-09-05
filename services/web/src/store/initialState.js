@@ -36,6 +36,11 @@ export const groupPage = Map({
 });
 
 export const autoLikesPage = Map({
+	list: Map({
+		items  : List([]),
+		loading: false,
+	}),
+	
 	form: Map({
 		loading: false,
 		error  : null,
