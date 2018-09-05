@@ -15,10 +15,15 @@ class Item extends PureComponent {
 		return (
 			<ListGroupItem>
 				<Row>
-					<Col>{this.props.children}</Col>
+					<Col xs={3}>{this.props.children}</Col>
+					<Col xs={5}>
+						<h4>Описание</h4>
+						<div><span className='h6'>Кол-во лайков:</span> {this.props.likesCount}</div>
+						<div><span className='h6'>Создана:</span> {moment(this.props.createdAt).format('MMMM Do YYYY, h:mm:ss')}</div>
+					</Col>
 					<Col>
-						<span>кол-во лайков: {this.props.likesCount}</span>
-						<small className="text-muted">Создана: {moment(this.props.createdAt).format('MMMM Do YYYY, h:mm:ss')}</small>
+						<h4>Действия</h4>
+						<div></div>
 					</Col>
 				</Row>
 			</ListGroupItem>
