@@ -1,5 +1,10 @@
-import { autoLikesPage }                         from '../store/initialState';
-import { REQUEST_CREATE, CREATE_FAILED, CREATE } from '../actions/autolikes';
+import { List } from 'immutable';
+
+import { autoLikesPage } from '../store/initialState';
+import {
+	REQUEST_CREATE, CREATE_FAILED,
+	CREATE, LIST,
+} from '../actions/autolikes';
 
 //eslint-disable-next-line
 export default (state = autoLikesPage, { type, payload }) => {
@@ -29,6 +34,12 @@ export default (state = autoLikesPage, { type, payload }) => {
 		);
 	}
 	
+	if (type === LIST) {
+		return state.updateIn(
+			['list', 'items'],
+			() => new List(payload.tasks),
+		);
+	}
 	
 	return state;
 };
