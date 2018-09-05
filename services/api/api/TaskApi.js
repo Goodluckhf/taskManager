@@ -81,18 +81,31 @@ class TaskApi extends BaseApi {
 	}
 	
 	/**
-	 * @description Список актуальных задач
+	 * @description Список задач
 	 * @return {Promise<*>}
 	 */
 	// eslint-disable-next-line class-methods-use-this
-	async getActual() {
+	async list({ filter = 'all' } = {}) {
 		const LikesTask = mongoose.model('LikesTask');
-		const likeTasks = await LikesTask.find({
-			$or: [
+		const query = {};
+		
+		if (filter === 'active') {
+			query.$or = [
 				{ status: LikesTask.status.waiting },
 				{ status: LikesTask.status.pending },
-			],
-		}).populate('group').exec();
+			];
+		} else if (filter === 'inactive') {
+			query.$or = [
+				{ status: LikesTask.status.skipped },
+				{ status: LikesTask.status.finished },
+			];
+		}
+		
+		const likeTasks = await LikesTask
+			.find(query)
+			.sort({ createdAt: -1 })
+			.populate('group')
+			.exec();
 		
 		return likeTasks.map(task => task.toObject());
 	}

@@ -20,7 +20,7 @@ export default (router, rpcClient) => {
 	router.get('/tasks', async (ctx) => {
 		ctx.body = {
 			success: true,
-			data   : await taskApi.getActual(),
+			data   : await taskApi.list(ctx.request.query),
 		};
 	});
 	
