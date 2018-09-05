@@ -8,12 +8,13 @@ import {
 
 class Item extends PureComponent {
 	static propTypes = {
-		publicId      : propTypes.string,
-		name          : propTypes.string,
-		image         : propTypes.string,
-		isTarget      : propTypes.bool,
+		publicId      : propTypes.string.isRequired,
+		name          : propTypes.string.isRequired,
+		image         : propTypes.string.isRequired,
+		isTarget      : propTypes.bool.isRequired,
 		changeIsTarget: propTypes.func,
-		_id           : propTypes.string,
+		_id           : propTypes.string.isRequired,
+		imageHeight   : propTypes.string,
 	};
 	
 	handleCheckbox = (e) => {
@@ -31,7 +32,19 @@ class Item extends PureComponent {
 						</a>
 					</CardTitle>
 					<hr/>
-					<CustomInput checked={this.props.isTarget} id={`isTarget_${this.props._id}`} onChange={this.handleCheckbox} type='checkbox' label='Учавствует в лайках'/>
+					{this.props.changeIsTarget ?
+						<CustomInput
+							checked={this.props.isTarget}
+							id={`isTarget_${this.props._id}`}
+							onChange={this.handleCheckbox}
+							type='checkbox'
+							label='Учавствует в лайках'
+						/>
+						:
+						<span className='h6'>
+							{this.props.isTarget ? 'Учавстует в лайках' : 'Не учавствует в лайках' }
+						</span>
+					}
 				</CardBody>
 			</Card>
 		);
