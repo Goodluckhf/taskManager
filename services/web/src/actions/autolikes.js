@@ -15,3 +15,16 @@ export const createFailed = error => ({
 	type   : CREATE_FAILED,
 	payload: { error },
 });
+
+
+export const REQUEST_LIST = 'AUTO_LIKES__REQUEST_LIST';
+export const requestList  = () => ({
+	type   : REQUEST_LIST,
+	payload: {},
+});
+
+export const LIST = 'AUTO_LIKES__LIST';
+export const list = tasks => ({
+	type   : LIST,
+	payload: { tasks },
+});
