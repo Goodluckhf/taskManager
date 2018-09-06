@@ -17,7 +17,7 @@ export const createFailed = error => ({
 });
 
 
-export const REQUEST_LIST = 'AUTO_LIKES__REQUEST_LIST';
+export const REQUEST_LIST = 'AUTO_LIKES__LIST_REQUEST';
 export const requestList  = () => ({
 	type   : REQUEST_LIST,
 	payload: {},
@@ -29,8 +29,27 @@ export const requestFilterChange   = filterState => ({
 	payload: { filterState },
 });
 
-export const LIST = 'AUTO_LIKES__LIST';
+export const LIST = 'AUTO_LIKES__LIST_SUCCESS';
 export const list = tasks => ({
 	type   : LIST,
 	payload: { tasks },
+});
+
+
+export const STOP_REQUEST = 'AUTO_LIKES__STOP_REQUEST';
+export const stopRequest = id => ({
+	type   : STOP_REQUEST,
+	payload: { id },
+});
+
+export const STOP_SUCCESS = 'AUTO_LIKES__STOP_SUCCESS';
+export const stopSuccess = id => ({
+	type   : STOP_SUCCESS,
+	payload: { id },
+});
+
+export const STOP_FAILURE = 'AUTO_LIKES__STOP_FAILURE';
+export const stopFailure = id => ({
+	type   : STOP_FAILURE,
+	payload: { id },
 });
