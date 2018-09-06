@@ -1,4 +1,4 @@
-import { List } from 'immutable';
+import { fromJS } from 'immutable';
 
 import { autoLikesPage } from '../store/initialState';
 import {
@@ -36,8 +36,8 @@ export default (state = autoLikesPage, { type, payload }) => {
 	
 	if (type === LIST) {
 		return state.updateIn(
-			['list', 'items'],
-			() => new List(payload.tasks),
+			['list'],
+			() => fromJS(payload.tasks),
 		);
 	}
 	
