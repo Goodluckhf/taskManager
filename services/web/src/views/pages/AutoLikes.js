@@ -6,14 +6,16 @@ import Immutable                    from 'immutable';
 import Layout                       from '../layout/Layout';
 import Form                         from '../components/autoLikes/Form';
 import List                         from '../components/autoLikes/List';
-import { requestCreate, requestFilterChange } from '../../actions/autolikes';
+import { requestCreate, requestFilterChange, stopRequest } from '../../actions/autolikes';
+import { loaderSelector } from '../../lib/loader';
 
 class AutoLikes extends PureComponent {
 	static propTypes = {
 		form          : propTypes.instanceOf(Immutable.Map),
-		list          : propTypes.instanceOf(Immutable.Map),
+		list          : propTypes.instanceOf(Immutable.List),
 		createAutoLike: propTypes.func,
 		filterChange  : propTypes.func,
+		stop          : propTypes.func,
 	};
 	
 	
@@ -27,7 +29,11 @@ class AutoLikes extends PureComponent {
 						loading={this.props.form.get('loading')}
 						createAutoLike={this.props.createAutoLike}
 					/>
-					<List filterChange={this.props.filterChange} items={this.props.list.get('items')} />
+					<List
+						stop={this.props.stop}
+						filterChange={this.props.filterChange}
+						items={this.props.list}
+					/>
 				</Container>
 			</Layout>
 		);
@@ -37,11 +43,12 @@ class AutoLikes extends PureComponent {
 const mapDispatchToProps = dispatch => ({
 	createAutoLike: data => dispatch(requestCreate(data)),
 	filterChange  : filter => dispatch(requestFilterChange(filter)),
+	stop          : id => dispatch(stopRequest(id)),
 });
 
 const mapStateToProps = state => ({
 	form: state.autoLikesPage.get('form'),
-	list: state.autoLikesPage.get('list'),
+	list: loaderSelector(['AUTO_LIKES__STOP', 'AUTO_LIKES__START'], 'autoLikesPage', state, ['list']),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AutoLikes);
