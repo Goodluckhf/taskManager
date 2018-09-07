@@ -14,19 +14,17 @@ const statusCodeToString = {
 
 class Item extends PureComponent {
 	static propTypes = {
-		children: propTypes.node,
-		
-		// createdAt : propTypes.instanceOf(Date),
-		// likesCount: propTypes.number,
-		// _id       : propTypes.string,
-		// status    : propTypes.number,
-		AUTO_LIKES__STOP_loading: propTypes.bool,
-		stop                    : propTypes.func,
-		item                    : propTypes.object,
+		children    : propTypes.node,
+		createdAt   : propTypes.string,
+		likesCount  : propTypes.number,
+		_id         : propTypes.string,
+		status      : propTypes.number,
+		stop_loading: propTypes.bool,
+		stop        : propTypes.func,
 	};
 	
 	onClick = () => {
-		this.props.stop(this.props.item.get('_id'));
+		this.props.stop(this.props._id);
 	};
 	
 	render() {
@@ -35,9 +33,9 @@ class Item extends PureComponent {
 				<Col xs={3}>{this.props.children}</Col>
 				<Col xs={5}>
 					<h4>Описание</h4>
-					<div><span className='h6'>Кол-во лайков:</span> {this.props.item.get('likesCount')}</div>
-					<div><span className='h6'>Создана:</span> {moment(this.props.item.get('createdAt')).format('MMMM Do YYYY, h:mm:ss')}</div>
-					<div><span className='h6'>Статус:</span> {statusCodeToString[this.props.item.get('status')]}</div>
+					<div><span className='h6'>Кол-во лайков:</span> {this.props.likesCount}</div>
+					<div><span className='h6'>Создана:</span> {moment(this.props.createdAt).format('MMMM Do YYYY, h:mm:ss')}</div>
+					<div><span className='h6'>Статус:</span> {statusCodeToString[this.props.status]}</div>
 				</Col>
 				<Col>
 					<h4>Действия</h4>
@@ -45,7 +43,7 @@ class Item extends PureComponent {
 						<LoadingButton
 							data-size={S}
 							data-color='green'
-							loading={this.props.item.get('AUTO_LIKES__STOP_loader') || false}
+							loading={this.props.stop_loading || false}
 							onClick={this.onClick}
 						>
 							Остановить
