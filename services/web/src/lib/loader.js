@@ -22,18 +22,17 @@ export const loaderReducer = (state = {}, action) => {
 
 //@TODO: Отрефакторить
 //@TODO: Добавить для Map
-export const loaderSelector = (actions, _path, _state, path) => {
-	const state = _state[_path].getIn(path);
+export const loaderSelector = (actionMap, statePath, _state, path) => {
+	const state = _state[statePath].getIn(path);
 	if (state instanceof List) {
 		return state.map((_item) => {
 			let item = _item;
-			actions.forEach((action) => {
+			Object.entries(actionMap).forEach(([action, key]) => {
 				const loaderAction = _state.loader[action];
 				if (!loaderAction) {
 					return;
 				}
 				
-				const key   = `${action}_loader`;
 				const value = loaderAction[item.get('_id')] || item.get(key) || false;
 				if (value === item.get(key)) {
 					return;

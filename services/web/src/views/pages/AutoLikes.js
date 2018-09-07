@@ -48,7 +48,7 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
 	form: state.autoLikesPage.get('form'),
-	list: loaderSelector(['AUTO_LIKES__STOP', 'AUTO_LIKES__START'], 'autoLikesPage', state, ['list']),
+	list: loaderSelector({ AUTO_LIKES__STOP: 'stop_loading', AUTO_LIKES__START: '' }, 'autoLikesPage', state, ['list']),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AutoLikes);
