@@ -13,13 +13,14 @@ class List extends PureComponent {
 	static propTypes = {
 		items       : propTypes.instanceOf(Immutable.List).isRequired,
 		filterChange: propTypes.func.isRequired,
+		stop        : propTypes.func.isRequired,
 	};
 	
 	render() {
 		const items = this.props.items.map(item => (
-			<Fragment key={item._id}>
-				<Item {...item}>
-					<GroupItem {...item.group} />
+			<Fragment key={item.get('_id')}>
+				<Item stop={this.props.stop} item={item}>
+					<GroupItem {...item.get('group').toJS()} />
 				</Item>
 				<hr/>
 			</Fragment>
