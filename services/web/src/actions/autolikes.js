@@ -49,7 +49,7 @@ export const stopSuccess = id => ({
 });
 
 export const STOP_FAILURE = 'AUTO_LIKES__STOP_FAILURE';
-export const stopFailure = id => ({
+export const stopFailure = (error, id) => ({
 	type   : STOP_FAILURE,
-	payload: { id },
+	payload: { error, id },
 });
