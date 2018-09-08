@@ -1,4 +1,4 @@
-import { List } from 'immutable';
+import { List, Map } from 'immutable';
 
 export const loaderReducer = (state = {}, action) => {
 	const { type, payload: { id } = {} } = action;
@@ -23,13 +23,14 @@ export const loaderReducer = (state = {}, action) => {
 //@TODO: Отрефакторить
 //@TODO: Добавить для Map
 export const loaderSelector = (actionMap, statePath, _state, path) => {
-	const state = _state[statePath].getIn(path);
+	let state = _state[statePath].getIn(path);
 	if (state instanceof List) {
 		return state.map((_item) => {
 			let item = _item;
 			Object.entries(actionMap).forEach(([action, key]) => {
 				const loaderAction = _state.loader[action];
-				if (!loaderAction) {
+				if (typeof loaderAction === 'undefined') {
+					item = item.set(key, false);
 					return;
 				}
 				
@@ -43,6 +44,25 @@ export const loaderSelector = (actionMap, statePath, _state, path) => {
 			
 			return item;
 		});
+	}
+	
+	if (state instanceof Map) {
+		Object.entries(actionMap).forEach(([action, key]) => {
+			const loaderAction = _state.loader[action];
+			if (typeof loaderAction === 'undefined') {
+				state = state.set(key, false);
+				return;
+			}
+			
+			const value = loaderAction.default || state.get(key) || false;
+			if (value === state.get(key)) {
+				return;
+			}
+			
+			state = state.set(key, value);
+		});
+		
+		return state;
 	}
 	
 	return state;
