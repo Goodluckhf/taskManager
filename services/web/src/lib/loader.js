@@ -20,6 +20,60 @@ export const loaderReducer = (state = {}, action) => {
 	};
 };
 
+export const errorReducer = (_state = {}, action) => {
+	const { type, payload: { id, error } = {} } = action;
+	const matches = /(.*)_(REQUEST|SUCCESS|FAILURE)/.exec(type);
+	if (!matches) {
+		return _state;
+	}
+	
+	// Обновляем, что бы удалить все предыдущие ошибки
+	const state = {};
+	const [, requestName, requestState] = matches;
+	const value  = requestState === 'FAILURE' ? error : null;
+	const result =
+		id ?
+			{ [id]: value } :
+			{ default: value };
+	
+	return {
+		...state,
+		[requestName]: { ...state[requestName], ...result },
+	};
+};
+
+const loading = (item, key, action, list) => {
+	if (typeof action === 'undefined') {
+		return item.set(key, false);
+	}
+	
+	const value = list ?
+		action[item.get('_id')] || item.get(key) || false
+		: action.default || item.get(key) || false;
+	
+	if (value === item.get(key)) {
+		return item;
+	}
+	
+	return item.set(key, value);
+};
+
+const error = (item, action, list) => {
+	if (typeof action === 'undefined') {
+		return item.set('error', null);
+	}
+	
+	const value = list ?
+		action[item.get('_id')] || item.get('error') || null
+		: action.default || item.get('error') || null;
+	
+	if (value === item.get('error')) {
+		return item;
+	}
+	
+	return item.set('error', value);
+};
+
 /**
  * Селектор автоматически подставляет поле loading
  * @param {Object.<String, String>} actionMap
@@ -35,17 +89,10 @@ export const loaderSelector = (actionMap, statePath, _state, path) => {
 			let item = _item;
 			Object.entries(actionMap).forEach(([action, key]) => {
 				const loaderAction = _state.loader[action];
-				if (typeof loaderAction === 'undefined') {
-					item = item.set(key, false);
-					return;
-				}
+				const errorAction  = _state.error[action];
 				
-				const value = loaderAction[item.get('_id')] || item.get(key) || false;
-				if (value === item.get(key)) {
-					return;
-				}
-				
-				item = item.set(key, value);
+				item = loading(item, key, loaderAction, true);
+				item = error(item, errorAction, true);
 			});
 			
 			return item;
@@ -55,17 +102,9 @@ export const loaderSelector = (actionMap, statePath, _state, path) => {
 	if (state instanceof Map) {
 		Object.entries(actionMap).forEach(([action, key]) => {
 			const loaderAction = _state.loader[action];
-			if (typeof loaderAction === 'undefined') {
-				state = state.set(key, false);
-				return;
-			}
-			
-			const value = loaderAction.default || state.get(key) || false;
-			if (value === state.get(key)) {
-				return;
-			}
-			
-			state = state.set(key, value);
+			const errorAction  = _state.error[action];
+			state = loading(state, key, loaderAction, false);
+			state = error(state, errorAction, false);
 		});
 		
 		return state;
