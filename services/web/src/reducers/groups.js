@@ -2,12 +2,12 @@ import { Map, fromJS } from 'immutable';
 import { groupPage } from '../store/initialState';
 import {
 	CHANGE_IS_TARGET,
-	CREATE, CREATE_FAILED, LIST,
-	REQUEST_CREATE, REQUEST_LIST,
+	CREATE_SUCCESS, CREATE_FAILURE,
+	LIST_SUCCESS, CREATE_REQUEST,
 } from '../actions/groups';
 
 export default (groupState = groupPage, { type, payload }) => {
-	if (type === CREATE) {
+	if (type === CREATE_SUCCESS) {
 		return groupState
 			.updateIn(
 				['list', 'items'],
@@ -15,45 +15,28 @@ export default (groupState = groupPage, { type, payload }) => {
 			)
 			.updateIn(
 				['form'],
-				form => form
-					.set('loading', false)
-					.set('error', null),
+				form => form.set('error', null),
 			);
 	}
 	
-	if (type === REQUEST_CREATE) {
+	if (type === CREATE_REQUEST) {
 		return groupState.updateIn(
 			['form'],
-			form => form
-				.set('loading', true)
-				.set('error', null),
+			form => form.set('error', null),
 		);
 	}
 	
-	if (type === CREATE_FAILED) {
+	if (type === CREATE_FAILURE) {
 		return groupState.updateIn(
 			['form'],
-			form => form
-				.set('loading', false)
-				.set('error', payload.error),
+			form => form.set('error', payload.error),
 		);
 	}
 	
-	if (type === REQUEST_LIST) {
+	if (type === LIST_SUCCESS) {
 		return groupState.updateIn(
-			['list'],
-			list => list
-				.set('loading', true),
-		);
-	}
-	
-	if (type === LIST) {
-		return groupState.updateIn(
-			['list'],
-			list => list.set('loading', false),
-		).updateIn(
 			['list', 'items'],
-			items => items.clear().concat(fromJS(payload.groups)),
+			() => fromJS(payload.groups),
 		);
 	}
 	
