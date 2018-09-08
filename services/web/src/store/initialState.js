@@ -34,11 +34,12 @@ export const groupPage = Map({
 });
 
 export const autoLikesPage = Map({
-	list: List([]),
+	list: Map({
+		items: List([]),
+	}),
 	
 	form: Map({
-		loading: false,
-		error  : null,
+		error: null,
 	}),
 });
 
