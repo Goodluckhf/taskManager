@@ -17,16 +17,21 @@ export default async (ctx, next) => {
 			error = ValidationError.createFromMongooseCastError(error);
 		}
 		
-		if (error instanceof BaseApiError) {
-			logger.warn({
-				message: 'API error',
-				error,
-			});
-			ctx.body   = error.toObject();
-			ctx.status = error.status;
-			return;
+		// Пока оборачиваем в ошбику
+		// Чтобы на клиент все равно пришла ошибка
+		
+		if (!(error instanceof BaseApiError)) {
+			if (error.request) {
+				delete error.request;
+			}
+			error = new BaseApiError(error.message, 500).combine({ error });
 		}
 		
-		ctx.throw(500, error);
+		logger.warn({
+			message: 'API error',
+			error,
+		});
+		ctx.body   = error.toObject();
+		ctx.status = error.status;
 	}
 };
