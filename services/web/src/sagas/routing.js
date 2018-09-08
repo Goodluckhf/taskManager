@@ -1,6 +1,6 @@
 import { takeEvery, put }  from 'redux-saga/effects';
 import { LOCATION_CHANGE } from 'connected-react-router';
-import { requestList as requestGroupList }     from '../actions/groups';
+import { listRequest as requestGroupList }     from '../actions/groups';
 import { requestList as requestAutolikesList } from '../actions/autolikes';
 
 export default function* () {

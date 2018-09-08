@@ -1,28 +1,27 @@
 import { takeEvery, put, call } from 'redux-saga/effects';
-
 import axios from 'axios';
 
 import {
-	REQUEST_CREATE, REQUEST_LIST,
+	CREATE_REQUEST, LIST_REQUEST,
 	CHANGE_IS_TARGET, REQUEST_FILTER_CHANGE,
-	createFailed, create, list,
+	createFailure, createSuccess, listSuccess,
 } from '../actions/groups';
 
 import { fatalError } from '../actions/fatalError';
 
 export default function* () {
-	yield takeEvery(REQUEST_CREATE, function* ({ payload: data }) {
+	yield takeEvery(CREATE_REQUEST, function* ({ payload: data }) {
 		try {
 			const { data: result } = yield call(axios.post, '/api/group', data);
 			if (!result.success) {
-				yield put(createFailed(result.data));
+				yield put(createFailure(result.data));
 				return;
 			}
 			
-			yield put(create(result.data));
+			yield put(createSuccess(result.data));
 		} catch (error) {
 			if (error.response && error.response.data) {
-				yield put(createFailed(error.response.data));
+				yield put(createFailure(error.response.data));
 				return;
 			}
 			
@@ -30,10 +29,10 @@ export default function* () {
 		}
 	});
 	
-	yield takeEvery(REQUEST_LIST, function* () {
+	yield takeEvery(LIST_REQUEST, function* () {
 		try {
 			const { data: result } = yield call(axios.get, '/api/groups');
-			yield put(list(result.data));
+			yield put(listSuccess(result.data));
 		} catch (error) {
 			yield put(fatalError(error));
 		}
@@ -50,7 +49,7 @@ export default function* () {
 	yield takeEvery(REQUEST_FILTER_CHANGE, function* ({ payload: { filterState } }) {
 		try {
 			const { data: result } = yield call(axios.get, '/api/groups', { params: filterState });
-			yield put(list(result.data));
+			yield put(listSuccess(result.data));
 		} catch (error) {
 			yield put(fatalError(error));
 		}
