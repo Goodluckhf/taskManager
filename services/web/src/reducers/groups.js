@@ -2,8 +2,8 @@ import { Map, fromJS } from 'immutable';
 import { groupPage } from '../store/initialState';
 import {
 	CHANGE_IS_TARGET,
-	CREATE_SUCCESS, CREATE_FAILURE,
-	LIST_SUCCESS, CREATE_REQUEST,
+	CREATE_SUCCESS,
+	LIST_SUCCESS,
 } from '../actions/groups';
 
 export default (groupState = groupPage, { type, payload }) => {
@@ -12,25 +12,7 @@ export default (groupState = groupPage, { type, payload }) => {
 			.updateIn(
 				['list', 'items'],
 				items => items.push(Map(payload.group)),
-			)
-			.updateIn(
-				['form'],
-				form => form.set('error', null),
 			);
-	}
-	
-	if (type === CREATE_REQUEST) {
-		return groupState.updateIn(
-			['form'],
-			form => form.set('error', null),
-		);
-	}
-	
-	if (type === CREATE_FAILURE) {
-		return groupState.updateIn(
-			['form'],
-			form => form.set('error', payload.error),
-		);
 	}
 	
 	if (type === LIST_SUCCESS) {
