@@ -3,24 +3,26 @@ import axios from 'axios';
 import { takeEvery, put, call } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import {
-	REQUEST_CREATE, REQUEST_LIST,
-	create, createFailed, list, REQUEST_FILTER_CHANGE, STOP_REQUEST, stopSuccess,
+	CREATE_REQUEST, LIST_REQUEST,
+	FILTER_CHANGE_REQUEST, STOP_REQUEST,
+	createSuccess, createFailure,
+	stopSuccess, listSuccess,
 } from '../actions/autolikes';
 import { fatalError }           from '../actions/fatalError';
 
 export default function* () {
-	yield takeEvery(REQUEST_CREATE, function* ({ payload: data }) {
+	yield takeEvery(CREATE_REQUEST, function* ({ payload: data }) {
 		try {
 			const { data: result } = yield call(axios.post, '/api/task', data);
 			if (!result.success) {
-				yield put(createFailed(result.data));
+				yield put(createFailure(result.data));
 				return;
 			}
 			
-			yield put(create(result.data));
+			yield put(createSuccess(result.data));
 		} catch (error) {
 			if (error.response && error.response.data) {
-				yield put(createFailed(error.response.data));
+				yield put(createFailure(error.response.data));
 				return;
 			}
 			
@@ -28,7 +30,7 @@ export default function* () {
 		}
 	});
 	
-	yield takeEvery(REQUEST_LIST, function* () {
+	yield takeEvery(LIST_REQUEST, function* () {
 		try {
 			const { data: result } = yield call(axios.get, '/api/tasks');
 			if (!result.success) {
@@ -36,13 +38,13 @@ export default function* () {
 				return;
 			}
 			
-			yield put(list(result.data));
+			yield put(listSuccess(result.data));
 		} catch (error) {
 			yield put(fatalError(error));
 		}
 	});
 	
-	yield takeEvery(REQUEST_FILTER_CHANGE, function* ({ payload: { filterState } }) {
+	yield takeEvery(FILTER_CHANGE_REQUEST, function* ({ payload: { filterState } }) {
 		try {
 			const { data: result } = yield call(axios.get, '/api/tasks', { params: filterState });
 			if (!result.success) {
@@ -50,7 +52,7 @@ export default function* () {
 				return;
 			}
 			
-			yield put(list(result.data));
+			yield put(listSuccess(result.data));
 		} catch (error) {
 			yield put(fatalError(error));
 		}
