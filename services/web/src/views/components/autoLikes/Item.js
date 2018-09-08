@@ -43,7 +43,7 @@ class Item extends PureComponent {
 						<LoadingButton
 							data-size={S}
 							data-color='green'
-							loading={this.props.stop_loading || false}
+							loading={this.props.stop_loading}
 							onClick={this.onClick}
 						>
 							Остановить

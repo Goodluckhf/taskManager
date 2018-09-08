@@ -34,7 +34,7 @@ class List extends PureComponent {
 				</CardHeader>
 				<CardBody>
 					<Row>
-						{groupsElements}
+						{this.props.loading ? 'Загружаю...' : groupsElements}
 					</Row>
 				</CardBody>
 			</Card>

@@ -4,10 +4,14 @@ import { connect }                       from 'react-redux';
 import Immutable                         from 'immutable';
 import propTypes                         from 'prop-types';
 
-import Form         from '../components/group/Form';
-import Layout       from '../layout/Layout';
-import { requestCreate, changeIsTarget, requestFilterChange } from '../../actions/groups';
-import List         from '../components/group/List';
+import Form   from '../components/group/Form';
+import Layout from '../layout/Layout';
+import {
+	createRequest, changeIsTarget,
+	requestFilterChange,
+} from '../../actions/groups';
+import List             from '../components/group/List';
+import { loaderSelector } from '../../lib/loader';
 
 class Groups extends PureComponent {
 	static propTypes = {
@@ -40,14 +44,14 @@ class Groups extends PureComponent {
 }
 
 const mapDispatchToProps = dispatch => ({
-	addGroup      : data => dispatch(requestCreate(data)),
+	addGroup      : data => dispatch(createRequest(data)),
 	changeIsTarget: (id, isTarget) => dispatch(changeIsTarget(id, isTarget)),
 	filterChange  : filterState => dispatch(requestFilterChange(filterState)),
 });
 
 const mapStateToProps = state => ({
-	groups: state.groupPage.get('list'),
-	form  : state.groupPage.get('form'),
+	groups: loaderSelector({ GROUPS__LIST: 'loading' }, 'groupPage', state, ['list']),
+	form  : loaderSelector({ GROUPS__CREATE: 'loading' }, 'groupPage', state, ['form']),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Groups);
