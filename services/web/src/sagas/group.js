@@ -3,7 +3,7 @@ import axios from 'axios';
 
 import {
 	CREATE_REQUEST, LIST_REQUEST,
-	CHANGE_IS_TARGET, REQUEST_FILTER_CHANGE,
+	CHANGE_IS_TARGET, FILTER_CHANGE_REQUEST,
 	createFailure, createSuccess, listSuccess,
 } from '../actions/groups';
 
@@ -46,7 +46,7 @@ export default function* () {
 		}
 	});
 	
-	yield takeEvery(REQUEST_FILTER_CHANGE, function* ({ payload: { filterState } }) {
+	yield takeEvery(FILTER_CHANGE_REQUEST, function* ({ payload: { filterState } }) {
 		try {
 			const { data: result } = yield call(axios.get, '/api/groups', { params: filterState });
 			yield put(listSuccess(result.data));

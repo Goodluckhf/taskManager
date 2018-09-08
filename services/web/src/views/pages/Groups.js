@@ -8,7 +8,7 @@ import Form   from '../components/group/Form';
 import Layout from '../layout/Layout';
 import {
 	createRequest, changeIsTarget,
-	requestFilterChange,
+	filterChangeRequest,
 } from '../../actions/groups';
 import List             from '../components/group/List';
 import { loaderSelector } from '../../lib/loader';
@@ -46,7 +46,7 @@ class Groups extends PureComponent {
 const mapDispatchToProps = dispatch => ({
 	addGroup      : data => dispatch(createRequest(data)),
 	changeIsTarget: (id, isTarget) => dispatch(changeIsTarget(id, isTarget)),
-	filterChange  : filterState => dispatch(requestFilterChange(filterState)),
+	filterChange  : filterState => dispatch(filterChangeRequest(filterState)),
 });
 
 const mapStateToProps = state => ({

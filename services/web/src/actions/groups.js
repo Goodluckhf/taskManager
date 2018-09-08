@@ -38,14 +38,14 @@ export const listFailure = error => ({
 	payload: { error },
 });
 
-export const CHANGE_IS_TARGET = 'GROUP__CHANGE_IS_TARGET';
+export const CHANGE_IS_TARGET = 'GROUPS__CHANGE_IS_TARGET';
 export const changeIsTarget = (id, isTarget) => ({
 	type   : CHANGE_IS_TARGET,
 	payload: { id, isTarget },
 });
 
-export const REQUEST_FILTER_CHANGE = 'GROUP__FILTER_CHANGE';
-export const requestFilterChange   = filterState => ({
-	type   : REQUEST_FILTER_CHANGE,
+export const FILTER_CHANGE_REQUEST = 'GROUPS__FILTER_CHANGE_REQUEST';
+export const filterChangeRequest   = filterState => ({
+	type   : FILTER_CHANGE_REQUEST,
 	payload: { filterState },
 });
