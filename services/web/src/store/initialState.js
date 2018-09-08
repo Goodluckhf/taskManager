@@ -25,13 +25,11 @@ export const routes = Map({
 
 export const groupPage = Map({
 	list: Map({
-		items  : List([]),
-		loading: false,
+		items: List([]),
 	}),
 	
 	form: Map({
-		loading: false,
-		error  : null,
+		error: null,
 	}),
 });
 
