@@ -73,3 +73,17 @@ export const loaderSelector = (actionMap, statePath, _state, path) => {
 	
 	return state;
 };
+
+/**
+ * @param {String} action
+ * @param {Object} state
+ * @return {*}
+ */
+export const getLoaderState = (action, state) => {
+	const loaderState = state.loader[action];
+	if (!loaderState) {
+		return false;
+	}
+	
+	return loaderState.default;
+};

@@ -14,6 +14,7 @@ class List extends PureComponent {
 		items       : propTypes.instanceOf(Immutable.List).isRequired,
 		filterChange: propTypes.func.isRequired,
 		stop        : propTypes.func.isRequired,
+		loading     : propTypes.bool.isRequired,
 	};
 	
 	render() {
@@ -50,7 +51,7 @@ class List extends PureComponent {
 					</Row>
 				</CardHeader>
 				<CardBody>
-					{items}
+					{this.props.loading ? 'Загружаю...' : items}
 				</CardBody>
 			</Card>
 		);

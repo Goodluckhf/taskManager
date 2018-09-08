@@ -1,13 +1,13 @@
 import React, { PureComponent }     from 'react';
-import propTypes                    from 'prop-types';
-import { connect }                  from 'react-redux';
-import { Container }                from 'reactstrap';
-import Immutable                    from 'immutable';
-import Layout                       from '../layout/Layout';
-import Form                         from '../components/autoLikes/Form';
-import List                         from '../components/autoLikes/List';
+import propTypes                                           from 'prop-types';
+import { connect }                                         from 'react-redux';
+import { Container }                                       from 'reactstrap';
+import Immutable                                           from 'immutable';
+import Layout                                              from '../layout/Layout';
+import Form                                                from '../components/autoLikes/Form';
+import List                                                from '../components/autoLikes/List';
 import { createRequest, filterChangeRequest, stopRequest } from '../../actions/autolikes';
-import { loaderSelector } from '../../lib/loader';
+import { loaderSelector, getLoaderState }                  from '../../lib/loader';
 
 class AutoLikes extends PureComponent {
 	static propTypes = {
@@ -49,8 +49,9 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-	form: loaderSelector({ AUTO_LIKES__CREATE: 'loading' }, 'autoLikesPage', state, ['form']),
-	list: loaderSelector({ AUTO_LIKES__STOP: 'stop_loading', AUTO_LIKES__START: '' }, 'autoLikesPage', state, ['list', 'items']),
+	form   : loaderSelector({ AUTO_LIKES__CREATE: 'loading' }, 'autoLikesPage', state, ['form']),
+	list   : loaderSelector({ AUTO_LIKES__STOP: 'stop_loading' }, 'autoLikesPage', state, ['list', 'items']),
+	loading: getLoaderState('AUTO_LIKES__LIST', state),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AutoLikes);
