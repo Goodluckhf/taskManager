@@ -1,12 +1,11 @@
 import axios from 'axios';
 
 import { takeEvery, put, call } from 'redux-saga/effects';
-import { delay } from 'redux-saga';
 import {
 	CREATE_REQUEST, LIST_REQUEST,
 	FILTER_CHANGE_REQUEST, STOP_REQUEST,
 	createSuccess, createFailure,
-	stopSuccess, listSuccess,
+	stopSuccess, listSuccess, stopFailure,
 } from '../actions/autolikes';
 import { fatalError }           from '../actions/fatalError';
 
@@ -58,9 +57,17 @@ export default function* () {
 		}
 	});
 	
-	yield  takeEvery(STOP_REQUEST, function* ({ payload: { id } }) {
-		yield call(delay, 3000);
-		
-		yield put(stopSuccess(id));
+	yield takeEvery(STOP_REQUEST, function* ({ payload: { id } }) {
+		try {
+			yield call(axios.post, `/api/task/stop/${id}`);
+			yield put(stopSuccess(id));
+		} catch (error) {
+			if (error.response && error.response.data) {
+				yield put(stopFailure(error.response.data, id));
+				return;
+			}
+			
+			yield put(fatalError(error));
+		}
 	});
 }
