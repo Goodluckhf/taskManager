@@ -1,35 +1,41 @@
 // Создание группы - приходит от саги
-export const CREATE = 'GROUPS__CREATE_GROUP';
-export const create = group => ({
-	type   : CREATE,
+export const CREATE_SUCCESS = 'GROUPS__CREATE_SUCCESS';
+export const createSuccess = group => ({
+	type   : CREATE_SUCCESS,
 	payload: { group },
 });
 
-export const CREATE_FAILED = 'GROUPS__CREATE_GROUP_FAILED';
-export const createFailed  = error => ({
-	type   : CREATE_FAILED,
+export const CREATE_FAILURE = 'GROUPS__CREATE_FAILURE';
+export const createFailure  = error => ({
+	type   : CREATE_FAILURE,
 	payload: { error },
 });
 
 
 // Для редьюсера
-export const REQUEST_CREATE = 'GROUPS__REQUEST_CREATE_GROUP';
-export const requestCreate  = data => ({
-	type   : REQUEST_CREATE,
+export const CREATE_REQUEST = 'GROUPS__CREATE_REQUEST';
+export const createRequest  = data => ({
+	type   : CREATE_REQUEST,
 	payload: data,
 });
 
 
-export const REQUEST_LIST = 'GROUP__REQUEST_LIST';
-export const requestList  = () => ({
-	type   : REQUEST_LIST,
+export const LIST_REQUEST = 'GROUPS__LIST_REQUEST';
+export const listRequest  = () => ({
+	type   : LIST_REQUEST,
 	payload: {},
 });
 
-export const LIST = 'GROUP__LIST';
-export const list = groups => ({
-	type   : LIST,
+export const LIST_SUCCESS = 'GROUPS__LIST_SUCCESS';
+export const listSuccess = groups => ({
+	type   : LIST_SUCCESS,
 	payload: { groups },
+});
+
+export const LIST_FAILURE = 'GROUPS__LIST_FAILURE';
+export const listFailure = error => ({
+	type   : LIST_FAILURE,
+	payload: { error },
 });
 
 export const CHANGE_IS_TARGET = 'GROUP__CHANGE_IS_TARGET';
