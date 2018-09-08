@@ -1,42 +1,27 @@
 import { fromJS } from 'immutable';
 
 import { autoLikesPage } from '../store/initialState';
-import {
-	REQUEST_CREATE, CREATE_FAILED,
-	CREATE, LIST,
-} from '../actions/autolikes';
+import { CREATE_FAILURE, CREATE_SUCCESS, LIST_SUCCESS } from '../actions/autolikes';
 
 //eslint-disable-next-line
 export default (state = autoLikesPage, { type, payload }) => {
-	if (type === REQUEST_CREATE) {
+	if (type === CREATE_FAILURE) {
 		return state.updateIn(
 			['form'],
-			form => form.set('loading', true),
+			form => form.set('error', payload.error),
 		);
 	}
 	
-	if (type === CREATE_FAILED) {
-		return state.updateIn(
-			['form'],
-			form => form
-				.set('loading', false)
-				.set('error', payload.error),
-		);
-	}
-	
-	if (type === CREATE) {
+	if (type === CREATE_SUCCESS) {
 		return state.updateIn(
 			['list', 'items'],
-			items => items.push(payload.task),
-		).updateIn(
-			['form'],
-			form => form.set('loading', false),
+			items => items.push(fromJS(payload.task)),
 		);
 	}
 	
-	if (type === LIST) {
+	if (type === LIST_SUCCESS) {
 		return state.updateIn(
-			['list'],
+			['list', 'items'],
 			() => fromJS(payload.tasks),
 		);
 	}
