@@ -20,8 +20,14 @@ export const loaderReducer = (state = {}, action) => {
 	};
 };
 
-//@TODO: Отрефакторить
-//@TODO: Добавить для Map
+/**
+ * Селектор автоматически подставляет поле loading
+ * @param {Object.<String, String>} actionMap
+ * @param {String} statePath
+ * @param {Object} _state
+ * @param {Array.<String>} path
+ * @return {*}
+ */
 export const loaderSelector = (actionMap, statePath, _state, path) => {
 	let state = _state[statePath].getIn(path);
 	if (state instanceof List) {
