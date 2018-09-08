@@ -28,9 +28,7 @@ export const groupPage = Map({
 		items: List([]),
 	}),
 	
-	form: Map({
-		error: null,
-	}),
+	form: Map({}),
 });
 
 export const autoLikesPage = Map({
@@ -38,9 +36,7 @@ export const autoLikesPage = Map({
 		items: List([]),
 	}),
 	
-	form: Map({
-		error: null,
-	}),
+	form: Map({}),
 });
 
 export const fatalError = Map({});
