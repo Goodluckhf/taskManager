@@ -1,37 +1,37 @@
-export const REQUEST_CREATE = 'AUTO_LIKES__REQUEST_CREATE_AUTO_LIKES';
-export const requestCreate  = data => ({
-	type   : REQUEST_CREATE,
+export const CREATE_REQUEST = 'AUTO_LIKES__CREATE_REQUEST';
+export const createRequest  = data => ({
+	type   : CREATE_REQUEST,
 	payload: data,
 });
 
-export const CREATE = 'AUTO_LIKES__CREATE_AUTO_LIKES';
-export const create = task => ({
-	type   : CREATE,
+export const CREATE_SUCCESS = 'AUTO_LIKES__CREATE_SUCCESS';
+export const createSuccess = task => ({
+	type   : CREATE_SUCCESS,
 	payload: { task },
 });
 
-export const CREATE_FAILED = 'AUTO_LIKES__CREATE_AUTO_LIKES_FAILED';
-export const createFailed = error => ({
-	type   : CREATE_FAILED,
+export const CREATE_FAILURE = 'AUTO_LIKES__CREATE_FAILURE';
+export const createFailure = error => ({
+	type   : CREATE_FAILURE,
 	payload: { error },
 });
 
 
-export const REQUEST_LIST = 'AUTO_LIKES__LIST_REQUEST';
-export const requestList  = () => ({
-	type   : REQUEST_LIST,
+export const LIST_REQUEST = 'AUTO_LIKES__LIST_REQUEST';
+export const listRequest  = () => ({
+	type   : LIST_REQUEST,
 	payload: {},
 });
 
-export const REQUEST_FILTER_CHANGE = 'AUTO_LIKES__FILTER_CHANGE';
-export const requestFilterChange   = filterState => ({
-	type   : REQUEST_FILTER_CHANGE,
+export const FILTER_CHANGE_REQUEST = 'AUTO_LIKES__FILTER_CHANGE_REQUEST';
+export const filterChangeRequest   = filterState => ({
+	type   : FILTER_CHANGE_REQUEST,
 	payload: { filterState },
 });
 
-export const LIST = 'AUTO_LIKES__LIST_SUCCESS';
-export const list = tasks => ({
-	type   : LIST,
+export const LIST_SUCCESS = 'AUTO_LIKES__LIST_SUCCESS';
+export const listSuccess = tasks => ({
+	type   : LIST_SUCCESS,
 	payload: { tasks },
 });
 
