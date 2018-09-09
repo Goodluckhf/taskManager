@@ -59,15 +59,16 @@ const loading = (item, key, action, list) => {
 };
 
 const error = (item, action, list) => {
+	const lastError = item.get('error');
 	if (typeof action === 'undefined') {
-		return item.set('error', null);
+		return item.set('error', lastError || null);
 	}
 	
 	const value = list ?
-		action[item.get('_id')] || item.get('error') || null
-		: action.default || item.get('error') || null;
+		action[item.get('_id')] || lastError || null
+		: action.default || lastError || null;
 	
-	if (value === item.get('error')) {
+	if (value === lastError) {
 		return item;
 	}
 	
