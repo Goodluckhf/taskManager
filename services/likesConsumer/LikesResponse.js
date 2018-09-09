@@ -16,7 +16,14 @@ class LikesResponse extends Response {
 	
 	//eslint-disable-next-line
 	async process(method, { postLink, likesCount }) {
-		const browser = await puppeteer.launch({ headless: false });
+		const browser = await puppeteer.launch({
+			args: [
+				'--no-sandbox',
+				'--disable-setuid-sandbox',
+				'--disable-dev-shm-usage',
+			],
+			headless: process.env.NODE_ENV === 'production',
+		});
 		const page    = await browser.newPage();
 		await loginAction(page, {
 			login   : this.login,
