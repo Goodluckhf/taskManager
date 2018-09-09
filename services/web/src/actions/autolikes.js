@@ -53,3 +53,22 @@ export const stopFailure = (error, id) => ({
 	type   : STOP_FAILURE,
 	payload: { error, id },
 });
+
+
+export const REMOVE_REQUEST = 'AUTO_LIKES__REMOVE_REQUEST';
+export const removeRequest = id => ({
+	type   : REMOVE_REQUEST,
+	payload: { id },
+});
+
+export const REMOVE_SUCCESS = 'AUTO_LIKES__REMOVE_SUCCESS';
+export const removeSuccess = id => ({
+	type   : REMOVE_SUCCESS,
+	payload: { id },
+});
+
+export const REMOVE_FAILURE = 'AUTO_LIKES__REMOVE_FAILURE';
+export const removeFailure = (error, id) => ({
+	type   : REMOVE_FAILURE,
+	payload: { error, id },
+});
