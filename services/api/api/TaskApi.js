@@ -9,8 +9,9 @@ import {
 	ValidationError,
 } from './errors';
 
-import BaseApi     from './BaseApi';
-import LikeRequest from './amqpRequests/LikeRequest';
+import BaseApi      from './BaseApi';
+import LikeRequest  from './amqpRequests/LikeRequest';
+import BaseApiError from './errors/BaseApiError';
 
 /**
  * @property {RpcClient} rpcClient
@@ -199,22 +200,30 @@ class TaskApi extends BaseApi {
 	//@TODO: Проверить что map вернет при ошибке
 	async handleActiveTasks() {
 		const Group = mongoose.model('Group');
+		const Task  = mongoose.model('Task');
 		const tasks = await mongoose.model('AutoLikesTask').findActive();
 		
 		return bluebird.map(
 			tasks,
-			async (task) => {
+			async (_task) => {
+				const task = _task;
 				// Проверяем, что прошло 70 минут, чтобы не лайкать уже лайкнутый пост
+				task.status = Task.status.pending;
+				await task.save();
 				const likesInterval = parseInt(this.config.get('autoLikesTask.likesInterval'), 10);
 				if (moment().diff(moment(task.lastLikedAt), 'minutes') < likesInterval) {
+					task.status = Task.status.waiting;
+					await task.save();
 					return;
 				}
 				
 				if (!task.group) {
 					this.logger.warn({
-						message: 'Like task hash no group',
+						message: 'Like task has no group',
 						taskId : task._id,
 					});
+					task.status = Task.status.waiting;
+					await task.save();
 					return;
 				}
 				
@@ -223,6 +232,8 @@ class TaskApi extends BaseApi {
 					.exec();
 				
 				if (!targetPublics.length) {
+					task.status = Task.status.waiting;
+					await task.save();
 					return;
 				}
 				
@@ -231,6 +242,8 @@ class TaskApi extends BaseApi {
 				
 				const $mentionLink = jsDom.window.document.querySelectorAll('#page_wall_posts .post .wall_post_text a.mem_link')[0];
 				if (!$mentionLink) {
+					task.status = Task.status.waiting;
+					await task.save();
 					return;
 				}
 				
@@ -246,8 +259,17 @@ class TaskApi extends BaseApi {
 				});
 				
 				if (!hasTargetGroupInTask) {
+					task.status = Task.status.waiting;
+					await task.save();
 					return;
 				}
+				
+				const likesTask = mongoose.model('LikesTask').createInstance({
+					postLink,
+					likesCount: task.likesCount,
+					status    : Task.status.pending,
+				});
+				await likesTask.save();
 				
 				const request = new LikeRequest(this.config, {
 					postLink,
@@ -255,15 +277,25 @@ class TaskApi extends BaseApi {
 				});
 				this.logger.info({ request });
 				
-				const result = await this.rpcClient.call(request);
-				
-				if (result.error) {
-					throw new TaskApiError(request, result.error);
-				}
-				
-				//eslint-disable-next-line no-param-reassign
-				task.lastLikedAt = new Date();
-				await task.save();
+				(async () => {
+					try {
+						const result = await this.rpcClient.call(request);
+						if (result.error) {
+							throw result.error;
+						}
+					} catch (error) {
+						const wrapedError = new BaseApiError(error.message, 500).combine(error);
+						this.logger.error({ error });
+						likesTask._error  = wrapedError.toObject();
+					}
+					
+					likesTask.status =  Task.status.finished;
+					await likesTask.save();
+					//eslint-disable-next-line no-param-reassign
+					task.lastLikedAt = new Date();
+					task.status = Task.status.waiting;
+					await task.save();
+				})();
 			},
 		);
 	}
