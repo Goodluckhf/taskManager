@@ -3,7 +3,7 @@ import propTypes                from 'prop-types';
 import { Row, Col }             from 'reactstrap';
 import * as moment              from 'moment';
 import 'moment/locale/ru';
-import LoadingButton, { S }     from '../ui/LoadingButton';
+import LoadingButton, { XS }     from '../ui/LoadingButton';
 import ApiError             from '../ui/ApiError';
 
 const statusCodeToString = {
@@ -15,18 +15,24 @@ const statusCodeToString = {
 
 class Item extends PureComponent {
 	static propTypes = {
-		children    : propTypes.node,
-		createdAt   : propTypes.string,
-		likesCount  : propTypes.number,
-		_id         : propTypes.string,
-		status      : propTypes.number,
-		error       : propTypes.object,
-		stop_loading: propTypes.bool,
-		stop        : propTypes.func,
+		children      : propTypes.node,
+		createdAt     : propTypes.string,
+		likesCount    : propTypes.number,
+		_id           : propTypes.string,
+		status        : propTypes.number,
+		error         : propTypes.object,
+		stop_loading  : propTypes.bool,
+		remove_loading: propTypes.bool,
+		stop          : propTypes.func,
+		remove        : propTypes.func,
 	};
 	
-	onClick = () => {
+	onStop = () => {
 		this.props.stop(this.props._id);
+	};
+	
+	onRemove = () => {
+		this.props.remove(this.props._id);
 	};
 	
 	render() {
@@ -44,12 +50,22 @@ class Item extends PureComponent {
 					<h4>Действия</h4>
 					<div>
 						<LoadingButton
-							data-size={S}
+							data-size={XS}
 							data-color='green'
 							loading={this.props.stop_loading}
-							onClick={this.onClick}
+							onClick={this.onStop}
 						>
 							Остановить
+						</LoadingButton>
+					</div>
+					<div style={{ marginTop: '10px' }}>
+						<LoadingButton
+							data-size={XS}
+							data-color='red'
+							loading={this.props.remove_loading}
+							onClick={this.onRemove}
+						>
+							Удалить
 						</LoadingButton>
 					</div>
 				</Col>

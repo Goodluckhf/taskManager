@@ -14,6 +14,7 @@ class List extends PureComponent {
 		items       : propTypes.instanceOf(Immutable.List).isRequired,
 		filterChange: propTypes.func.isRequired,
 		stop        : propTypes.func.isRequired,
+		remove      : propTypes.func.isRequired,
 		loading     : propTypes.bool.isRequired,
 	};
 	
@@ -24,11 +25,13 @@ class List extends PureComponent {
 				<Fragment key={item.get('_id')}>
 					<Item
 						stop={this.props.stop}
+						remove={this.props.remove}
 						_id={item.get('_id')}
 						createdAt={item.get('createdAt')}
 						likesCount={item.get('likesCount')}
 						status={item.get('status')}
 						stop_loading={item.get('stop_loading')}
+						remove_loading={item.get('remove_loading')}
 						error={item.get('error')}
 					>
 						<GroupItem
