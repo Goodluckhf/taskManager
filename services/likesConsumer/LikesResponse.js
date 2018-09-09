@@ -30,7 +30,7 @@ class LikesResponse extends Response {
 		await urlInput.type(postLink);
 		
 		const likesCountInput = await page.$('.widget__addtask form input[name="like_count"]');
-		await likesCountInput.type(likesCount);
+		await likesCountInput.type(`${likesCount}`);
 		
 		await page.click('button.ant-btn.ant-btn-primary.ant-btn-lg');
 		await page.waitForSelector('.ant-message .ant-message-notice-content');
