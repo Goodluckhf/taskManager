@@ -2,10 +2,11 @@ import axios from 'axios';
 
 import { takeEvery, put, call } from 'redux-saga/effects';
 import {
-	CREATE_REQUEST, LIST_REQUEST,
+	CREATE_REQUEST, LIST_REQUEST, REMOVE_REQUEST,
 	FILTER_CHANGE_REQUEST, STOP_REQUEST,
 	createSuccess, createFailure,
 	stopSuccess, listSuccess, stopFailure,
+	removeSuccess, removeFailure,
 } from '../actions/autolikes';
 import { fatalError }           from '../actions/fatalError';
 
@@ -64,6 +65,20 @@ export default function* () {
 		} catch (error) {
 			if (error.response && error.response.data) {
 				yield put(stopFailure(error.response.data, id));
+				return;
+			}
+			
+			yield put(fatalError(error));
+		}
+	});
+	
+	yield takeEvery(REMOVE_REQUEST, function* ({ payload: { id } }) {
+		try {
+			yield call(axios.delete, `/api/task/${id}`);
+			yield put(removeSuccess(id));
+		} catch (error) {
+			if (error.response && error.response.data) {
+				yield put(removeFailure(error.response.data, id));
 				return;
 			}
 			
