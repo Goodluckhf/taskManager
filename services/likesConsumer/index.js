@@ -28,8 +28,8 @@ const forceExit = (ms = 500, code = 1) => {
 			logger,
 			login   : config.get('likePro.login'),
 			password: config.get('likePro.password'),
-			queue   : config.get('likesTask.queue'),
-			prefetch: config.get('likesTask.prefetch'),
+			queue   : config.get('autoLikesTask.queue'),
+			prefetch: config.get('autoLikesTask.prefetch'),
 		});
 		
 		const rpcServer = new RpcServer(amqp, logger, response);
