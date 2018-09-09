@@ -21,7 +21,7 @@ services:
   web:
     build:
       context: ./services/web
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
       - ./services/web/public:/home/www:cached
       - /dev/null:/var/log/nginx/access.log
@@ -29,7 +29,7 @@ services:
   api:
     build:
       context: ./services/api
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
       - .:/home/www:cached
     restart: always
