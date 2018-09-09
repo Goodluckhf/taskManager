@@ -33,6 +33,15 @@ export default (router, rpcClient) => {
 		};
 	});
 	
+	router.delete('/task/:id', async (ctx) => {
+		const { id } = ctx.params;
+		
+		ctx.body = {
+			success: true,
+			data   : await taskApi.remove(id),
+		};
+	});
+	
 	router.get('/task/handleActive', async (ctx) => {
 		ctx.body = {
 			success: true,

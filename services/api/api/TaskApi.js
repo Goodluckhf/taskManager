@@ -178,6 +178,20 @@ class TaskApi extends BaseApi {
 	}
 	
 	/**
+	 * @description Удаляет задачу
+	 * @param {String} _id
+	 * @return {Promise<void>}
+	 */
+	// eslint-disable-next-line class-methods-use-this
+	async remove(_id) {
+		if (!_id) {
+			throw new ValidationError({ _id });
+		}
+		
+		return mongoose.model('LikesTask').deleteOne({ _id });
+	}
+	
+	/**
 	 * @description Выполняет актуальные задачи (используется в кроне)
 	 * @return {Promise<*>}
 	 */
