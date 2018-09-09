@@ -1,9 +1,11 @@
 FROM node:8.7.0
 
 WORKDIR /home/www
-ENV NODE_ENV=development \
-	NODE_PATH=.
+ENV NODE_ENV=production
 
-RUN npm i -g nodemon
+COPY . .
 
-CMD ["node", "--require", "babel-register", "./services/api/app.js"]
+RUN npm i
+RUN npx babel ./ -d ./dist --ignore node_modules,services/web
+
+CMD ["node", "./dist/services/api/app.js"]
