@@ -15,7 +15,7 @@
 		"reconnectInterval": 3000
 	},
 	
-	"likesTask": {
+	"autoLikesTask": {
 		"likesInterval": 70,
 		"queue": "tasks.likes",
 		"timeout": 60000,

@@ -66,7 +66,7 @@ class TaskApi extends BaseApi {
 		}
 		
 		try {
-			const likesTask = mongoose.model('LikesTask').createInstance({
+			const likesTask = mongoose.model('AutoLikesTask').createInstance({
 				...data,
 				group: group._id,
 			});
@@ -86,7 +86,7 @@ class TaskApi extends BaseApi {
 	 */
 	// eslint-disable-next-line class-methods-use-this
 	async list({ filter = 'all' } = {}) {
-		const LikesTask = mongoose.model('LikesTask');
+		const LikesTask = mongoose.model('AutoLikesTask');
 		const query = {};
 		
 		if (filter === 'active') {
@@ -130,7 +130,7 @@ class TaskApi extends BaseApi {
 		}, data);
 		
 		const likesTask = await mongoose
-			.model('LikesTask')
+			.model('AutoLikesTask')
 			.findOne({ _id })
 			.exec();
 		
@@ -164,7 +164,7 @@ class TaskApi extends BaseApi {
 			throw new ValidationError({ _id });
 		}
 		
-		const task = await mongoose.model('LikesTask').findOne({ _id });
+		const task = await mongoose.model('AutoLikesTask').findOne({ _id });
 		if (!task) {
 			throw new NotFound({ query: { _id }, what: 'LikesTask' });
 		}
@@ -188,7 +188,7 @@ class TaskApi extends BaseApi {
 			throw new ValidationError({ _id });
 		}
 		
-		return mongoose.model('LikesTask').deleteOne({ _id });
+		return mongoose.model('AutoLikesTask').deleteOne({ _id });
 	}
 	
 	/**
@@ -199,13 +199,13 @@ class TaskApi extends BaseApi {
 	//@TODO: Проверить что map вернет при ошибке
 	async handleActiveTasks() {
 		const Group = mongoose.model('Group');
-		const tasks = await mongoose.model('LikesTask').findActive();
+		const tasks = await mongoose.model('AutoLikesTask').findActive();
 		
 		return bluebird.map(
 			tasks,
 			async (task) => {
 				// Проверяем, что прошло 70 минут, чтобы не лайкать уже лайкнутый пост
-				const likesInterval = parseInt(this.config.get('likesTask.likesInterval'), 10);
+				const likesInterval = parseInt(this.config.get('autoLikesTask.likesInterval'), 10);
 				if (moment().diff(moment(task.lastLikedAt), 'minutes') < likesInterval) {
 					return;
 				}

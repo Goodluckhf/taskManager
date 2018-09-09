@@ -1,5 +1,5 @@
-import taskSchema      from './Task';
-import likesTaskSchema from './TaskType/Likes';
+import taskSchema          from './Task';
+import autoLikesTaskSchema from './TaskType/AutoLikes';
 
 import groupSchema   from './Group';
 import accountSchema from './Account';
@@ -10,5 +10,5 @@ export default (connection) => {
 	connection.model('Group', groupSchema);
 	connection.model('Account', accountSchema);
 	connection.model('Task', taskSchema);
-	connection.model('Task').discriminator('LikesTask', likesTaskSchema);
+	connection.model('Task').discriminator('AutoLikesTask', autoLikesTaskSchema);
 };

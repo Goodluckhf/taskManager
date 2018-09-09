@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const likesSchema = new mongoose.Schema({
+const autolikesSchema = new mongoose.Schema({
 	group: {
 		type    : mongoose.Schema.Types.ObjectId,
 		required: true,
@@ -23,12 +23,12 @@ const likesSchema = new mongoose.Schema({
  * @property {ObjectId|GroupDocument} group
  * @property {Number} likesCount
  */
-export class LikesTaskDocument {
+export class AutoLikesTaskDocument {
 	/**
 	 * @param {Object} opts
 	 * @param {Number} opts.likesCount
 	 * @param {ObjectId} opts.group
-	 * @return {LikesTaskDocument}
+	 * @return {AutoLikesTaskDocument}
 	 */
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
@@ -41,7 +41,7 @@ export class LikesTaskDocument {
 	 * @param {Object} opts
 	 * @param {Number} opts.likesCount
 	 * @param {Number} opts.groupId
-	 * @return {LikesTaskDocument}
+	 * @return {AutoLikesTaskDocument}
 	 */
 	// eslint-disable-next-line object-curly-newline
 	fill({ likesCount, groupId }) {
@@ -57,6 +57,6 @@ export class LikesTaskDocument {
 	}
 }
 
-likesSchema.loadClass(LikesTaskDocument);
+autolikesSchema.loadClass(AutoLikesTaskDocument);
 
-export default likesSchema;
+export default autolikesSchema;
