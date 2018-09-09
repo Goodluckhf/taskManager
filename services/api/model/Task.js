@@ -32,6 +32,11 @@ const schema = new mongoose.Schema({
 		type   : Boolean,
 		default: false,
 	},
+	
+	_error: {
+		type   : Object,
+		default: null,
+	},
 });
 
 schema.statics.status = statuses;
@@ -71,10 +76,7 @@ export class TaskDocument {
 	 */
 	static findActive() {
 		return this.find({
-			$or: [
-				{ status: statuses.waiting },
-				{ status: statuses.pending },
-			],
+			status: statuses.waiting,
 		}).populate('group').exec();
 	}
 }
