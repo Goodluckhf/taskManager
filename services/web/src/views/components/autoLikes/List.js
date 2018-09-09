@@ -28,6 +28,7 @@ class List extends PureComponent {
 						remove={this.props.remove}
 						_id={item.get('_id')}
 						createdAt={item.get('createdAt')}
+						lastLikedAt={item.get('lastLikedAt')}
 						likesCount={item.get('likesCount')}
 						status={item.get('status')}
 						stop_loading={item.get('stop_loading')}
