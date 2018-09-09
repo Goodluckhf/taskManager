@@ -1,0 +1,47 @@
+version: '2.2'
+
+x-default-logging:
+  &default-logging
+  driver: json-file
+  options:
+    max-size: '5m'
+    max-file: '1'
+
+services:
+  nginx:
+    build:
+      context: ./services/nginx
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+    volumes:
+      - /dev/null:/var/log/nginx/access.log
+    logging: *default-logging
+  web:
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile
+    logging: *default-logging
+  api:
+    build:
+      context: ./
+      dockerfile: ./services/api/Dockerfile
+    restart: always
+    logging: *default-logging
+  mongo:
+      image: mongo
+      volumes:
+        - mongo-data:/data/db
+      logging:
+        driver: none
+  rabbit:
+      image: rabbitmq:3-management
+      volumes:
+        - rabbit-data:/var/lib/rabbitmq:cached
+      logging:
+        driver: none
+      ports:
+        - 8081:15672
+volumes:
+    mongo-data:
+    rabbit-data:
