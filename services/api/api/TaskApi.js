@@ -104,6 +104,13 @@ class TaskApi extends BaseApi {
 			.find(query)
 			.sort({ createdAt: -1 })
 			.populate('group')
+			.populate({
+				path   : 'subTasks',
+				options: {
+					limit: 1,
+					sort : { createdAt: -1 },
+				},
+			})
 			.exec();
 		
 		return likeTasks.map(task => task.toObject());

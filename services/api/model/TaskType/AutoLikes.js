@@ -22,6 +22,11 @@ const autolikesSchema = new mongoose.Schema({
 		type   : Boolean,
 		default: true,
 	},
+	
+	subTasks: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref : 'Task',
+	}],
 });
 
 /**
