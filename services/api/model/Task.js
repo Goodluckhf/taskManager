@@ -72,11 +72,15 @@ export class TaskDocument {
 	}
 	
 	/**
+	 * Получить список тасков для крона
+	 * Которые готовы к выполнению
 	 * @return {Promise.<Array.<TaskDocument>>}
 	 */
 	static findActive() {
 		return this.find({
-			status: statuses.waiting,
+			status  : statuses.waiting,
+			repeated: true,
+		// Пока такой кастыль, но нужно убарть от сюда
 		}).populate('group').exec();
 	}
 }

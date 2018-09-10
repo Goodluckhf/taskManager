@@ -17,6 +17,11 @@ const autolikesSchema = new mongoose.Schema({
 		type   : Date,
 		default: null,
 	},
+	
+	repeated: {
+		type   : Boolean,
+		default: true,
+	},
 });
 
 /**
