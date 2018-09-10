@@ -17,7 +17,7 @@ const likesSchema = new mongoose.Schema({
 	},
 	
 	// Если задача была создана в ручную будет null
-	parentTaskId: mongoose.Schema.Types.ObjectId,
+	parentTask: mongoose.Schema.Types.ObjectId,
 });
 
 /**

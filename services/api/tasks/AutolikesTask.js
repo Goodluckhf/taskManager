@@ -71,7 +71,9 @@ class AutoLikesTask extends BaseTask {
 			postLink,
 			likesCount: this.task.likesCount,
 			status    : Task.status.pending,
+			parentTask: this.task,
 		});
+		this.task.subTasks.push(likesTask);
 		await likesTask.save();
 		
 		const request = new LikeRequest(this.config, {
