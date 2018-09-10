@@ -8,6 +8,22 @@ x-default-logging:
     max-file: '1'
 
 services:
+  mongo:
+      image: mongo
+      volumes:
+        - mongo-data:/data/db
+      logging:
+        driver: none
+  rabbit:
+      image: rabbitmq:3-management
+      volumes:
+        - rabbit-data:/var/lib/rabbitmq:cached
+      logging:
+        driver: none
+      ports:
+        - 8081:15672
+
+  # Головной nginx - проксирует запросы на api и web
   nginx:
     build:
       context: ./services/nginx
@@ -28,20 +44,22 @@ services:
       dockerfile: ./services/api/Dockerfile
     restart: always
     logging: *default-logging
-  mongo:
-      image: mongo
-      volumes:
-        - mongo-data:/data/db
-      logging:
-        driver: none
-  rabbit:
-      image: rabbitmq:3-management
-      volumes:
-        - rabbit-data:/var/lib/rabbitmq:cached
-      logging:
-        driver: none
-      ports:
-        - 8081:15672
+  cron:
+    build:
+      context: ./
+      dockerfile: services/cron/Dockerfile
+
+  # Консумеры
+  likes-consumer:
+      shm_size: 1Gb
+      mem_limit: 2Gb
+      cap_add:
+       - SYS_ADMIN
+      build:
+        context: ./
+        dockerfile: ./services/likesConsumer/Dockerfile
+      stop_grace_period: 20s
+      restart: always
 volumes:
     mongo-data:
     rabbit-data:
