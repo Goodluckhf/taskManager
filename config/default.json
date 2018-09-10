@@ -40,5 +40,9 @@
 	
 	"cron": {
 		"interval": 60000
+	},
+	
+	"vkAlert": {
+		"chat_id": 215
 	}
 }

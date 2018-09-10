@@ -208,7 +208,7 @@ class TaskApi extends BaseApi {
 			async (_task) => {
 				let task;
 				if (_task.__t === 'AutoLikesTask') {
-					task = new AutoLikesTask(this.logger, _task, this.rpcClient, this.config);
+					task = new AutoLikesTask(this.vkApi, this.logger, _task, this.rpcClient, this.config);
 				}
 				
 				return task.handle();

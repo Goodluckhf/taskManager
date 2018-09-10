@@ -6,7 +6,15 @@ import BaseTask     from './BaseTask';
 import BaseApiError from '../api/errors/BaseApiError';
 import LikeRequest  from '../api/amqpRequests/LikeRequest';
 
+/**
+ * @property {VkApi} vkApi
+ */
 class AutoLikesTask extends BaseTask {
+	constructor(vkApi, ...args) {
+		super(...args);
+		this.vkApi = vkApi;
+	}
+	
 	async handle() {
 		const Task      = mongoose.model('Task');
 		const Group     = mongoose.model('Group');
@@ -92,6 +100,10 @@ class AutoLikesTask extends BaseTask {
 				const wrapedError = new BaseApiError(error.message, 500).combine(error);
 				this.logger.error({ error });
 				likesTask._error  = wrapedError.toObject();
+				await this.vkApi.apiRequest('messages.send', {
+					chat_id: this.config.get('vkAlert.chat_id'),
+					message: JSON.stringify(wrapedError.toObject(), null, 2),
+				});
 			}
 			
 			likesTask.status =  Task.status.finished;
