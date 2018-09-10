@@ -1,10 +1,16 @@
 FROM cheerlesscloud/node:8.7.0
 
 WORKDIR /home/www
-ENV NODE_ENV=development \
-	NODE_PATH=.
-
+ENV NODE_ENV=development
 USER 1001
 
-RUN npm i  puppeteer
-CMD ["node", "--require", "babel-register", "./services/likesConsumer/index.js"]
+COPY . .
+
+RUN npm i
+RUN npx babel ./ -d ./dist --ignore node_modules,services/web
+
+ENV NODE_ENV=production
+RUN npm prune
+RUN npm i puppeteer
+
+CMD ["node", "./dist/services/likesConsumer/index.js"]
