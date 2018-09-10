@@ -1,7 +1,5 @@
 import mongoose  from 'mongoose';
 import bluebird  from 'bluebird';
-import moment    from 'moment';
-import { JSDOM } from 'jsdom';
 
 import {
 	NotFound,
@@ -9,9 +7,9 @@ import {
 	ValidationError,
 } from './errors';
 
-import BaseApi      from './BaseApi';
-import LikeRequest  from './amqpRequests/LikeRequest';
-import BaseApiError from './errors/BaseApiError';
+import BaseApi       from './BaseApi';
+import LikeRequest   from './amqpRequests/LikeRequest';
+import AutoLikesTask from '../tasks/AutolikesTask';
 
 /**
  * @property {RpcClient} rpcClient
@@ -196,106 +194,17 @@ class TaskApi extends BaseApi {
 	 * @description Выполняет актуальные задачи (используется в кроне)
 	 * @return {Promise<*>}
 	 */
-	//@TODO: Вынести в отдельный класс для тасков
-	//@TODO: Проверить что map вернет при ошибке
 	async handleActiveTasks() {
-		const Group = mongoose.model('Group');
-		const Task  = mongoose.model('Task');
-		const tasks = await mongoose.model('AutoLikesTask').findActive();
-		
+		const tasks = await mongoose.model('Task').findActive();
 		return bluebird.map(
 			tasks,
 			async (_task) => {
-				const task = _task;
-				// Проверяем, что прошло 70 минут, чтобы не лайкать уже лайкнутый пост
-				task.status = Task.status.pending;
-				await task.save();
-				const likesInterval = parseInt(this.config.get('autoLikesTask.likesInterval'), 10);
-				if (moment().diff(moment(task.lastLikedAt), 'minutes') < likesInterval) {
-					task.status = Task.status.waiting;
-					await task.save();
-					return;
+				let task;
+				if (_task.__t === 'AutoLikesTask') {
+					task = new AutoLikesTask(this.logger, _task, this.rpcClient, this.config);
 				}
 				
-				if (!task.group) {
-					this.logger.warn({
-						message: 'Like task has no group',
-						taskId : task._id,
-					});
-					task.status = Task.status.waiting;
-					await task.save();
-					return;
-				}
-				
-				const targetPublics = await Group.find({ isTarget: true })
-					.lean()
-					.exec();
-				
-				if (!targetPublics.length) {
-					task.status = Task.status.waiting;
-					await task.save();
-					return;
-				}
-				
-				const link  = Group.getLinkByPublicId(task.group.publicId);
-				const jsDom = await JSDOM.fromURL(link);
-				
-				const $mentionLink = jsDom.window.document.querySelectorAll('#page_wall_posts .post .wall_post_text a.mem_link')[0];
-				if (!$mentionLink) {
-					task.status = Task.status.waiting;
-					await task.save();
-					return;
-				}
-				
-				// Ссылка на пост
-				const $post    = jsDom.window.document.querySelectorAll('#page_wall_posts .post')[0];
-				const $postId  = $post.attributes.getNamedItem('data-post-id');
-				const postLink = Group.getPostLinkById($postId.value);
-				
-				const mentionId  = $mentionLink.attributes.getNamedItem('mention_id');
-				
-				const hasTargetGroupInTask = targetPublics.some((targetGroup) => {
-					return `club${targetGroup.publicId}` === mentionId.value;
-				});
-				
-				if (!hasTargetGroupInTask) {
-					task.status = Task.status.waiting;
-					await task.save();
-					return;
-				}
-				
-				const likesTask = mongoose.model('LikesTask').createInstance({
-					postLink,
-					likesCount: task.likesCount,
-					status    : Task.status.pending,
-				});
-				await likesTask.save();
-				
-				const request = new LikeRequest(this.config, {
-					postLink,
-					likesCount: task.likesCount,
-				});
-				this.logger.info({ request });
-				
-				(async () => {
-					try {
-						const result = await this.rpcClient.call(request);
-						if (result.error) {
-							throw result.error;
-						}
-					} catch (error) {
-						const wrapedError = new BaseApiError(error.message, 500).combine(error);
-						this.logger.error({ error });
-						likesTask._error  = wrapedError.toObject();
-					}
-					
-					likesTask.status =  Task.status.finished;
-					await likesTask.save();
-					//eslint-disable-next-line no-param-reassign
-					task.lastLikedAt = new Date();
-					task.status = Task.status.waiting;
-					await task.save();
-				})();
+				return task.handle();
 			},
 		);
 	}
