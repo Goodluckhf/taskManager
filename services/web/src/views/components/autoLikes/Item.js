@@ -22,6 +22,7 @@ class Item extends PureComponent {
 		_id           : propTypes.string,
 		status        : propTypes.number,
 		error         : propTypes.object,
+		lastTask      : propTypes.object,
 		stop_loading  : propTypes.bool,
 		remove_loading: propTypes.bool,
 		stop          : propTypes.func,
@@ -40,12 +41,20 @@ class Item extends PureComponent {
 		return (
 			<Row>
 				<Col xs={3}>{this.props.children}</Col>
-				<Col xs={5}>
+				<Col xs={6}>
 					<h4>Описание</h4>
 					<div><span className='h6'>Кол-во лайков:</span> {this.props.likesCount}</div>
 					<div><span className='h6'>Создана:</span> {moment(this.props.createdAt).format('MMMM Do YYYY, HH:mm:ss')}</div>
 					<div><span className='h6'>Последняя в :</span> {moment(this.props.lastLikedAt).format('MMMM Do YYYY, HH:mm:ss')}</div>
 					<div><span className='h6'>Статус:</span> {statusCodeToString[this.props.status]}</div>
+					<div><span className='h6'>Статус последней задачи: </span>
+						{this.props.lastTask && statusCodeToString[this.props.lastTask.status]}
+					</div>
+					{
+						this.props.lastTask &&
+						this.props.lastTask._error &&
+						<ApiError title={'Ошибка последней задачи'} error={this.props.lastTask._error}/>
+					}
 					{this.props.error && <ApiError error={this.props.error}/>}
 				</Col>
 				<Col>
