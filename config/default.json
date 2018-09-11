@@ -28,9 +28,19 @@
 		"prefetch": 1
 	},
 	
+	"commentsTask": {
+		"queue": "tasks.comments",
+		"timeout": 60000,
+		"prefetch": 1
+	},
+	
 	"likePro": {
 		"login": "!login!",
 		"password": "!password!"
+	},
+	
+	"z1y1x1": {
+		"token": "!token!"
 	},
 	
 	"vkApi": {
