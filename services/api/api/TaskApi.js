@@ -7,6 +7,7 @@ import {
 	ValidationError,
 } from './errors';
 
+import BaseApiError  from './errors/BaseApiError';
 import BaseApi       from './BaseApi';
 import LikeRequest   from './amqpRequests/LikeRequest';
 import AutoLikesTask from '../tasks/AutolikesTask';
@@ -200,18 +201,39 @@ class TaskApi extends BaseApi {
 	}
 	
 	/**
+	 * @param {BaseApiError | Error} error
+	 * @return {Promise<*>}
+	 */
+	sendAlert(error) {
+		if (!(error instanceof BaseApiError)) {
+			//eslint-disable-next-line no-param-reassign
+			error = new BaseApiError(error.message, 500).combine(error);
+		}
+		
+		//@TODO: Перенести в либу
+		return this.vkApi.apiRequest('messages.send', {
+			chat_id: this.config.get('vkAlert.chat_id'),
+			message: JSON.stringify(error.toObject(), null, 2),
+		});
+	}
+	
+	/**
 	 * @description Выполняет актуальные задачи (используется в кроне)
 	 * @return {Promise<*>}
 	 */
 	async handleActiveTasks() {
-		const tasks = await mongoose.model('Task').findActive();
+		const Task  = mongoose.model('Task');
+		const tasks = await Task.findActive();
 		return bluebird.map(
 			tasks,
 			async (_task) => {
 				let task;
+				//eslint-disable-next-line no-param-reassign
+				_task.status = Task.status.pending;
+				await _task.save();
+				
 				if (_task.__t === 'AutoLikesTask') {
 					task = new AutoLikesTask({
-						vkApi       : this.vkApi,
 						logger      : this.logger,
 						taskDocument: _task,
 						rpcClient   : this.rpcClient,
@@ -219,7 +241,11 @@ class TaskApi extends BaseApi {
 					});
 				}
 				
-				return task.handle();
+				// Задача просто запускается
+				// Не нужно ожидать ее выполнения
+				// Главное обработать ошибку и отослать алерт
+				// @TODO: Придумать graceful reload, т.к. из-за фоновых задач будет все разьебываться
+				task.handle().catch(errors => bluebird.map(errors, error => this.sendAlert(error)));
 			},
 		);
 	}
