@@ -13,8 +13,9 @@ class Form extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			publicHref: '',
-			likesCount: 100,
+			publicHref   : '',
+			likesCount   : 100,
+			commentsCount: 33,
 		};
 	}
 	static propTypes = {
@@ -25,6 +26,10 @@ class Form extends PureComponent {
 	
 	handleCountInput = (e) => {
 		this.setState({ likesCount: parseInt(e.target.value.trim(), 10) });
+	};
+	
+	handleCommentsCountInput = (e) => {
+		this.setState({ commentsCount: parseInt(e.target.value.trim(), 10) });
 	};
 	
 	handlePublicInput = (e) => {
@@ -50,6 +55,10 @@ class Form extends PureComponent {
 								<Col>
 									<Label>Кол-во лайков (100 минимум)</Label>
 									<Input onChange={this.handleCountInput} type='number' value={this.state.likesCount}/>
+								</Col>
+								<Col>
+									<Label>Кол-во комментов</Label>
+									<Input onChange={this.handleCommentsCountInput} type='number' value={this.state.commentsCount}/>
 								</Col>
 							</Row>
 						</FormGroup>
