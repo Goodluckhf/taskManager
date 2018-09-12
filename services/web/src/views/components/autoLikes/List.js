@@ -32,6 +32,7 @@ class List extends PureComponent {
 						createdAt={item.get('createdAt')}
 						lastLikedAt={item.get('lastLikedAt')}
 						likesCount={item.get('likesCount')}
+						commentsCount={item.get('commentsCount')}
 						status={item.get('status')}
 						stop_loading={item.get('stop_loading')}
 						remove_loading={item.get('remove_loading')}
