@@ -17,6 +17,11 @@ process.on('unhandledRejection', (_error) => {
 	if (error.request) {
 		delete error.request;
 	}
+	
+	if (error.response && error.response.request) {
+		delete error.response.request;
+	}
+	
 	logger.error({ error });
 });
 
