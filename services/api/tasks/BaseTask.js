@@ -1,14 +1,16 @@
 /**
  * @property {Logger} logger
- * @property {TaskDocument} task
+ * @property {TaskDocument} taskDocument
+ * @property {RpcClient} rpcClient
  * @property {Config} config
  */
 class BaseTask {
-	constructor(logger, taskDocument, rpcClient, config) {
-		this.logger    = logger;
-		this.task      = taskDocument;
-		this.rpcClient = rpcClient;
-		this.config    = config;
+	//eslint-disable-next-line object-curly-newline
+	constructor({ logger, taskDocument, rpcClient, config }) {
+		this.logger       = logger;
+		this.taskDocument = taskDocument;
+		this.rpcClient    = rpcClient;
+		this.config       = config;
 	}
 	
 	/**
