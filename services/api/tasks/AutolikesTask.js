@@ -2,8 +2,9 @@ import moment       from 'moment/moment';
 import { JSDOM }    from 'jsdom';
 import mongoose     from 'mongoose';
 
-import BaseTask  from './BaseTask';
-import LikesTask from './LikesTask';
+import BaseTask     from './BaseTask';
+import LikesTask    from './LikesTask';
+import CommentsTask from './CommentsTask';
 
 /**
  * @property {VkApi} vkApi
@@ -15,9 +16,10 @@ class AutoLikesTask extends BaseTask {
 	}
 	
 	async handle() {
-		const Task           = mongoose.model('Task');
-		const Group          = mongoose.model('Group');
-		const LikesTaskModel = mongoose.model('LikesTask');
+		const Task              = mongoose.model('Task');
+		const Group             = mongoose.model('Group');
+		const LikesTaskModel    = mongoose.model('LikesTask');
+		const CommentsTaskModel = mongoose.model('CommentsTask');
 		
 		// Проверяем, что прошло 70 минут, чтобы не лайкать уже лайкнутый пост
 		this.taskDocument.status = Task.status.pending;
@@ -90,7 +92,24 @@ class AutoLikesTask extends BaseTask {
 			vkApi       : this.vkApi,
 		});
 		
+		const commentsTaskDocument = CommentsTaskModel.createInstance({
+			postLink,
+			commentsCount: this.taskDocument.commentsCount,
+			status       : Task.status.pending,
+			parentTask   : this.taskDocument,
+		});
+		
+		const commentsTask = new CommentsTask({
+			logger      : this.logger,
+			parentTask  : this.taskDocument,
+			taskDocument: commentsTaskDocument,
+			rpcClient   : this.rpcClient,
+			config      : this.config,
+			vkApi       : this.vkApi,
+		});
+		
 		await likesTask.handle();
+		await commentsTask.handle();
 	}
 }
 
