@@ -34,6 +34,14 @@ services:
       - .:/home/www:cached
     restart: always
     logging: *default-logging
+  comments-consumer:
+    build:
+      context: ./services/commentsConsumer
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/home/www:cached
+    logging: *default-logging
+    restart: always
   cron:
     build:
       context: ./services/cron

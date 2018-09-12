@@ -7,7 +7,7 @@ import CommentsResponse from './CommentsResponse';
 
 const rabbitConfig = config.get('rabbit');
 const amqp = new Amqp(logger, {
-	host : process.env.NODE_ENV === 'development' ? 'localhost' : rabbitConfig.host,
+	host : rabbitConfig.host,
 	port : rabbitConfig.port,
 	retry: false,
 });
@@ -26,8 +26,7 @@ const forceExit = (ms = 500, code = 1) => {
 	try {
 		const response = new CommentsResponse({
 			logger,
-			login   : config.get('z1y1x1.login'),
-			password: config.get('z1y1x1.password'),
+			token   : config.get('z1y1x1.token'),
 			queue   : config.get('commentsTask.queue'),
 			prefetch: config.get('commentsTask.prefetch'),
 		});

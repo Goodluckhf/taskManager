@@ -58,7 +58,14 @@ services:
       build:
         context: ./
         dockerfile: ./services/likesConsumer/Dockerfile
+      logging: *default-logging
       stop_grace_period: 20s
+      restart: always
+  comments-consumer:
+      build:
+        context: ./
+        dockerfile: ./services/commentsConsumer/Dockerfile
+      logging: *default-logging
       restart: always
 volumes:
     mongo-data:
