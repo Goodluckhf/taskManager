@@ -35,10 +35,11 @@ class TaskApi extends BaseApi {
 		const data = { ..._data };
 		this.validate({
 			properties: {
-				likesCount: { oneOf: [{ type: 'string' }, { type: 'number' }] }, // @TODO: Разобраться, чтобы сам конверитил в int
-				publicHref: { type: 'string' },
-				admin     : { type: 'string' },
-				groupId   : { type: 'string' },
+				likesCount   : { oneOf: [{ type: 'string' }, { type: 'number' }] }, // @TODO: Разобраться, чтобы сам конверитил в int
+				commentsCount: { oneOf: [{ type: 'string' }, { type: 'number' }] },
+				publicHref   : { type: 'string' },
+				admin        : { type: 'string' },
+				groupId      : { type: 'string' },
 			},
 			required: ['likesCount'],
 		}, data);
