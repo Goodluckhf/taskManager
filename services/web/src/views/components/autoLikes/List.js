@@ -30,7 +30,7 @@ class List extends PureComponent {
 						remove={this.props.remove}
 						_id={item.get('_id')}
 						createdAt={item.get('createdAt')}
-						lastLikedAt={item.get('lastLikedAt')}
+						lastLikedAt={item.get('lastHandleAt')}
 						likesCount={item.get('likesCount')}
 						commentsCount={item.get('commentsCount')}
 						status={item.get('status')}

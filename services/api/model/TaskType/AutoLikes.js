@@ -18,7 +18,7 @@ const autolikesSchema = new mongoose.Schema({
 	},
 	
 	// Время последнего проставления лайков в этой группе
-	lastLikedAt: {
+	lastHandleAt: {
 		type   : Date,
 		default: null,
 	},
