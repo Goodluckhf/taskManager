@@ -12,6 +12,11 @@ const autolikesSchema = new mongoose.Schema({
 		required: true,
 	},
 	
+	commentsCount: {
+		type    : Number,
+		required: true,
+	},
+	
 	// Время последнего проставления лайков в этой группе
 	lastLikedAt: {
 		type   : Date,
@@ -37,26 +42,33 @@ export class AutoLikesTaskDocument {
 	/**
 	 * @param {Object} opts
 	 * @param {Number} opts.likesCount
+	 * @param {Number} opts.commentsCount
 	 * @param {ObjectId} opts.group
 	 * @return {AutoLikesTaskDocument}
 	 */
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
-		baseTask.likesCount = opts.likesCount;
-		baseTask.group      = opts.group;
+		baseTask.likesCount    = opts.likesCount;
+		baseTask.commentsCount = opts.commentsCount;
+		baseTask.group         = opts.group;
 		return baseTask;
 	}
 	
 	/**
 	 * @param {Object} opts
 	 * @param {Number} opts.likesCount
+	 * @param {Number} opts.commentsCount
 	 * @param {Number} opts.groupId
 	 * @return {AutoLikesTaskDocument}
 	 */
 	// eslint-disable-next-line object-curly-newline
-	fill({ likesCount, groupId }) {
+	fill({ likesCount, groupId, commentsCount }) {
 		if (likesCount) {
 			this.likesCount = likesCount;
+		}
+		
+		if (commentsCount) {
+			this.commentsCount = commentsCount;
 		}
 		
 		if (groupId) {
