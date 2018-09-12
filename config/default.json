@@ -16,7 +16,10 @@
 	},
 	
 	"autoLikesTask": {
-		"likesInterval": 70,
+		"likesInterval": 70
+	},
+	
+	"likesTask": {
 		"queue": "tasks.likes",
 		"timeout": 60000,
 		"prefetch": 1
