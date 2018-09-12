@@ -13,8 +13,6 @@ class AutoLikesTask extends BaseTask {
 		const LikesTaskModel    = mongoose.model('LikesTask');
 		const CommentsTaskModel = mongoose.model('CommentsTask');
 		
-		const errors = [];
-		
 		try {
 			// Проверяем, что прошло 70 минут, чтобы не лайкать уже лайкнутый пост
 			const likesInterval = parseInt(this.config.get('autoLikesTask.likesInterval'), 10);
@@ -105,6 +103,7 @@ class AutoLikesTask extends BaseTask {
 				likesTaskDocument.save(),
 			]);
 			
+			const errors = [];
 			await Promise.all([
 				likesTask.handle().catch(error => errors.push(error)),
 				commentsTask.handle().catch(error => errors.push(error)),
