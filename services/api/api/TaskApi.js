@@ -131,8 +131,9 @@ class TaskApi extends BaseApi {
 		
 		this.validate({
 			properties: {
-				groupId   : { type: 'string' },
-				likesCount: { oneOf: [{ type: 'string' }, { type: 'number' }] }, // @TODO: Разобраться, чтобы сам конверитил в int
+				groupId      : { type: 'string' },
+				likesCount   : { oneOf: [{ type: 'string' }, { type: 'number' }] }, // @TODO: Разобраться, чтобы сам конверитил в int
+				commentsCount: { oneOf: [{ type: 'string' }, { type: 'number' }] }, // @TODO: Разобраться, чтобы сам конверитил в int
 			},
 		}, data);
 		
