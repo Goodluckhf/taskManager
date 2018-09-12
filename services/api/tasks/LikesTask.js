@@ -5,11 +5,13 @@ import LikeRequest  from '../api/amqpRequests/LikeRequest';
 import BaseApiError from '../api/errors/BaseApiError';
 /**
  * @property {TaskDocument} parentTask
+ * @property {VkApi} vkApi
  */
 class LikesTask extends BaseTask {
-	constructor({ parentTask, ...args }) {
+	constructor({ parentTask, vkApi, ...args }) {
 		super(args);
 		this.parentTask = parentTask;
+		this.vkApi      = vkApi;
 	}
 	
 	async handle() {

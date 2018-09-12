@@ -87,6 +87,7 @@ class AutoLikesTask extends BaseTask {
 			taskDocument: likesTaskDocument,
 			rpcClient   : this.rpcClient,
 			config      : this.config,
+			vkApi       : this.vkApi,
 		});
 		
 		await likesTask.handle();
