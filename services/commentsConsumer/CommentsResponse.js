@@ -10,21 +10,21 @@ class CommentsResponse extends Response {
 		this.token = token;
 	}
 	
-	//eslint-disable-next-line
-	async process(method, { postLink, count }) {
-		const { data: result } = axios.get('http://api.z1y1x1.ru/tasks/create', {
+	async process(method, { postLink, commentsCount }) {
+		this.logger.info({ postLink, commentsCount });
+		const { data } = await axios.get('http://api.z1y1x1.ru/tasks/create', {
 			params: {
 				sub    : 3,
 				type   : 2,
 				token  : this.token,
 				content: postLink,
-				count,
+				count  : commentsCount,
 			},
 		});
 		
-		this.logger.info(result);
+		this.logger.info({ postLink, commentsCount, data });
 		
-		return result;
+		return data;
 	}
 }
 
