@@ -109,7 +109,7 @@ class TaskApi extends BaseApi {
 			.populate({
 				path   : 'subTasks',
 				options: {
-					limit: 1,
+					limit: 2,
 					sort : { createdAt: -1 },
 				},
 			})
