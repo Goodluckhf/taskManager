@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import propTypes                from 'prop-types';
+import { List }                 from 'immutable';
 import { Row, Col }             from 'reactstrap';
 import * as moment              from 'moment';
 import 'moment/locale/ru';
@@ -13,6 +14,11 @@ const statusCodeToString = {
 	3: <span className='text-muted'>Отменена</span>,
 };
 
+const taskTypeToString = {
+	CommentsTask: 'Накрутка комментов',
+	LikesTask   : 'Накрутка лайков',
+};
+
 class Item extends PureComponent {
 	static propTypes = {
 		children      : propTypes.node,
@@ -23,7 +29,7 @@ class Item extends PureComponent {
 		_id           : propTypes.string,
 		status        : propTypes.number,
 		error         : propTypes.object,
-		lastTask      : propTypes.object,
+		lastTasks     : propTypes.instanceOf(List),
 		stop_loading  : propTypes.bool,
 		remove_loading: propTypes.bool,
 		stop          : propTypes.func,
@@ -39,6 +45,15 @@ class Item extends PureComponent {
 	};
 	
 	render() {
+		const lastTasks = this.props.lastTasks.map((task) => {
+			const title = taskTypeToString[task.get('__t')];
+			return (
+				<div key={task.get('_id')}>
+					<span className='h6'>{title}: {statusCodeToString[task.get('status')]}</span>
+					{task.get('_error') && <ApiError title={title} error={task.get('_error').toJS()}/>}
+				</div>
+			);
+		});
 		return (
 			<Row>
 				<Col xs={3}>{this.props.children}</Col>
@@ -49,14 +64,7 @@ class Item extends PureComponent {
 					<div><span className='h6'>Создана:</span> {moment(this.props.createdAt).format('MMMM Do YYYY, HH:mm:ss')}</div>
 					<div><span className='h6'>Последняя в :</span> {moment(this.props.lastHandleAt).format('MMMM Do YYYY, HH:mm:ss')}</div>
 					<div><span className='h6'>Статус:</span> {statusCodeToString[this.props.status]}</div>
-					<div><span className='h6'>Статус последней задачи: </span>
-						{this.props.lastTask && statusCodeToString[this.props.lastTask.status]}
-					</div>
-					{
-						this.props.lastTask &&
-						this.props.lastTask._error &&
-						<ApiError title={'Ошибка последней задачи'} error={this.props.lastTask._error}/>
-					}
+					{lastTasks}
 					{this.props.error && <ApiError error={this.props.error}/>}
 				</Col>
 				<Col>

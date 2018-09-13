@@ -20,8 +20,8 @@ class List extends PureComponent {
 	
 	render() {
 		const items = this.props.items.map((item) => {
-			const group    = item.get('group');
-			const lastTask = item.getIn(['subTasks', 0]);
+			const group     = item.get('group');
+			const lastTasks = item.get('subTasks');
 			
 			return (
 				<Fragment key={item.get('_id')}>
@@ -37,7 +37,7 @@ class List extends PureComponent {
 						stop_loading={item.get('stop_loading')}
 						remove_loading={item.get('remove_loading')}
 						error={item.get('error')}
-						lastTask={lastTask && lastTask.toJS()}
+						lastTasks={lastTasks}
 					>
 						<GroupItem
 							_id={group.get('_id')}
