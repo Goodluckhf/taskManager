@@ -6,6 +6,7 @@ import logger       from '../../lib/logger';
 import routes       from './routes';
 import errorHandler from './routes/api/errorHandler';
 import initModels   from './model';
+import gracefulStop from '../../lib/GracefulStop';
 
 import db from '../../lib/db';
 
@@ -44,6 +45,7 @@ logger.info(`server listening on port: ${config.get('api.port')}`);
 
 process.on('uncaughtException', (error) => {
 	logger.error({ error });
+	gracefulStop.stop(1);
 });
 
 process.on('unhandledRejection', (error) => {
@@ -52,5 +54,10 @@ process.on('unhandledRejection', (error) => {
 
 // @TODO: Для прод мода убрать
 process.on('SIGTERM', () => {
-	process.exit(0);
+	if (process.env.NODE_ENV === 'development') {
+		process.exit(0);
+		return;
+	}
+	
+	gracefulStop.stop(0);
 });

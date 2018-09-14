@@ -11,6 +11,9 @@ import BaseApiError  from './errors/BaseApiError';
 import BaseApi       from './BaseApi';
 import LikeRequest   from './amqpRequests/LikeRequest';
 import AutoLikesTask from '../tasks/AutolikesTask';
+import gracefulStop  from '../../../lib/GracefulStop';
+
+gracefulStop.setWaitor('handleActiveTasks');
 
 /**
  * @property {RpcClient} rpcClient
@@ -222,9 +225,21 @@ class TaskApi extends BaseApi {
 	 * @return {Promise<*>}
 	 */
 	async handleActiveTasks() {
+		if (gracefulStop.isStopping) {
+			this.logger.warn({
+				message: 'method call during graceful stopping',
+				method : 'TaskApi.handleActive',
+			});
+			return;
+		}
+		
+		gracefulStop.setProcessing('handleActiveTasks');
 		const Task  = mongoose.model('Task');
 		const tasks = await Task.findActive();
-		return bluebird.map(
+		// Задачи просто запускаются
+		// Не ждем пока они выполнятся
+		// Главное обработать ошибку и отослать алерт
+		bluebird.map(
 			tasks,
 			async (_task) => {
 				let task;
@@ -241,13 +256,12 @@ class TaskApi extends BaseApi {
 					});
 				}
 				
-				// Задача просто запускается
-				// Не нужно ожидать ее выполнения
-				// Главное обработать ошибку и отослать алерт
-				// @TODO: Придумать graceful reload, т.к. из-за фоновых задач будет все разьебываться
-				task.handle().catch(errors => bluebird.map(errors, error => this.sendAlert(error)));
+				return task.handle().catch(errors => bluebird.map(errors, error => this.sendAlert(error)));
 			},
-		);
+		).then(() => {
+			// Graceful reload
+			gracefulStop.setReady('handleActiveTasks');
+		});
 	}
 	
 	/**
