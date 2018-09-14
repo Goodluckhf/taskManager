@@ -75,6 +75,7 @@
       ],
       "spaced-comment": 0,
       "no-trailing-spaces": 0,
+      "no-restricted-syntax": "warn",
       "arrow-body-style": [
         1,
         "as-needed"
