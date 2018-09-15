@@ -4,6 +4,7 @@ import Amqp             from '../../lib/amqp/Amqp';
 import logger           from '../../lib/logger';
 import RpcServer        from '../../lib/amqp/RpcServer';
 import CommentsResponse from './CommentsResponse';
+import gracefulStop  from '../../lib/GracefulStop';
 
 const rabbitConfig = config.get('rabbit');
 const amqp = new Amqp(logger, {
@@ -11,16 +12,6 @@ const amqp = new Amqp(logger, {
 	port : rabbitConfig.port,
 	retry: false,
 });
-
-/**
- * @param {Number} ms,
- * @param {Number} code
- */
-const forceExit = (ms = 500, code = 1) => {
-	setTimeout(() => {
-		process.exit(code);
-	}, ms);
-};
 
 (async () => {
 	try {
@@ -31,7 +22,7 @@ const forceExit = (ms = 500, code = 1) => {
 			prefetch: config.get('commentsTask.prefetch'),
 		});
 		
-		const rpcServer = new RpcServer(amqp, logger, response);
+		const rpcServer = new RpcServer(amqp, logger, response, gracefulStop);
 		await rpcServer.start();
 		logger.info({
 			message: 'rpc server started',
@@ -39,22 +30,20 @@ const forceExit = (ms = 500, code = 1) => {
 		});
 	} catch (error) {
 		logger.error({ error });
-		forceExit();
+		gracefulStop.forceStop();
 	}
 })();
 
 process.on('SIGTERM', () => {
-	//TODO: Сделать graceful shutdown
-	logger.warn({ message: 'Graceful shutdown' });
-	forceExit(500, 2);
+	gracefulStop.stop();
 });
 
 process.on('uncaughtException', (error) => {
 	logger.error({ error });
-	forceExit();
+	gracefulStop.forceStop();
 });
 
 process.on('unhandledRejection', (error) => {
 	logger.error({ error });
-	forceExit();
+	gracefulStop.forceStop();
 });
