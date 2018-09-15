@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer';
 
-import Response  from '../../lib/amqp/Response';
+import Response    from '../../lib/amqp/Response';
 import loginAction from './login';
 
 /**
