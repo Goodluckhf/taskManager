@@ -63,6 +63,7 @@ services:
         dockerfile: ./services/likesConsumer/Dockerfile
       logging: *default-logging
       stop_grace_period: 70s
+      stop_signal: SIGINT
       restart: always
   comments-consumer:
       build:

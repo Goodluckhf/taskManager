@@ -35,7 +35,7 @@ const amqp = new Amqp(logger, {
 	}
 })();
 
-process.on('SIGTERM', () => {
+process.on('SIGINT', () => {
 	gracefulStop.stop();
 });
 
