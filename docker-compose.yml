@@ -14,6 +14,8 @@ services:
         - mongo-data:/data/db
       logging:
         driver: none
+      ports:
+        - 27017:27017
   rabbit:
       image: rabbitmq:3-management
       volumes:
@@ -60,7 +62,7 @@ services:
         context: ./
         dockerfile: ./services/likesConsumer/Dockerfile
       logging: *default-logging
-      stop_grace_period: 20s
+      stop_grace_period: 70s
       restart: always
   comments-consumer:
       build:
@@ -68,6 +70,7 @@ services:
         dockerfile: ./services/commentsConsumer/Dockerfile
       logging: *default-logging
       restart: always
+      stop_grace_period: 70s
 volumes:
     mongo-data:
     rabbit-data:
