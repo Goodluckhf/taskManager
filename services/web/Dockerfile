@@ -1,7 +1,9 @@
 FROM node:8.7.0 as node
 
-COPY . .
+COPY package*.json ./
 RUN npm i
+
+COPY . .
 RUN npm run build
 
 FROM nginx:1.13.12-alpine
