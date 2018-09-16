@@ -1,4 +1,5 @@
 node_modules
 .idea
+.env
 config/*
-!config/default.json
+!config/default.js
