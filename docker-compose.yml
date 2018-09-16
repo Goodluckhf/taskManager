@@ -64,7 +64,6 @@ services:
     image: google/cadvisor:latest
     restart: always
     logging: *default-logging
-    command: --prometheus_endpoint
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
