@@ -7,9 +7,11 @@ import AccountResponse from './AccountResponse';
 
 const rabbitConfig = config.get('rabbit');
 const amqp = new Amqp(logger, {
-	host : process.env.NODE_ENV === 'development' ? 'localhost' : rabbitConfig.host,
-	port : rabbitConfig.port,
-	retry: false,
+	host    : process.env.NODE_ENV === 'development' ? 'localhost' : rabbitConfig.host,
+	port    : rabbitConfig.port,
+	login   : rabbitConfig.login,
+	password: rabbitConfig.password,
+	retry   : false,
 });
 
 /**

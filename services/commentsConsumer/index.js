@@ -8,9 +8,11 @@ import gracefulStop  from '../../lib/GracefulStop';
 
 const rabbitConfig = config.get('rabbit');
 const amqp = new Amqp(logger, {
-	host : rabbitConfig.host,
-	port : rabbitConfig.port,
-	retry: false,
+	host    : rabbitConfig.host,
+	port    : rabbitConfig.port,
+	login   : rabbitConfig.login,
+	password: rabbitConfig.password,
+	retry   : false,
 });
 
 (async () => {
