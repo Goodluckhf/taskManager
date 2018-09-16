@@ -5,25 +5,82 @@ x-default-logging:
   driver: json-file
   options:
     max-size: '5m'
-    max-file: '1'
+    max-file: '2'
 
 services:
   mongo:
-      image: mongo
-      volumes:
-        - mongo-data:/data/db
-      logging:
-        driver: none
-      ports:
-        - 27017:27017
+    image: mongo
+    volumes:
+      - mongo-data:/data/db
+    logging:
+      driver: none
+    ports:
+      - 27017:27017
   rabbit:
-      image: rabbitmq:3-management
-      volumes:
-        - rabbit-data:/var/lib/rabbitmq:cached
-      logging:
-        driver: none
-      ports:
-        - 8081:15672
+    image: rabbitmq:3-management
+    volumes:
+      - rabbit-data:/var/lib/rabbitmq:cached
+    logging:
+      driver: none
+    env_file:
+      - .env
+    ports:
+      - 8081:15672
+  prometheus:
+    container_name: prometheus
+    build:
+      context: ./services/prometheus
+      dockerfile: Dockerfile
+    volumes:
+      - prometheus-data:/prometheus
+    restart: always
+    logging: *default-logging
+    ports:
+      - 9090:9090
+  node-exporter:
+    container_name: node-exporter
+    image: prom/node-exporter:v0.15.2
+    restart: always
+    command: --path.procfs /host/proc --path.sysfs /host/sys --collector.filesystem.ignored-mount-points "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns)($$|/)"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    logging: *default-logging
+  rabbit-exporter:
+    container_name: rabbit-exporter
+    image: kbudde/rabbitmq-exporter
+    restart: always
+    logging:
+      driver: none
+    env_file:
+      - .env
+  nginx-exporter:
+    container_name: nginx-exporter
+    image: sophos/nginx-vts-exporter
+    restart: always
+    env_file:
+      - .env
+  cadvisor:
+    image: google/cadvisor:latest
+    restart: always
+    logging: *default-logging
+    command: --prometheus_endpoint
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:5.1.3
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
+    logging: *default-logging
+    env_file:
+      - .env
 
   # Головной nginx - проксирует запросы на api и web
   nginx:
@@ -54,24 +111,26 @@ services:
 
   # Консумеры
   likes-consumer:
-      shm_size: 1Gb
-      mem_limit: 2Gb
-      cap_add:
-       - SYS_ADMIN
-      build:
-        context: ./
-        dockerfile: ./services/likesConsumer/Dockerfile
-      logging: *default-logging
-      stop_grace_period: 70s
-      stop_signal: SIGINT
-      restart: always
+    shm_size: 1Gb
+    mem_limit: 2Gb
+    cap_add:
+     - SYS_ADMIN
+    build:
+      context: ./
+      dockerfile: ./services/likesConsumer/Dockerfile
+    logging: *default-logging
+    stop_grace_period: 70s
+    stop_signal: SIGINT
+    restart: always
   comments-consumer:
-      build:
-        context: ./
-        dockerfile: ./services/commentsConsumer/Dockerfile
-      logging: *default-logging
-      restart: always
-      stop_grace_period: 70s
+    build:
+      context: ./
+      dockerfile: ./services/commentsConsumer/Dockerfile
+    logging: *default-logging
+    restart: always
+    stop_grace_period: 70s
 volumes:
-    mongo-data:
-    rabbit-data:
+  mongo-data:
+  rabbit-data:
+  prometheus-data:
+  grafana-data:
