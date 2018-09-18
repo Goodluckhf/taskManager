@@ -23,22 +23,23 @@ module.exports = {
 		likesInterval: 70,
 	},
 	
-	likesTask: {
-		queue   : 'tasks.likes',
+	tasksQueue: {
+		name    : 'tasks',
 		timeout : 60000,
 		prefetch: 1,
 	},
 	
-	accountTask: {
-		queue   : 'tasks.account',
-		timeout : 60000,
-		prefetch: 1,
+	likesTask: {
+		method: 'setLikes',
 	},
 	
 	commentsTask: {
-		queue   : 'tasks.comments',
-		timeout : 60000,
-		prefetch: 1,
+		method: 'setComments',
+	},
+	
+	// @TODO: Поправить
+	accountTask: {
+		method: 'tasks.account',
 	},
 	
 	likePro: {
