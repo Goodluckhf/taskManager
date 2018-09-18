@@ -34,14 +34,6 @@ services:
       - .:/home/www:cached
     restart: always
     logging: *default-logging
-  comments-consumer:
-    build:
-      context: ./services/commentsConsumer
-      dockerfile: Dockerfile.dev
-    volumes:
-      - .:/home/www:cached
-    logging: *default-logging
-    restart: always
   cron:
     build:
       context: ./services/cron
@@ -54,6 +46,8 @@ services:
       - rabbit-data:/var/lib/rabbitmq:cached
     logging:
       driver: none
+    env_file:
+      - .env
     ports:
       - 8081:15672
       - 5672:5672
