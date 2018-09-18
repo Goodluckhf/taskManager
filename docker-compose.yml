@@ -109,25 +109,19 @@ services:
       dockerfile: services/cron/Dockerfile
 
   # Консумеры
-  likes-consumer:
+  task-consumer:
     shm_size: 1Gb
     mem_limit: 2Gb
     cap_add:
      - SYS_ADMIN
     build:
       context: ./
-      dockerfile: ./services/likesConsumer/Dockerfile
+      dockerfile: services/taskConsumer/Dockerfile
+    scale: 2
     logging: *default-logging
     stop_grace_period: 70s
     stop_signal: SIGINT
     restart: always
-  comments-consumer:
-    build:
-      context: ./
-      dockerfile: ./services/commentsConsumer/Dockerfile
-    logging: *default-logging
-    restart: always
-    stop_grace_period: 70s
 volumes:
   mongo-data:
   rabbit-data:
