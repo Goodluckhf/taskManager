@@ -1,20 +1,27 @@
 import puppeteer from 'puppeteer';
 
-import Response    from '../../../../lib/amqp/Response';
+import Response    from '../../../../../lib/amqp/Response';
 import loginAction from './login';
 
 /**
  * @property {String} login
  * @property {String} password
  */
-class LikesResponse extends Response {
+class LikeProResponse extends Response {
 	constructor({ login, password, ...args }) {
 		super(args);
 		this.login    = login;
 		this.password = password;
 	}
 	
-	//eslint-disable-next-line
+	/**
+	 * @return {String}
+	 */
+	// eslint-disable-next-line class-methods-use-this,
+	get method() {
+		return 'setLikes_likesPro';
+	}
+	
 	async process({ postLink, likesCount }) {
 		const browser = await puppeteer.launch({
 			args: [
@@ -65,4 +72,4 @@ class LikesResponse extends Response {
 	}
 }
 
-export default LikesResponse;
+export default LikeProResponse;
