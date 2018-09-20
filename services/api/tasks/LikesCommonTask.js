@@ -6,13 +6,14 @@ import LikesTask from './LikesTask';
 class LikesCommonTask extends BaseTask {
 	async createTaskAndHandle(service) {
 		const LikesTaskDocument = mongoose.model('LikesTask');
+		const TaskDocument      = mongoose.model('Task');
 		
 		const likesTaskDocument = LikesTaskDocument.createInstance({
 			likesCount: this.taskDocument.likesCount,
 			postLink  : this.taskDocument.postLink,
 			service,
 		});
-		
+		likesTaskDocument.status = TaskDocument.status.pending;
 		this.taskDocument.subTasks.push(likesTaskDocument);
 		await Promise.all([
 			this.taskDocument.save(),
@@ -40,9 +41,17 @@ class LikesCommonTask extends BaseTask {
 		try {
 			await this.createTaskAndHandle(serviceOrder[0]);
 		} catch (error) {
+			this.logger.error({
+				error,
+				service: serviceOrder[0],
+			});
 			try {
 				await this.createTaskAndHandle(serviceOrder[1]);
 			} catch (_error) {
+				this.logger.error({
+					error  : _error,
+					service: serviceOrder[1],
+				});
 				await this.createTaskAndHandle(serviceOrder[2]);
 			}
 		}

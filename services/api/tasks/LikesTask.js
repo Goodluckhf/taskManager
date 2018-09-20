@@ -24,7 +24,6 @@ class LikesTask extends BaseTask {
 			await this.rpcClient.call(request);
 		} catch (error) {
 			const wrapedError = new BaseApiError(error.message, 500).combine(error);
-			this.logger.error({ error });
 			this.taskDocument._error = wrapedError.toObject();
 			throw wrapedError;
 		} finally {
