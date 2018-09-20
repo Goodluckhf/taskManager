@@ -3,9 +3,10 @@ import config    from 'config';
 import Amqp             from '../../lib/amqp/Amqp';
 import logger           from '../../lib/logger';
 import RpcServer        from '../../lib/amqp/RpcServer';
-import LikesResponse    from './responses/LikesResponse/LikesResponse';
+import LikeProResponse  from './responses/likes/LikeProResponse/LikeProResponse';
 import gracefulStop     from '../../lib/GracefulStop/index';
 import CommentsResponse from './responses/CommentsResponse';
+import Z1y1x1Response   from './responses/likes/Z1y1x1Response';
 
 const rabbitConfig = config.get('rabbit');
 const amqp = new Amqp(logger, {
@@ -20,12 +21,19 @@ const rpcServer = new RpcServer(amqp, logger, gracefulStop, {
 	prefetch: config.get('tasksQueue.prefetch'),
 });
 
-rpcServer.addResponse(new LikesResponse({
+// Обработчики накрутки лайков
+rpcServer.addResponse(new LikeProResponse({
 	logger,
 	login   : config.get('likePro.login'),
 	password: config.get('likePro.password'),
-	method  : config.get('likesTask.method'),
-})).addResponse(new CommentsResponse({
+})).addResponse(new Z1y1x1Response({
+	logger,
+	token: config.get('z1y1x1.token'),
+}));
+
+
+// Обработчики накрутки комментов
+rpcServer.addResponse(new CommentsResponse({
 	logger,
 	token : config.get('z1y1x1.token'),
 	method: config.get('commentsTask.method'),
