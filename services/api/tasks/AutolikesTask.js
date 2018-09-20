@@ -2,15 +2,15 @@ import moment       from 'moment/moment';
 import { JSDOM }    from 'jsdom';
 import mongoose     from 'mongoose';
 
-import BaseTask     from './BaseTask';
-import LikesTask    from './LikesTask';
-import CommentsTask from './CommentsTask';
+import BaseTask        from './BaseTask';
+import LikesCommonTask from './LikesCommonTask';
+import CommentsTask    from './CommentsTask';
 
 class AutoLikesTask extends BaseTask {
 	async handle() {
 		const Task              = mongoose.model('Task');
 		const Group             = mongoose.model('Group');
-		const LikesTaskModel    = mongoose.model('LikesTask');
+		const LikesCommonModel  = mongoose.model('likesCommon');
 		const CommentsTaskModel = mongoose.model('CommentsTask');
 		
 		try {
@@ -67,16 +67,16 @@ class AutoLikesTask extends BaseTask {
 				return;
 			}
 			
-			const likesTaskDocument = LikesTaskModel.createInstance({
+			const likesCommonDocument = LikesCommonModel.createInstance({
 				postLink,
 				likesCount: this.taskDocument.likesCount,
 				status    : Task.status.pending,
 				parentTask: this.taskDocument,
 			});
 			
-			const likesTask = new LikesTask({
+			const likesCommonTask = new LikesCommonTask({
 				logger      : this.logger,
-				taskDocument: likesTaskDocument,
+				taskDocument: likesCommonDocument,
 				rpcClient   : this.rpcClient,
 				config      : this.config,
 			});
@@ -96,16 +96,16 @@ class AutoLikesTask extends BaseTask {
 			});
 			
 			this.taskDocument.subTasks.push(commentsTaskDocument);
-			this.taskDocument.subTasks.push(likesTaskDocument);
+			this.taskDocument.subTasks.push(likesCommonDocument);
 			await Promise.all([
 				this.taskDocument.save(),
 				commentsTaskDocument.save(),
-				likesTaskDocument.save(),
+				likesCommonDocument.save(),
 			]);
 			
 			const errors = [];
 			await Promise.all([
-				likesTask.handle().catch(error => errors.push(error)),
+				likesCommonTask.handle().catch(error => errors.push(error)),
 				commentsTask.handle().catch(error => errors.push(error)),
 			]);
 			

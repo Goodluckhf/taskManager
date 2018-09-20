@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const likesSchema = new mongoose.Schema({
+const likesCommonSchema = new mongoose.Schema({
 	postLink: {
 		type    : String,
 		required: true,
@@ -16,6 +16,11 @@ const likesSchema = new mongoose.Schema({
 		default: false,
 	},
 	
+	subTasks: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref : 'Task',
+	}],
+	
 	// Если задача была создана в ручную будет null
 	parentTask: mongoose.Schema.Types.ObjectId,
 });
@@ -24,12 +29,12 @@ const likesSchema = new mongoose.Schema({
  * @property {String} postLink
  * @property {Number} likesCount
  */
-export class LikesTaskDocument {
+export class LikesCommonDocument {
 	/**
 	 * @param {Object} opts
 	 * @param {Number} opts.likesCount
 	 * @param {String} opts.postLink
-	 * @return {LikesTaskDocument}
+	 * @return {LikesCommonDocument}
 	 */
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
@@ -42,7 +47,7 @@ export class LikesTaskDocument {
 	 * @param {Object} opts
 	 * @param {Number} opts.likesCount
 	 * @param {String} opts.postLink
-	 * @return {LikesTaskDocument}
+	 * @return {LikesCommonDocument}
 	 */
 	// eslint-disable-next-line object-curly-newline
 	fill({ likesCount, postLink }) {
@@ -58,6 +63,6 @@ export class LikesTaskDocument {
 	}
 }
 
-likesSchema.loadClass(LikesTaskDocument);
+likesCommonSchema.loadClass(LikesCommonDocument);
 
-export default likesSchema;
+export default likesCommonSchema;
