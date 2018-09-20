@@ -48,7 +48,12 @@ process.on('uncaughtException', (error) => {
 	gracefulStop.stop(1);
 });
 
-process.on('unhandledRejection', (error, reason) => {
+process.on('unhandledRejection', (_error, reason) => {
+	const error = _error;
+	if (error.request) {
+		delete error.request;
+	}
+	
 	logger.error({ error, reason });
 });
 
