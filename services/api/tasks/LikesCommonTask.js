@@ -24,6 +24,7 @@ class LikesCommonTask extends BaseTask {
 		const likesTask = new LikesTask({
 			rpcClient   : this.rpcClient,
 			logger      : this.logger,
+			config      : this.config,
 			taskDocument: likesTaskDocument,
 			service,
 		});
