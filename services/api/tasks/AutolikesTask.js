@@ -10,7 +10,7 @@ class AutoLikesTask extends BaseTask {
 	async handle() {
 		const Task              = mongoose.model('Task');
 		const Group             = mongoose.model('Group');
-		const LikesCommonModel  = mongoose.model('likesCommon');
+		const LikesCommonModel  = mongoose.model('LikesCommon');
 		const CommentsTaskModel = mongoose.model('CommentsTask');
 		
 		try {
