@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 
-import BaseTask  from './BaseTask';
-import LikesTask from './LikesTask';
+import BaseTask     from './BaseTask';
+import LikesTask    from './LikesTask';
+import BaseApiError from '../api/errors/BaseApiError';
 
 class LikesCommonTask extends BaseTask {
 	async createTaskAndHandle(service) {
@@ -32,8 +33,8 @@ class LikesCommonTask extends BaseTask {
 	}
 	
 	async handle() {
+		const TaskDocument = mongoose.model('Task');
 		const serviceOrder = this.config.get('likesTask.serviceOrder');
-		
 		// В конфиге задается порядок сервисов
 		// И мы при ошибке пытаемся поставить лайки через другой сервис
 		// Пока сервисов 3 поэтому так оствалю
@@ -52,7 +53,23 @@ class LikesCommonTask extends BaseTask {
 					error  : _error,
 					service: serviceOrder[1],
 				});
-				await this.createTaskAndHandle(serviceOrder[2]);
+				try {
+					await this.createTaskAndHandle(serviceOrder[2]);
+				} catch (__error) {
+					this.logger.error({
+						error  : __error,
+						service: serviceOrder[2],
+					});
+					let displayError = __error;
+					if (!(displayError instanceof BaseApiError)) {
+						displayError = new BaseApiError(__error.message, 500).combine(__error);
+					}
+					
+					this.taskDocument._error = displayError.toObject();
+				} finally {
+					this.taskDocument.status = TaskDocument.status.finished;
+					await this.taskDocument.save();
+				}
 			}
 		}
 	}
