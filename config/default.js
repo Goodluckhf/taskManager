@@ -30,7 +30,7 @@ module.exports = {
 	},
 	
 	likesTask: {
-		method: 'setLikes',
+		serviceOrder: ['likesPro', 'z1y1x1', 'likest'],
 	},
 	
 	commentsTask: {
