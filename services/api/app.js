@@ -48,8 +48,8 @@ process.on('uncaughtException', (error) => {
 	gracefulStop.stop(1);
 });
 
-process.on('unhandledRejection', (error) => {
-	logger.error({ error });
+process.on('unhandledRejection', (error, reason) => {
+	logger.error({ error, reason });
 });
 
 // @TODO: Для прод мода убрать
