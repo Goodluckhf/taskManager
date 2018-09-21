@@ -47,6 +47,11 @@ module.exports = {
 		password: '!password!',
 	},
 	
+	likest: {
+		login   : '!login!',
+		password: '!password!',
+	},
+	
 	z1y1x1: {
 		token: '!token!',
 	},
