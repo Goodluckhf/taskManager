@@ -25,7 +25,7 @@ module.exports = {
 	
 	tasksQueue: {
 		name    : 'tasks',
-		timeout : 60000,
+		timeout : 120000,
 		prefetch: 1,
 	},
 	
@@ -54,6 +54,10 @@ module.exports = {
 	vkApi: {
 		token  : '!token!',
 		timeout: 10000,
+	},
+	
+	rucaptcha: {
+		token: '!token!',
 	},
 	
 	cron: {
