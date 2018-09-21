@@ -1,5 +1,6 @@
 import puppeteer   from 'puppeteer';
 import Response    from '../../../../../lib/amqp/Response';
+import loginAction from '../../../actions/likest/login';
 
 /**
  * @property {String} login
@@ -38,22 +39,7 @@ class LikestResponse extends Response {
 			const page = await browser.newPage();
 			// Авторизовываемся
 			await page.goto('https://likest.ru/user', { waitUntil: 'networkidle2' });
-			const captchaSrc = await page.evaluate(() => {
-				const img = document.querySelector('.captcha img');
-				return img.src;
-			});
-			
-			const captchaAnswer = await this.captcha.solve(captchaSrc);
-			await page.evaluate((login, password, captcha) => {
-				document.querySelector('#edit-name').value = login;
-				document.querySelector('#edit-pass').value = password;
-				document.querySelector('#edit-captcha-response').value = captcha;
-			}, this.login, this.password, captchaAnswer);
-			
-			const loginNavigationPromise = page.waitForNavigation();
-			await page.click('#edit-submit');
-			await loginNavigationPromise;
-			
+			await loginAction(page, this.captcha, this.login, this.password);
 			
 			//Заполняем поля для накрутки лайков
 			await page.goto('https://likest.ru/buy-likes', { waitUntil: 'networkidle2' });
