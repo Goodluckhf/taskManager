@@ -1,4 +1,5 @@
 import config    from 'config';
+import axios     from 'axios/index';
 
 import Amqp             from '../../lib/amqp/Amqp';
 import logger           from '../../lib/logger';
@@ -7,6 +8,8 @@ import LikeProResponse  from './responses/likes/LikeProResponse/LikeProResponse'
 import gracefulStop     from '../../lib/GracefulStop/index';
 import CommentsResponse from './responses/CommentsResponse';
 import Z1y1x1Response   from './responses/likes/Z1y1x1Response';
+import LikestResponse   from './responses/likes/LikestResponse/LikestResponse';
+import Captcha          from '../../lib/Captcha';
 
 const rabbitConfig = config.get('rabbit');
 const amqp = new Amqp(logger, {
@@ -21,6 +24,8 @@ const rpcServer = new RpcServer(amqp, logger, gracefulStop, {
 	prefetch: config.get('tasksQueue.prefetch'),
 });
 
+const captcha = new Captcha(axios, config.get('rucaptcha.token'));
+
 // Обработчики накрутки лайков
 rpcServer.addResponse(new LikeProResponse({
 	logger,
@@ -29,6 +34,11 @@ rpcServer.addResponse(new LikeProResponse({
 })).addResponse(new Z1y1x1Response({
 	logger,
 	token: config.get('z1y1x1.token'),
+})).addResponse(new LikestResponse({
+	captcha,
+	logger,
+	login   : config.get('likest.login'),
+	password: config.get('likest.password'),
 }));
 
 
