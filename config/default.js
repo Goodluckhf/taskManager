@@ -34,7 +34,7 @@ module.exports = {
 	},
 	
 	commentsTask: {
-		method: 'setComments',
+		serviceOrder: ['z1y1x1', 'likest'],
 	},
 	
 	// @TODO: Поправить
