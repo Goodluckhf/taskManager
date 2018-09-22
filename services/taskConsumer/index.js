@@ -1,15 +1,15 @@
 import config    from 'config';
 import axios     from 'axios/index';
 
-import Amqp             from '../../lib/amqp/Amqp';
-import logger           from '../../lib/logger';
-import RpcServer        from '../../lib/amqp/RpcServer';
-import LikeProResponse  from './responses/likes/LikeProResponse/LikeProResponse';
-import gracefulStop     from '../../lib/GracefulStop/index';
-import CommentsResponse from './responses/CommentsResponse';
-import Z1y1x1Response   from './responses/likes/Z1y1x1Response';
-import LikestResponse   from './responses/likes/LikestResponse/LikestResponse';
-import Captcha          from '../../lib/Captcha';
+import Amqp                   from '../../lib/amqp/Amqp';
+import logger                 from '../../lib/logger';
+import RpcServer              from '../../lib/amqp/RpcServer';
+import LikeProResponse        from './responses/likes/LikeProResponse/LikeProResponse';
+import gracefulStop           from '../../lib/GracefulStop/index';
+import Z1y1x1CommentsResponse from './responses/comments/Z1y1x1Response';
+import Z1y1x1Response         from './responses/likes/Z1y1x1Response';
+import LikestResponse         from './responses/likes/LikestResponse';
+import Captcha                from '../../lib/Captcha';
 
 const rabbitConfig = config.get('rabbit');
 const amqp = new Amqp(logger, {
@@ -43,10 +43,9 @@ rpcServer.addResponse(new LikeProResponse({
 
 
 // Обработчики накрутки комментов
-rpcServer.addResponse(new CommentsResponse({
+rpcServer.addResponse(new Z1y1x1CommentsResponse({
 	logger,
-	token : config.get('z1y1x1.token'),
-	method: config.get('commentsTask.method'),
+	token: config.get('z1y1x1.token'),
 }));
 
 (async () => {
