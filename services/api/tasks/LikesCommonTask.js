@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import moment   from 'moment';
 
 import BaseTask     from './BaseTask';
 import LikesTask    from './LikesTask';
@@ -6,16 +7,17 @@ import BaseApiError from '../api/errors/BaseApiError';
 
 class LikesCommonTask extends BaseTask {
 	async createTaskAndHandle(service) {
-		const LikesTaskDocument = mongoose.model('LikesTask');
-		const TaskDocument      = mongoose.model('Task');
+		const LikesTaskModel      = mongoose.model('LikesTask');
+		const LikesCheckTaskModel = mongoose.model('LikesCheckTask');
+		const TaskModel           = mongoose.model('Task');
 		
-		const likesTaskDocument = LikesTaskDocument.createInstance({
+		const likesTaskDocument = LikesTaskModel.createInstance({
 			likesCount: this.taskDocument.likesCount,
 			postLink  : this.taskDocument.postLink,
 			parentTask: this.taskDocument,
 			service,
 		});
-		likesTaskDocument.status = TaskDocument.status.pending;
+		likesTaskDocument.status = TaskModel.status.pending;
 		this.taskDocument.subTasks.push(likesTaskDocument);
 		await Promise.all([
 			this.taskDocument.save(),
@@ -31,7 +33,19 @@ class LikesCommonTask extends BaseTask {
 		});
 		
 		await likesTask.handle();
-		//@TODO: Создать задачу на проверку лайков
+		this.taskDocument.status = TaskModel.status.checking;
+		const checkDelay = this.config.get('likesTask.checkingDelay');
+		const checkTaskDocument = LikesCheckTaskModel.createInstance({
+			likesCount: this.taskDocument.likesCount,
+			postLink  : this.taskDocument.postLink,
+			parentTask: this.taskDocument,
+			startAt   : moment().add(checkDelay, 'm'),
+		});
+		
+		await Promise.all([
+			this.taskDocument.save(),
+			checkTaskDocument.save(),
+		]);
 	}
 	
 	async handle() {
