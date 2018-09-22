@@ -1,13 +1,21 @@
 import axios    from 'axios';
-import Response from '../../../lib/amqp/Response';
+import Response from '../../../../lib/amqp/Response';
 
 /**
  * @property {String} token
  */
-class CommentsResponse extends Response {
+class Z1y1x1Response extends Response {
 	constructor({ token, ...args }) {
 		super(args);
 		this.token = token;
+	}
+	
+	/**
+	 * @return {String}
+	 */
+	// eslint-disable-next-line class-methods-use-this,
+	get method() {
+		return 'setComments_z1y1x1';
 	}
 	
 	async process({ postLink, commentsCount }) {
@@ -23,9 +31,12 @@ class CommentsResponse extends Response {
 		});
 		
 		this.logger.info({ postLink, commentsCount, data });
+		if (data.error) {
+			throw data.error;
+		}
 		
 		return data;
 	}
 }
 
-export default CommentsResponse;
+export default Z1y1x1Response;
