@@ -1,8 +1,9 @@
-import taskSchema          from './Task';
-import autoLikesTaskSchema from './TaskType/AutoLikes';
-import likesCommonSchema   from './TaskType/LikesCommon';
-import commentsTaskSchema  from './TaskType/Comments';
-import likesTaskSchema     from './TaskType/LikesTask';
+import taskSchema           from './Task';
+import autoLikesTaskSchema  from './TaskType/AutoLikes';
+import likesCommonSchema    from './TaskType/LikesCommon';
+import likesTaskSchema      from './TaskType/LikesTask';
+import commentsCommonSchema from './TaskType/CommentsCommon';
+import commentsTaskSchema   from './TaskType/CommentsTask';
 
 import groupSchema   from './Group';
 import accountSchema from './Account';
@@ -15,6 +16,7 @@ export default (connection) => {
 	connection.model('Task', taskSchema);
 	connection.model('Task').discriminator('AutoLikesTask', autoLikesTaskSchema);
 	connection.model('Task').discriminator('LikesCommon', likesCommonSchema);
-	connection.model('Task').discriminator('CommentsTask', commentsTaskSchema);
 	connection.model('Task').discriminator('LikesTask', likesTaskSchema);
+	connection.model('Task').discriminator('CommentsCommon', commentsCommonSchema);
+	connection.model('Task').discriminator('CommentsTask', commentsTaskSchema);
 };
