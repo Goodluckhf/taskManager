@@ -2,16 +2,16 @@ import moment       from 'moment/moment';
 import { JSDOM }    from 'jsdom';
 import mongoose     from 'mongoose';
 
-import BaseTask        from './BaseTask';
-import LikesCommonTask from './LikesCommonTask';
-import CommentsTask    from './CommentsTask';
+import BaseTask           from './BaseTask';
+import LikesCommonTask    from './LikesCommonTask';
+import CommentsCommonTask from './CommentsCommonTask';
 
 class AutoLikesTask extends BaseTask {
 	async handle() {
-		const Task              = mongoose.model('Task');
-		const Group             = mongoose.model('Group');
-		const LikesCommonModel  = mongoose.model('LikesCommon');
-		const CommentsTaskModel = mongoose.model('CommentsTask');
+		const Task                = mongoose.model('Task');
+		const Group               = mongoose.model('Group');
+		const LikesCommonModel    = mongoose.model('LikesCommon');
+		const CommentsCommonModel = mongoose.model('CommentsCommon');
 		
 		try {
 			// Проверяем, что прошло 70 минут, чтобы не лайкать уже лайкнутый пост
@@ -81,32 +81,32 @@ class AutoLikesTask extends BaseTask {
 				config      : this.config,
 			});
 			
-			const commentsTaskDocument = CommentsTaskModel.createInstance({
+			const commentsCommonDocument = CommentsCommonModel.createInstance({
 				postLink,
 				commentsCount: this.taskDocument.commentsCount,
 				status       : Task.status.pending,
 				parentTask   : this.taskDocument,
 			});
 			
-			const commentsTask = new CommentsTask({
+			const commentsCommonTask = new CommentsCommonTask({
 				logger      : this.logger,
-				taskDocument: commentsTaskDocument,
+				taskDocument: commentsCommonDocument,
 				rpcClient   : this.rpcClient,
 				config      : this.config,
 			});
 			
-			this.taskDocument.subTasks.push(commentsTaskDocument);
+			this.taskDocument.subTasks.push(commentsCommonDocument);
 			this.taskDocument.subTasks.push(likesCommonDocument);
 			await Promise.all([
 				this.taskDocument.save(),
-				commentsTaskDocument.save(),
+				commentsCommonDocument.save(),
 				likesCommonDocument.save(),
 			]);
 			
 			const errors = [];
 			await Promise.all([
 				likesCommonTask.handle().catch(error => errors.push(error)),
-				commentsTask.handle().catch(error => errors.push(error)),
+				commentsCommonTask.handle().catch(error => errors.push(error)),
 			]);
 			
 			if (errors.length) {
