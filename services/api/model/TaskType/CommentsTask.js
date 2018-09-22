@@ -20,12 +20,16 @@ const commentsTaskSchema = new mongoose.Schema({
 		type    : String,
 		required: true,
 	},
+	
+	// Если задача была создана в ручную будет null
+	parentTask: mongoose.Schema.Types.ObjectId,
 });
 
 /**
  * @property {String} postLink
  * @property {Number} commentsCount
  * @property {String} service
+ * @property {TaskDocument} parentTask
  */
 export class CommentsTaskDocument {
 	/**
@@ -33,6 +37,7 @@ export class CommentsTaskDocument {
 	 * @param {Number} opts.commentsCount
 	 * @param {String} opts.postLink
 	 * @param {String} opts.service
+	 * @param {TaskDocument} opts.parentTask
 	 * @return {CommentsTaskDocument}
 	 */
 	static createInstance(opts) {
@@ -40,6 +45,7 @@ export class CommentsTaskDocument {
 		baseTask.commentsCount = opts.commentsCount;
 		baseTask.postLink      = opts.postLink;
 		baseTask.service       = opts.service;
+		baseTask.parentTask    = opts.parentTask || null;
 		return baseTask;
 	}
 }
