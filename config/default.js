@@ -30,7 +30,8 @@ module.exports = {
 	},
 	
 	likesTask: {
-		serviceOrder: ['likesPro', 'z1y1x1', 'likest'],
+		checkingDelay: 2, // В минутах
+		serviceOrder : ['likesPro', 'z1y1x1', 'likest'],
 	},
 	
 	commentsTask: {
