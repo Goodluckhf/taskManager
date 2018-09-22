@@ -1,6 +1,6 @@
 import puppeteer   from 'puppeteer';
-import Response    from '../../../../../lib/amqp/Response';
-import loginAction from '../../../actions/likest/login';
+import Response    from '../../../../lib/amqp/Response';
+import loginAction from '../../actions/likest/login';
 
 /**
  * @property {String} login
