@@ -12,6 +12,7 @@ class CommentsCommonTask extends BaseTask {
 		const commentsTaskDocument = CommentsTaskModel.createInstance({
 			commentsCount: this.taskDocument.commentsCount,
 			postLink     : this.taskDocument.postLink,
+			parentTask   : this.taskDocument,
 			service,
 		});
 		commentsTaskDocument.status = TaskDocument.status.pending;

@@ -12,6 +12,7 @@ class LikesCommonTask extends BaseTask {
 		const likesTaskDocument = LikesTaskDocument.createInstance({
 			likesCount: this.taskDocument.likesCount,
 			postLink  : this.taskDocument.postLink,
+			parentTask: this.taskDocument,
 			service,
 		});
 		likesTaskDocument.status = TaskDocument.status.pending;
