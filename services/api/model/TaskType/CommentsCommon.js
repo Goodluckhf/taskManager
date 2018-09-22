@@ -34,12 +34,14 @@ export class CommentsCommonTaskDocument {
 	 * @param {Object} opts
 	 * @param {Number} opts.commentsCount
 	 * @param {String} opts.postLink
+	 * @param {TaskDocument} opts.parentTask
 	 * @return {CommentsCommonTaskDocument}
 	 */
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
 		baseTask.commentsCount = opts.commentsCount;
 		baseTask.postLink      = opts.postLink;
+		baseTask.parentTask    = opts.parentTask || null;
 		return baseTask;
 	}
 	
