@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const commentsSchema = new mongoose.Schema({
+const commentsTaskSchema = new mongoose.Schema({
 	postLink: {
 		type    : String,
 		required: true,
@@ -16,48 +16,34 @@ const commentsSchema = new mongoose.Schema({
 		default: false,
 	},
 	
-	// Если задача была создана в ручную будет null
-	parentTask: mongoose.Schema.Types.ObjectId,
+	service: {
+		type    : String,
+		required: true,
+	},
 });
 
 /**
  * @property {String} postLink
  * @property {Number} commentsCount
+ * @property {String} service
  */
 export class CommentsTaskDocument {
 	/**
 	 * @param {Object} opts
 	 * @param {Number} opts.commentsCount
 	 * @param {String} opts.postLink
+	 * @param {String} opts.service
 	 * @return {CommentsTaskDocument}
 	 */
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
 		baseTask.commentsCount = opts.commentsCount;
 		baseTask.postLink      = opts.postLink;
+		baseTask.service       = opts.service;
 		return baseTask;
-	}
-	
-	/**
-	 * @param {Object} opts
-	 * @param {Number} opts.commentsCount
-	 * @param {String} opts.postLink
-	 * @return {CommentsTaskDocument}
-	 */
-	// eslint-disable-next-line object-curly-newline
-	fill({ commentsCount, postLink }) {
-		if (commentsCount) {
-			this.commentsCount = commentsCount;
-		}
-		
-		if (postLink) {
-			this.postLink = postLink;
-		}
-		
-		return this;
 	}
 }
 
-commentsSchema.loadClass(CommentsTaskDocument);
+commentsTaskSchema.loadClass(CommentsTaskDocument);
 
-export default commentsSchema;
+export default commentsTaskSchema;
