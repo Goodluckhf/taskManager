@@ -20,12 +20,16 @@ const likesTaskSchema = new mongoose.Schema({
 		type    : String,
 		required: true,
 	},
+	
+	// Если задача была создана в ручную будет null
+	parentTask: mongoose.Schema.Types.ObjectId,
 });
 
 /**
  * @property {String} postLink
  * @property {Number} likesCount
  * @property {String} service
+ * @property {TaskDocument} parentTask
  */
 export class LikesTaskDocument {
 	/**
@@ -33,6 +37,7 @@ export class LikesTaskDocument {
 	 * @param {Number} opts.likesCount
 	 * @param {String} opts.postLink
 	 * @param {String} opts.service
+	 * @param {TaskDocument} opts.parentTask
 	 * @return {LikesTaskDocument}
 	 */
 	static createInstance(opts) {
@@ -40,6 +45,7 @@ export class LikesTaskDocument {
 		baseTask.likesCount = opts.likesCount;
 		baseTask.postLink   = opts.postLink;
 		baseTask.service    = opts.service;
+		baseTask.parentTask = opts.parentTask || null;
 		return baseTask;
 	}
 }
