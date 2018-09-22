@@ -7,11 +7,13 @@ import {
 	ValidationError,
 } from './errors';
 
-import BaseApiError  from './errors/BaseApiError';
-import BaseApi       from './BaseApi';
-import LikeRequest   from './amqpRequests/LikeRequest';
-import AutoLikesTask from '../tasks/AutolikesTask';
-import gracefulStop  from '../../../lib/GracefulStop';
+import BaseApiError   from './errors/BaseApiError';
+import BaseApi        from './BaseApi';
+import LikeRequest    from './amqpRequests/LikeRequest';
+import AutoLikesTask  from '../tasks/AutolikesTask';
+import gracefulStop   from '../../../lib/GracefulStop';
+import LikesCheckTask from '../tasks/LikesCheckTask';
+import BaseTask       from '../tasks/BaseTask';
 
 gracefulStop.setWaitor('handleActiveTasks');
 
@@ -256,6 +258,24 @@ class TaskApi extends BaseApi {
 					});
 				}
 				
+				if (_task.__t === 'LikesCheckTask') {
+					task = new LikesCheckTask({
+						logger      : this.logger,
+						taskDocument: _task,
+						rpcClient   : this.rpcClient,
+						config      : this.config,
+					});
+				}
+				
+				if (!(task instanceof BaseTask)) {
+					this.logger.warn({
+						message: 'task is not instance of BaseTask',
+						task   : _task.toObject(),
+					});
+					return;
+				}
+				
+				// eslint-disable-next-line consistent-return
 				return task.handle().catch(errors => bluebird.map(errors, error => this.sendAlert(error)));
 			},
 		).then(() => {
