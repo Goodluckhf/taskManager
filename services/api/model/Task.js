@@ -13,6 +13,9 @@ const statuses = {
 	
 	// Прорущена
 	skipped: 3,
+	
+	// Проверяется
+	checking: 4,
 };
 
 const schema = new mongoose.Schema({
@@ -33,6 +36,11 @@ const schema = new mongoose.Schema({
 		default: false,
 	},
 	
+	// Задача запланирована на точное время
+	startAt: {
+		type: Date,
+	},
+	
 	_error: {
 		type   : Object,
 		default: null,
@@ -44,6 +52,9 @@ schema.statics.status = statuses;
 /**
  * @property {Date} createdAt
  * @property {Object<*>} status
+ * @property {Boolean} repeated
+ * @property {Date} startAt
+ * @property {Object} _error
  */
 export class TaskDocument {
 	/**
@@ -78,8 +89,11 @@ export class TaskDocument {
 	 */
 	static findActive() {
 		return this.find({
-			status  : statuses.waiting,
-			repeated: true,
+			status: statuses.waiting,
+			$or   : [
+				{ repeated: true },
+				{ startAt: { $lte: new Date() } },
+			],
 		// Пока такой кастыль, но нужно убарть от сюда
 		}).populate('group').exec();
 	}
