@@ -7,6 +7,7 @@ import RpcServer              from '../../lib/amqp/RpcServer';
 import LikeProResponse        from './responses/likes/LikeProResponse/LikeProResponse';
 import gracefulStop           from '../../lib/GracefulStop/index';
 import Z1y1x1CommentsResponse from './responses/comments/Z1y1x1Response';
+import LikestCommentsResponse from './responses/comments/LikestResponse';
 import Z1y1x1Response         from './responses/likes/Z1y1x1Response';
 import LikestResponse         from './responses/likes/LikestResponse';
 import Captcha                from '../../lib/Captcha';
@@ -46,6 +47,11 @@ rpcServer.addResponse(new LikeProResponse({
 rpcServer.addResponse(new Z1y1x1CommentsResponse({
 	logger,
 	token: config.get('z1y1x1.token'),
+})).addResponse(new LikestCommentsResponse({
+	captcha,
+	logger,
+	login   : config.get('likest.login'),
+	password: config.get('likest.password'),
 }));
 
 (async () => {
