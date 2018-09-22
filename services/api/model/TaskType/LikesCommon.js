@@ -34,12 +34,14 @@ export class LikesCommonDocument {
 	 * @param {Object} opts
 	 * @param {Number} opts.likesCount
 	 * @param {String} opts.postLink
+	 * @param {TaskDocument} opts.parentTask
 	 * @return {LikesCommonDocument}
 	 */
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
 		baseTask.likesCount = opts.likesCount;
 		baseTask.postLink   = opts.postLink;
+		baseTask.parentTask = opts.parentTask || null;
 		return baseTask;
 	}
 	
