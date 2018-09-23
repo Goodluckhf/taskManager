@@ -12,6 +12,7 @@ const statusCodeToString = {
 	1: <span className='text-warning'>Выполняется</span>,
 	2: <span className='text-success'>Выполнена</span>,
 	3: <span className='text-muted'>Отменена</span>,
+	4: <span className='text-info'>Проверяется</span>,
 };
 
 const taskTypeToString = {
