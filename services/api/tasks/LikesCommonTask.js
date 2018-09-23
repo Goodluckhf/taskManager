@@ -25,9 +25,10 @@ class LikesCommonTask extends BaseTask {
 			likesCount: this.taskDocument.likesCount,
 			postLink  : this.taskDocument.postLink,
 			parentTask: this.taskDocument,
+			status    : TaskModel.status.pending,
 			service,
 		});
-		likesTaskDocument.status = TaskModel.status.pending;
+		
 		this.taskDocument.subTasks.push(likesTaskDocument);
 		await Promise.all([
 			this.taskDocument.save(),
@@ -49,7 +50,7 @@ class LikesCommonTask extends BaseTask {
 		const checkDelay = this.config.get('likesTask.checkingDelay');
 		const checkTaskDocument = LikesCheckTaskModel.createInstance({
 			serviceIndex,
-			likesCount: this.taskDocument.likesCount,
+			likesCount: this.config.get('likesTask.likesToCheck'),
 			postLink  : this.taskDocument.postLink,
 			parentTask: this.taskDocument,
 			startAt   : moment().add(checkDelay, 'm'),
@@ -62,7 +63,7 @@ class LikesCommonTask extends BaseTask {
 	}
 	
 	async loopHandleTasks(_serviceIndex) {
-		const TaskDocument = mongoose.model('Task');
+		const TaskModel = mongoose.model('Task');
 		const serviceOrder = this.config.get('likesTask.serviceOrder');
 		const serviceIndex = _serviceIndex || this.serviceIndex;
 		const service = serviceOrder[serviceIndex];
@@ -85,11 +86,9 @@ class LikesCommonTask extends BaseTask {
 				displayError = new BaseApiError(error.message, 500).combine(error);
 			}
 			this.taskDocument._error = displayError.toObject();
-			
-			throw displayError;
-		} finally {
-			this.taskDocument.status = TaskDocument.status.finished;
+			this.taskDocument.status = TaskModel.status.finished;
 			await this.taskDocument.save();
+			throw displayError;
 		}
 	}
 	
