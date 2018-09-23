@@ -19,15 +19,15 @@ class LikesCheckResponse extends Response {
 		return 'checkLikes';
 	}
 	
-	async process({ postLink, likeCount }) {
-		this.logger.info({ postLink, likeCount });
+	async process({ postLink, likesCount }) {
+		this.logger.info({ postLink, likesCount });
 		const postId = postIdByLink(postLink);
 		const { response: [post] } = await this.vkApi.apiRequest('wall.getById', {
 			posts             : postId,
 			copy_history_depth: 1,
 		});
 		
-		if (post.likes.count < likeCount) {
+		if (post.likes.count < likesCount) {
 			const error = new Error('there is not likes');
 			error.likesCount = post.likes.count;
 			error.postLink   = postLink;
