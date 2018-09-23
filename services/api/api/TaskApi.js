@@ -7,7 +7,6 @@ import {
 	ValidationError,
 } from './errors';
 
-import BaseApiError   from './errors/BaseApiError';
 import BaseApi        from './BaseApi';
 import LikeRequest    from './amqpRequests/LikeRequest';
 import AutoLikesTask  from '../tasks/AutolikesTask';
@@ -20,12 +19,14 @@ gracefulStop.setWaitor('handleActiveTasks');
 /**
  * @property {RpcClient} rpcClient
  * @property {VkApi} vkApi
+ * @property {Alert} alert
  */
 class TaskApi extends BaseApi {
-	constructor(rpcClient, vkApi, ...args) {
+	constructor(rpcClient, vkApi, alert, ...args) {
 		super(...args);
 		this.rpcClient = rpcClient;
 		this.vkApi     = vkApi;
+		this.alert     = alert;
 	}
 	
 	/**
@@ -205,22 +206,6 @@ class TaskApi extends BaseApi {
 		return mongoose.model('AutoLikesTask').deleteOne({ _id });
 	}
 	
-	/**
-	 * @param {BaseApiError | Error} error
-	 * @return {Promise<*>}
-	 */
-	sendAlert(error) {
-		if (!(error instanceof BaseApiError)) {
-			//eslint-disable-next-line no-param-reassign
-			error = new BaseApiError(error.message, 500).combine(error);
-		}
-		
-		//@TODO: Перенести в либу
-		return this.vkApi.apiRequest('messages.send', {
-			chat_id: this.config.get('vkAlert.chat_id'),
-			message: JSON.stringify(error.toObject(), null, 2),
-		});
-	}
 	
 	/**
 	 * @description Выполняет актуальные задачи (используется в кроне)
@@ -276,7 +261,17 @@ class TaskApi extends BaseApi {
 				}
 				
 				// eslint-disable-next-line consistent-return
-				return task.handle().catch(errors => bluebird.map(errors, error => this.sendAlert(error)));
+				return task.handle().catch((errors) => {
+					if (!Array.isArray(errors)) {
+						// eslint-disable-next-line no-param-reassign
+						errors = [errors];
+					}
+					
+					return bluebird.map(
+						errors,
+						error => this.alert.sendError(error, this.config.get('vkAlert.chat_id')),
+					);
+				});
 			},
 		).then(() => {
 			// Graceful reload
