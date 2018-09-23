@@ -61,10 +61,10 @@ class CommentsCommonTask extends BaseTask {
 				}
 				
 				this.taskDocument._error = displayError.toObject();
-			} finally {
-				this.taskDocument.status = TaskDocument.status.finished;
-				await this.taskDocument.save();
 			}
+		} finally {
+			this.taskDocument.status = TaskDocument.status.finished;
+			await this.taskDocument.save();
 		}
 	}
 }
