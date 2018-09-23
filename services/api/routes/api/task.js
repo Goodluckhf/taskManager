@@ -2,13 +2,16 @@ import config  from 'config';
 import VkApi   from '../../../../lib/VkApi';
 import logger  from '../../../../lib/logger';
 import TaskApi from '../../api/TaskApi';
+import Alert   from '../../../../lib/Alert';
 
 export default (router, rpcClient) => {
 	const vkApi = new VkApi(config.get('vkApi.token'), {
 		timeout: config.get('vkApi.timeout'),
 	});
+	const alert = new Alert(vkApi);
+	
 	// Сам классс Api
-	const taskApi = new TaskApi(rpcClient, vkApi, config, logger);
+	const taskApi = new TaskApi(rpcClient, vkApi, alert, config, logger);
 	
 	router.post('/task', async (ctx) => {
 		ctx.body = {
