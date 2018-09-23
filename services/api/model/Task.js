@@ -45,6 +45,14 @@ const schema = new mongoose.Schema({
 		type   : Object,
 		default: null,
 	},
+	
+	subTasks: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref : 'Task',
+	}],
+	
+	// Если задача была создана в ручную будет null
+	parentTask: mongoose.Schema.Types.ObjectId,
 });
 
 schema.statics.status = statuses;
@@ -55,6 +63,8 @@ schema.statics.status = statuses;
  * @property {Boolean} repeated
  * @property {Date} startAt
  * @property {Object} _error
+ * @property {Array.<TaskDocument>} subTasks
+ * @property {TaskDocument} parentTask
  */
 export class TaskDocument {
 	/**
@@ -64,14 +74,6 @@ export class TaskDocument {
 	 */
 	static createInstance(Constructor, opts) {
 		return new Constructor(opts);
-	}
-	
-	/**
-	 * @return {Boolean}
-	 */
-	get active() {
-		return this.status === statuses.waiting
-			|| this.status === statuses.pending;
 	}
 	
 	/**
@@ -94,8 +96,7 @@ export class TaskDocument {
 				{ repeated: true },
 				{ startAt: { $lte: new Date() } },
 			],
-		// Пока такой кастыль, но нужно убарть от сюда
-		}).populate('group').exec();
+		}).populate('parentTask').exec();
 	}
 }
 
