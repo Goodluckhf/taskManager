@@ -22,6 +22,7 @@ class AutoLikesTask extends BaseTask {
 				return;
 			}
 			
+			await this.taskDocument.populate('group');
 			if (!this.taskDocument.group) {
 				this.logger.warn({
 					message: 'Like task has no group',
