@@ -10,19 +10,6 @@ const commentsCommonTaskSchema = new mongoose.Schema({
 		type    : Number,
 		required: true,
 	},
-	
-	repeated: {
-		type   : Boolean,
-		default: false,
-	},
-	
-	subTasks: [{
-		type: mongoose.Schema.Types.ObjectId,
-		ref : 'Task',
-	}],
-	
-	// Если задача была создана в ручную будет null
-	parentTask: mongoose.Schema.Types.ObjectId,
 });
 
 /**
