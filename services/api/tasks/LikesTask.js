@@ -7,15 +7,10 @@ import BaseApiError from '../api/errors/BaseApiError';
  * @property {String} service
  */
 class LikesTask extends BaseTask {
-	constructor({ service, ...args }) {
-		super(args);
-		this.service = service;
-	}
-	
 	async handle() {
 		const Task = mongoose.model('Task');
 		try {
-			const request = new LikeRequest(this.service, this.config, {
+			const request = new LikeRequest(this.taskDocument.service, this.config, {
 				postLink  : this.taskDocument.postLink,
 				likesCount: this.taskDocument.likesCount,
 			});

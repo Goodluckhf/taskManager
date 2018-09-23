@@ -29,7 +29,6 @@ class LikesCommonTask extends BaseTask {
 			logger      : this.logger,
 			config      : this.config,
 			taskDocument: likesTaskDocument,
-			service,
 		});
 		
 		await likesTask.handle();
