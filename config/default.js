@@ -31,6 +31,7 @@ module.exports = {
 	
 	likesTask: {
 		checkingDelay: 2, // В минутах
+		likesToCheck : 30,
 		serviceOrder : ['likesPro', 'z1y1x1', 'likest'],
 	},
 	
