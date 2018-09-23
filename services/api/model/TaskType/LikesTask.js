@@ -11,18 +11,10 @@ const likesTaskSchema = new mongoose.Schema({
 		required: true,
 	},
 	
-	repeated: {
-		type   : Boolean,
-		default: false,
-	},
-	
 	service: {
 		type    : String,
 		required: true,
 	},
-	
-	// Если задача была создана в ручную будет null
-	parentTask: mongoose.Schema.Types.ObjectId,
 });
 
 /**
