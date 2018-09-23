@@ -4,15 +4,10 @@ import CommentRequest from '../api/amqpRequests/CommentRequest';
 import BaseApiError   from '../api/errors/BaseApiError';
 
 class CommentsTask extends BaseTask {
-	constructor({ service, ...args }) {
-		super(args);
-		this.service = service;
-	}
-	
 	async handle() {
 		const Task = mongoose.model('Task');
 		try {
-			const request = new CommentRequest(this.service, this.config, {
+			const request = new CommentRequest(this.taskDocument.service, this.config, {
 				postLink     : this.taskDocument.postLink,
 				commentsCount: this.taskDocument.commentsCount,
 			});

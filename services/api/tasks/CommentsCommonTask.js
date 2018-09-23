@@ -27,7 +27,6 @@ class CommentsCommonTask extends BaseTask {
 			logger      : this.logger,
 			config      : this.config,
 			taskDocument: commentsTaskDocument,
-			service,
 		});
 		
 		await commentsTask.handle();
