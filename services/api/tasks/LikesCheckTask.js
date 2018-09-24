@@ -20,9 +20,13 @@ class LikesCheckTask extends BaseTask {
 			this.logger.warn({ error });
 			const serviceOrder = this.config.get('likesTask.serviceOrder');
 			if (serviceOrder.length === this.taskDocument.serviceIndex + 1) {
-				error.postLink   = this.taskDocument.postLink;
-				error.likesCount = this.taskDocument.likesCount;
-				throw new BaseApiError(error.message, 500).combine(error);
+				error.postLink     = this.taskDocument.postLink;
+				error.likesCount   = this.taskDocument.parentTask.likesCount;
+				const wrappedError = new BaseApiError(error.message, 500).combine(error);
+				
+				this.taskDocument.parentTask.status = Task.status.finished;
+				this.taskDocument.parentTask._error = wrappedError;
+				throw wrappedError;
 			}
 			
 			this.taskDocument.parentTask.status = Task.status.pending;
