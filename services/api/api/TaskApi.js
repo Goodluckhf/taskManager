@@ -2,7 +2,7 @@ import mongoose  from 'mongoose';
 import bluebird  from 'bluebird';
 
 import {
-	NotFound,
+	NotFound, TaskAlreadyExist,
 	TaskApiError,
 	ValidationError,
 } from './errors';
@@ -78,6 +78,15 @@ class TaskApi extends BaseApi {
 					query: { _id: data.groupId },
 				});
 			}
+		}
+		
+		const existsTask = await mongoose.model('AutoLikesTask').findOne({
+			group : group._id,
+			status: mongoose.model('Task').status.waiting,
+		});
+		
+		if (existsTask) {
+			throw new TaskAlreadyExist({ id: existsTask.id, groupId: group.id });
 		}
 		
 		try {
