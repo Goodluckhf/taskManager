@@ -7,14 +7,22 @@ import {
 	ValidationError,
 } from './errors';
 
-import BaseApi        from './BaseApi';
-import LikeRequest    from './amqpRequests/LikeRequest';
-import AutoLikesTask  from '../tasks/AutolikesTask';
-import gracefulStop   from '../../../lib/GracefulStop';
-import LikesCheckTask from '../tasks/LikesCheckTask';
-import BaseTask       from '../tasks/BaseTask';
+import BaseApi           from './BaseApi';
+import LikeRequest       from './amqpRequests/LikeRequest';
+import AutoLikesTask     from '../tasks/AutolikesTask';
+import gracefulStop      from '../../../lib/GracefulStop';
+import LikesCheckTask    from '../tasks/LikesCheckTask';
+import CommentsCheckTask from '../tasks/CommentsCheckTask';
 
 gracefulStop.setWaitor('handleActiveTasks');
+
+// Маппер по ключу типа дискриминатора
+// Выдает класс задачи
+const mapperModelTypeToTask = {
+	AutoLikesTask,
+	LikesCheckTask,
+	CommentsCheckTask,
+};
 
 /**
  * @property {RpcClient} rpcClient
@@ -229,36 +237,25 @@ class TaskApi extends BaseApi {
 		bluebird.map(
 			tasks,
 			async (_task) => {
-				let task;
 				//eslint-disable-next-line no-param-reassign
 				_task.status = Task.status.pending;
 				await _task.save();
+				const TaskClass = mapperModelTypeToTask[_task.__t];
 				
-				if (_task.__t === 'AutoLikesTask') {
-					task = new AutoLikesTask({
-						logger      : this.logger,
-						taskDocument: _task,
-						rpcClient   : this.rpcClient,
-						config      : this.config,
-					});
-				}
-				
-				if (_task.__t === 'LikesCheckTask') {
-					task = new LikesCheckTask({
-						logger      : this.logger,
-						taskDocument: _task,
-						rpcClient   : this.rpcClient,
-						config      : this.config,
-					});
-				}
-				
-				if (!(task instanceof BaseTask)) {
+				if (!TaskClass) {
 					this.logger.warn({
 						message: 'task is not instance of BaseTask',
 						task   : _task.toObject(),
 					});
 					return;
 				}
+				
+				const task = new TaskClass({
+					logger      : this.logger,
+					taskDocument: _task,
+					rpcClient   : this.rpcClient,
+					config      : this.config,
+				});
 				
 				// eslint-disable-next-line consistent-return
 				return task.handle().catch((errors) => {
