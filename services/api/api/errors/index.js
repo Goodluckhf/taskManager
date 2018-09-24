@@ -92,6 +92,21 @@ export class TaskApiError extends BaseApiError {
 	}
 }
 
+export class TaskAlreadyExist extends BaseApiError {
+	constructor({ id, groupId }) {
+		super('Task for such group already exists');
+		this.id      = id;
+		this.groupId = groupId;
+	}
+	
+	toObject() {
+		return {
+			...super.toObject(),
+			id     : this.id,
+			groupId: this.groupId,
+		};
+	}
+}
 
 export class GroupAlreadyExist extends BaseApiError {
 	constructor({ id, name }) {
