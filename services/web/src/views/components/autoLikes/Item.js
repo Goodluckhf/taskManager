@@ -16,8 +16,8 @@ const statusCodeToString = {
 };
 
 const taskTypeToString = {
-	CommentsTask: 'Накрутка комментов',
-	LikesCommon : 'Накрутка лайков',
+	CommentsCommon: 'Накрутка комментов',
+	LikesCommon   : 'Накрутка лайков',
 };
 
 class Item extends PureComponent {
