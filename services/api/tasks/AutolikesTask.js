@@ -38,7 +38,8 @@ class AutoLikesTask extends BaseTask {
 			const link  = Group.getLinkByPublicId(this.taskDocument.group.publicId);
 			const jsDom = await JSDOM.fromURL(link);
 			
-			const $mentionLink = jsDom.window.document.querySelectorAll('#page_wall_posts .post .wall_post_text a.mem_link')[0];
+			const $lastPost = jsDom.window.document.querySelector('#page_wall_posts .post .wall_post_text');
+			const $mentionLink = $lastPost.querySelector('a.mem_link');
 			if (!$mentionLink) {
 				return;
 			}
