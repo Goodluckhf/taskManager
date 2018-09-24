@@ -17,8 +17,6 @@ class AutoLikesTask extends BaseTask {
 			// Проверяем, что прошло 70 минут, чтобы не лайкать уже лайкнутый пост
 			const likesInterval = parseInt(this.config.get('autoLikesTask.likesInterval'), 10);
 			if (this.taskDocument.lastHandleAt && moment().diff(moment(this.taskDocument.lastHandleAt), 'minutes') < likesInterval) {
-				this.taskDocument.status = Task.status.waiting;
-				await this.taskDocument.save();
 				return;
 			}
 			
@@ -28,16 +26,12 @@ class AutoLikesTask extends BaseTask {
 					message: 'Like task has no group',
 					taskId : this.taskDocument._id,
 				});
-				this.taskDocument.status = Task.status.waiting;
-				await this.taskDocument.save();
 				return;
 			}
 			
 			const targetPublics = await Group.find({ isTarget: true }).lean().exec();
 			
 			if (!targetPublics.length) {
-				this.taskDocument.status = Task.status.waiting;
-				await this.taskDocument.save();
 				return;
 			}
 			
@@ -46,8 +40,6 @@ class AutoLikesTask extends BaseTask {
 			
 			const $mentionLink = jsDom.window.document.querySelectorAll('#page_wall_posts .post .wall_post_text a.mem_link')[0];
 			if (!$mentionLink) {
-				this.taskDocument.status = Task.status.waiting;
-				await this.taskDocument.save();
 				return;
 			}
 			
@@ -63,8 +55,6 @@ class AutoLikesTask extends BaseTask {
 			});
 			
 			if (!hasTargetGroupInTask) {
-				this.taskDocument.status = Task.status.waiting;
-				await this.taskDocument.save();
 				return;
 			}
 			
@@ -113,16 +103,16 @@ class AutoLikesTask extends BaseTask {
 			if (errors.length) {
 				throw errors;
 			}
+			this.taskDocument.lastHandleAt = new Date();
 		} catch (error) {
 			if (!Array.isArray(error)) {
 				//eslint-disable-next-line no-throw-literal
 				throw [error];
 			}
 			
+			this.taskDocument.lastHandleAt = new Date();
 			throw error;
 		} finally {
-			this.taskDocument.lastHandleAt = new Date();
-			
 			//@TODO: Сделать все таки finished статус
 			this.taskDocument.status = Task.status.waiting;
 			await this.taskDocument.save();
