@@ -11,7 +11,7 @@ class CommentsCheckTask extends BaseTask {
 		
 		const request = new CommentsCheckRequest(this.config, {
 			postLink     : this.taskDocument.postLink,
-			commentsCount: this.config.get('likesTask.commentsToCheck'),
+			commentsCount: this.config.get('commentsTask.commentsToCheck'),
 		});
 		
 		try {

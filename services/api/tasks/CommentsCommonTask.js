@@ -23,10 +23,10 @@ class CommentsCommonTask extends BaseTask {
 		const service      = serviceOrder[serviceIndex];
 		
 		const commentsTaskDocument = CommentsTaskModel.createInstance({
-			likesCount: this.taskDocument.commentsCount,
-			postLink  : this.taskDocument.postLink,
-			parentTask: this.taskDocument,
-			status    : TaskModel.status.pending,
+			commentsCount: this.taskDocument.commentsCount,
+			postLink     : this.taskDocument.postLink,
+			parentTask   : this.taskDocument,
+			status       : TaskModel.status.pending,
 			service,
 		});
 		
