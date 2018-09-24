@@ -13,6 +13,7 @@ import LikestResponse         from './responses/likes/LikestResponse';
 import Captcha                from '../../lib/Captcha';
 import VkApi                  from '../../lib/VkApi';
 import LikesCheckResponse     from './responses/LikesCheckResponse';
+import CommentsCheckResponse  from './responses/CommentsCheckResponse';
 
 const rabbitConfig = config.get('rabbit');
 const amqp = new Amqp(logger, {
@@ -49,6 +50,9 @@ rpcServer.addResponse(new LikeProResponse({
 }));
 
 rpcServer.addResponse(new LikesCheckResponse({
+	logger,
+	vkApi,
+})).addResponse(new CommentsCheckResponse({
 	logger,
 	vkApi,
 }));
