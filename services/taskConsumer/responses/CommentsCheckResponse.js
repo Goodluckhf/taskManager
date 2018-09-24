@@ -28,10 +28,7 @@ class CommentsCheckResponse extends Response {
 		});
 		
 		if (post.comments.count < commentsCount) {
-			const error = new Error('there is not comments');
-			error.commentsCount = post.comments.count;
-			error.postLink   = postLink;
-			throw error;
+			throw new Error('there is not comments');
 		}
 	}
 }

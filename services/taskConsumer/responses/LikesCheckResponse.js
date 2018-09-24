@@ -28,10 +28,7 @@ class LikesCheckResponse extends Response {
 		});
 		
 		if (post.likes.count < likesCount) {
-			const error = new Error('there is not likes');
-			error.likesCount = post.likes.count;
-			error.postLink   = postLink;
-			throw error;
+			throw new Error('there is not likes');
 		}
 	}
 }
