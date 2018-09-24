@@ -36,7 +36,9 @@ module.exports = {
 	},
 	
 	commentsTask: {
-		serviceOrder: ['z1y1x1', 'likest'],
+		checkingDelay  : 2, // В минутах
+		commentsToCheck: 7,
+		serviceOrder   : ['z1y1x1', 'likest'],
 	},
 	
 	// @TODO: Поправить
