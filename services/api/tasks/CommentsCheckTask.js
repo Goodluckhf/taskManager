@@ -22,8 +22,12 @@ class CommentsCheckTask extends BaseTask {
 			const serviceOrder = this.config.get('commentsTask.serviceOrder');
 			if (serviceOrder.length === this.taskDocument.serviceIndex + 1) {
 				error.postLink      = this.taskDocument.postLink;
-				error.commentsCount = this.taskDocument.commentsCount;
-				throw new BaseApiError(error.message, 500).combine(error);
+				error.commentsCount = this.taskDocument.parentTask.commentsCount;
+				const wrappedError  = new BaseApiError(error.message, 500).combine(error);
+				
+				this.taskDocument.parentTask.status = Task.status.finished;
+				this.taskDocument.parentTask._error = wrappedError;
+				throw wrappedError;
 			}
 			
 			this.taskDocument.parentTask.status = Task.status.pending;
