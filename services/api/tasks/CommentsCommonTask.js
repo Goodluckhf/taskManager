@@ -1,21 +1,35 @@
 import mongoose from 'mongoose';
+import moment   from 'moment';
 
 import BaseTask     from './BaseTask';
-import BaseApiError from '../api/errors/BaseApiError';
 import CommentsTask from './CommentsTask';
+import BaseApiError from '../api/errors/BaseApiError';
 
+/**
+ * @property {Number} serviceIndex
+ */
 class CommentsCommonTask extends BaseTask {
-	async createTaskAndHandle(service) {
-		const CommentsTaskModel = mongoose.model('CommentsTask');
-		const TaskDocument      = mongoose.model('Task');
+	constructor({ serviceIndex = 0, ...args }) {
+		super(args);
+		this.serviceIndex = serviceIndex;
+	}
+	
+	async createTaskAndHandle(serviceIndex) {
+		const CommentsTaskModel      = mongoose.model('CommentsTask');
+		const CommentsCheckTaskModel = mongoose.model('CommentsCheckTask');
+		const TaskModel              = mongoose.model('Task');
+		
+		const serviceOrder = this.config.get('commentsTask.serviceOrder');
+		const service      = serviceOrder[serviceIndex];
 		
 		const commentsTaskDocument = CommentsTaskModel.createInstance({
-			commentsCount: this.taskDocument.commentsCount,
-			postLink     : this.taskDocument.postLink,
-			parentTask   : this.taskDocument,
+			likesCount: this.taskDocument.commentsCount,
+			postLink  : this.taskDocument.postLink,
+			parentTask: this.taskDocument,
+			status    : TaskModel.status.pending,
 			service,
 		});
-		commentsTaskDocument.status = TaskDocument.status.pending;
+		
 		this.taskDocument.subTasks.push(commentsTaskDocument);
 		await Promise.all([
 			this.taskDocument.save(),
@@ -30,42 +44,61 @@ class CommentsCommonTask extends BaseTask {
 		});
 		
 		await commentsTask.handle();
-		//@TODO: Создать задачу на проверку комментов
+		
+		// Если задача выполнилась без ошибки
+		// То создаем задачу на проверку
+		this.taskDocument.status = TaskModel.status.checking;
+		const checkDelay = this.config.get('commentsTask.checkingDelay');
+		const checkTaskDocument = CommentsCheckTaskModel.createInstance({
+			serviceIndex,
+			commentsCount: this.config.get('commentsTask.commentsToCheck'),
+			postLink     : this.taskDocument.postLink,
+			parentTask   : this.taskDocument,
+			startAt      : moment().add(checkDelay, 'm'),
+		});
+		
+		await Promise.all([
+			this.taskDocument.save(),
+			checkTaskDocument.save(),
+		]);
 	}
 	
-	async handle() {
-		const TaskDocument = mongoose.model('Task');
+	async loopHandleTasks(_serviceIndex) {
+		const TaskModel = mongoose.model('Task');
 		const serviceOrder = this.config.get('commentsTask.serviceOrder');
-		// В конфиге задается порядок сервисов
-		// И мы при ошибке пытаемся поставить лайки через другой сервис
-		// Пока сервиса 2 поэтому так оствалю
-		// Если цепочка увеличится можно придумать абстракцию
+		const serviceIndex = _serviceIndex || this.serviceIndex;
+		const service = serviceOrder[serviceIndex];
+		
 		try {
-			await this.createTaskAndHandle(serviceOrder[0]);
+			return this.createTaskAndHandle(serviceIndex);
 		} catch (error) {
 			this.logger.error({
 				error,
-				service: serviceOrder[0],
+				service,
 			});
-			try {
-				await this.createTaskAndHandle(serviceOrder[1]);
-			} catch (_error) {
-				this.logger.error({
-					error  : _error,
-					service: serviceOrder[1],
-				});
-				
-				let displayError = _error;
-				if (!(displayError instanceof BaseApiError)) {
-					displayError = new BaseApiError(_error.message, 500).combine(_error);
-				}
-				
-				this.taskDocument._error = displayError.toObject();
+			
+			if (serviceOrder.length !== serviceIndex + 1) {
+				return this.loopHandleTasks(serviceIndex + 1);
 			}
-		} finally {
-			this.taskDocument.status = TaskDocument.status.finished;
+			
+			// Это последний был, значит пора выкидывать ошибку
+			let displayError = error;
+			if (!(displayError instanceof BaseApiError)) {
+				displayError = new BaseApiError(error.message, 500).combine(error);
+			}
+			this.taskDocument._error = displayError.toObject();
+			this.taskDocument.status = TaskModel.status.finished;
 			await this.taskDocument.save();
+			throw displayError;
 		}
+	}
+	
+	async handle() {
+		// В конфиге задается порядок сервисов
+		// И мы при ошибке пытаемся поставить лайки через другой сервис
+		// Пока сервисов 3 поэтому так оствалю
+		// Если цепочка увеличится можно придумать абстракцию
+		return this.loopHandleTasks();
 	}
 }
 
