@@ -13,7 +13,7 @@ import { fatalError }           from '../actions/fatalError';
 export default function* () {
 	yield takeEvery(CREATE_REQUEST, function* ({ payload: data }) {
 		try {
-			const { data: result } = yield call(axios.post, '/api/task', data);
+			const { data: result } = yield call(axios.post, '/api/autolikes', data);
 			if (!result.success) {
 				yield put(createFailure(result.data));
 				return;
@@ -32,7 +32,7 @@ export default function* () {
 	
 	yield takeEvery(LIST_REQUEST, function* () {
 		try {
-			const { data: result } = yield call(axios.get, '/api/tasks');
+			const { data: result } = yield call(axios.get, '/api/autolikes');
 			if (!result.success) {
 				yield put(fatalError(result.data));
 				return;
@@ -46,7 +46,7 @@ export default function* () {
 	
 	yield takeEvery(FILTER_CHANGE_REQUEST, function* ({ payload: { filterState } }) {
 		try {
-			const { data: result } = yield call(axios.get, '/api/tasks', { params: filterState });
+			const { data: result } = yield call(axios.get, '/api/autolikes', { params: filterState });
 			if (!result.success) {
 				yield put(fatalError(result.data));
 				return;
