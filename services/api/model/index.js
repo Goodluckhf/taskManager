@@ -6,9 +6,10 @@ import commentsCommonSchema    from './TaskType/CommentsCommon';
 import commentsTaskSchema      from './TaskType/CommentsTask';
 import likesCheckTaskSchema    from './TaskType/LikesCheckTask';
 import commentsCheckTaskSchema from './TaskType/CommentsCheckTask';
+import checkWallBanTaskSchema  from './TaskType/CheckWallBanTask';
 
-import groupSchema   from './Group';
-import accountSchema from './Account';
+import groupSchema                from './Group';
+import accountSchema              from './Account';
 
 
 // Initialise mongoose models
@@ -23,4 +24,5 @@ export default (connection) => {
 	connection.model('Task').discriminator('CommentsCheckTask', commentsCheckTaskSchema);
 	connection.model('Task').discriminator('CommentsCommon', commentsCommonSchema);
 	connection.model('Task').discriminator('CommentsTask', commentsTaskSchema);
+	connection.model('Task').discriminator('CheckWallBanTask', checkWallBanTaskSchema);
 };
