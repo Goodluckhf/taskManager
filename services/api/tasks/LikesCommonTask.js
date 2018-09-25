@@ -56,6 +56,7 @@ class LikesCommonTask extends BaseTask {
 			startAt   : moment().add(checkDelay, 'm'),
 		});
 		
+		this.taskDocument.subTasks.push(checkTaskDocument);
 		await Promise.all([
 			this.taskDocument.save(),
 			checkTaskDocument.save(),
@@ -69,7 +70,7 @@ class LikesCommonTask extends BaseTask {
 		const service = serviceOrder[serviceIndex];
 		
 		try {
-			return this.createTaskAndHandle(serviceIndex);
+			return await this.createTaskAndHandle(serviceIndex);
 		} catch (error) {
 			this.logger.error({
 				error,
