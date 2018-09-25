@@ -5,9 +5,10 @@ import logger    from '../../../../lib/logger';
 import RpcClient from '../../../../lib/amqp/RpcClient';
 import Amqp      from '../../../../lib/amqp/Amqp';
 
-import createTaskRoute    from './task';
-import createAccountRoute from './account';
-import createGroupRoute   from './group';
+import createTaskRoute          from './task';
+import createAutoLikesTaskRoute from './autolikes';
+import createAccountRoute       from './account';
+import createGroupRoute         from './group';
 
 // rabbit, RPC client
 const rabbitConfig = config.get('rabbit');
@@ -22,5 +23,6 @@ const router = new Router({ prefix: '/api' });
 createTaskRoute(router, rpcClient);
 createAccountRoute(router, rpcClient);
 createGroupRoute(router);
+createAutoLikesTaskRoute(router);
 
 export default router;
