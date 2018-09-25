@@ -84,6 +84,11 @@ export class TaskDocument {
 		return this;
 	}
 	
+	get active() {
+		return this.status !== statuses.waiting ||
+			this.status !== statuses.finished;
+	}
+	
 	/**
 	 * Получить список тасков для крона
 	 * Которые готовы к выполнению
