@@ -123,3 +123,19 @@ export class GroupAlreadyExist extends BaseApiError {
 		};
 	}
 }
+
+export class WallSeekAlreadyExist extends BaseApiError {
+	constructor({ link, id }) {
+		super('Wall seek task for this group has already exists');
+		this.id   = id;
+		this.link = link;
+	}
+	
+	toObject() {
+		return {
+			...super.toObject(),
+			id  : this.id,
+			link: this.link,
+		};
+	}
+}
