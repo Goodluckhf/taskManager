@@ -25,7 +25,7 @@ class WallSeekApi extends BaseApi {
 		this.validate({
 			properties: {
 				link     : { type: 'string' },
-				postCount: { type: 'string' },
+				postCount: { oneOf: [{ type: 'string' }, { type: 'number' }] },
 			},
 			required: ['link', 'postCount'],
 		}, data);
