@@ -9,6 +9,7 @@ import createTaskRoute          from './task';
 import createAutoLikesTaskRoute from './autolikes';
 import createAccountRoute       from './account';
 import createGroupRoute         from './group';
+import createWallSeekRoute      from './wallSeek';
 
 // rabbit, RPC client
 const rabbitConfig = config.get('rabbit');
@@ -22,6 +23,7 @@ const router = new Router({ prefix: '/api' });
 
 createTaskRoute(router, rpcClient);
 createAccountRoute(router, rpcClient);
+createWallSeekRoute(router);
 createGroupRoute(router);
 createAutoLikesTaskRoute(router);
 
