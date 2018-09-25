@@ -75,8 +75,12 @@ class GroupDocument {
 		return newGroup.save();
 	}
 	
+	get link() {
+		return GroupDocument.getLinkByPublicId(this.publicId);
+	}
+	
 	/**
-	 * @param {String} publicId
+	 * @param {String | Number} publicId
 	 * @return {String}
 	 */
 	static getLinkByPublicId(publicId) {
