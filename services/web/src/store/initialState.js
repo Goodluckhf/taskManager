@@ -20,6 +20,11 @@ export const routes = Map({
 				text   : 'NEW',
 			}),
 		}),
+		Map({
+			name: 'Слежка',
+			url : '/wallseek',
+			icon: 'fa fa-user-secret',
+		}),
 	]),
 });
 
@@ -39,6 +44,14 @@ export const autoLikesPage = Map({
 	form: Map({}),
 });
 
+export const wallSeekPage = Map({
+	list: Map({
+		items: List([]),
+	}),
+	
+	form: Map({}),
+});
+
 export const fatalError = Map({});
 
 export default {
@@ -46,5 +59,6 @@ export default {
 	groupPage,
 	autoLikesPage,
 	fatalError,
+	wallSeekPage,
 };
 
