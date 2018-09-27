@@ -4,7 +4,6 @@ import _         from 'lodash';
 
 import Response  from '../../../lib/amqp/Response';
 /**
- * @property {String} token
  * @property {VkApi} vkApi
  */
 class WallCheckBanResponse extends Response {
@@ -24,8 +23,13 @@ class WallCheckBanResponse extends Response {
 	async process({ link, postCount: postCountString }) {
 		const postCount = parseInt(postCountString, 10);
 		this.logger.info({ link, postCount });
-		const jsDom = await JSDOM.fromURL(link);
-		const posts = [...jsDom.window.document.querySelectorAll('.post._post')].slice(0, postCount);
+		const jsDom        = await JSDOM.fromURL(link);
+		const posts        = [...jsDom.window.document.querySelectorAll('.post._post')].slice(0, postCount);
+		const groupBlocked = jsDom.window.document.querySelector('.groups_blocked');
+		if (groupBlocked) {
+			throw new Error('Group is blocked');
+		}
+		
 		if (!posts.length) {
 			throw new Error('Posts have been deleted');
 		}
@@ -34,13 +38,32 @@ class WallCheckBanResponse extends Response {
 		await bluebird.map(
 			posts,
 			async (post) => {
+				// 1) Проверяем есть ли снипет
+				// 2) Проверяем есть ли вики страница
+				// 3) Берем любую ссылку из поста
 				try {
 					// ссылка может быть в снипете
-					const thumb = post.querySelector('.page_media_thumbed_link');
+					const thumb       = post.querySelector('.page_media_thumbed_link');
+					const previewLink = post.querySelector('.wall_postlink_preview_btn_label');
 					if (thumb) {
 						links.push(this.getThumbLink(thumb));
 						return;
 					}
+					
+					if (previewLink) {
+						try {
+							const linkFromWiki = await this.getLinkFromWiki(post);
+							links.push(linkFromWiki);
+							return;
+						} catch (error) {
+							this.logger.warn({
+								message: 'failed wiki parse',
+								error,
+							});
+							return;
+						}
+					}
+					
 					const a = post.querySelector('.wall_text a');
 					if (!a || !a.href.length) {
 						this.logger.info('Нет ссылки');
@@ -48,7 +71,6 @@ class WallCheckBanResponse extends Response {
 					}
 					
 					links.push(a.href);
-					// Может быть вики страница
 				} catch (error) {
 					this.logger.error({ error });
 				}
@@ -93,6 +115,13 @@ class WallCheckBanResponse extends Response {
 			error.links = errors;
 			throw error;
 		}
+	}
+	
+	//eslint-disable-next-line class-methods-use-this
+	async getLinkFromWiki(post) {
+		const a     = post.querySelector('.wall_text a.lnk');
+		const jsDom = await JSDOM.fromURL(a.href);
+		return jsDom.window.document.querySelector('.pages_cont a').href;
 	}
 	
 	//eslint-disable-next-line class-methods-use-this
