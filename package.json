@@ -24,6 +24,7 @@
     "koa-bodyparser": "^4.2.1",
     "koa-morgan": "^1.0.1",
     "koa-router": "^7.4.0",
+    "lodash": "^4.17.11",
     "moment": "^2.22.2",
     "mongoose": "^5.2.9",
     "mongoose-paginate": "^5.0.3",
