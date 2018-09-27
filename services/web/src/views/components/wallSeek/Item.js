@@ -10,7 +10,7 @@ const statusCodeToString = {
 	0: <span className='text-primary'>Ожидает</span>,
 	1: <span className='text-warning'>Выполняется</span>,
 	2: <span className='text-success'>Выполнена</span>,
-	3: <span className='text-muted'>Отменена</span>,
+	3: <span className='text-muted'>Остановлена</span>,
 	4: <span className='text-info'>Проверяется</span>,
 };
 
@@ -42,7 +42,7 @@ class Item extends PureComponent {
 					<div><span className='h6'>Кол-во постов:</span> {this.props.postCount}</div>
 					<div><span className='h6'>Создана:</span> {moment(this.props.createdAt).format('MMMM Do YYYY, HH:mm:ss')}</div>
 					<div><span className='h6'>Статус:</span> {statusCodeToString[this.props.status]}</div>
-					{this.props._error && <ApiError error={this.props._error}/>}
+					{this.props._error && <ApiError title='Последняя ошибка' error={this.props._error}/>}
 					{this.props.error && <ApiError error={this.props.error}/>}
 				</Col>
 				<Col>
