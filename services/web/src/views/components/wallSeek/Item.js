@@ -25,12 +25,18 @@ class Item extends PureComponent {
 		error         : propTypes.object,
 		_error        : propTypes.object,
 		remove_loading: propTypes.bool,
+		resume_loading: propTypes.bool,
 		remove        : propTypes.func,
+		resume        : propTypes.func,
 	};
 	
 	
 	onRemove = () => {
 		this.props.remove(this.props._id);
+	};
+	
+	onResume = () => {
+		this.props.resume(this.props._id);
 	};
 	
 	render() {
@@ -55,6 +61,16 @@ class Item extends PureComponent {
 							onClick={this.onRemove}
 						>
 							Удалить
+						</LoadingButton>
+					</div>
+					<div style={{ marginTop: '10px' }}>
+						<LoadingButton
+							data-size={XS}
+							data-color='green'
+							loading={this.props.resume_loading}
+							onClick={this.onResume}
+						>
+							Возобновить
 						</LoadingButton>
 					</div>
 				</Col>

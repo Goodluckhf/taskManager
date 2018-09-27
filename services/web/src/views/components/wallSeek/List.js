@@ -14,6 +14,7 @@ class List extends PureComponent {
 		items  : propTypes.instanceOf(Immutable.List).isRequired,
 		loading: propTypes.bool.isRequired,
 		remove : propTypes.func.isRequired,
+		resume : propTypes.func.isRequired,
 	};
 	
 	render() {
@@ -24,11 +25,13 @@ class List extends PureComponent {
 				<Fragment key={item.get('_id')}>
 					<TaskItem
 						remove={this.props.remove}
+						resume={this.props.resume}
 						_id={item.get('_id')}
 						createdAt={item.get('createdAt')}
 						postCount={item.get('postCount')}
 						status={item.get('status')}
 						remove_loading={item.get('remove_loading')}
+						resume_loading={item.get('resume_loading')}
 						error={item.get('error')}
 						_error={item.get('_error')}
 					>

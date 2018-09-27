@@ -9,14 +9,15 @@ import Form                             from '../components/wallSeek/Form';
 import List                             from '../components/wallSeek/List';
 import {
 	removeRequest,
-	createRequest,
-}                                         from '../../actions/wallSeek';
+	createRequest, resumeRequest,
+} from '../../actions/wallSeek';
 import { getLoaderState, loaderSelector } from '../../lib/loader';
 
 class WallSeek extends PureComponent {
 	static propTypes = {
 		addWallSeek: propTypes.func,
 		remove     : propTypes.func,
+		resume     : propTypes.func,
 		form       : propTypes.instanceOf(Immutable.Map),
 		list       : propTypes.instanceOf(Immutable.List),
 		loading    : propTypes.bool,
@@ -35,6 +36,7 @@ class WallSeek extends PureComponent {
 						items={this.props.list}
 						loading={this.props.loading}
 						remove={this.props.remove}
+						resume={this.props.resume}
 					/>
 				</Container>
 			</Layout>
@@ -46,6 +48,7 @@ class WallSeek extends PureComponent {
 const mapDispatchToProps = dispatch => ({
 	addWallSeek: data => dispatch(createRequest(data)),
 	remove     : id => dispatch(removeRequest(id)),
+	resume     : id => dispatch(resumeRequest(id)),
 });
 
 const mapStateToProps = state => ({
@@ -53,6 +56,7 @@ const mapStateToProps = state => ({
 	list: loaderSelector(
 		{
 			WALLSEEK__REMOVE: 'remove_loading',
+			WALLSEEK__RESUME: 'resume_loading',
 		},
 		'wallSeekPage', state, ['list', 'items'],
 	),
