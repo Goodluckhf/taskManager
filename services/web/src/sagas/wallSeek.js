@@ -4,7 +4,7 @@ import { takeEvery, put, call } from 'redux-saga/effects';
 import {
 	CREATE_REQUEST, LIST_REQUEST, REMOVE_REQUEST,
 	createSuccess, createFailure,
-	listSuccess, removeSuccess, removeFailure,
+	listSuccess, removeSuccess, removeFailure, RESUME_REQUEST, resumeSuccess, resumeFailure,
 } from '../actions/wallSeek';
 import { fatalError } from '../actions/fatalError';
 
@@ -50,6 +50,20 @@ export default function* () {
 		} catch (error) {
 			if (error.response && error.response.data) {
 				yield put(removeFailure(error.response.data, id));
+				return;
+			}
+			
+			yield put(fatalError(error));
+		}
+	});
+	
+	yield takeEvery(RESUME_REQUEST, function* ({ payload: { id } }) {
+		try {
+			yield call(axios.put, `/api/wallSeek/${id}/resume`);
+			yield put(resumeSuccess(id));
+		} catch (error) {
+			if (error.response && error.response.data) {
+				yield put(resumeFailure(error.response.data, id));
 				return;
 			}
 			
