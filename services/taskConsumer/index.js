@@ -1,5 +1,5 @@
 import config    from 'config';
-import axios     from 'axios/index';
+import axios     from 'axios';
 
 import Amqp                   from '../../lib/amqp/Amqp';
 import logger                 from '../../lib/logger';
@@ -14,6 +14,7 @@ import Captcha                from '../../lib/Captcha';
 import VkApi                  from '../../lib/VkApi';
 import LikesCheckResponse     from './responses/LikesCheckResponse';
 import CommentsCheckResponse  from './responses/CommentsCheckResponse';
+import WallCheckBanResponse   from './responses/WallCheckBanResponse';
 
 const rabbitConfig = config.get('rabbit');
 const amqp = new Amqp(logger, {
@@ -69,6 +70,9 @@ rpcServer.addResponse(new Z1y1x1CommentsResponse({
 	password: config.get('likest.password'),
 }));
 
+
+// Слежка группы на бан
+rpcServer.addResponse(new WallCheckBanResponse({ vkApi, logger }));
 (async () => {
 	try {
 		await rpcServer.start();
