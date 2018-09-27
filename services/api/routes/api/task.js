@@ -8,10 +8,10 @@ export default (router, rpcClient) => {
 	const vkApi = new VkApi(config.get('vkApi.token'), {
 		timeout: config.get('vkApi.timeout'),
 	});
-	const alert = new Alert(vkApi);
+	const alert = new Alert(vkApi, logger);
 	
 	// Сам классс Api
-	const taskApi = new TaskApi(rpcClient, vkApi, alert, config, logger);
+	const taskApi = new TaskApi(rpcClient, alert, config, logger);
 	
 	router.post('/task/stop/:id', async (ctx) => {
 		const { id } = ctx.params;
