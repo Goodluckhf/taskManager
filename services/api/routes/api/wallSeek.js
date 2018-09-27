@@ -17,6 +17,14 @@ export default (router) => {
 		};
 	});
 	
+	router.put('/wallSeek/:id/resume', async (ctx) => {
+		const { id } = ctx.params;
+		ctx.body = {
+			success: true,
+			data   : await wallSeekApi.resume(id),
+		};
+	});
+	
 	router.get('/wallSeek', async (ctx) => {
 		ctx.body = {
 			success: true,

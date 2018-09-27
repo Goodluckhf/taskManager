@@ -62,6 +62,19 @@ class WallSeekApi extends BaseApi {
 			.lean()
 			.exec();
 	}
+	
+	/**
+	 * @param {String} _id
+	 * @return {Promise<void>}
+	 */
+	// eslint-disable-next-line class-methods-use-this
+	async resume(_id) {
+		const CheckWallBanTask = mongoose.model('CheckWallBanTask');
+		const Task             = mongoose.model('Task');
+		const task             = await CheckWallBanTask.findOne({ _id }).populate('group').exec();
+		task.status            = Task.status.waiting;
+		return task.save();
+	}
 }
 
 export default WallSeekApi;
