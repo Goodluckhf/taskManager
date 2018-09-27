@@ -38,6 +38,24 @@ export const removeFailure = (error, id) => ({
 	payload: { error, id },
 });
 
+export const RESUME_REQUEST = 'WALLSEEK__RESUME_REQUEST';
+export const resumeRequest = id => ({
+	type   : RESUME_REQUEST,
+	payload: { id },
+});
+
+export const RESUME_SUCCESS = 'WALLSEEK__RESUME_SUCCESS';
+export const resumeSuccess = id => ({
+	type   : RESUME_SUCCESS,
+	payload: { id },
+});
+
+export const RESUME_FAILURE = 'WALLSEEK__RESUME_FAILURE';
+export const resumeFailure = (error, id) => ({
+	type   : RESUME_FAILURE,
+	payload: { error, id },
+});
+
 
 export const LIST_REQUEST = 'WALLSEEK__LIST_REQUEST';
 export const listRequest  = () => ({
