@@ -11,6 +11,7 @@ import AutoLikesTask     from '../tasks/AutolikesTask';
 import gracefulStop      from '../../../lib/GracefulStop';
 import LikesCheckTask    from '../tasks/LikesCheckTask';
 import CommentsCheckTask from '../tasks/CommentsCheckTask';
+import CheckWallBanTask  from '../tasks/CheckWallBanTask';
 
 gracefulStop.setWaitor('handleActiveTasks');
 
@@ -20,6 +21,7 @@ const mapperModelTypeToTask = {
 	AutoLikesTask,
 	LikesCheckTask,
 	CommentsCheckTask,
+	CheckWallBanTask,
 };
 
 /**
