@@ -11,7 +11,7 @@ class CheckWallBanTask extends BaseTask {
 			
 			const request = new CheckWallBanRequest(this.config, {
 				postCount: this.taskDocument.postCount,
-				link     : this.taskDocument.link,
+				link     : this.taskDocument.group.link,
 			});
 			this.logger.info({ request });
 			
@@ -20,7 +20,7 @@ class CheckWallBanTask extends BaseTask {
 		} catch (error) {
 			const wrapedError = new BaseApiError(error.message, 500).combine(error);
 			this.taskDocument._error = wrapedError.toObject();
-			this.taskDocument.status = Task.status.finished;
+			this.taskDocument.status = Task.status.skipped;
 			throw wrapedError;
 		} finally {
 			await this.taskDocument.save();
