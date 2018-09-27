@@ -30,6 +30,7 @@ class List extends PureComponent {
 						status={item.get('status')}
 						remove_loading={item.get('remove_loading')}
 						error={item.get('error')}
+						_error={item.get('_error')}
 					>
 						<GroupItem
 							_id={group.get('_id')}

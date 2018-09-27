@@ -1,16 +1,17 @@
 import React, { PureComponent } from 'react';
+import Immutable                from 'immutable';
 import propTypes from 'prop-types';
 import { Alert } from 'reactstrap';
 
 class ApiError extends PureComponent {
 	static propTypes = {
-		error: propTypes.object,
+		error: propTypes.instanceOf(Immutable.Map).isRequired,
 		title: propTypes.string,
 	};
 	
 	render() {
-		const { message } = this.props.error;
-		const title = this.props.title ? `${this.props.title}: ${message}` : message;
+		const message = this.props.error.get('message');
+		const title   = this.props.title ? `${this.props.title}: ${message}` : message;
 		return (
 			<Alert color="danger" {...this.props}>
 				<h4 className="alert-heading">{title}!</h4>
