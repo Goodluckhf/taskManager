@@ -19,8 +19,9 @@ initModels(dbConnection);
 const app = new Koa();
 
 app.silent = false;
-
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development') {
+	app.use(morgan('dev'));
+}
 app.use(bodyParser());
 app.use(errorHandler);
 app.use(routes.routes());
