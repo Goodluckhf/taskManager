@@ -51,11 +51,11 @@ class List extends PureComponent {
 			<Card>
 				<CardHeader>
 					<Row>
-						<Col><b>Список задач на слежку</b></Col>
+						<Col><b>Список задач на слежку</b><span>{this.props.loading ? 'Обновляю...' : ''}</span></Col>
 					</Row>
 				</CardHeader>
 				<CardBody>
-					{this.props.loading ? 'Загружаю...' : items}
+					{items}
 				</CardBody>
 			</Card>
 		);
