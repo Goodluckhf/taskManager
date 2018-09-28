@@ -28,13 +28,13 @@ class List extends PureComponent {
 			<Card>
 				<CardHeader>
 					<Row>
-						<Col><b>Список пабликов</b></Col>
+						<Col><b>Список пабликов</b><span>{this.props.loading ? 'Загружаю...' : ''}</span></Col>
 						<FormFilter change={this.props.filterChange}/>
 					</Row>
 				</CardHeader>
 				<CardBody>
 					<Row>
-						{this.props.loading ? 'Загружаю...' : groupsElements}
+						{groupsElements}
 					</Row>
 				</CardBody>
 			</Card>
