@@ -1,19 +1,19 @@
-import { takeEvery, put, call, fork, cancel }  from 'redux-saga/effects';
+import { takeEvery, call, fork, cancel }  from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import { LOCATION_CHANGE } from 'connected-react-router';
-import { listRequest as groupListRequest }     from '../actions/groups';
+import { update as updateGroup }     from './group';
 import { listRequest as autolikesListRequest } from '../actions/autolikes';
 import { listRequest as wallSeekListRequest }  from '../actions/wallSeek';
 
-const mapperPathToActionCreator = {
-	'/groups'   : groupListRequest,
+const mapperPathToUpdateFunction = {
+	'/groups'   : updateGroup,
 	'/autolikes': autolikesListRequest,
 	'/wallseek' : wallSeekListRequest,
 };
 
-const loopUpdate = function* (actionCreator, interval) {
+const loopUpdate = function* (updateFunction, interval) {
 	while (true) {
-		yield put(actionCreator());
+		yield updateFunction();
 		yield call(delay, interval);
 	}
 };
@@ -26,12 +26,12 @@ export default function* () {
 			yield cancel(currentLoopTask);
 		}
 		
-		const actionCreator = mapperPathToActionCreator[location.pathname];
-		if (!actionCreator) {
+		const updateFunction = mapperPathToUpdateFunction[location.pathname];
+		if (!updateFunction) {
 			return;
 		}
 		
-		currentLoopTask = yield fork(loopUpdate, actionCreator, interval);
+		currentLoopTask = yield fork(loopUpdate, updateFunction, interval);
 	});
 }
 
