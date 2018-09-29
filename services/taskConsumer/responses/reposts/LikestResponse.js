@@ -58,7 +58,7 @@ class LikestResponse extends Response {
 					return true;
 				}
 				
-				return !!document.querySelector('#reposts-add-ajax-form-wrapper .messages status');
+				return !!document.querySelector('#reposts-add-ajax-form-wrapper .messages.status');
 			});
 			
 			const errors = await page.evaluate(() => {
@@ -70,7 +70,7 @@ class LikestResponse extends Response {
 				throw errors;
 			}
 		} finally {
-			// await browser.close();
+			await browser.close();
 		}
 	}
 }
