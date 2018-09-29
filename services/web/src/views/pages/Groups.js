@@ -20,6 +20,7 @@ class Groups extends PureComponent {
 		filterChange  : propTypes.func,
 		form          : propTypes.instanceOf(Immutable.Map),
 		groups        : propTypes.instanceOf(Immutable.Map),
+		filter        : propTypes.instanceOf(Immutable.Map),
 	};
 	
 	render() {
@@ -36,6 +37,7 @@ class Groups extends PureComponent {
 						loading={this.props.groups.get('loading')}
 						changeIsTarget={this.props.changeIsTarget}
 						filterChange={this.props.filterChange}
+						filter={this.props.filter}
 					/>
 				</Container>
 			</Layout>
@@ -51,6 +53,7 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
 	groups: loaderSelector({ GROUPS__LIST: 'loading' }, 'groupPage', state, ['list']),
+	filter: state.groupPage.getIn(['list', 'filter']),
 	form  : loaderSelector({ GROUPS__CREATE: 'loading' }, 'groupPage', state, ['form']),
 });
 

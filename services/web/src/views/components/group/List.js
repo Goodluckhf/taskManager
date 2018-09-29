@@ -12,6 +12,7 @@ import FormFilter from './FormFilter';
 class List extends PureComponent {
 	static propTypes = {
 		items         : propTypes.instanceOf(Immutable.List).isRequired,
+		filter        : propTypes.instanceOf(Immutable.Map).isRequired,
 		loading       : propTypes.bool.isRequired,
 		changeIsTarget: propTypes.func.isRequired,
 		filterChange  : propTypes.func.isRequired,
@@ -29,7 +30,11 @@ class List extends PureComponent {
 				<CardHeader>
 					<Row>
 						<Col><b>Список пабликов</b><span>{this.props.loading ? 'Загружаю...' : ''}</span></Col>
-						<FormFilter change={this.props.filterChange}/>
+						<FormFilter
+							search={this.props.filter.get('search')}
+							isTarget={this.props.filter.get('isTarget')}
+							change={this.props.filterChange}
+						/>
 					</Row>
 				</CardHeader>
 				<CardBody>
