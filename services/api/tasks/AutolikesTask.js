@@ -5,6 +5,7 @@ import mongoose     from 'mongoose';
 import BaseTask           from './BaseTask';
 import LikesCommonTask    from './LikesCommonTask';
 import CommentsCommonTask from './CommentsCommonTask';
+import RepostsCommonTask  from './RepostsCommonTask';
 
 class AutoLikesTask extends BaseTask {
 	async handle() {
@@ -12,6 +13,7 @@ class AutoLikesTask extends BaseTask {
 		const Group               = mongoose.model('Group');
 		const LikesCommonModel    = mongoose.model('LikesCommon');
 		const CommentsCommonModel = mongoose.model('CommentsCommon');
+		const RepostsCommonModel  = mongoose.model('RepostsCommon');
 		
 		try {
 			// Проверяем, что прошло 70 минут, чтобы не лайкать уже лайкнутый пост
@@ -87,18 +89,35 @@ class AutoLikesTask extends BaseTask {
 				config      : this.config,
 			});
 			
+			const repostsCommonDocument = RepostsCommonModel.createInstance({
+				postLink,
+				repostsCount: this.taskDocument.repostsCount,
+				status      : Task.status.pending,
+				parentTask  : this.taskDocument,
+			});
+			
+			const repostsCommonTask = new RepostsCommonTask({
+				logger      : this.logger,
+				taskDocument: repostsCommonDocument,
+				rpcClient   : this.rpcClient,
+				config      : this.config,
+			});
+			
 			this.taskDocument.subTasks.push(commentsCommonDocument);
 			this.taskDocument.subTasks.push(likesCommonDocument);
+			this.taskDocument.subTasks.push(repostsCommonTask);
 			await Promise.all([
 				this.taskDocument.save(),
 				commentsCommonDocument.save(),
 				likesCommonDocument.save(),
+				repostsCommonTask.save(),
 			]);
 			
 			const errors = [];
 			await Promise.all([
 				likesCommonTask.handle().catch(error => errors.push(error)),
 				commentsCommonTask.handle().catch(error => errors.push(error)),
+				repostsCommonTask.handle().catch(error => errors.push(error)),
 			]);
 			
 			if (errors.length) {
