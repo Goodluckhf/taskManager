@@ -21,9 +21,9 @@ export const createRequest  = data => ({
 
 
 export const LIST_REQUEST = 'GROUPS__LIST_REQUEST';
-export const listRequest  = () => ({
+export const listRequest  = filterState => ({
 	type   : LIST_REQUEST,
-	payload: {},
+	payload: { filterState },
 });
 
 export const LIST_SUCCESS = 'GROUPS__LIST_SUCCESS';
