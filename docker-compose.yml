@@ -10,6 +10,7 @@ x-default-logging:
 services:
   mongo:
     image: mongo
+    restart: always
     volumes:
       - mongo-data:/data/db
     logging:
@@ -18,12 +19,13 @@ services:
       - 27017:27017
   rabbit:
     image: rabbitmq:3-management
+    restart: always
     volumes:
       - rabbit-data:/var/lib/rabbitmq:cached
     logging:
       driver: none
     env_file:
-      - .env
+      - .env.rabbit
     ports:
       - 8081:15672
   prometheus:
@@ -53,13 +55,13 @@ services:
     logging:
       driver: none
     env_file:
-      - .env
+      - .env.rabbit
   nginx-exporter:
     container_name: nginx-exporter
     image: sophos/nginx-vts-exporter
     restart: always
     env_file:
-      - .env
+      - .env.infra
   cadvisor:
     image: google/cadvisor:latest
     restart: always
@@ -79,7 +81,7 @@ services:
       - grafana-data:/var/lib/grafana
     logging: *default-logging
     env_file:
-      - .env
+      - .env.infra
 
   # Головной nginx - проксирует запросы на api и web
   nginx:
@@ -102,13 +104,17 @@ services:
       dockerfile: ./services/api/Dockerfile
     restart: always
     logging: *default-logging
-    stop_grace_period: 70s
+    stop_grace_period: 120s
     env_file:
       - .env
+      - .env.rabbit
   cron:
+    restart: always
     build:
       context: ./
       dockerfile: services/cron/Dockerfile
+    env_file:
+      - .env
 
   # Консумеры
   task-consumer:
@@ -121,9 +127,12 @@ services:
       dockerfile: services/taskConsumer/Dockerfile
     scale: 2
     logging: *default-logging
-    stop_grace_period: 70s
+    stop_grace_period: 120s
     stop_signal: SIGINT
     restart: always
+    env_file:
+      - .env
+      - .env.rabbit
 volumes:
   mongo-data:
   rabbit-data:
