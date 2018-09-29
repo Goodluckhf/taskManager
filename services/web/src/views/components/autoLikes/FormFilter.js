@@ -9,6 +9,10 @@ class FormFilter extends PureComponent {
 		this.state = {
 			filter: 'all',
 		};
+		
+		this.filterAllId      = Math.random();
+		this.filterActiveId   = Math.random();
+		this.filterInactiveId = Math.random();
 	}
 	
 	static propTypes = {
@@ -26,7 +30,7 @@ class FormFilter extends PureComponent {
 			<Fragment>
 				<Col xs='2'>
 					<CustomInput
-						id={Math.random()}
+						id={this.filterAllId}
 						onChange={this.onFilterChange}
 						type='radio'
 						label='Все'
@@ -37,7 +41,7 @@ class FormFilter extends PureComponent {
 				</Col>
 				<Col xs='2'>
 					<CustomInput
-						id={Math.random()}
+						id={this.filterActiveId}
 						onChange={this.onFilterChange}
 						type='radio'
 						label='Активные'
@@ -48,7 +52,7 @@ class FormFilter extends PureComponent {
 				</Col>
 				<Col xs='2'>
 					<CustomInput
-						id={Math.random()}
+						id={this.filterInactiveId}
 						onChange={this.onFilterChange}
 						type='radio'
 						label='Не активные'
