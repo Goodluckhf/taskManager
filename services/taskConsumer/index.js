@@ -8,6 +8,8 @@ import LikeProResponse        from './responses/likes/LikeProResponse/LikeProRes
 import gracefulStop           from '../../lib/GracefulStop/index';
 import Z1y1x1CommentsResponse from './responses/comments/Z1y1x1Response';
 import LikestCommentsResponse from './responses/comments/LikestResponse';
+import Z1y1x1RepostsResponse  from './responses/reposts/Z1y1x1Response';
+import LikestRepostsResponse  from './responses/reposts/LikestResponse';
 import Z1y1x1Response         from './responses/likes/Z1y1x1Response';
 import LikestResponse         from './responses/likes/LikestResponse';
 import Captcha                from '../../lib/Captcha';
@@ -15,6 +17,7 @@ import VkApi                  from '../../lib/VkApi';
 import LikesCheckResponse     from './responses/LikesCheckResponse';
 import CommentsCheckResponse  from './responses/CommentsCheckResponse';
 import WallCheckBanResponse   from './responses/WallCheckBanResponse';
+import RepostsCheckResponse   from './responses/RepostsCheckResponse';
 
 const rabbitConfig = config.get('rabbit');
 const amqp = new Amqp(logger, {
@@ -56,6 +59,9 @@ rpcServer.addResponse(new LikesCheckResponse({
 })).addResponse(new CommentsCheckResponse({
 	logger,
 	vkApi,
+})).addResponse(new RepostsCheckResponse({
+	logger,
+	vkApi,
 }));
 
 
@@ -64,6 +70,18 @@ rpcServer.addResponse(new Z1y1x1CommentsResponse({
 	logger,
 	token: config.get('z1y1x1.token'),
 })).addResponse(new LikestCommentsResponse({
+	captcha,
+	logger,
+	login   : config.get('likest.login'),
+	password: config.get('likest.password'),
+}));
+
+
+// Обработчики накрутки репостов
+rpcServer.addResponse(new Z1y1x1RepostsResponse({
+	logger,
+	token: config.get('z1y1x1.token'),
+})).addResponse(new LikestRepostsResponse({
 	captcha,
 	logger,
 	login   : config.get('likest.login'),
