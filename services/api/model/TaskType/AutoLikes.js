@@ -17,6 +17,11 @@ const autolikesSchema = new mongoose.Schema({
 		required: true,
 	},
 	
+	repostsCount: {
+		type    : Number,
+		required: true,
+	},
+	
 	// Время последнего проставления лайков в этой группе
 	lastHandleAt: {
 		type   : Date,
