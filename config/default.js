@@ -25,20 +25,20 @@ module.exports = {
 	
 	tasksQueue: {
 		name    : 'tasks',
-		timeout : 120000,
+		timeout : process.env.TASK_QUEUE__TIMEOUT,
 		prefetch: 1,
 	},
 	
 	likesTask: {
-		checkingDelay: 2, // В минутах
-		likesToCheck : 30,
-		serviceOrder : ['likesPro', 'z1y1x1', 'likest'],
+		checkingDelay: process.env.LIKES_TASK__CHECKING_DELAY, // В минутах
+		likesToCheck : process.env.LIKES_TASK__LIKES_TO_CHECK,
+		serviceOrder : process.env.LIKES_TASK__SERVICE_ORDER.split(','),
 	},
 	
 	commentsTask: {
-		checkingDelay  : 2, // В минутах
-		commentsToCheck: 7,
-		serviceOrder   : ['z1y1x1', 'likest'],
+		checkingDelay  : process.env.COMMENTS_TASK__CHECKING_DELAY, // В минутах
+		commentsToCheck: process.env.COMMENTS_TASK__COMMENTS_TO_CHECK,
+		serviceOrder   : process.env.COMMENTS_TASK__SERVICE_ORDER.split(','),
 	},
 	
 	// @TODO: Поправить
@@ -47,33 +47,33 @@ module.exports = {
 	},
 	
 	likePro: {
-		login   : '!login!',
-		password: '!password!',
+		login   : process.env.LIKE_PRO__LOGIN,
+		password: process.env.LIKE_PRO__PASSWORD,
 	},
 	
 	likest: {
-		login   : '!login!',
-		password: '!password!',
+		login   : process.env.LIKEST__LOGIN,
+		password: process.env.LIKEST__PASSWORD,
 	},
 	
 	z1y1x1: {
-		token: '!token!',
+		token: process.env.Z1Y1X1__TOKEN,
 	},
 	
 	vkApi: {
-		token  : '!token!',
-		timeout: 10000,
+		token  : process.env.VK_API__TOKEN,
+		timeout: process.env.VK_API__TIMEOUT,
 	},
 	
 	rucaptcha: {
-		token: '!token!',
+		token: process.env.RUCAPTCHA__TOKEN,
 	},
 	
 	cron: {
-		interval: 60000,
+		interval: process.env.CRON__INTERVAL,
 	},
 	
 	vkAlert: {
-		chat_id: 215,
+		chat_id: process.env.VK_ALERT__CHAT_ID,
 	},
 };
