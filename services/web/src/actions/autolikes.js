@@ -18,9 +18,9 @@ export const createFailure = error => ({
 
 
 export const LIST_REQUEST = 'AUTO_LIKES__LIST_REQUEST';
-export const listRequest  = () => ({
+export const listRequest  = filter => ({
 	type   : LIST_REQUEST,
-	payload: {},
+	payload: filter,
 });
 
 export const FILTER_CHANGE_REQUEST = 'AUTO_LIKES__FILTER_CHANGE_REQUEST';
