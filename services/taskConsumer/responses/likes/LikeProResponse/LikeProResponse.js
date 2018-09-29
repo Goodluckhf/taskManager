@@ -68,6 +68,10 @@ class LikeProResponse extends Response {
 			await browser.close();
 		}
 		
+		if (result.error) {
+			throw result.error;
+		}
+		
 		return result;
 	}
 }
