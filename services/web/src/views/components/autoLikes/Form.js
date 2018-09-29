@@ -16,6 +16,7 @@ class Form extends PureComponent {
 			publicHref   : '',
 			likesCount   : 100,
 			commentsCount: 33,
+			repostsCount : 15,
 		};
 	}
 	static propTypes = {
@@ -30,6 +31,10 @@ class Form extends PureComponent {
 	
 	handleCommentsCountInput = (e) => {
 		this.setState({ commentsCount: parseInt(e.target.value.trim(), 10) });
+	};
+	
+	handleRepostsCountInput = (e) => {
+		this.setState({ repostsCount: parseInt(e.target.value.trim(), 10) });
 	};
 	
 	handlePublicInput = (e) => {
@@ -48,17 +53,21 @@ class Form extends PureComponent {
 					<BootstrapForm>
 						<FormGroup>
 							<Row>
-								<Col>
+								<Col sm='6' md='5'>
 									<Label>Ссылка на паблик где должен выйти пост</Label>
 									<Input onChange={this.handlePublicInput} type='text' placeholder='https://vk.com/nice.advice'/>
 								</Col>
-								<Col>
+								<Col sm='6' md='3'>
 									<Label>Кол-во лайков (100 минимум)</Label>
 									<Input onChange={this.handleCountInput} type='number' value={this.state.likesCount}/>
 								</Col>
-								<Col>
+								<Col sm='6' md='2'>
 									<Label>Кол-во комментов</Label>
 									<Input onChange={this.handleCommentsCountInput} type='number' value={this.state.commentsCount}/>
+								</Col>
+								<Col sm='6' md='2'>
+									<Label>Кол-во репостов</Label>
+									<Input onChange={this.handleRepostsCountInput} type='number' value={this.state.repostsCount}/>
 								</Col>
 							</Row>
 						</FormGroup>
