@@ -1,14 +1,28 @@
 import axios from 'axios';
 
-import { takeEvery, put, call } from 'redux-saga/effects';
+import { takeEvery, put, call, select } from 'redux-saga/effects';
 import {
 	CREATE_REQUEST, LIST_REQUEST, REMOVE_REQUEST,
 	FILTER_CHANGE_REQUEST, STOP_REQUEST,
 	createSuccess, createFailure,
 	stopSuccess, listSuccess, stopFailure,
-	removeSuccess, removeFailure,
-} from '../actions/autolikes';
+	removeSuccess, removeFailure, listRequest,
+}                               from '../actions/autolikes';
 import { fatalError }           from '../actions/fatalError';
+
+const list = function* (filterState) {
+	try {
+		const { data: result } = yield call(axios.get, '/api/autolikes', { params: filterState });
+		if (!result.success) {
+			yield put(fatalError(result.data));
+			return;
+		}
+		
+		yield put(listSuccess(result.data));
+	} catch (error) {
+		yield put(fatalError(error));
+	}
+};
 
 export default function* () {
 	yield takeEvery(CREATE_REQUEST, function* ({ payload: data }) {
@@ -30,32 +44,12 @@ export default function* () {
 		}
 	});
 	
-	yield takeEvery(LIST_REQUEST, function* () {
-		try {
-			const { data: result } = yield call(axios.get, '/api/autolikes');
-			if (!result.success) {
-				yield put(fatalError(result.data));
-				return;
-			}
-			
-			yield put(listSuccess(result.data));
-		} catch (error) {
-			yield put(fatalError(error));
-		}
+	yield takeEvery(LIST_REQUEST, function* ({ payload: filterState }) {
+		yield list(filterState);
 	});
 	
 	yield takeEvery(FILTER_CHANGE_REQUEST, function* ({ payload: { filterState } }) {
-		try {
-			const { data: result } = yield call(axios.get, '/api/autolikes', { params: filterState });
-			if (!result.success) {
-				yield put(fatalError(result.data));
-				return;
-			}
-			
-			yield put(listSuccess(result.data));
-		} catch (error) {
-			yield put(fatalError(error));
-		}
+		yield list(filterState);
 	});
 	
 	yield takeEvery(STOP_REQUEST, function* ({ payload: { id } }) {
@@ -86,3 +80,11 @@ export default function* () {
 		}
 	});
 }
+
+export const update = function* () {
+	const filter = yield select(state => (
+		state.autoLikesPage.getIn(['list', 'filter'])
+	));
+	
+	yield put(listRequest({ filter }));
+};
