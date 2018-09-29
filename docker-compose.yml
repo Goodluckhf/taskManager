@@ -103,6 +103,8 @@ services:
     restart: always
     logging: *default-logging
     stop_grace_period: 70s
+    env_file:
+      - .env
   cron:
     build:
       context: ./
