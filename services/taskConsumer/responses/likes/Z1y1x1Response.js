@@ -28,6 +28,10 @@ class Z1y1x1Response extends Response {
 		
 		this.logger.info({ postLink, likesCount, data });
 		
+		if (data.error) {
+			throw data.error;
+		}
+		
 		return data;
 	}
 }
