@@ -105,12 +105,12 @@ class AutoLikesTask extends BaseTask {
 			
 			this.taskDocument.subTasks.push(commentsCommonDocument);
 			this.taskDocument.subTasks.push(likesCommonDocument);
-			this.taskDocument.subTasks.push(repostsCommonTask);
+			this.taskDocument.subTasks.push(repostsCommonDocument);
 			await Promise.all([
 				this.taskDocument.save(),
 				commentsCommonDocument.save(),
 				likesCommonDocument.save(),
-				repostsCommonTask.save(),
+				repostsCommonDocument.save(),
 			]);
 			
 			const errors = [];
