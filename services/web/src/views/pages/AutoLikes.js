@@ -21,6 +21,7 @@ class AutoLikes extends PureComponent {
 		stop          : propTypes.func,
 		remove        : propTypes.func,
 		loading       : propTypes.bool,
+		filter        : propTypes.string,
 	};
 	
 	
@@ -40,6 +41,7 @@ class AutoLikes extends PureComponent {
 						filterChange={this.props.filterChange}
 						items={this.props.list}
 						loading={this.props.loading}
+						filter={this.props.filter}
 					/>
 				</Container>
 			</Layout>
@@ -55,8 +57,9 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-	form: loaderSelector({ AUTO_LIKES__CREATE: 'loading' }, 'autoLikesPage', state, ['form']),
-	list: loaderSelector(
+	form  : loaderSelector({ AUTO_LIKES__CREATE: 'loading' }, 'autoLikesPage', state, ['form']),
+	filter: state.autoLikesPage.getIn(['list', 'filter']),
+	list  : loaderSelector(
 		{
 			AUTO_LIKES__STOP  : 'stop_loading',
 			AUTO_LIKES__REMOVE: 'remove_loading',

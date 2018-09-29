@@ -31,7 +31,6 @@ class FormFilter extends PureComponent {
 		if (!Object.keys(newState).length) {
 			return null;
 		}
-		console.log(props, state, newState);
 		
 		return newState;
 	}

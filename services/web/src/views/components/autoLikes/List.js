@@ -16,6 +16,7 @@ class List extends PureComponent {
 		stop        : propTypes.func.isRequired,
 		remove      : propTypes.func.isRequired,
 		loading     : propTypes.bool.isRequired,
+		filter      : propTypes.string.isRequired,
 	};
 	
 	render() {
@@ -56,7 +57,7 @@ class List extends PureComponent {
 				<CardHeader>
 					<Row>
 						<Col><b>Список задач на автолайкинг</b><span>{this.props.loading ? 'Обновляю...' : ''}</span></Col>
-						<FormFilter change={this.props.filterChange}/>
+						<FormFilter filter={this.props.filter} change={this.props.filterChange}/>
 					</Row>
 				</CardHeader>
 				<CardBody>

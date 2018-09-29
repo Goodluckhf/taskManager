@@ -7,7 +7,8 @@ class FormFilter extends PureComponent {
 		super(props);
 		
 		this.state = {
-			filter: 'all',
+			filter : this.props.filter,
+			_filter: this.props.filter,
 		};
 		
 		this.filterAllId      = Math.random();
@@ -17,11 +18,23 @@ class FormFilter extends PureComponent {
 	
 	static propTypes = {
 		change: propTypes.func.isRequired,
+		filter: propTypes.string.isRequired,
 	};
+	
+	static getDerivedStateFromProps(props, state) {
+		if (props.filter !== state._filter) {
+			return {
+				filter : props.filter,
+				_filter: props.filter,
+			};
+		}
+		
+		return null;
+	}
 	
 	onFilterChange = (e) => {
 		this.setState({ filter: e.target.value }, () => {
-			this.props.change(this.state);
+			this.props.change({ filter: this.state.filter });
 		});
 	};
 	
