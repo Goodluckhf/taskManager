@@ -110,7 +110,7 @@ class AutoLikesApi extends BaseApi {
 			.populate({
 				path   : 'subTasks',
 				options: {
-					limit: 2,
+					limit: 3,
 					sort : { createdAt: -1 },
 				},
 			})
