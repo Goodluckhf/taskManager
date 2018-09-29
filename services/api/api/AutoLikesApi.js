@@ -19,6 +19,8 @@ class AutoLikesApi extends BaseApi {
 	 * @param {String} _data.publicHref
 	 * @param {String} _data.admin
 	 * @param {Number} _data.likesCount
+	 * @param {Number} _data.commentsCount
+	 * @param {Number} _data.repostsCount
 	 * @return {Promise<*>}
 	 */
 	async create(_data) {
@@ -27,11 +29,12 @@ class AutoLikesApi extends BaseApi {
 			properties: {
 				likesCount   : { oneOf: [{ type: 'string' }, { type: 'number' }] }, // @TODO: Разобраться, чтобы сам конверитил в int
 				commentsCount: { oneOf: [{ type: 'string' }, { type: 'number' }] },
+				repostsCount : { oneOf: [{ type: 'string' }, { type: 'number' }] },
 				publicHref   : { type: 'string' },
 				admin        : { type: 'string' },
 				groupId      : { type: 'string' },
 			},
-			required: ['likesCount'],
+			required: ['likesCount', 'commentsCount', 'repostsCount'],
 		}, data);
 		
 		if (!data.groupId && !data.publicHref) {
@@ -122,6 +125,8 @@ class AutoLikesApi extends BaseApi {
 	 * @param {Object} _data
 	 * @param {String} _data.groupId
 	 * @param {Number} _data.likesCount
+	 * @param {Number} _data.commentsCount
+	 * @param {Number} _data.repostsCount
 	 * @return {Promise<*>}
 	 */
 	async update(_id, _data) {
@@ -132,6 +137,7 @@ class AutoLikesApi extends BaseApi {
 				groupId      : { type: 'string' },
 				likesCount   : { oneOf: [{ type: 'string' }, { type: 'number' }] }, // @TODO: Разобраться, чтобы сам конверитил в int
 				commentsCount: { oneOf: [{ type: 'string' }, { type: 'number' }] }, // @TODO: Разобраться, чтобы сам конверитил в int
+				repostsCount : { oneOf: [{ type: 'string' }, { type: 'number' }] }, // @TODO: Разобраться, чтобы сам конверитил в int
 			},
 		}, data);
 		
