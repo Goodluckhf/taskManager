@@ -51,7 +51,7 @@ class Item extends PureComponent {
 			return (
 				<div key={task.get('_id')}>
 					<span className='h6'>{title}: {statusCodeToString[task.get('status')]}</span>
-					{task.get('_error') && <ApiError title={title} error={task.get('_error').toJS()}/>}
+					{task.get('_error') && <ApiError title={title} error={task.get('_error')}/>}
 				</div>
 			);
 		});
