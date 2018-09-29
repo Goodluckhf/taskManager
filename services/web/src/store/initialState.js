@@ -42,7 +42,8 @@ export const groupPage = Map({
 
 export const autoLikesPage = Map({
 	list: Map({
-		items: List([]),
+		items : List([]),
+		filter: 'active',
 	}),
 	
 	form: Map({}),

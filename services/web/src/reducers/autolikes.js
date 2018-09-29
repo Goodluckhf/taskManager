@@ -2,7 +2,7 @@ import { fromJS } from 'immutable';
 
 import { autoLikesPage } from '../store/initialState';
 import {
-	CREATE_SUCCESS,
+	CREATE_SUCCESS, FILTER_CHANGE_REQUEST,
 	LIST_SUCCESS, REMOVE_SUCCESS, STOP_SUCCESS,
 } from '../actions/autolikes';
 
@@ -33,6 +33,13 @@ export default (state = autoLikesPage, { type, payload }) => {
 	if (type === REMOVE_SUCCESS) {
 		const index = state.getIn(['list', 'items']).findIndex(item => item.get('_id') === payload.id);
 		return state.deleteIn(['list', 'items', index]);
+	}
+	
+	if (type === FILTER_CHANGE_REQUEST) {
+		return state.updateIn(
+			['list', 'filter'],
+			() => payload.filterState.filter,
+		);
 	}
 	
 	return state;
