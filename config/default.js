@@ -2,8 +2,8 @@ require('dotenv').config();
 
 module.exports = {
 	db: {
-		connectionURI    : 'mongodb://mongo/tasks',
-		reconnectInterval: 1000,
+		connectionURI    : process.env.MONGODB_URL,
+		reconnectInterval: process.env.MONGODB__RECONNECTING_INTERVAL,
 	},
 	
 	api: {

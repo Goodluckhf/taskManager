@@ -3,5 +3,6 @@ node_modules
 .env
 .env.infra
 .env.rabbit
+.env.mongodb
 config/*
 !config/default.js
