@@ -1,4 +1,13 @@
-require('dotenv').config();
+const path   = require('path');
+const dotEnv = require('dotenv');
+
+if (process.env.NODE_ENV === 'development') {
+	console.log(path.resolve(process.cwd(), '.env.mongodb'));
+	dotEnv.config({ path: path.resolve(process.cwd(), '.env.mongodb') });
+	dotEnv.config({ path: path.resolve(process.cwd(), '.env.rabbit') });
+	dotEnv.config();
+	console.log(process.env);
+}
 
 module.exports = {
 	db: {
@@ -33,6 +42,12 @@ module.exports = {
 		checkingDelay: process.env.LIKES_TASK__CHECKING_DELAY, // В минутах
 		likesToCheck : process.env.LIKES_TASK__LIKES_TO_CHECK,
 		serviceOrder : process.env.LIKES_TASK__SERVICE_ORDER.split(','),
+	},
+	
+	repostsTask: {
+		checkingDelay : process.env.REPOSTS_TASK__CHECKING_DELAY, // В минутах
+		repostsToCheck: process.env.REPOSTS_TASK__REPOSTS_TO_CHECK,
+		serviceOrder  : process.env.REPOSTS_TASK__SERVICE_ORDER.split(','),
 	},
 	
 	commentsTask: {

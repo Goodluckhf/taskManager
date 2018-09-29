@@ -34,12 +34,18 @@ services:
       - .:/home/www:cached
     restart: always
     logging: *default-logging
+    env_file:
+      - .env
+      - .env.rabbit
+      - .env.mongodb
   cron:
     build:
       context: ./services/cron
       dockerfile: Dockerfile.dev
     volumes:
       - .:/home/www:cached
+    env_file:
+      - .env
   rabbit:
     image: rabbitmq:3-management
     volumes:
@@ -47,7 +53,7 @@ services:
     logging:
       driver: none
     env_file:
-      - .env
+      - .env.rabbit
     ports:
       - 8081:15672
       - 5672:5672
