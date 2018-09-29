@@ -30,7 +30,11 @@ export const routes = Map({
 
 export const groupPage = Map({
 	list: Map({
-		items: List([]),
+		items : List([]),
+		filter: Map({
+			search  : '',
+			isTarget: true,
+		}),
 	}),
 	
 	form: Map({}),
