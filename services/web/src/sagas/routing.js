@@ -1,14 +1,14 @@
-import { takeEvery, call, fork, cancel }  from 'redux-saga/effects';
-import { delay } from 'redux-saga';
-import { LOCATION_CHANGE } from 'connected-react-router';
-import { update as updateGroup }     from './group';
-import { update as updateAutolikes } from './autolikes';
-import { listRequest as wallSeekListRequest }  from '../actions/wallSeek';
+import { takeEvery, call, fork, cancel } from 'redux-saga/effects';
+import { delay }                         from 'redux-saga';
+import { LOCATION_CHANGE }               from 'connected-react-router';
+import { update as updateGroup }         from './group';
+import { update as updateAutolikes }     from './autolikes';
+import { update as updateWallSeek }      from './wallSeek';
 
 const mapperPathToUpdateFunction = {
 	'/groups'   : updateGroup,
 	'/autolikes': updateAutolikes,
-	'/wallseek' : wallSeekListRequest,
+	'/wallseek' : updateWallSeek,
 };
 
 const loopUpdate = function* (updateFunction, interval) {

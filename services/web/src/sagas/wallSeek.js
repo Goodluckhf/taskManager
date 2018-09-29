@@ -2,11 +2,11 @@ import axios from 'axios';
 
 import { takeEvery, put, call } from 'redux-saga/effects';
 import {
-	CREATE_REQUEST, LIST_REQUEST, REMOVE_REQUEST,
-	createSuccess, createFailure,
-	listSuccess, removeSuccess, removeFailure, RESUME_REQUEST, resumeSuccess, resumeFailure,
-} from '../actions/wallSeek';
-import { fatalError } from '../actions/fatalError';
+	CREATE_REQUEST, LIST_REQUEST, REMOVE_REQUEST, RESUME_REQUEST,
+	createSuccess, createFailure, listRequest, resumeSuccess,
+	listSuccess, removeSuccess, removeFailure, resumeFailure,
+}                               from '../actions/wallSeek';
+import { fatalError }           from '../actions/fatalError';
 
 export default function* () {
 	yield takeEvery(CREATE_REQUEST, function* ({ payload: data }) {
@@ -71,3 +71,7 @@ export default function* () {
 		}
 	});
 }
+
+export const update = function* () {
+	yield put(listRequest());
+};
