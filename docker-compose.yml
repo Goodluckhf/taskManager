@@ -55,6 +55,7 @@ services:
     ports:
       - 9091:9090
     env_file:
+      - .env.infra
       - .env.rabbit
   nginx-exporter:
     container_name: nginx-exporter
