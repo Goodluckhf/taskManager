@@ -2,11 +2,9 @@ const path   = require('path');
 const dotEnv = require('dotenv');
 
 if (process.env.NODE_ENV === 'development') {
-	console.log(path.resolve(process.cwd(), '.env.mongodb'));
 	dotEnv.config({ path: path.resolve(process.cwd(), '.env.mongodb') });
 	dotEnv.config({ path: path.resolve(process.cwd(), '.env.rabbit') });
 	dotEnv.config();
-	console.log(process.env);
 }
 
 module.exports = {
