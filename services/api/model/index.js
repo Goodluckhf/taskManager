@@ -11,14 +11,17 @@ import repostsCommonSchema     from './TaskType/RepostsCommon';
 import repostsTaskSchema       from './TaskType/RepostsTask';
 import checkWallBanTaskSchema  from './TaskType/CheckWallBanTask';
 
-import groupSchema                from './Group';
-import accountSchema              from './Account';
+import groupSchema   from './Group';
+import accountSchema from './Account';
+import userSchema    from './User';
 
 
 // Initialise mongoose models
 export default (connection) => {
 	connection.model('Group', groupSchema);
 	connection.model('Account', accountSchema);
+	connection.model('User', userSchema);
+	
 	connection.model('Task', taskSchema);
 	connection.model('Task').discriminator('AutoLikesTask', autoLikesTaskSchema);
 	connection.model('Task').discriminator('LikesCommon', likesCommonSchema);
