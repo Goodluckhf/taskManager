@@ -20,6 +20,12 @@ const userSchema = new mongoose.Schema({
 		type   : Boolean,
 		default: false,
 	},
+	
+	// Группы учавствующие в задачу на супер задачу
+	targetGroups: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref : 'Group',
+	}],
 });
 
 const algorithmIterations = 100;
@@ -29,6 +35,7 @@ const hashLength          = 128;
  * @property {String} email
  * @property {String} passwordHash
  * @property {Boolean} isActive
+ * @property {Array.<GroupDocument>} targetGroups
  */
 class UserDocument {
 	/**
