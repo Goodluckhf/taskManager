@@ -8,6 +8,10 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 module.exports = {
+	jwt: {
+		secret: process.env.JWT__SECRET,
+	},
+	
 	db: {
 		connectionURI    : process.env.MONGODB_URL,
 		reconnectInterval: process.env.MONGODB__RECONNECTING_INTERVAL,
