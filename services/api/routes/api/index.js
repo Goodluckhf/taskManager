@@ -1,5 +1,6 @@
-import config from 'config';
-import Router from 'koa-router';
+import config   from 'config';
+import Router   from 'koa-router';
+import passport from 'koa-passport';
 
 import logger    from '../../../../lib/logger';
 import RpcClient from '../../../../lib/amqp/RpcClient';
@@ -10,6 +11,7 @@ import createAutoLikesTaskRoute from './autolikes';
 import createAccountRoute       from './account';
 import createGroupRoute         from './group';
 import createWallSeekRoute      from './wallSeek';
+import createUserRoute          from './user';
 
 // rabbit, RPC client
 const rabbitConfig = config.get('rabbit');
@@ -21,10 +23,11 @@ rpcClient.start().catch((error) => {
 
 const router = new Router({ prefix: '/api' });
 
-createTaskRoute(router, rpcClient);
+createTaskRoute(router, rpcClient, passport);
 createAccountRoute(router, rpcClient);
 createWallSeekRoute(router);
 createGroupRoute(router);
 createAutoLikesTaskRoute(router);
+createUserRoute(router, passport);
 
 export default router;
