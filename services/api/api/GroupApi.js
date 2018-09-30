@@ -18,6 +18,7 @@ class GroupApi extends BaseApi {
 	 * @param {Object} data
 	 * @param {String} data.link
 	 * @param {String} data.isTarget
+	 * @param {UserDocument} data.user
 	 */
 	async add(data) {
 		const Group = mongoose.model('Group');
@@ -38,41 +39,55 @@ class GroupApi extends BaseApi {
 		}
 		
 		const newGroup = Group.createInstance(vkGroup);
-		
+		await newGroup.save();
+		const groupObject = newGroup.toObject({ getters: true });
 		if (data.isTarget) {
-			newGroup.isTarget = data.isTarget;
+			data.user.targetGroups.push(newGroup);
+			await data.user.save();
+			groupObject.isTarget = true;
+		} else {
+			groupObject.isTarget = false;
 		}
 		
-		return newGroup.save();
+		return groupObject;
 	}
 	
 	/**
 	 * @param {String} _id
 	 * @param {boolean} isTarget
+	 * @param {UserDocument} user
 	 * @return {Promise<void>}
 	 */
 	//eslint-disable-next-line class-methods-use-this
-	async changeIsTarget(_id, isTarget) {
+	async changeIsTarget(_id, isTarget, user) {
 		const Group = mongoose.model('Group');
+		
 		const group = await Group.findOne({ _id });
 		if (!group) {
 			throw new NotFound({ query: { _id }, what: 'Group' });
 		}
-		group.isTarget = Boolean(isTarget);
-		return group.save();
+		
+		const targetGroupIndex = user.targetGroups.findIndex(id => id.toString() === _id);
+		if (targetGroupIndex === -1) {
+			user.targetGroups.push(group);
+		} else {
+			user.targetGroups.splice(targetGroupIndex, 1);
+		}
+		
+		await user.save();
 	}
 	
 	/**
 	 * @description Возвращает список групп
-	 * @property {String} search
-	 * @property {boolean} isTarget
+	 * @param {String} search
+	 * @param {boolean} isTarget
+	 * @param {UserDocument} user
 	 * @return {Promise.<Array.<GroupDocument>>}
 	 */
 	//eslint-disable-next-line class-methods-use-this
-	async list({ search, isTarget: _isTarget }) {
+	async list({ search, isTarget: _isTarget, user }) {
 		const Group  = mongoose.model('Group');
 		const isTarget = _isTarget === 'true' || _isTarget === true;
-		
 		
 		const query = {};
 		if (search) {
@@ -88,10 +103,22 @@ class GroupApi extends BaseApi {
 		}
 		
 		if (isTarget) {
-			query.isTarget = true;
+			query._id = { $in: user.targetGroups };
 		}
 		
-		return Group.find(query).sort({ isTarget: -1 }).exec();
+		const idsHash = user.targetGroups.reduce((obj, id) => {
+			return {
+				...obj,
+				[id.toString()]: true,
+			};
+		}, {});
+		
+		const groups = await Group.find(query).sort({ name: -1 }).lean().exec();
+		return groups.map((group) => {
+			//eslint-disable-next-line no-param-reassign
+			group.isTarget = !!idsHash[group._id];
+			return group;
+		});
 	}
 }
 
