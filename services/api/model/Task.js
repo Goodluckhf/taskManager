@@ -46,6 +46,11 @@ const schema = new mongoose.Schema({
 		default: null,
 	},
 	
+	user: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref : 'User',
+	},
+	
 	subTasks: [{
 		type: mongoose.Schema.Types.ObjectId,
 		ref : 'Task',
