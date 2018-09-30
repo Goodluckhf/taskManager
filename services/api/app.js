@@ -1,14 +1,16 @@
-import Koa          from 'koa';
-import morgan       from 'koa-morgan';
-import bodyParser   from 'koa-bodyparser';
-import config       from 'config';
-import logger       from '../../lib/logger';
-import routes       from './routes';
-import errorHandler from './routes/api/errorHandler';
-import initModels   from './model';
-import gracefulStop from '../../lib/GracefulStop';
+import Koa        from 'koa';
+import morgan     from 'koa-morgan';
+import bodyParser from 'koa-bodyparser';
+import passport   from 'koa-passport';
+import config     from 'config';
 
-import db from '../../lib/db';
+import logger             from '../../lib/logger';
+import routes             from './routes';
+import errorHandler       from './routes/api/errorHandler';
+import initModels         from './model';
+import gracefulStop       from '../../lib/GracefulStop';
+import db                 from '../../lib/db';
+import passportStrategies from './passport';
 
 // Подключаемся к бд
 const dbConnection = db.connect();
@@ -23,6 +25,9 @@ if (process.env.NODE_ENV === 'development') {
 	app.use(morgan('dev'));
 }
 app.use(bodyParser());
+app.use(passport.initialize());
+passportStrategies(passport, config.get('jwt.secret'));
+
 app.use(errorHandler);
 app.use(routes.routes());
 
