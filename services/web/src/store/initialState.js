@@ -59,11 +59,18 @@ export const wallSeekPage = Map({
 
 export const fatalError = Map({});
 
+export const auth = Map({
+	//eslint-disable-next-line no-undef
+	jwt      : window.localStorage.tasks_jwt,
+	lastRoute: '',
+});
+
 export default {
 	routes,
 	groupPage,
 	autoLikesPage,
 	fatalError,
 	wallSeekPage,
+	auth,
 };
 
