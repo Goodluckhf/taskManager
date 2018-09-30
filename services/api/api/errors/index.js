@@ -139,3 +139,33 @@ export class WallSeekAlreadyExist extends BaseApiError {
 		};
 	}
 }
+
+export class LoginFailed extends BaseApiError {
+	constructor({ email }) {
+		super('Login failed. Check login or password');
+		this.email = email;
+	}
+	
+	toObject() {
+		return {
+			...super.toObject(),
+			email: this.email,
+		};
+	}
+}
+
+
+export class UserAlreadyExists extends BaseApiError {
+	constructor({ email }) {
+		super('User has already exists');
+		this.email = email;
+	}
+	
+	toObject() {
+		return {
+			...super.toObject(),
+			email: this.email,
+		};
+	}
+}
+
