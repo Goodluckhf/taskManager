@@ -10,7 +10,10 @@ class ApiError extends PureComponent {
 	};
 	
 	render() {
-		const message = this.props.error.get('message');
+		const message = this.props.error instanceof Immutable.Map
+			? this.props.error.get('message')
+			: this.props.error.message;
+		
 		const title   = this.props.title ? `${this.props.title}: ${message}` : message;
 		return (
 			<Alert color="danger" {...this.props}>
