@@ -59,12 +59,23 @@ export const wallSeekPage = Map({
 
 export const fatalError = Map({});
 
-export const auth = Map({
-	//eslint-disable-next-line no-undef
-	jwt      : window.localStorage.getItem('tasks_jwt') || null,
+// Вытаскиваем из jwt данные
+const _auth = {
+	jwt      : null,
 	email    : '',
 	lastRoute: '',
-});
+};
+
+try {
+	//eslint-disable-next-line no-undef
+	const jwt = window.localStorage.getItem('tasks_jwt');
+	//eslint-disable-next-line no-undef
+	const payload = JSON.parse(atob(jwt.split('.')[1]));
+	_auth.email = payload.email;
+	_auth.jwt   = jwt;
+} catch (error) { console.error(error); }
+
+export const auth = Map(_auth);
 
 export default {
 	routes,
