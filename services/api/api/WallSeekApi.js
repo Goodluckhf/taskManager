@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
-import BaseApi  from './BaseApi';
-import { WallSeekAlreadyExist } from './errors';
+import BaseApi                            from './BaseApi';
+import { NotFound, WallSeekAlreadyExist } from './errors';
 
 /**
  * @property {VkApi} vkApi
@@ -17,6 +17,7 @@ class WallSeekApi extends BaseApi {
 	 * @param {Object} data
 	 * @param {String} data.link
 	 * @param {Number} data.postCount
+	 * @param {UserDocument} data.user
 	 */
 	async add(data) {
 		const Group            = mongoose.model('Group');
@@ -29,10 +30,10 @@ class WallSeekApi extends BaseApi {
 			},
 			required: ['link', 'postCount'],
 		}, data);
-		
+		this.checkUserReady(data.user);
 		const vkGroup = await this.vkApi.groupByHref(data.link);
 		const group   = await Group.findOrCreateByPublicId(vkGroup.id, vkGroup);
-		const count   = await CheckWallBanTask.count({ group: group._id });
+		const count   = await CheckWallBanTask.count({ group: group._id, user: data.user });
 		
 		if (count) {
 			throw new WallSeekAlreadyExist({
@@ -43,6 +44,7 @@ class WallSeekApi extends BaseApi {
 		
 		const task = CheckWallBanTask.createInstance({
 			postCount: data.postCount,
+			user     : data.user,
 			group,
 		});
 		
@@ -51,13 +53,14 @@ class WallSeekApi extends BaseApi {
 	
 	/**
 	 * @description Возвращает список задач
+	 * @property {UserDocument} user
 	 * @return {Promise.<Array.<CheckWallBanTaskDocument>>}
 	 */
 	// eslint-disable-next-line class-methods-use-this
-	async list() {
+	async list(user) {
 		const CheckWallBanTask = mongoose.model('CheckWallBanTask');
 		return CheckWallBanTask
-			.find()
+			.find({ user })
 			.populate('group')
 			.lean()
 			.exec();
@@ -65,14 +68,23 @@ class WallSeekApi extends BaseApi {
 	
 	/**
 	 * @param {String} _id
+	 * @param {UserDocument} user
 	 * @return {Promise<void>}
 	 */
 	// eslint-disable-next-line class-methods-use-this
-	async resume(_id) {
+	async resume(_id, user) {
 		const CheckWallBanTask = mongoose.model('CheckWallBanTask');
 		const Task             = mongoose.model('Task');
-		const task             = await CheckWallBanTask.findOne({ _id }).populate('group').exec();
-		task.status            = Task.status.waiting;
+		const task             = await CheckWallBanTask.findOne({ _id, user }).populate('group').exec();
+		
+		if (!task) {
+			throw new NotFound({
+				what : 'WallSeekTask',
+				query: { _id },
+			});
+		}
+		
+		task.status = Task.status.waiting;
 		return task.save();
 	}
 }
