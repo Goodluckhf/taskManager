@@ -21,3 +21,9 @@ export const loginSuccess = data => ({
 	type   : LOGIN_SUCCESS,
 	payload: data,
 });
+
+export const LOGOUT = 'AUTH__LOGOUT';
+export const logout = () => ({
+	type   : LOGOUT,
+	payload: {},
+});

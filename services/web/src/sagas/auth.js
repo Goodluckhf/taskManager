@@ -8,9 +8,10 @@ import { push } from 'connected-react-router';
 import {
 	LOGIN_REQUEST, NEED_LOGIN,
 	loginFailure, loginSuccess,
-	needLogin,
+	needLogin, LOGOUT,
 } from '../actions/auth';
 
+const localstorageJwtKey = 'tasks_jwt';
 
 export const checkLogin = function* () {
 	const jwt        = yield select(state => state.auth.get('jwt'));
@@ -49,7 +50,7 @@ export default function* () {
 			yield put(loginSuccess(response));
 			const lastRoute = yield select(state => state.auth.get('lastRoute'));
 			// eslint-disable-next-line no-undef
-			window.localStorage.setItem('tasks_jwt', response.token);
+			window.localStorage.setItem(localstorageJwtKey, response.token);
 			yield put(push(lastRoute));
 		} catch (error) {
 			if (error.response && error.response.data) {
@@ -59,6 +60,11 @@ export default function* () {
 			
 			yield put(loginFailure(error));
 		}
+	});
+	
+	yield takeEvery(LOGOUT, function* () {
+		window.localStorage.removeItem(localstorageJwtKey);
+		yield put(push('/login'));
 	});
 }
 

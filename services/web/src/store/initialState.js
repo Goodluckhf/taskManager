@@ -73,7 +73,7 @@ try {
 	const payload = JSON.parse(atob(jwt.split('.')[1]));
 	_auth.email = payload.email;
 	_auth.jwt   = jwt;
-} catch (error) { console.error(error); }
+} catch (error) { console.warn(error); }
 
 export const auth = Map(_auth);
 
