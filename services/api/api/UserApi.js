@@ -4,16 +4,12 @@ import jwt      from 'jsonwebtoken';
 import BaseApi                            from './BaseApi';
 import { LoginFailed, UserAlreadyExists } from './errors';
 
-/**
- * @property {Passport} passport
- */
 class UserApi extends BaseApi {
-	constructor(passport, ...args) {
-		super(...args);
-	}
-	
-	createToken(id) {
-		return jwt.sign({ id }, this.config.get('jwt.secret'));
+	createToken(user) {
+		return jwt.sign({
+			email: user.email,
+			id   : user.id,
+		}, this.config.get('jwt.secret'));
 	}
 	
 	/**
@@ -43,12 +39,29 @@ class UserApi extends BaseApi {
 		});
 		
 		await user.save();
-		const token = this.createToken(user.id);
+		const token = this.createToken(user);
 		
 		const displayUser = user.toObject();
 		delete displayUser.passwordHash;
 		delete displayUser.salt;
 		return { user: displayUser, token };
+	}
+	
+	
+	/**
+	 * Обновляет токены и данные для задач
+	 * @param {Object} data
+	 * @param {String} data.chatId
+	 * @param {UserDocument} user
+	 * @return {Promise<void>}
+	 */
+	//eslint-disable-next-line class-methods-use-this
+	async updateTokens(user, { chatId }) {
+		if (chatId) {
+			//eslint-disable-next-line no-param-reassign
+			user.chatId = chatId;
+			await user.save();
+		}
 	}
 	
 	/**
@@ -74,7 +87,7 @@ class UserApi extends BaseApi {
 		const displayUser = user.toObject();
 		delete displayUser.passwordHash;
 		delete displayUser.salt;
-		const token = this.createToken(user.id);
+		const token = this.createToken(user);
 		return { user: displayUser, token };
 	}
 }
