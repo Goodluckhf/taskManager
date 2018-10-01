@@ -1,5 +1,4 @@
 import { takeEvery, put, call, select } from 'redux-saga/effects';
-import axios from 'axios';
 
 import {
 	CREATE_REQUEST, LIST_REQUEST,
@@ -8,11 +7,16 @@ import {
 	listRequest,
 } from '../actions/groups';
 
+import { callApi } from './api';
 import { fatalError } from '../actions/fatalError';
 
 export const list = function* (filterState) {
 	try {
-		const { data: result } = yield call(axios.get, '/api/groups', { params: filterState });
+		const result = yield call(callApi, {
+			url : 'groups',
+			data: filterState,
+		});
+		
 		yield put(listSuccess(result.data));
 	} catch (error) {
 		yield put(fatalError(error));
@@ -22,7 +26,12 @@ export const list = function* (filterState) {
 export default function* () {
 	yield takeEvery(CREATE_REQUEST, function* ({ payload: data }) {
 		try {
-			const { data: result } = yield call(axios.post, '/api/group', data);
+			const result = yield call(callApi, {
+				url   : 'group',
+				method: 'post',
+				data,
+			});
+			
 			if (!result.success) {
 				yield put(createFailure(result.data));
 				return;
@@ -45,7 +54,11 @@ export default function* () {
 	
 	yield takeEvery(CHANGE_IS_TARGET, function* ({ payload: { id, isTarget } }) {
 		try {
-			yield call(axios.put, `/api/group/${id}/target`, { isTarget });
+			yield call(callApi, {
+				url   : `group/${id}/target`,
+				method: 'put',
+				data  : { isTarget },
+			});
 		} catch (error) {
 			yield put(fatalError(error));
 		}
