@@ -1,4 +1,6 @@
 import React, { PureComponent } from 'react';
+import propTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 import {
 	Button,
@@ -13,10 +15,44 @@ import {
 	InputGroupAddon,
 	InputGroupText,
 	Row,
-} from 'reactstrap';
+}            from 'reactstrap';
+
+import LoadingButton, { S } from '../ui/LoadingButton';
+import ApiError             from '../ui/ApiError';
 
 class LoginForm extends PureComponent {
-	//eslint-disable-next-line
+	constructor(props) {
+		super(props);
+		
+		this.state = {
+			email   : '',
+			password: '',
+		};
+	}
+	
+	static propTypes = {
+		login  : propTypes.func.isRequired,
+		loading: propTypes.bool.isRequired,
+		error  : propTypes.object,
+	};
+	
+	onClickLogin = (e) => {
+		e.preventDefault();
+		this.props.login(this.state);
+	};
+	
+	handleEmailInput = (e) => {
+		this.setState({
+			email: e.target.value.trim(),
+		});
+	};
+	
+	handlePasswordInput = (e) => {
+		this.setState({
+			password: e.target.value.trim(),
+		});
+	};
+	
 	render() {
 		return (
 			<div className="app flex-row align-items-center">
@@ -35,7 +71,7 @@ class LoginForm extends PureComponent {
 														<i className="icon-user"></i>
 													</InputGroupText>
 												</InputGroupAddon>
-												<Input type="text" placeholder="Email" autoComplete="email" />
+												<Input type="text" onChange={this.handleEmailInput} placeholder="Email" autoComplete="email" />
 											</InputGroup>
 											<InputGroup className="mb-4">
 												<InputGroupAddon addonType="prepend">
@@ -43,11 +79,19 @@ class LoginForm extends PureComponent {
 														<i className="icon-lock"></i>
 													</InputGroupText>
 												</InputGroupAddon>
-												<Input type="password" placeholder="Пароль" autoComplete="password" />
+												<Input type="password" onChange={this.handlePasswordInput} placeholder="Пароль" autoComplete="password" />
 											</InputGroup>
 											<Row>
 												<Col xs="6">
-													<Button color="primary" className="px-4">Войти</Button>
+													<LoadingButton
+														onClick={this.onClickLogin}
+														data-color="blue"
+														className="px-4"
+														data-size={S}
+														loading={this.props.loading}
+													>
+														Войти
+													</LoadingButton>
 												</Col>
 												<Col xs="6" className="text-right">
 													<Button color="link" className="px-0">Забыли пароль?</Button>
@@ -61,13 +105,16 @@ class LoginForm extends PureComponent {
 										<div>
 											<h2>Регистрация</h2>
 											<p>Еще нет аккаунта?</p>
-											<Button color="primary" className="mt-3" active>Зарегистрироваться сейчас!</Button>
+											<Button color="primary" className="mt-3" active>
+												<Link style={{ textDecoration: 'none' }} to='/register'>Зарегистрироваться</Link>
+											</Button>
 										</div>
 									</CardBody>
 								</Card>
 							</CardGroup>
 						</Col>
 					</Row>
+					{this.props.error ? <ApiError style={{ marginTop: '24px' }} error={this.props.error}/> : ''}
 				</Container>
 			</div>
 		);
