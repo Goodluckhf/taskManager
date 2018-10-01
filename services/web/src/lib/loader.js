@@ -83,7 +83,7 @@ const error = (item, action, list) => {
  * @param {Array.<String>} path
  * @return {*}
  */
-export const loaderSelector = (actionMap, statePath, _state, path) => {
+export const loaderSelector = (actionMap, statePath, _state, path = []) => {
 	let state = _state[statePath].getIn(path);
 	if (state instanceof List) {
 		return state.map((_item) => {
