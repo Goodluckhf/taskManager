@@ -169,3 +169,17 @@ export class UserAlreadyExists extends BaseApiError {
 	}
 }
 
+export class UserIsNotReady extends BaseApiError {
+	constructor(fields) {
+		super('You have to fill settings for your account');
+		this.fields = fields;
+	}
+	
+	toObject() {
+		return {
+			...super.toObject(),
+			fields: this.fields,
+		};
+	}
+}
+
