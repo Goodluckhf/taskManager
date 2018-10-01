@@ -25,9 +25,9 @@ const router = new Router({ prefix: '/api' });
 
 createTaskRoute(router, rpcClient, passport);
 createAccountRoute(router, rpcClient);
-createWallSeekRoute(router);
+createWallSeekRoute(router, passport);
 createGroupRoute(router, passport);
-createAutoLikesTaskRoute(router);
+createAutoLikesTaskRoute(router, passport);
 createUserRoute(router, passport);
 
 export default router;

@@ -4,7 +4,7 @@ import logger  from '../../../../lib/logger';
 import TaskApi from '../../api/TaskApi';
 import Alert   from '../../../../lib/Alert';
 
-export default (router, rpcClient) => {
+export default (router, rpcClient, passport) => {
 	const vkApi = new VkApi(config.get('vkApi.token'), {
 		timeout: config.get('vkApi.timeout'),
 	});
@@ -13,7 +13,7 @@ export default (router, rpcClient) => {
 	// Сам классс Api
 	const taskApi = new TaskApi(rpcClient, alert, config, logger);
 	
-	router.post('/task/stop/:id', async (ctx) => {
+	router.post('/task/stop/:id', passport.authenticate('jwt', { session: false }), async (ctx) => {
 		const { id } = ctx.params;
 		
 		ctx.body = {
@@ -22,7 +22,7 @@ export default (router, rpcClient) => {
 		};
 	});
 	
-	router.delete('/task/:id', async (ctx) => {
+	router.delete('/task/:id', passport.authenticate('jwt', { session: false }), async (ctx) => {
 		const { id } = ctx.params;
 		
 		ctx.body = {
