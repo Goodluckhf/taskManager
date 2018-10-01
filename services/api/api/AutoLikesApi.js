@@ -21,6 +21,7 @@ class AutoLikesApi extends BaseApi {
 	 * @param {Number} _data.likesCount
 	 * @param {Number} _data.commentsCount
 	 * @param {Number} _data.repostsCount
+	 * @param {UserDocument} _data.user
 	 * @return {Promise<*>}
 	 */
 	async create(_data) {
@@ -41,6 +42,7 @@ class AutoLikesApi extends BaseApi {
 			throw new ValidationError(['groupId', 'publicHref']);
 		}
 		
+		this.checkUserReady(data.user);
 		let group;
 		if (data.publicHref) {
 			const vkGroup = await this.vkApi.groupByHref(data.publicHref);
@@ -59,6 +61,7 @@ class AutoLikesApi extends BaseApi {
 		}
 		
 		const existsTask = await mongoose.model('AutoLikesTask').findOne({
+			user  : data.user,
 			group : group._id,
 			status: mongoose.model('Task').status.waiting,
 		});
@@ -70,6 +73,7 @@ class AutoLikesApi extends BaseApi {
 		try {
 			const likesTask = mongoose.model('AutoLikesTask').createInstance({
 				...data,
+				user : data.user,
 				group: group._id,
 			});
 			await likesTask.save();
@@ -84,10 +88,12 @@ class AutoLikesApi extends BaseApi {
 	
 	/**
 	 * @description Список задач
+	 * @property {String} filter
+	 * @property {UserDocument} user
 	 * @return {Promise<*>}
 	 */
 	// eslint-disable-next-line class-methods-use-this
-	async list({ filter = 'all' } = {}) {
+	async list({ filter = 'all', user } = {}) {
 		const LikesTask = mongoose.model('AutoLikesTask');
 		const query = {};
 		
@@ -102,7 +108,7 @@ class AutoLikesApi extends BaseApi {
 				{ status: LikesTask.status.finished },
 			];
 		}
-		
+		query.user = user;
 		const likeTasks = await LikesTask
 			.find(query)
 			.sort({ createdAt: -1 })
@@ -120,6 +126,7 @@ class AutoLikesApi extends BaseApi {
 	}
 	
 	/**
+	 * TODO: Добавить пользователя
 	 * @description Обновляет задание
 	 * @param {String} _id
 	 * @param {Object} _data
