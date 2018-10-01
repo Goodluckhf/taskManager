@@ -1,5 +1,5 @@
-import Ajv                 from 'ajv';
-import { ValidationError } from './errors';
+import Ajv                                 from 'ajv';
+import { UserIsNotReady, ValidationError } from './errors';
 
 /**
  * @property {String} config
@@ -22,6 +22,18 @@ class BaseApi {
 		const validate = ajv.validate(rules, values);
 		if (!validate) {
 			throw new ValidationError(ajv.errors);
+		}
+	}
+	
+	/**
+	 * Проверяет готов ли аккаунт и созданию задач
+	 * Необходимо заполнить токены
+	 * @param {UserDocument} user
+	 */
+	//eslint-disable-next-line class-methods-use-this
+	checkUserReady(user) {
+		if (!user.chatId) {
+			throw new UserIsNotReady(['chatId']);
 		}
 	}
 }
