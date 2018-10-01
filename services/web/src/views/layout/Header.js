@@ -7,16 +7,13 @@ import logo from '../../assets/img/brand/logo.svg';
 import sygnet from '../../assets/img/brand/sygnet.svg';
 
 const propTypes = {
-	children: PropTypes.node,
+	email: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
 
 class Header extends PureComponent {
 	render() {
-		// eslint-disable-next-line
-    const { children, ...attributes } = this.props;
-
 		return (
 			<React.Fragment>
 				<AppSidebarToggler className="d-lg-none" display="md" mobile />
@@ -32,13 +29,7 @@ class Header extends PureComponent {
 
 				<Nav className="d-md-down-none ml-auto" navbar>
 					<NavItem className="px-3">
-						<NavLink href="/">Dashboard</NavLink>
-					</NavItem>
-					<NavItem className="px-3">
-						<NavLink href="#/users">Users</NavLink>
-					</NavItem>
-					<NavItem className="px-3">
-						<NavLink href="#">Settings</NavLink>
+						<NavLink href="/settings">{this.props.email}</NavLink>
 					</NavItem>
 				</Nav>
 			</React.Fragment>

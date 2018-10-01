@@ -22,7 +22,7 @@ class Layout extends PureComponent {
 		return (
 			<div className="app">
 				<AppHeader fixed>
-					<Header />
+					<Header email={this.props.email}/>
 				</AppHeader>
 				<div className="app-body">
 					<AppSidebar fixed display="lg">
@@ -50,11 +50,13 @@ Layout.propTypes = {
 	children  : PropTypes.node,
 	routes    : PropTypes.object,
 	fatalError: PropTypes.object,
+	email     : PropTypes.string.isRequired,
 };
 
 const mapStateToProps = state => ({
 	routes    : state.routes,
 	fatalError: state.fatalError,
+	email     : state.auth.get('email'),
 });
 
 export default connect(mapStateToProps)(Layout);
