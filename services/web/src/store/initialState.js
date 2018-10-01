@@ -61,7 +61,8 @@ export const fatalError = Map({});
 
 export const auth = Map({
 	//eslint-disable-next-line no-undef
-	jwt      : window.localStorage.tasks_jwt,
+	jwt      : window.localStorage.getItem('tasks_jwt') || null,
+	email    : '',
 	lastRoute: '',
 });
 
