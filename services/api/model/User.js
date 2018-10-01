@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema({
 		default: false,
 	},
 	
+	// Чат vk для алертов
+	chatId: {
+		type: String,
+	},
+	
 	// Группы учавствующие в задачу на супер задачу
 	targetGroups: [{
 		type: mongoose.Schema.Types.ObjectId,
@@ -35,6 +40,7 @@ const hashLength          = 128;
  * @property {String} email
  * @property {String} passwordHash
  * @property {Boolean} isActive
+ * @property {String} chatId
  * @property {Array.<GroupDocument>} targetGroups
  */
 class UserDocument {
