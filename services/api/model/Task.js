@@ -106,7 +106,7 @@ export class TaskDocument {
 				{ repeated: true },
 				{ startAt: { $lte: new Date() } },
 			],
-		}).populate('parentTask').exec();
+		}).populate('parentTask').populate('user').exec();
 	}
 }
 
