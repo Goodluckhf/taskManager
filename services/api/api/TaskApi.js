@@ -41,16 +41,17 @@ class TaskApi extends BaseApi {
 	/**
 	 * @description Останавливает задачу
 	 * @param {String} _id
+	 * @param {UserDocument} user
 	 */
 	// eslint-disable-next-line class-methods-use-this
-	async stop(_id) {
+	async stop(_id, user) {
 		if (!_id) {
 			throw new ValidationError({ _id });
 		}
 		
-		const task = await mongoose.model('AutoLikesTask').findOne({ _id });
+		const task = await mongoose.model('Task').findOne({ _id, user });
 		if (!task) {
-			throw new NotFound({ query: { _id }, what: 'LikesCommonTask' });
+			throw new NotFound({ query: { _id }, what: 'Task' });
 		}
 		
 		if (!task.active) {
@@ -64,17 +65,18 @@ class TaskApi extends BaseApi {
 	/**
 	 * @description Удаляет задачу и все подзадачи
 	 * @param {String} _id
+	 * @param {UserDocument} user
 	 * @return {Promise<void>}
 	 */
 	// eslint-disable-next-line class-methods-use-this
-	async remove(_id) {
+	async remove(_id, user) {
 		if (!_id) {
 			throw new ValidationError({ _id });
 		}
 		
 		const task = await mongoose
 			.model('Task')
-			.findOne({ _id })
+			.findOne({ _id, user })
 			.populate({
 				path    : 'subTasks',
 				options : { lean: true },
@@ -156,7 +158,7 @@ class TaskApi extends BaseApi {
 					
 					return bluebird.map(
 						errors,
-						error => this.alert.sendError(error, this.config.get('vkAlert.chat_id')),
+						error => this.alert.sendError(error, _task.user.chatId),
 					);
 				});
 			},
