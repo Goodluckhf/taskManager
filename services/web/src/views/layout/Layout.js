@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
-import PropTypes            from 'prop-types';
-import { connect }          from 'react-redux';
+import PropTypes                from 'prop-types';
+import { connect }              from 'react-redux';
 
 import {
 	AppFooter,
@@ -13,16 +13,17 @@ import {
 	AppSidebarNav,
 } from '@coreui/react';
 // sidebar nav config
-import Footer   from './Footer';
-import Header   from './Header';
-import ApiError from '../components/ui/ApiError';
+import Footer     from './Footer';
+import { logout } from '../../actions/auth';
+import Header     from './Header';
+import ApiError   from '../components/ui/ApiError';
 
 class Layout extends PureComponent {
 	render() {
 		return (
 			<div className="app">
 				<AppHeader fixed>
-					<Header email={this.props.email}/>
+					<Header logout={this.props.logout} email={this.props.email}/>
 				</AppHeader>
 				<div className="app-body">
 					<AppSidebar fixed display="lg">
@@ -51,6 +52,7 @@ Layout.propTypes = {
 	routes    : PropTypes.object,
 	fatalError: PropTypes.object,
 	email     : PropTypes.string.isRequired,
+	logout    : PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -59,4 +61,8 @@ const mapStateToProps = state => ({
 	email     : state.auth.get('email'),
 });
 
-export default connect(mapStateToProps)(Layout);
+const mapDispatchToProps = dispatch => ({
+	logout: () => dispatch(logout()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Layout);

@@ -7,12 +7,18 @@ import logo from '../../assets/img/brand/logo.svg';
 import sygnet from '../../assets/img/brand/sygnet.svg';
 
 const propTypes = {
-	email: PropTypes.string.isRequired,
+	email : PropTypes.string.isRequired,
+	logout: PropTypes.func.isRequired,
 };
 
 const defaultProps = {};
 
 class Header extends PureComponent {
+	onLogout = (e) => {
+		e.preventDefault();
+		this.props.logout();
+	};
+	
 	render() {
 		return (
 			<React.Fragment>
@@ -28,6 +34,9 @@ class Header extends PureComponent {
 				<AppSidebarToggler className="d-md-down-none" display="lg" />
 
 				<Nav className="d-md-down-none ml-auto" navbar>
+					<NavItem className="px-3">
+						<NavLink href='#' onClick={this.onLogout}>Выйти</NavLink>
+					</NavItem>
 					<NavItem className="px-3">
 						<NavLink href="/settings">{this.props.email}</NavLink>
 					</NavItem>
