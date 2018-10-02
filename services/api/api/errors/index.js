@@ -183,3 +183,13 @@ export class UserIsNotReady extends BaseApiError {
 	}
 }
 
+export class UserIsNotActive extends BaseApiError {
+	constructor() {
+		super('Пользователь не активен. Обратитесь к админу');
+	}
+	
+	toObject() {
+		return super.toObject();
+	}
+}
+
