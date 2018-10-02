@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 import { takeEvery, put, call } from 'redux-saga/effects';
 import {
 	CREATE_REQUEST, LIST_REQUEST, REMOVE_REQUEST, RESUME_REQUEST,
@@ -7,11 +5,16 @@ import {
 	listSuccess, removeSuccess, removeFailure, resumeFailure,
 }                               from '../actions/wallSeek';
 import { fatalError }           from '../actions/fatalError';
+import { callApi }              from './api';
 
 export default function* () {
 	yield takeEvery(CREATE_REQUEST, function* ({ payload: data }) {
 		try {
-			const { data: result } = yield call(axios.post, '/api/wallseek', data);
+			const result = yield call(callApi, {
+				url   : 'wallseek',
+				method: 'post',
+				data,
+			});
 			if (!result.success) {
 				yield put(createFailure(result.data));
 				return;
@@ -30,7 +33,7 @@ export default function* () {
 	
 	yield takeEvery(LIST_REQUEST, function* () {
 		try {
-			const { data: result } = yield call(axios.get, '/api/wallseek');
+			const result = yield call(callApi, { url: 'wallseek' });
 			if (!result.success) {
 				yield put(fatalError(result.data));
 				return;
@@ -45,7 +48,10 @@ export default function* () {
 	
 	yield takeEvery(REMOVE_REQUEST, function* ({ payload: { id } }) {
 		try {
-			yield call(axios.delete, `/api/task/${id}`);
+			yield call(callApi, {
+				url   : `task/${id}`,
+				method: 'delete',
+			});
 			yield put(removeSuccess(id));
 		} catch (error) {
 			if (error.response && error.response.data) {
@@ -59,7 +65,10 @@ export default function* () {
 	
 	yield takeEvery(RESUME_REQUEST, function* ({ payload: { id } }) {
 		try {
-			yield call(axios.put, `/api/wallSeek/${id}/resume`);
+			yield call(callApi, {
+				url   : `wallSeek/${id}/resume`,
+				method: 'put',
+			});
 			yield put(resumeSuccess(id));
 		} catch (error) {
 			if (error.response && error.response.data) {
