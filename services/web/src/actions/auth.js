@@ -41,6 +41,25 @@ export const registerSuccess = data => ({
 });
 
 
+export const CREATE_CHAT_REQUEST = 'AUTH__CREATE_CHAT_REQUEST';
+export const createChatRequest  = vkLink => ({
+	type   : CREATE_CHAT_REQUEST,
+	payload: { vkLink },
+});
+
+export const CREATE_CHAT_FAILURE = 'AUTH__CREATE_CHAT_FAILURE';
+export const createChatFailure = error => ({
+	type   : CREATE_CHAT_FAILURE,
+	payload: { error },
+});
+
+export const CREATE_CHAT_SUCCESS = 'AUTH__CREATE_CHAT_SUCCESS';
+export const createChatSuccess = data => ({
+	type   : CREATE_CHAT_SUCCESS,
+	payload: data,
+});
+
+
 export const LOGOUT = 'AUTH__LOGOUT';
 export const logout = () => ({
 	type   : LOGOUT,
