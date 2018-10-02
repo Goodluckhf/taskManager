@@ -79,6 +79,7 @@ module.exports = {
 	
 	vkApi: {
 		token  : process.env.VK_API__TOKEN,
+		id     : process.env.VK_API__ID,
 		timeout: process.env.VK_API__TIMEOUT,
 	},
 	
