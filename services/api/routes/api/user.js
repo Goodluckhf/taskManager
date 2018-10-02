@@ -23,6 +23,13 @@ export default (router, passport) => {
 		};
 	});
 	
+	router.get('/user', passport.authenticate('jwt', { session: false }), async (ctx) => {
+		ctx.body = {
+			success: true,
+			data   : await userApi.getUser(ctx.state.user),
+		};
+	});
+	
 	router.post('/user/chat', passport.authenticate('jwt', { session: false }), async (ctx) => {
 		ctx.body = {
 			success: true,
