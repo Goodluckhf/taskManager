@@ -158,7 +158,9 @@ class TaskApi extends BaseApi {
 					
 					return bluebird.map(
 						errors,
-						error => this.alert.sendError(error, _task.user.chatId),
+						error => this.alert
+							.sendError(error, _task.user.chatId)
+							.catch(_error => this.logger.error({ error: _error })),
 					);
 				});
 			},
