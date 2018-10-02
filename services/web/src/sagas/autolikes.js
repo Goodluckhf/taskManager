@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 import { takeEvery, put, call, select } from 'redux-saga/effects';
 import {
 	CREATE_REQUEST, LIST_REQUEST, REMOVE_REQUEST,
@@ -7,12 +5,16 @@ import {
 	createSuccess, createFailure,
 	stopSuccess, listSuccess, stopFailure,
 	removeSuccess, removeFailure, listRequest,
-}                               from '../actions/autolikes';
-import { fatalError }           from '../actions/fatalError';
+}                                       from '../actions/autolikes';
+import { fatalError }                   from '../actions/fatalError';
+import { callApi }                      from './api';
 
 const list = function* (filterState) {
 	try {
-		const { data: result } = yield call(axios.get, '/api/autolikes', { params: filterState });
+		const result = yield call(callApi, {
+			url : 'autolikes',
+			data: filterState,
+		});
 		if (!result.success) {
 			yield put(fatalError(result.data));
 			return;
@@ -27,7 +29,11 @@ const list = function* (filterState) {
 export default function* () {
 	yield takeEvery(CREATE_REQUEST, function* ({ payload: data }) {
 		try {
-			const { data: result } = yield call(axios.post, '/api/autolikes', data);
+			const result = yield call(callApi, {
+				url   : 'autolikes',
+				method: 'post',
+				data,
+			});
 			if (!result.success) {
 				yield put(createFailure(result.data));
 				return;
@@ -54,7 +60,10 @@ export default function* () {
 	
 	yield takeEvery(STOP_REQUEST, function* ({ payload: { id } }) {
 		try {
-			yield call(axios.post, `/api/task/stop/${id}`);
+			yield call(callApi, {
+				url   : `task/stop/${id}`,
+				method: 'post',
+			});
 			yield put(stopSuccess(id));
 		} catch (error) {
 			if (error.response && error.response.data) {
@@ -68,7 +77,10 @@ export default function* () {
 	
 	yield takeEvery(REMOVE_REQUEST, function* ({ payload: { id } }) {
 		try {
-			yield call(axios.delete, `/api/task/${id}`);
+			yield call(callApi, {
+				url   : `task/${id}`,
+				method: 'delete',
+			});
 			yield put(removeSuccess(id));
 		} catch (error) {
 			if (error.response && error.response.data) {
