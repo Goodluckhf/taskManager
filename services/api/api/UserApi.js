@@ -7,7 +7,7 @@ import { LoginFailed, UserAlreadyExists } from './errors';
 class UserApi extends BaseApi {
 	createToken(user) {
 		return jwt.sign({
-			email: user.email,
+			email: user.email.toLowerCase(),
 			id   : user.id,
 		}, this.config.get('jwt.secret'));
 	}
@@ -22,19 +22,19 @@ class UserApi extends BaseApi {
 		const User = mongoose.model('User');
 		this.validate({
 			properties: {
-				email   : { type: 'string' },
+				email   : { type: 'string', format: 'email' },
 				password: { type: 'string' },
 			},
 			required: ['email', 'password'],
 		}, data);
 		
-		const existUser = await User.count({ email: data.email });
+		const existUser = await User.count({ email: data.email.toLowerCase() });
 		if (existUser > 0) {
 			throw new UserAlreadyExists({ email: data.email });
 		}
 		
 		const user = User.createInstance({
-			email   : data.email,
+			email   : data.email.toLowerCase(),
 			password: data.password,
 		});
 		
@@ -56,12 +56,18 @@ class UserApi extends BaseApi {
 	 * @return {Promise<void>}
 	 */
 	//eslint-disable-next-line class-methods-use-this
-	async updateTokens(user, { chatId }) {
+	async updateTokens(user, { chatId, vkToken }) {
 		if (chatId) {
 			//eslint-disable-next-line no-param-reassign
 			user.chatId = chatId;
-			await user.save();
 		}
+		
+		if (vkToken) {
+			//eslint-disable-next-line no-param-reassign
+			user.vkToken = vkToken;
+		}
+		
+		await user.save();
 	}
 	
 	/**
@@ -78,7 +84,7 @@ class UserApi extends BaseApi {
 			required: ['email', 'password'],
 		}, data);
 		
-		const user = await mongoose.model('User').findOne({ email: data.email });
+		const user = await mongoose.model('User').findOne({ email: data.email.toLowerCase() });
 		
 		if (!user || !user.checkPassword(data.password)) {
 			throw new LoginFailed({ email: data.email });
