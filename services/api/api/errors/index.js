@@ -193,3 +193,31 @@ export class UserIsNotActive extends BaseApiError {
 	}
 }
 
+export class NoFriendsInvite extends BaseApiError {
+	constructor(link) {
+		super('Нужно отправить запрос в друзья пользователю по ссылке');
+		this.link = link;
+	}
+	
+	toObject() {
+		return {
+			...super.toObject(),
+			link: this.link,
+		};
+	}
+}
+
+export class ChatAlreadyExists extends BaseApiError {
+	constructor(chatId) {
+		super('Чат для алертов уже создан');
+		this.chatId = chatId;
+	}
+	
+	toObject() {
+		return {
+			...super.toObject(),
+			chatId: this.chatId,
+		};
+	}
+}
+
