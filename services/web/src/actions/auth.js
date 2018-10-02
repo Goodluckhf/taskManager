@@ -59,6 +59,24 @@ export const createChatSuccess = data => ({
 	payload: data,
 });
 
+export const GET_USER_DATA_REQUEST = 'AUTH__GET_USER_DATA_REQUEST';
+export const getUserDataRequest  = () => ({
+	type   : GET_USER_DATA_REQUEST,
+	payload: {},
+});
+
+export const GET_USER_DATA_FAILURE = 'AUTH__GET_USER_DATA_FAILURE';
+export const getUserDataFailure = error => ({
+	type   : GET_USER_DATA_FAILURE,
+	payload: { error },
+});
+
+export const GET_USER_DATA_SUCCESS = 'AUTH__GET_USER_DATA_SUCCESS';
+export const getUserDataSuccess = data => ({
+	type   : GET_USER_DATA_SUCCESS,
+	payload: data,
+});
+
 
 export const LOGOUT = 'AUTH__LOGOUT';
 export const logout = () => ({
