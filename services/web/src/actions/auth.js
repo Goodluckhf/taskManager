@@ -22,6 +22,25 @@ export const loginSuccess = data => ({
 	payload: data,
 });
 
+export const REGISTER_REQUEST = 'AUTH__REGISTER_REQUEST';
+export const registerRequest  = credentials => ({
+	type   : REGISTER_REQUEST,
+	payload: credentials,
+});
+
+export const REGISTER_FAILURE = 'AUTH__REGISTER_FAILURE';
+export const registerFailure = error => ({
+	type   : REGISTER_FAILURE,
+	payload: { error },
+});
+
+export const REGISTER_SUCCESS = 'AUTH__REGISTER_SUCCESS';
+export const registerSuccess = data => ({
+	type   : REGISTER_SUCCESS,
+	payload: data,
+});
+
+
 export const LOGOUT = 'AUTH__LOGOUT';
 export const logout = () => ({
 	type   : LOGOUT,
