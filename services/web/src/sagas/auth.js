@@ -8,16 +8,25 @@ import { push } from 'connected-react-router';
 import {
 	LOGIN_REQUEST, NEED_LOGIN,
 	loginFailure, loginSuccess,
-	needLogin, LOGOUT,
+	needLogin, LOGOUT, REGISTER_REQUEST, registerFailure,
 } from '../actions/auth';
 
 const localstorageJwtKey = 'tasks_jwt';
+
+export const getDefaultRoute = function* () {
+	const route = yield select(state => state.router.location.pathname);
+	if (route === '/login' || route === '/register') {
+		return '/groups';
+	}
+	
+	return route;
+};
 
 export const checkLogin = function* () {
 	const jwt        = yield select(state => state.auth.get('jwt'));
 	let currentRoute = yield select(state => state.router.location.pathname);
 	
-	if (currentRoute === '/login') {
+	if (currentRoute === '/login' || currentRoute === '/register') {
 		currentRoute = '/groups';
 		if (jwt) {
 			yield put(push(currentRoute));
@@ -36,8 +45,8 @@ export const checkLogin = function* () {
 export default function* () {
 	yield fork(checkLogin);
 	
-	yield takeEvery(NEED_LOGIN, function* (currentRoute) {
-		if (currentRoute === '/login') {
+	yield takeEvery(NEED_LOGIN, function* ({ payload: currentRoute }) {
+		if (currentRoute === '/login' || currentRoute === '/register') {
 			return;
 		}
 		
@@ -59,6 +68,23 @@ export default function* () {
 			}
 			
 			yield put(loginFailure(error));
+		}
+	});
+	
+	yield takeEvery(REGISTER_REQUEST, function* ({ payload: data }) {
+		try {
+			const { data: { data: response } } = yield call(axios.post, '/api/register', data);
+			yield put(loginSuccess(response));
+			const route = yield getDefaultRoute();
+			window.localStorage.setItem(localstorageJwtKey, response.token);
+			yield put(push(route));
+		} catch (error) {
+			if (error.response && error.response.data) {
+				yield put(registerFailure(error.response.data));
+				return;
+			}
+			
+			yield put(registerFailure(error));
 		}
 	});
 	
