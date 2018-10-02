@@ -1,5 +1,5 @@
-import { auth }                              from '../store/initialState';
-import { LOGIN_SUCCESS, LOGOUT, NEED_LOGIN } from '../actions/auth';
+import { auth }                                                     from '../store/initialState';
+import { GET_USER_DATA_SUCCESS, LOGIN_SUCCESS, LOGOUT, NEED_LOGIN } from '../actions/auth';
 
 export default (authState = auth, { type, payload }) => {
 	if (type === NEED_LOGIN) {
@@ -16,6 +16,12 @@ export default (authState = auth, { type, payload }) => {
 		return authState
 			.update('jwt', () => null)
 			.update('email', () => '');
+	}
+	
+	if (type === GET_USER_DATA_SUCCESS) {
+		return authState
+			.update('vkLink', () => payload.vkLink)
+			.update('chatId', () => payload.chatId);
 	}
 	
 	return authState;
