@@ -63,6 +63,8 @@ export const fatalError = Map({});
 const _auth = {
 	jwt      : null,
 	email    : '',
+	chatId   : null,
+	vkLink   : '',
 	lastRoute: '',
 };
 
