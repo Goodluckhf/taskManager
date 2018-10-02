@@ -1,10 +1,19 @@
 import mongoose from 'mongoose';
 import jwt      from 'jsonwebtoken';
 
-import BaseApi                            from './BaseApi';
-import { LoginFailed, UserAlreadyExists } from './errors';
+import BaseApi                                                                from './BaseApi';
+import { ChatAlreadyExists, LoginFailed, NoFriendsInvite, UserAlreadyExists } from './errors';
+import { linkByVkUserId }                                                     from '../../../lib/helper';
 
+/**
+ * @property {VkApi} vkApi
+ */
 class UserApi extends BaseApi {
+	constructor(vkApi, ...args) {
+		super(...args);
+		this.vkApi = vkApi;
+	}
+	
 	createToken(user) {
 		return jwt.sign({
 			email: user.email.toLowerCase(),
@@ -47,28 +56,48 @@ class UserApi extends BaseApi {
 		return { user: displayUser, token };
 	}
 	
-	
 	/**
-	 * Обновляет токены и данные для задач
-	 * @param {Object} data
-	 * @param {String} data.chatId
 	 * @param {UserDocument} user
+	 * @param {String} vkId
 	 * @return {Promise<void>}
 	 */
-	//eslint-disable-next-line class-methods-use-this
-	async updateTokens(user, { chatId, vkToken }) {
-		if (chatId) {
-			//eslint-disable-next-line no-param-reassign
-			user.chatId = chatId;
+	async createChat({ user, vkId }) {
+		if (user.chatId) {
+			throw new ChatAlreadyExists(user.chatId);
 		}
 		
-		if (vkToken) {
-			//eslint-disable-next-line no-param-reassign
-			user.vkToken = vkToken;
+		const { response: [{ friend_status: status }] } = await this.vkApi.apiRequest('friends.areFriends', {
+			user_ids : vkId,
+			need_sign: 0,
+		});
+		
+		// Пользователь не является другом или
+		// отменил дружбу, тогда я остаюсь в подписчиках
+		// И ему нужно просто добавить в друзья
+		if (status === 0 || status === 1) {
+			throw new NoFriendsInvite(linkByVkUserId(this.config.get('vkApi.id')));
 		}
 		
+		if (status === 2) {
+			await this.vkApi.apiRequest('friends.add', {
+				user_id: vkId,
+				follow : 0,
+			});
+		}
+		
+		const { response: chatId } = await this.vkApi.apiRequest('messages.createChat', {
+			user_ids: vkId,
+			title   : 'Алерты',
+		});
+		
+		//eslint-disable-next-line no-param-reassign
+		user.chatId = chatId;
+		//eslint-disable-next-line no-param-reassign
+		user.vkId   = vkId;
 		await user.save();
+		return chatId;
 	}
+	
 	
 	/**
 	 * @param {Object} data

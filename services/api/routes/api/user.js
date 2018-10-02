@@ -1,9 +1,13 @@
-import config from 'config';
-import logger from '../../../../lib/logger';
+import config  from 'config';
+import logger  from '../../../../lib/logger';
 import UserApi from '../../api/UserApi';
+import VkApi   from '../../../../lib/VkApi';
 
 export default (router, passport) => {
-	const userApi = new UserApi(config, logger);
+	const vkApi = new VkApi(config.get('vkApi.token'), {
+		timeout: config.get('vkApi.timeout'),
+	});
+	const userApi = new UserApi(vkApi, config, logger);
 	
 	router.post('/login', async (ctx) => {
 		ctx.body = {
@@ -19,10 +23,13 @@ export default (router, passport) => {
 		};
 	});
 	
-	router.put('/user/tokens', passport.authenticate('jwt', { session: false }), async (ctx) => {
+	router.post('/user/chat', passport.authenticate('jwt', { session: false }), async (ctx) => {
 		ctx.body = {
 			success: true,
-			data   : await userApi.updateTokens(ctx.state.user, ctx.request.body),
+			data   : await userApi.createChat({
+				...ctx.request.body,
+				user: ctx.state.user,
+			}),
 		};
 	});
 };
