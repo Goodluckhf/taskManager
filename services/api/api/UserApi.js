@@ -1,9 +1,14 @@
 import mongoose from 'mongoose';
 import jwt      from 'jsonwebtoken';
 
-import BaseApi                                                                from './BaseApi';
-import { ChatAlreadyExists, LoginFailed, NoFriendsInvite, UserAlreadyExists } from './errors';
-import { linkByVkUserId }                                                     from '../../../lib/helper';
+import BaseApi            from './BaseApi';
+import {
+	ChatAlreadyExists,
+	LoginFailed,
+	NoFriendsInvite,
+	UserAlreadyExists,
+}                         from './errors';
+import { linkByVkUserId } from '../../../lib/helper';
 
 /**
  * @property {VkApi} vkApi
@@ -98,6 +103,19 @@ class UserApi extends BaseApi {
 		return chatId;
 	}
 	
+	
+	/**
+	 * Возвращает инфу о пользователе
+	 * @param {UserDocument} user
+	 * @return {Promise<void>}
+	 */
+	async getUser(user) {
+		return {
+			chatId      : user.chatId,
+			vkLink      : linkByVkUserId(user.vkId),
+			systemVkLink: linkByVkUserId(this.config.get('vkApi.id')),
+		};
+	}
 	
 	/**
 	 * @param {Object} data
