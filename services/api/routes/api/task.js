@@ -18,7 +18,7 @@ export default (router, rpcClient, passport) => {
 		
 		ctx.body = {
 			success: true,
-			data   : await taskApi.stop(id),
+			data   : await taskApi.stop(id, ctx.state.user),
 		};
 	});
 	
@@ -27,7 +27,7 @@ export default (router, rpcClient, passport) => {
 		
 		ctx.body = {
 			success: true,
-			data   : await taskApi.remove(id),
+			data   : await taskApi.remove(id, ctx.state.user),
 		};
 	});
 	
