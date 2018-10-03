@@ -63,13 +63,19 @@ class UserApi extends BaseApi {
 	
 	/**
 	 * @param {UserDocument} user
-	 * @param {String} vkId
-	 * @return {Promise<void>}
+	 * @param {String} vkLink
+	 * @return {Promise<Object>}
 	 */
-	async createChat({ user, vkId }) {
+	async createChat({ user, vkLink }) {
 		if (user.chatId) {
 			throw new ChatAlreadyExists(user.chatId);
 		}
+		
+		const screenNameOrId = vkLink.replace(/^(?:https?:\/\/)?vk.com\/(?:id)?/i, '');
+		
+		const { response: [{ id: vkId }] } = await this.vkApi.apiRequest('users.get', {
+			user_ids: screenNameOrId,
+		});
 		
 		const { response: [{ friend_status: status }] } = await this.vkApi.apiRequest('friends.areFriends', {
 			user_ids : vkId,
@@ -100,7 +106,7 @@ class UserApi extends BaseApi {
 		//eslint-disable-next-line no-param-reassign
 		user.vkId   = vkId;
 		await user.save();
-		return chatId;
+		return { chatId, vkLink };
 	}
 	
 	
