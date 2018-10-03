@@ -25,7 +25,6 @@ export default (authState = auth, { type, payload }) => {
 	}
 	
 	if (type === CREATE_CHAT_SUCCESS) {
-		console.log(payload);
 		return authState
 			.update('chatId', () => payload.chatId)
 			.update('vkLink', () => payload.vkLink);
