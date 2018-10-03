@@ -22,7 +22,7 @@ export const callApi = function* ({ url, data: _data = {}, method = 'get' }) {
 			..._data,
 			jwt,
 		};
-		const data = method === 'get' ? { params } : params;
+		const data = ['get', 'delete'].includes(method) ? { params } : params;
 		
 		const { data: result } = yield call(axios[method], `${baseUrl}/${url}`, data);
 		return result;
