@@ -25,6 +25,7 @@ class LikesCommonTask extends BaseTask {
 			likesCount: this.taskDocument.likesCount,
 			postLink  : this.taskDocument.postLink,
 			parentTask: this.taskDocument,
+			user      : this.taskDocument.user,
 			status    : TaskModel.status.pending,
 			service,
 		});
@@ -53,6 +54,7 @@ class LikesCommonTask extends BaseTask {
 			likesCount: this.config.get('likesTask.likesToCheck'),
 			postLink  : this.taskDocument.postLink,
 			parentTask: this.taskDocument,
+			user      : this.taskDocument.user,
 			startAt   : moment().add(checkDelay, 'm'),
 		});
 		

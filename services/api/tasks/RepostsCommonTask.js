@@ -26,6 +26,7 @@ class RepostsCommonTask extends BaseTask {
 			repostsCount: this.taskDocument.repostsCount,
 			postLink    : this.taskDocument.postLink,
 			parentTask  : this.taskDocument,
+			user        : this.taskDocument.user,
 			status      : TaskModel.status.pending,
 			service,
 		});
@@ -54,6 +55,7 @@ class RepostsCommonTask extends BaseTask {
 			repostsCount: this.config.get('repostsTask.repostsToCheck'),
 			postLink    : this.taskDocument.postLink,
 			parentTask  : this.taskDocument,
+			user        : this.taskDocument.user,
 			startAt     : moment().add(checkDelay, 'm'),
 		});
 		this.taskDocument.subTasks.push(checkTaskDocument);

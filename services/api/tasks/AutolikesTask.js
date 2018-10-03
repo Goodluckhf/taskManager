@@ -31,7 +31,14 @@ class AutoLikesTask extends BaseTask {
 				return;
 			}
 			
-			const targetPublics = await Group.find({ isTarget: true }).lean().exec();
+			const targetPublics = await Group
+				.find({
+					_id: {
+						$in: this.taskDocument.user.targetGroups,
+					},
+				})
+				.lean()
+				.exec();
 			
 			if (!targetPublics.length) {
 				return;
@@ -63,6 +70,7 @@ class AutoLikesTask extends BaseTask {
 			
 			const likesCommonDocument = LikesCommonModel.createInstance({
 				postLink,
+				user      : this.taskDocument.user,
 				likesCount: this.taskDocument.likesCount,
 				status    : Task.status.pending,
 				parentTask: this.taskDocument,
@@ -77,6 +85,7 @@ class AutoLikesTask extends BaseTask {
 			
 			const commentsCommonDocument = CommentsCommonModel.createInstance({
 				postLink,
+				user         : this.taskDocument.user,
 				commentsCount: this.taskDocument.commentsCount,
 				status       : Task.status.pending,
 				parentTask   : this.taskDocument,
@@ -91,6 +100,7 @@ class AutoLikesTask extends BaseTask {
 			
 			const repostsCommonDocument = RepostsCommonModel.createInstance({
 				postLink,
+				user        : this.taskDocument.user,
 				repostsCount: this.taskDocument.repostsCount,
 				status      : Task.status.pending,
 				parentTask  : this.taskDocument,

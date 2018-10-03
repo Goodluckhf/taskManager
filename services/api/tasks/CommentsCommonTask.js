@@ -27,6 +27,7 @@ class CommentsCommonTask extends BaseTask {
 			postLink     : this.taskDocument.postLink,
 			parentTask   : this.taskDocument,
 			status       : TaskModel.status.pending,
+			user         : this.taskDocument.user,
 			service,
 		});
 		
@@ -54,6 +55,7 @@ class CommentsCommonTask extends BaseTask {
 			commentsCount: this.config.get('commentsTask.commentsToCheck'),
 			postLink     : this.taskDocument.postLink,
 			parentTask   : this.taskDocument,
+			user         : this.taskDocument.user,
 			startAt      : moment().add(checkDelay, 'm'),
 		});
 		this.taskDocument.subTasks.push(checkTaskDocument);
