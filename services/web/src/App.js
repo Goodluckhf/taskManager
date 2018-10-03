@@ -20,7 +20,7 @@ import './scss/style.css';
 
 import {
 	Page404, Groups, AutoLikes,
-	WallSeek, Login, Register,
+	WallSeek, Login, Register, Settings,
 } from './views/pages';
 
 import { configureStore } from './store';
@@ -42,6 +42,7 @@ class App extends Component {
 						
 						<Route path="/login" exact name="Login" component={withRouter(Login)} />
 						<Route path="/register" exact name="Register" component={withRouter(Register)} />
+						<Route path="/settings" exact name="Settings" component={withRouter(Settings)} />
 						<Route component={Page404} />
 					</Switch>
 				</ConnectedRouter>

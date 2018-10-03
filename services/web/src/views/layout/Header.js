@@ -1,6 +1,7 @@
 import React, { PureComponent }  from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 import { AppNavbarBrand, AppSidebarToggler } from '@coreui/react';
 import logo from '../../assets/img/brand/logo.svg';
@@ -38,7 +39,7 @@ class Header extends PureComponent {
 						<NavLink href='#' onClick={this.onLogout}>Выйти</NavLink>
 					</NavItem>
 					<NavItem className="px-3">
-						<NavLink href="/settings">{this.props.email}</NavLink>
+						<Link to="/settings">{this.props.email}</Link>
 					</NavItem>
 				</Nav>
 			</React.Fragment>
