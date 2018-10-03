@@ -6,10 +6,21 @@ import axios    from 'axios';
 import { push } from 'connected-react-router';
 
 import {
-	LOGIN_REQUEST, NEED_LOGIN, LOGOUT, REGISTER_REQUEST,
-	loginFailure, loginSuccess, registerFailure,
-	needLogin, getUserDataFailure, getUserDataSuccess,
-}                  from '../actions/auth';
+	LOGIN_REQUEST,
+	NEED_LOGIN,
+	LOGOUT,
+	REGISTER_REQUEST,
+	loginFailure,
+	loginSuccess,
+	registerFailure,
+	needLogin,
+	getUserDataFailure,
+	getUserDataSuccess,
+	GET_USER_DATA_REQUEST,
+	getUserDataRequest,
+	CREATE_CHAT_REQUEST,
+	createChatSuccess, createChatFailure,
+} from '../actions/auth';
 import { callApi } from './api';
 
 const localstorageJwtKey = 'tasks_jwt';
@@ -89,6 +100,38 @@ export default function* () {
 		}
 	});
 	
+	yield takeEvery(CREATE_CHAT_REQUEST, function* ({ payload: data }) {
+		try {
+			const userData = yield callApi({
+				url   : 'user/chat',
+				method: 'post',
+				data,
+			});
+			yield put(createChatSuccess(userData.data));
+		} catch (error) {
+			if (error.response && error.response.data) {
+				yield put(createChatFailure(error.response.data));
+				return;
+			}
+			
+			yield put(createChatFailure(error));
+		}
+	});
+	
+	yield takeEvery(GET_USER_DATA_REQUEST, function* () {
+		try {
+			const userData = yield callApi({ url: 'user' });
+			yield put(getUserDataSuccess(userData.data));
+		} catch (error) {
+			if (error.response && error.response.data) {
+				yield put(getUserDataFailure(error.response.data));
+				return;
+			}
+			
+			yield put(getUserDataFailure(error));
+		}
+	});
+	
 	yield takeEvery(LOGOUT, function* () {
 		window.localStorage.removeItem(localstorageJwtKey);
 		yield put(push('/login'));
@@ -96,15 +139,5 @@ export default function* () {
 }
 
 export const getUserData = function* () {
-	try {
-		const userData = yield callApi({ url: 'user' });
-		yield put(getUserDataSuccess(userData.data));
-	} catch (error) {
-		if (error.response && error.response.data) {
-			yield put(getUserDataFailure(error.response.data));
-			return;
-		}
-		
-		yield put(getUserDataFailure(error));
-	}
+	yield put(getUserDataRequest());
 };
