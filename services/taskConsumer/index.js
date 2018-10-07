@@ -18,6 +18,7 @@ import LikesCheckResponse     from './responses/LikesCheckResponse';
 import CommentsCheckResponse  from './responses/CommentsCheckResponse';
 import WallCheckBanResponse   from './responses/WallCheckBanResponse';
 import RepostsCheckResponse   from './responses/RepostsCheckResponse';
+import PostCheckAdResponse    from './responses/PostCheckAdResponse';
 
 const rabbitConfig = config.get('rabbit');
 const amqp = new Amqp(logger, {
@@ -91,6 +92,10 @@ rpcServer.addResponse(new Z1y1x1RepostsResponse({
 
 // Слежка группы на бан
 rpcServer.addResponse(new WallCheckBanResponse({ vkApi, logger }));
+
+// Проверка на выход рекламного поста
+rpcServer.addResponse(new PostCheckAdResponse({ logger }));
+
 (async () => {
 	try {
 		await rpcServer.start();
