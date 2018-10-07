@@ -47,8 +47,8 @@ class Form extends PureComponent {
 								<Col sm='12'>
 									<p>
 										{/*eslint-disable-next-line max-len*/}
-										1) Добавьте в друзья пользователя: <a href={this.props.systemVkLink}>{this.props.systemVkLink}</a><br/>
-										2) Вставьте сслку на профиль, куда вы хотите, что бы приходили оповещания<br/>
+										1) Добавьте в друзья пользователя: <a rel='noopener noreferrer' target='_blank' href={this.props.systemVkLink}>{this.props.systemVkLink}</a><br/>
+										2) Вставьте ссылку на профиль, куда вы хотите, что бы приходили оповещания<br/>
 										3) Нажмите на кнопку создать чат <br/>
 									</p>
 								</Col>

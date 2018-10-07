@@ -21,7 +21,8 @@ export default (authState = auth, { type, payload }) => {
 	if (type === GET_USER_DATA_SUCCESS) {
 		return authState
 			.update('vkLink', () => payload.vkLink)
-			.update('chatId', () => payload.chatId);
+			.update('chatId', () => payload.chatId)
+			.update('systemVkLink', () => payload.systemVkLink);
 	}
 	
 	if (type === CREATE_CHAT_SUCCESS) {
