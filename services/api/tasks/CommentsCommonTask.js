@@ -49,10 +49,12 @@ class CommentsCommonTask extends BaseTask {
 		// Если задача выполнилась без ошибки
 		// То создаем задачу на проверку
 		this.taskDocument.status = TaskModel.status.checking;
-		const checkDelay = this.config.get('commentsTask.checkingDelay');
+		const checkDelay      = this.config.get('commentsTask.checkingDelay');
+		const commentsToCheck = this.taskDocument.commentsCount * parseFloat(this.config.get('commentsTask.commentsToCheck'));
+		
 		const checkTaskDocument = CommentsCheckTaskModel.createInstance({
 			serviceIndex,
-			commentsCount: this.config.get('commentsTask.commentsToCheck'),
+			commentsCount: commentsToCheck,
 			postLink     : this.taskDocument.postLink,
 			parentTask   : this.taskDocument,
 			user         : this.taskDocument.user,

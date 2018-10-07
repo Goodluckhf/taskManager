@@ -48,10 +48,12 @@ class LikesCommonTask extends BaseTask {
 		// Если задача выполнилась без ошибки
 		// То создаем задачу на проверку
 		this.taskDocument.status = TaskModel.status.checking;
-		const checkDelay = this.config.get('likesTask.checkingDelay');
+		const checkDelay   = this.config.get('likesTask.checkingDelay');
+		const likesToCheck = this.taskDocument.likesCount * parseFloat(this.config.get('likesTask.likesToCheck'));
+		
 		const checkTaskDocument = LikesCheckTaskModel.createInstance({
 			serviceIndex,
-			likesCount: this.config.get('likesTask.likesToCheck'),
+			likesCount: likesToCheck,
 			postLink  : this.taskDocument.postLink,
 			parentTask: this.taskDocument,
 			user      : this.taskDocument.user,

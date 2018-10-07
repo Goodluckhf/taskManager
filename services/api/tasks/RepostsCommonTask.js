@@ -49,10 +49,12 @@ class RepostsCommonTask extends BaseTask {
 		// Если задача выполнилась без ошибки
 		// То создаем задачу на проверку
 		this.taskDocument.status = TaskModel.status.checking;
-		const checkDelay = this.config.get('repostsTask.checkingDelay');
+		const checkDelay     = this.config.get('repostsTask.checkingDelay');
+		const repostsToCheck = this.taskDocument.repostsCount * parseFloat(this.config.get('repostsTask.repostsToCheck'));
+		
 		const checkTaskDocument = RepostsCheckTaskModel.createInstance({
 			serviceIndex,
-			repostsCount: this.config.get('repostsTask.repostsToCheck'),
+			repostsCount: repostsToCheck,
 			postLink    : this.taskDocument.postLink,
 			parentTask  : this.taskDocument,
 			user        : this.taskDocument.user,
