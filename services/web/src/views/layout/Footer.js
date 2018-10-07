@@ -8,14 +8,10 @@ const propTypes = {
 const defaultProps = {};
 
 class Footer extends PureComponent {
+	// eslint-disable-next-line class-methods-use-this
 	render() {
-	// eslint-disable-next-line
-    const { children, ...attributes } = this.props;
 		return (
-			<React.Fragment>
-				<span><a href="https://coreui.io">CoreUI</a> &copy; 2018 creativeLabs.</span>
-				<span className="ml-auto">Powered by <a href="Goodluckhf@yandex.ru">Хлопчики девелопчики</a></span>
-			</React.Fragment>
+			<span className="ml-auto">Разработано: <a href="mailto:Goodluckhf@yandex.ru">Goodluckhf@yandex.ru</a></span>
 		);
 	}
 }
