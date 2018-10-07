@@ -1,11 +1,11 @@
 import moment       from 'moment/moment';
-import { JSDOM }    from 'jsdom';
 import mongoose     from 'mongoose';
 
 import BaseTask           from './BaseTask';
 import LikesCommonTask    from './LikesCommonTask';
 import CommentsCommonTask from './CommentsCommonTask';
 import RepostsCommonTask  from './RepostsCommonTask';
+import PostCheckAdRequest from '../api/amqpRequests/PostCheckAdRequest';
 
 class AutoLikesTask extends BaseTask {
 	async handle() {
@@ -45,27 +45,25 @@ class AutoLikesTask extends BaseTask {
 			}
 			
 			const link  = Group.getLinkByPublicId(this.taskDocument.group.publicId);
-			const jsDom = await JSDOM.fromURL(link);
 			
-			const $lastPost    = jsDom.window.document.querySelectorAll('#page_wall_posts .post')[0];
-			const $mentionLink = $lastPost.querySelector('a.mem_link');
-			if (!$mentionLink) {
+			// @TODO: Сделать через класс задачи
+			// Эту задачу не нужно сохранять в базе
+			// Потому что она выполняется каждую минуту
+			// И если не выполнится или будет какая-то ошибка
+			// Ничего страшного, потому что через минуту еще раз запустится
+			let postId;
+			try {
+				const request = new PostCheckAdRequest(this.config, {
+					postLink     : link,
+					targetPublics: targetPublics.map(p => p.publicId),
+				});
+				postId = await this.rpcClient.call(request);
+			} catch (error) {
+				this.logger.info({ error });
 				return;
 			}
 			
-			// Ссылка на пост
-			const $postId  = $lastPost.attributes.getNamedItem('data-post-id');
-			const postLink = Group.getPostLinkById($postId.value);
-			
-			const mentionId  = $mentionLink.attributes.getNamedItem('mention_id');
-			
-			const hasTargetGroupInTask = targetPublics.some((targetGroup) => {
-				return `club${targetGroup.publicId}` === mentionId.value;
-			});
-			
-			if (!hasTargetGroupInTask) {
-				return;
-			}
+			const postLink = Group.getPostLinkById(postId);
 			
 			const likesCommonDocument = LikesCommonModel.createInstance({
 				postLink,
