@@ -3,7 +3,7 @@ import BaseTask         from './BaseTask';
 
 import CommentsCheckRequest from '../api/amqpRequests/CommentCheckRequest';
 import CommentsCommonTask   from './CommentsCommonTask';
-import BaseApiError         from '../api/errors/BaseApiError';
+import TaskErrorFactory     from '../api/errors/tasks/TaskErrorFactory';
 
 class CommentsCheckTask extends BaseTask {
 	async handle() {
@@ -21,12 +21,15 @@ class CommentsCheckTask extends BaseTask {
 			this.logger.warn({ error });
 			const serviceOrder = this.config.get('commentsTask.serviceOrder');
 			if (serviceOrder.length === this.taskDocument.serviceIndex + 1) {
-				error.postLink      = this.taskDocument.postLink;
-				error.commentsCount = this.taskDocument.parentTask.commentsCount;
-				const wrappedError  = new BaseApiError(error.message, 500).combine(error);
+				const wrappedError = TaskErrorFactory.createError(
+					'comments',
+					error,
+					this.taskDocument.postLink,
+					this.taskDocument.parentTask.commentsCount,
+				);
 				
 				this.taskDocument.parentTask.status = Task.status.finished;
-				this.taskDocument.parentTask._error = wrappedError;
+				this.taskDocument.parentTask._error = wrappedError.toObject();
 				throw wrappedError;
 			}
 			
@@ -35,6 +38,7 @@ class CommentsCheckTask extends BaseTask {
 			
 			const commentsTask = new CommentsCommonTask({
 				serviceIndex: this.taskDocument.serviceIndex + 1,
+				user        : this.taskDocument.user,
 				logger      : this.logger,
 				taskDocument: this.taskDocument.parentTask,
 				rpcClient   : this.rpcClient,
