@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 import moment   from 'moment';
 
-import BaseTask     from './BaseTask';
-import CommentsTask from './CommentsTask';
-import BaseApiError from '../api/errors/BaseApiError';
+import BaseTask         from './BaseTask';
+import CommentsTask     from './CommentsTask';
+import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
+import BaseTaskError    from '../api/errors/tasks/BaseTaskError';
 
 /**
  * @property {Number} serviceIndex
@@ -88,9 +89,15 @@ class CommentsCommonTask extends BaseTask {
 			
 			// Это последний был, значит пора выкидывать ошибку
 			let displayError = error;
-			if (!(displayError instanceof BaseApiError)) {
-				displayError = new BaseApiError(error.message, 500).combine(error);
+			if (!(displayError instanceof BaseTaskError)) {
+				displayError = TaskErrorFactory.createError(
+					'comments',
+					error,
+					this.taskDocument.postLink,
+					this.taskDocument.commentsCount,
+				);
 			}
+			
 			this.taskDocument._error = displayError.toObject();
 			this.taskDocument.status = TaskModel.status.finished;
 			await this.taskDocument.save();
