@@ -32,6 +32,10 @@ class Z1y1x1Response extends Response {
 		
 		this.logger.info({ postLink, commentsCount, data });
 		if (data.error) {
+			if (data.error.descr) {
+				throw new Error(data.error.descr);
+			}
+			
 			throw data.error;
 		}
 		
