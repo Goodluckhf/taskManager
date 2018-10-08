@@ -53,19 +53,19 @@ class Form extends PureComponent {
 					<BootstrapForm>
 						<FormGroup>
 							<Row>
-								<Col sm='6' md='5'>
+								<Col lg='6' md='6' sm='6'>
 									<Label>Ссылка на паблик где должен выйти пост</Label>
 									<Input onChange={this.handlePublicInput} type='text' placeholder='https://vk.com/nice.advice'/>
 								</Col>
-								<Col sm='6' md='3'>
+								<Col lg='6' md='6' sm='6'>
 									<Label>Кол-во лайков</Label>
 									<Input onChange={this.handleCountInput} type='number' value={this.state.likesCount}/>
 								</Col>
-								<Col sm='6' md='2'>
+								<Col lg='6' md='6' sm='6'>
 									<Label>Кол-во комментов</Label>
 									<Input onChange={this.handleCommentsCountInput} type='number' value={this.state.commentsCount}/>
 								</Col>
-								<Col sm='6' md='2'>
+								<Col lg='6' md='6' sm='6'>
 									<Label>Кол-во репостов</Label>
 									<Input onChange={this.handleRepostsCountInput} type='number' value={this.state.repostsCount}/>
 								</Col>
