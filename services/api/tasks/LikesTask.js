@@ -1,7 +1,7 @@
-import mongoose     from 'mongoose';
-import BaseTask     from './BaseTask';
-import LikeRequest  from '../api/amqpRequests/LikeRequest';
-import BaseApiError from '../api/errors/BaseApiError';
+import mongoose         from 'mongoose';
+import BaseTask         from './BaseTask';
+import LikeRequest      from '../api/amqpRequests/LikeRequest';
+import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
 
 /**
  * @property {String} service
@@ -18,9 +18,15 @@ class LikesTask extends BaseTask {
 			
 			await this.rpcClient.call(request);
 		} catch (error) {
-			const wrapedError = new BaseApiError(error.message, 500).combine(error);
-			this.taskDocument._error = wrapedError.toObject();
-			throw wrapedError;
+			const wrappedError = TaskErrorFactory.createError(
+				'likes',
+				error,
+				this.taskDocument.postLink,
+				this.taskDocument.likesCount,
+			);
+			
+			this.taskDocument._error = wrappedError.toObject();
+			throw wrappedError;
 		} finally {
 			this.taskDocument.status = Task.status.finished;
 			await this.taskDocument.save();
