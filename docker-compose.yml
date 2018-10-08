@@ -93,6 +93,7 @@ services:
 
   # Головной nginx - проксирует запросы на api и web
   nginx:
+    image: just1ce/main_nginx
     build:
       context: ./services/nginx
       dockerfile: Dockerfile
@@ -102,11 +103,13 @@ services:
       - /dev/null:/var/log/nginx/access.log
     logging: *default-logging
   web:
+    image: just1ce/nginx_web
     build:
       context: ./services/web
       dockerfile: Dockerfile
     logging: *default-logging
   api:
+    image: just1ce/taskmanager_api
     build:
       context: ./
       dockerfile: ./services/api/Dockerfile
@@ -118,6 +121,7 @@ services:
       - .env.rabbit
       - .env.mongodb
   cron:
+    image: just1ce/taskmanager_cron
     restart: always
     build:
       context: ./
@@ -131,6 +135,7 @@ services:
     mem_limit: 2Gb
     cap_add:
      - SYS_ADMIN
+    image: just1ce/taskmanager_consumer
     build:
       context: ./
       dockerfile: services/taskConsumer/Dockerfile
