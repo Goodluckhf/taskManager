@@ -3,7 +3,7 @@ import BaseTask         from './BaseTask';
 
 import RepostCheckRequest from '../api/amqpRequests/RepostCheckRequest';
 import RepostsCommonTask  from './RepostsCommonTask';
-import BaseApiError       from '../api/errors/BaseApiError';
+import TaskErrorFactory   from '../api/errors/tasks/TaskErrorFactory';
 
 class RepostsCheckTask extends BaseTask {
 	async handle() {
@@ -21,12 +21,15 @@ class RepostsCheckTask extends BaseTask {
 			this.logger.warn({ error });
 			const serviceOrder = this.config.get('repostsTask.serviceOrder');
 			if (serviceOrder.length === this.taskDocument.serviceIndex + 1) {
-				error.postLink      = this.taskDocument.postLink;
-				error.repostsCount  = this.taskDocument.parentTask.repostsCount;
-				const wrappedError  = new BaseApiError(error.message, 500).combine(error);
+				const wrappedError = TaskErrorFactory.createError(
+					'reposts',
+					error,
+					this.taskDocument.postLink,
+					this.taskDocument.parentTask.repostsCount,
+				);
 				
 				this.taskDocument.parentTask.status = Task.status.finished;
-				this.taskDocument.parentTask._error = wrappedError;
+				this.taskDocument.parentTask._error = wrappedError.toObject();
 				throw wrappedError;
 			}
 			
@@ -35,6 +38,7 @@ class RepostsCheckTask extends BaseTask {
 			
 			const repostsTask = new RepostsCommonTask({
 				serviceIndex: this.taskDocument.serviceIndex + 1,
+				user        : this.taskDocument.user,
 				logger      : this.logger,
 				taskDocument: this.taskDocument.parentTask,
 				rpcClient   : this.rpcClient,
