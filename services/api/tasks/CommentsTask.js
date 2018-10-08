@@ -1,7 +1,7 @@
-import mongoose       from 'mongoose';
-import BaseTask       from './BaseTask';
-import CommentRequest from '../api/amqpRequests/CommentRequest';
-import BaseApiError   from '../api/errors/BaseApiError';
+import mongoose         from 'mongoose';
+import BaseTask         from './BaseTask';
+import CommentRequest   from '../api/amqpRequests/CommentRequest';
+import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
 
 class CommentsTask extends BaseTask {
 	async handle() {
@@ -15,9 +15,15 @@ class CommentsTask extends BaseTask {
 			
 			await this.rpcClient.call(request);
 		} catch (error) {
-			const wrapedError = new BaseApiError(error.message, 500).combine(error);
-			this.taskDocument._error  = wrapedError.toObject();
-			throw wrapedError;
+			const wrappedError = TaskErrorFactory.createError(
+				'comments',
+				error,
+				this.taskDocument.postLink,
+				this.taskDocument.commentsCount,
+			);
+			
+			this.taskDocument._error  = wrappedError.toObject();
+			throw wrappedError;
 		} finally {
 			this.taskDocument.status = Task.status.finished;
 			await this.taskDocument.save();
