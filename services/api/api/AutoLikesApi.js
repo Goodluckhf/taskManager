@@ -79,7 +79,10 @@ class AutoLikesApi extends BaseApi {
 			await likesTask.save();
 			return {
 				...likesTask.toObject(),
-				group: group.toObject(),
+				group: {
+					...group.toObject(),
+					isTarget: !!data.user.targetGroups.find(_id => _id.equals(group._id)),
+				},
 			};
 		} catch (error) {
 			throw (new ValidationError(data)).combine({ error });
