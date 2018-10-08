@@ -1,7 +1,7 @@
-import mongoose      from 'mongoose';
-import BaseTask      from './BaseTask';
-import RepostRequest from '../api/amqpRequests/RepostRequest';
-import BaseApiError  from '../api/errors/BaseApiError';
+import mongoose         from 'mongoose';
+import BaseTask         from './BaseTask';
+import RepostRequest    from '../api/amqpRequests/RepostRequest';
+import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
 
 class RepostsTask extends BaseTask {
 	async handle() {
@@ -15,9 +15,14 @@ class RepostsTask extends BaseTask {
 			
 			await this.rpcClient.call(request);
 		} catch (error) {
-			const wrapedError = new BaseApiError(error.message, 500).combine(error);
-			this.taskDocument._error  = wrapedError.toObject();
-			throw wrapedError;
+			const wrappedError = TaskErrorFactory.createError(
+				'reposts',
+				error,
+				this.taskDocument.postLink,
+				this.taskDocument.repostsCount,
+			);
+			this.taskDocument._error  = wrappedError.toObject();
+			throw wrappedError;
 		} finally {
 			this.taskDocument.status = Task.status.finished;
 			await this.taskDocument.save();
