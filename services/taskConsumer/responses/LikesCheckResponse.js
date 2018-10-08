@@ -28,7 +28,7 @@ class LikesCheckResponse extends Response {
 		});
 		
 		if (post.likes.count < likesCount) {
-			throw new Error('there is not likes');
+			throw new Error('Лайки не накрутились');
 		}
 	}
 }

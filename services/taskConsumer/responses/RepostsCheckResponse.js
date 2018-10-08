@@ -28,7 +28,7 @@ class RepostsCheckResponse extends Response {
 		});
 		
 		if (post.reposts.count < repostsCount) {
-			throw new Error('there is not reposts');
+			throw new Error('Репосты не накрутились');
 		}
 	}
 }

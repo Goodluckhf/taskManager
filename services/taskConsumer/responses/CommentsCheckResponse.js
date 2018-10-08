@@ -28,7 +28,7 @@ class CommentsCheckResponse extends Response {
 		});
 		
 		if (post.comments.count < commentsCount) {
-			throw new Error('there is not comments');
+			throw new Error('Комменты не накрутились');
 		}
 	}
 }

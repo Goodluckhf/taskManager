@@ -18,7 +18,7 @@ class PostCheckAdResponse extends Response {
 		const $lastPost    = jsDom.window.document.querySelectorAll('#page_wall_posts .post')[0];
 		const $mentionLink = $lastPost.querySelector('a.mem_link');
 		if (!$mentionLink) {
-			throw new Error('There is no ad post');
+			throw new Error('Поста нет');
 		}
 		
 		//Для сылки на пост
@@ -30,7 +30,7 @@ class PostCheckAdResponse extends Response {
 		));
 		
 		if (!hasTargetGroupInTask) {
-			throw new Error('There is no ad post');
+			throw new Error('Поста нет');
 		}
 		
 		return $postId.value;
