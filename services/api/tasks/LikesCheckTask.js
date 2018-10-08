@@ -2,7 +2,7 @@ import mongoose         from 'mongoose';
 import BaseTask         from './BaseTask';
 import LikeCheckRequest from '../api/amqpRequests/LikeCheckRequest';
 import LikesCommonTask  from './LikesCommonTask';
-import BaseApiError     from '../api/errors/BaseApiError';
+import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
 
 class LikesCheckTask extends BaseTask {
 	async handle() {
@@ -20,12 +20,15 @@ class LikesCheckTask extends BaseTask {
 			this.logger.warn({ error });
 			const serviceOrder = this.config.get('likesTask.serviceOrder');
 			if (serviceOrder.length === this.taskDocument.serviceIndex + 1) {
-				error.postLink     = this.taskDocument.postLink;
-				error.likesCount   = this.taskDocument.parentTask.likesCount;
-				const wrappedError = new BaseApiError(error.message, 500).combine(error);
+				const wrappedError = TaskErrorFactory.createError(
+					'likes',
+					error,
+					this.taskDocument.postLink,
+					this.taskDocument.parentTask.likesCount,
+				);
 				
 				this.taskDocument.parentTask.status = Task.status.finished;
-				this.taskDocument.parentTask._error = wrappedError;
+				this.taskDocument.parentTask._error = wrappedError.toObject();
 				throw wrappedError;
 			}
 			
@@ -34,6 +37,7 @@ class LikesCheckTask extends BaseTask {
 			
 			const likesTask = new LikesCommonTask({
 				serviceIndex: this.taskDocument.serviceIndex + 1,
+				user        : this.taskDocument.user,
 				logger      : this.logger,
 				taskDocument: this.taskDocument.parentTask,
 				rpcClient   : this.rpcClient,
