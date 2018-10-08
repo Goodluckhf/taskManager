@@ -20,7 +20,7 @@ import './scss/style.css';
 
 import {
 	Page404, Groups, AutoLikes,
-	WallSeek, Login, Register, Settings,
+	Login, Register, Settings,
 } from './views/pages';
 
 import { configureStore } from './store';
@@ -38,7 +38,7 @@ class App extends Component {
 						<Redirect exact from="/" to='/groups' />
 						<Route path="/groups" exact name="Groups" component={withRouter(Groups)} />
 						<Route path="/autolikes" exact name="AutoLikes" component={withRouter(AutoLikes)} />
-						<Route path="/wallseek" exact name="WallSeek" component={withRouter(WallSeek)} />
+						{/*<Route path="/wallseek" exact name="WallSeek" component={withRouter(WallSeek)} />*/}
 						
 						<Route path="/login" exact name="Login" component={withRouter(Login)} />
 						<Route path="/register" exact name="Register" component={withRouter(Register)} />

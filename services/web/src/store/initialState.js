@@ -12,7 +12,7 @@ export const routes = Map({
 			}),
 		}),
 		Map({
-			name : 'Автолайки',
+			name : 'Автонакрутка',
 			url  : '/autolikes',
 			icon : 'icon-heart',
 			badge: Map({
@@ -20,11 +20,11 @@ export const routes = Map({
 				text   : 'NEW',
 			}),
 		}),
-		Map({
-			name: 'Слежка',
-			url : '/wallseek',
-			icon: 'fa fa-user-secret',
-		}),
+		// Map({
+		// 	name: 'Слежка',
+		// 	url : '/wallseek',
+		// 	icon: 'fa fa-user-secret',
+		// }),
 	]),
 });
 

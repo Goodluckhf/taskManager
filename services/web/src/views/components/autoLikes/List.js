@@ -57,7 +57,7 @@ class List extends PureComponent {
 			<Card>
 				<CardHeader>
 					<Row>
-						<Col><b>Список задач на автолайкинг</b><span>{this.props.loading ? 'Обновляю...' : ''}</span></Col>
+						<Col><b>Список задач на автонакртку</b><span>{this.props.loading ? 'Обновляю...' : ''}</span></Col>
 						<FormFilter filter={this.props.filter} change={this.props.filterChange}/>
 					</Row>
 				</CardHeader>

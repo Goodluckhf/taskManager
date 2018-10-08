@@ -48,7 +48,7 @@ class Form extends PureComponent {
 	render() {
 		return (
 			<Card>
-				<CardHeader><b>Добавить задачу на автолайкинг</b></CardHeader>
+				<CardHeader><b>Добавить задачу на автонакрутку</b></CardHeader>
 				<CardBody>
 					<BootstrapForm>
 						<FormGroup>
