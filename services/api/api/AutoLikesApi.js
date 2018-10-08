@@ -95,7 +95,7 @@ class AutoLikesApi extends BaseApi {
 	// eslint-disable-next-line class-methods-use-this
 	async list({ filter = 'all', user } = {}) {
 		const LikesTask = mongoose.model('AutoLikesTask');
-		const query = {};
+		const query     = {};
 		
 		if (filter === 'active') {
 			query.$or = [
@@ -120,9 +120,22 @@ class AutoLikesApi extends BaseApi {
 					sort : { createdAt: -1 },
 				},
 			})
+			.lean()
 			.exec();
 		
-		return likeTasks.map(task => task.toObject());
+		const idsHash = user.targetGroups.reduce((obj, id) => {
+			return {
+				...obj,
+				[id.toString()]: true,
+			};
+		}, {});
+		
+		
+		return likeTasks.map((taks) => {
+			//eslint-disable-next-line no-param-reassign
+			taks.group.isTarget = !!idsHash[taks.group._id];
+			return taks;
+		});
 	}
 	
 	/**

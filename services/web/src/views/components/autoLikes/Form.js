@@ -58,7 +58,7 @@ class Form extends PureComponent {
 									<Input onChange={this.handlePublicInput} type='text' placeholder='https://vk.com/nice.advice'/>
 								</Col>
 								<Col sm='6' md='3'>
-									<Label>Кол-во лайков (100 минимум)</Label>
+									<Label>Кол-во лайков</Label>
 									<Input onChange={this.handleCountInput} type='number' value={this.state.likesCount}/>
 								</Col>
 								<Col sm='6' md='2'>
