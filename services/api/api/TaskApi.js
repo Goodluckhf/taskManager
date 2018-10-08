@@ -13,6 +13,8 @@ import LikesCheckTask    from '../tasks/LikesCheckTask';
 import CommentsCheckTask from '../tasks/CommentsCheckTask';
 import RepostsCheckTask  from '../tasks/RepostsCheckTask';
 import CheckWallBanTask  from '../tasks/CheckWallBanTask';
+import BaseTaskError     from './errors/tasks/BaseTaskError';
+import TaskErrorFactory  from './errors/tasks/TaskErrorFactory';
 
 gracefulStop.setWaitor('handleActiveTasks');
 
@@ -158,9 +160,23 @@ class TaskApi extends BaseApi {
 					
 					return bluebird.map(
 						errors,
-						error => this.alert
-							.sendError(error, _task.user.chatId)
-							.catch(_error => this.logger.error({ error: _error })),
+						(error) => {
+							// Не предвиденная ошибка
+							if (!(error instanceof BaseTaskError)) {
+								//eslint-disable-next-line no-param-reassign
+								error = TaskErrorFactory.createError('default', error);
+								this.logger.error({
+									message: 'Fatal error',
+									id     : _task.id,
+									user   : _task.user.id,
+									error,
+								});
+							}
+							
+							return this.alert
+								.sendError(error.toMessageString(), _task.user.chatId)
+								.catch(_error => this.logger.error({ error: _error }));
+						},
 					);
 				});
 			},
