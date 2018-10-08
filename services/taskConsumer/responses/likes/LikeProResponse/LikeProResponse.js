@@ -69,7 +69,7 @@ class LikeProResponse extends Response {
 		}
 		
 		if (result.error) {
-			throw result.error;
+			throw new Error(result.error);
 		}
 		
 		return result;
