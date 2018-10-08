@@ -67,7 +67,10 @@ class LikestResponse extends Response {
 			});
 			
 			if (errors.length) {
-				throw errors;
+				const error    = new Error('Ошибки валидации');
+				error.messages = errors;
+				error.status   = 0;
+				throw error;
 			}
 		} finally {
 			await browser.close();
