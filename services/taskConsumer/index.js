@@ -40,19 +40,13 @@ const vkApi = new VkApi(config.get('vkApi.token'), {
 });
 
 // Обработчики накрутки лайков
-rpcServer.addResponse(new LikeProResponse({
-	logger,
-	login   : config.get('likePro.login'),
-	password: config.get('likePro.password'),
-})).addResponse(new Z1y1x1Response({
-	logger,
-	token: config.get('z1y1x1.token'),
-})).addResponse(new LikestResponse({
-	captcha,
-	logger,
-	login   : config.get('likest.login'),
-	password: config.get('likest.password'),
-}));
+rpcServer
+	.addResponse(new LikeProResponse({ logger }))
+	.addResponse(new Z1y1x1Response({ logger }))
+	.addResponse(new LikestResponse({
+		captcha,
+		logger,
+	}));
 
 rpcServer.addResponse(new LikesCheckResponse({
 	logger,
@@ -67,27 +61,21 @@ rpcServer.addResponse(new LikesCheckResponse({
 
 
 // Обработчики накрутки комментов
-rpcServer.addResponse(new Z1y1x1CommentsResponse({
-	logger,
-	token: config.get('z1y1x1.token'),
-})).addResponse(new LikestCommentsResponse({
-	captcha,
-	logger,
-	login   : config.get('likest.login'),
-	password: config.get('likest.password'),
-}));
+rpcServer
+	.addResponse(new Z1y1x1CommentsResponse({ logger }))
+	.addResponse(new LikestCommentsResponse({
+		captcha,
+		logger,
+	}));
 
 
 // Обработчики накрутки репостов
-rpcServer.addResponse(new Z1y1x1RepostsResponse({
-	logger,
-	token: config.get('z1y1x1.token'),
-})).addResponse(new LikestRepostsResponse({
-	captcha,
-	logger,
-	login   : config.get('likest.login'),
-	password: config.get('likest.password'),
-}));
+rpcServer
+	.addResponse(new Z1y1x1RepostsResponse({ logger }))
+	.addResponse(new LikestRepostsResponse({
+		captcha,
+		logger,
+	}));
 
 
 // Слежка группы на бан
