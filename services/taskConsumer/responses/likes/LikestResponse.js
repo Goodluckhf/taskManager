@@ -3,17 +3,13 @@ import Response    from '../../../../lib/amqp/Response';
 import loginAction from '../../actions/likest/login';
 
 /**
- * @property {String} login
- * @property {String} password
  * @property {Captcha} captcha
  */
 class LikestResponse extends Response {
 	//eslint-disable-next-line object-curly-newline
-	constructor({ login, password, captcha, ...args }) {
+	constructor({ captcha, ...args }) {
 		super(args);
-		this.login    = login;
-		this.password = password;
-		this.captcha  = captcha;
+		this.captcha = captcha;
 	}
 	
 	/**
@@ -24,7 +20,7 @@ class LikestResponse extends Response {
 		return 'setLikes_likest';
 	}
 	
-	async process({ postLink, likesCount }) {
+	async process({ postLink, likesCount, serviceCredentials: { login, password } }) {
 		const browser = await puppeteer.launch({
 			args: [
 				'--no-sandbox',
@@ -39,7 +35,7 @@ class LikestResponse extends Response {
 			const page = await browser.newPage();
 			// Авторизовываемся
 			await page.goto('https://likest.ru/user', { waitUntil: 'networkidle2' });
-			await loginAction(page, this.captcha, this.login, this.password);
+			await loginAction(page, this.captcha, login, password);
 			
 			//Заполняем поля для накрутки лайков
 			await page.goto('https://likest.ru/buy-likes', { waitUntil: 'networkidle2' });

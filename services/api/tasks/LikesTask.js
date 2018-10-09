@@ -10,9 +10,12 @@ class LikesTask extends BaseTask {
 	async handle() {
 		const Task = mongoose.model('Task');
 		try {
+			const serviceCredentials = this.getCredentialsForService(this.taskDocument.service);
+			
 			const request = new LikeRequest(this.taskDocument.service, this.config, {
 				postLink  : this.taskDocument.postLink,
 				likesCount: this.taskDocument.likesCount,
+				serviceCredentials,
 			});
 			this.logger.info({ request });
 			

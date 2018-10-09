@@ -3,17 +3,7 @@ import puppeteer from 'puppeteer';
 import Response    from '../../../../../lib/amqp/Response';
 import loginAction from './login';
 
-/**
- * @property {String} login
- * @property {String} password
- */
 class LikeProResponse extends Response {
-	constructor({ login, password, ...args }) {
-		super(args);
-		this.login    = login;
-		this.password = password;
-	}
-	
 	/**
 	 * @return {String}
 	 */
@@ -22,7 +12,8 @@ class LikeProResponse extends Response {
 		return 'setLikes_likePro';
 	}
 	
-	async process({ postLink, likesCount }) {
+	//eslint-disable-next-line object-curly-newline
+	async process({ postLink, likesCount, serviceCredentials: { login, password } }) {
 		const browser = await puppeteer.launch({
 			args: [
 				'--no-sandbox',
@@ -36,8 +27,8 @@ class LikeProResponse extends Response {
 		try {
 			const page    = await browser.newPage();
 			await loginAction(page, {
-				login   : this.login,
-				password: this.password,
+				login,
+				password,
 			});
 			await page.goto('https://likepro.org/cabinet', { waitUntil: 'networkidle2' });
 			this.logger.info({ postLink, likesCount });
