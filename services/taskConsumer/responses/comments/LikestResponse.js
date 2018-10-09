@@ -5,10 +5,8 @@ import loginAction from '../../actions/likest/login';
 
 class LikestResponse extends Response {
 	//eslint-disable-next-line object-curly-newline
-	constructor({ login, password, captcha, ...args }) {
+	constructor({ captcha, ...args }) {
 		super(args);
-		this.login    = login;
-		this.password = password;
 		this.captcha  = captcha;
 	}
 	
@@ -20,7 +18,7 @@ class LikestResponse extends Response {
 		return 'setComments_likest';
 	}
 	
-	async process({ postLink, commentsCount }) {
+	async process({ postLink, commentsCount, serviceCredentials: { login, password } }) {
 		const browser = await puppeteer.launch({
 			args: [
 				'--no-sandbox',
@@ -35,7 +33,7 @@ class LikestResponse extends Response {
 			const page = await browser.newPage();
 			// Авторизовываемся
 			await page.goto('https://likest.ru/user', { waitUntil: 'networkidle2' });
-			await loginAction(page, this.captcha, this.login, this.password);
+			await loginAction(page, this.captcha, login, password);
 			
 			await page.goto('https://likest.ru/comments/add', { waitUntil: 'networkidle2' });
 			

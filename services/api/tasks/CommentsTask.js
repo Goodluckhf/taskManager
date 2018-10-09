@@ -7,9 +7,12 @@ class CommentsTask extends BaseTask {
 	async handle() {
 		const Task = mongoose.model('Task');
 		try {
+			const serviceCredentials = this.getCredentialsForService(this.taskDocument.service);
+			
 			const request = new CommentRequest(this.taskDocument.service, this.config, {
 				postLink     : this.taskDocument.postLink,
 				commentsCount: this.taskDocument.commentsCount,
+				serviceCredentials,
 			});
 			this.logger.info({ request });
 			
