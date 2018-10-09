@@ -1,2 +1,2 @@
 FROM hypoport/nginx-vts
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./services/nginx/nginx.conf /etc/nginx/conf.d/default.conf

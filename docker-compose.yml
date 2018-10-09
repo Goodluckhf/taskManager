@@ -29,10 +29,11 @@ services:
     ports:
       - 8081:15672
   prometheus:
+    image: just1ce/tasks_prometheus:${RELEASE_VERSION:-latest}
     container_name: prometheus
     build:
-      context: ./services/prometheus
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/prometheus/Dockerfile
     volumes:
       - prometheus-data:/prometheus
     restart: always
@@ -82,6 +83,7 @@ services:
       - /dev/disk/:/dev/disk:ro
   grafana:
     container_name: grafana
+    restart: always
     image: grafana/grafana:5.1.3
     ports:
       - 3000:3000
@@ -93,25 +95,27 @@ services:
 
   # Головной nginx - проксирует запросы на api и web
   nginx:
-    image: just1ce/main_nginx
+    image: just1ce/main_nginx:${RELEASE_VERSION:-latest}
     build:
-      context: ./services/nginx
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/nginx/Dockerfile
+    restart: always
     ports:
       - 80:80
     volumes:
       - /dev/null:/var/log/nginx/access.log
     logging: *default-logging
   web:
-    image: just1ce/nginx_web
+    image: just1ce/nginx_web:${RELEASE_VERSION:-latest}
+    restart: always
     build:
-      context: ./services/web
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/web/Dockerfile
     logging: *default-logging
   api:
-    image: just1ce/taskmanager_api
+    image: just1ce/taskmanager_api:${RELEASE_VERSION:-latest}
     build:
-      context: ./
+      context: .
       dockerfile: ./services/api/Dockerfile
     restart: always
     logging: *default-logging
@@ -121,11 +125,11 @@ services:
       - .env.rabbit
       - .env.mongodb
   cron:
-    image: just1ce/taskmanager_cron
+    image: just1ce/taskmanager_cron:${RELEASE_VERSION:-latest}
     restart: always
     build:
-      context: ./
-      dockerfile: services/cron/Dockerfile
+      context: .
+      dockerfile: ./services/cron/Dockerfile
     env_file:
       - .env
 
@@ -135,10 +139,10 @@ services:
     mem_limit: 2Gb
     cap_add:
      - SYS_ADMIN
-    image: just1ce/taskmanager_consumer
+    image: just1ce/taskmanager_consumer:${RELEASE_VERSION:-latest}
     build:
-      context: ./
-      dockerfile: services/taskConsumer/Dockerfile
+      context: .
+      dockerfile: ./services/taskConsumer/Dockerfile
     scale: 2
     logging: *default-logging
     stop_grace_period: 120s

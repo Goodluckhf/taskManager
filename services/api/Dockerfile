@@ -1,4 +1,4 @@
-FROM node:8.7.0
+FROM node:8.12.0-alpine
 
 WORKDIR /home/www
 ENV NODE_ENV=development

@@ -1,16 +1,16 @@
 FROM node:8.7.0 as node
 
-COPY package*.json ./
+COPY ./services/web/package*.json ./
 RUN npm i
 
-COPY . .
+COPY ./services/web .
 RUN npm run build
 
 FROM nginx:1.13.12-alpine
 
 WORKDIR /home/www
 
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
-COPY . .
+COPY ./services/web/nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./services/web .
 COPY --from=node ./build ./public
 
