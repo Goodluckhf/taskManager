@@ -1,7 +1,7 @@
 import { call, put, select }       from 'redux-saga/effects';
 import axios          from 'axios';
 import { checkLogin } from './auth';
-import { needLogin }  from '../actions/auth';
+import { needLogin, logout }  from '../actions/auth';
 
 const baseUrl = '/api';
 /**
@@ -27,11 +27,12 @@ export const callApi = function* ({ url, data: _data = {}, method = 'get' }) {
 		const { data: result } = yield call(axios[method], `${baseUrl}/${url}`, data);
 		return result;
 	} catch (error) {
-		if (error.message !== 'no auth' || !error.response || error.response.status !== 401) {
+		if (error.message !== 'no auth' && !error.response && error.response.status !== 401) {
 			throw error;
 		}
 		
 		const currentRoute = yield select(state => state.router.location.pathname);
+		yield put(logout());
 		yield put(needLogin(currentRoute));
 	}
 };
