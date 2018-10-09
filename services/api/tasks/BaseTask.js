@@ -27,7 +27,7 @@ class BaseTask {
 			return defaultCredentials;
 		}
 		
-		return userService;
+		return userService.toObject();
 	}
 	
 	/**
