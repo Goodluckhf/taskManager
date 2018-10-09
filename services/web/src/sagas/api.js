@@ -27,12 +27,14 @@ export const callApi = function* ({ url, data: _data = {}, method = 'get' }) {
 		const { data: result } = yield call(axios[method], `${baseUrl}/${url}`, data);
 		return result;
 	} catch (error) {
-		if (error.message !== 'no auth' && !error.response && error.response.status !== 401) {
+		//eslint-disable-next-line no-mixed-operators
+		if (error.message === 'no auth' || error.response && error.response.status === 401) {
+			const currentRoute = yield select(state => state.router.location.pathname);
+			yield put(logout());
+			yield put(needLogin(currentRoute));
 			throw error;
 		}
 		
-		const currentRoute = yield select(state => state.router.location.pathname);
-		yield put(logout());
-		yield put(needLogin(currentRoute));
+		throw error;
 	}
 };
