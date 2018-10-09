@@ -7,9 +7,12 @@ class RepostsTask extends BaseTask {
 	async handle() {
 		const Task = mongoose.model('Task');
 		try {
+			const serviceCredentials = this.getCredentialsForService(this.taskDocument.service);
+			
 			const request = new RepostRequest(this.taskDocument.service, this.config, {
 				postLink    : this.taskDocument.postLink,
 				repostsCount: this.taskDocument.repostsCount,
+				serviceCredentials,
 			});
 			this.logger.info({ request });
 			
