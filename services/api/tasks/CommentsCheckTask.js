@@ -35,10 +35,10 @@ class CommentsCheckTask extends BaseTask {
 			
 			this.taskDocument.parentTask.status = Task.status.pending;
 			await this.taskDocument.parentTask.save();
+			await this.taskDocument.parentTask.populate('user').execPopulate();
 			
 			const commentsTask = new CommentsCommonTask({
 				serviceIndex: this.taskDocument.serviceIndex + 1,
-				user        : this.taskDocument.user,
 				logger      : this.logger,
 				taskDocument: this.taskDocument.parentTask,
 				rpcClient   : this.rpcClient,
