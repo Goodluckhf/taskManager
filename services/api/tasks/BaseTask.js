@@ -14,6 +14,23 @@ class BaseTask {
 	}
 	
 	/**
+	 * @TODO: Вынести в другое место
+	 * Возвращает доступы для сервисов
+	 * Либо дефолтные либо берет у пользователя
+	 * @param {String} service
+	 * @return {Object}
+	 */
+	getCredentialsForService(service) {
+		const userService = this.taskDocument.user.services[service];
+		const defaultCredentials = this.config.get(`${service}`);
+		if (!userService) {
+			return defaultCredentials;
+		}
+		
+		return userService;
+	}
+	
+	/**
 	 * Базовый метод выполнения задачи
 	 * Нужно переопределить
 	 * @abstract
