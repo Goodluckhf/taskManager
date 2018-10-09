@@ -1,6 +1,46 @@
 import mongoose from 'mongoose';
 import crypto   from 'crypto';
 
+const likestServiceSchema = new mongoose.Schema({
+	login: {
+		type: String,
+	},
+	
+	password: {
+		type: String,
+	},
+}, { _id: false });
+
+const z1x1y1ServiceSchema = new mongoose.Schema({
+	token: {
+		type: String,
+	},
+}, { _id: false });
+
+const likeProServiceSchema = new mongoose.Schema({
+	login: {
+		type: String,
+	},
+	
+	password: {
+		type: String,
+	},
+}, { _id: false });
+
+const servicesSchema = new mongoose.Schema({
+	likest: {
+		type: likestServiceSchema,
+	},
+	
+	z1y1x1: {
+		type: z1x1y1ServiceSchema,
+	},
+	
+	likePro: {
+		type: likeProServiceSchema,
+	},
+}, { _id: false });
+
 const userSchema = new mongoose.Schema({
 	email: {
 		type    : String,
@@ -19,6 +59,11 @@ const userSchema = new mongoose.Schema({
 	isActive: {
 		type   : Boolean,
 		default: false,
+	},
+	
+	services: {
+		type   : servicesSchema,
+		default: {},
 	},
 	
 	// Чат vk для алертов
@@ -44,6 +89,7 @@ const hashLength          = 128;
  * @property {String} email
  * @property {String} passwordHash
  * @property {Boolean} isActive
+ * @property {Object} services
  * @property {String} chatId
  * @property {String} vkId
  * @property {Array.<GroupDocument>} targetGroups
