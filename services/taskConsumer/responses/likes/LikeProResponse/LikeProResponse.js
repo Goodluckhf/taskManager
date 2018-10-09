@@ -19,7 +19,7 @@ class LikeProResponse extends Response {
 	 */
 	// eslint-disable-next-line class-methods-use-this,
 	get method() {
-		return 'setLikes_likesPro';
+		return 'setLikes_likePro';
 	}
 	
 	async process({ postLink, likesCount }) {
