@@ -105,9 +105,11 @@ class LoginForm extends PureComponent {
 										<div>
 											<h2>Регистрация</h2>
 											<p>Еще нет аккаунта?</p>
-											<Button color="primary" className="mt-3" active>
-												<Link style={{ textDecoration: 'none' }} to='/register'>Зарегистрироваться</Link>
-											</Button>
+											<Link to='/register'>
+												<Button color="primary" className="mt-3" active>
+													Зарегистрироваться
+												</Button>
+											</Link>
 										</div>
 									</CardBody>
 								</Card>
