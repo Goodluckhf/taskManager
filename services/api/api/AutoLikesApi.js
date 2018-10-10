@@ -1,4 +1,6 @@
+import _        from 'lodash';
 import mongoose from 'mongoose';
+
 import BaseApi  from './BaseApi';
 import {
 	NotFound,
@@ -40,6 +42,12 @@ class AutoLikesApi extends BaseApi {
 		
 		if (!data.groupId && !data.publicHref) {
 			throw new ValidationError(['groupId', 'publicHref']);
+		}
+		
+		if (parseInt(data.likesCount, 10) === 0
+			&& parseInt(data.commentsCount, 10) === 0
+			&& parseInt(data.repostsCount, 10) === 0) {
+			throw new ValidationError(['commentsCount', 'likesCount', 'repostsCount']);
 		}
 		
 		this.checkUserReady(data.user);
@@ -126,6 +134,14 @@ class AutoLikesApi extends BaseApi {
 			.lean()
 			.exec();
 		
+		const likeTasksWithUniqSubTasks = likeTasks.map((task) => {
+			//eslint-disable-next-line no-param-reassign
+			task.subTasks = _.uniqWith(task.subTasks, (task1, task2) => (
+				task1.__t === task2.__t
+			));
+			return task;
+		});
+		
 		const idsHash = user.targetGroups.reduce((obj, id) => {
 			return {
 				...obj,
@@ -134,7 +150,7 @@ class AutoLikesApi extends BaseApi {
 		}, {});
 		
 		
-		return likeTasks.map((taks) => {
+		return likeTasksWithUniqSubTasks.map((taks) => {
 			//eslint-disable-next-line no-param-reassign
 			taks.group.isTarget = !!idsHash[taks.group._id];
 			return taks;
