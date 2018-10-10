@@ -143,7 +143,7 @@ services:
     build:
       context: .
       dockerfile: ./services/taskConsumer/Dockerfile
-    scale: 2
+    scale: 5
     logging: *default-logging
     stop_grace_period: 120s
     stop_signal: SIGINT
