@@ -22,8 +22,14 @@ class LikesCommonTask extends BaseTask {
 		const serviceOrder = this.config.get('likesTask.serviceOrder');
 		const service      = serviceOrder[serviceIndex];
 		
+		// Потому через сервис likePro можно ставить не меньше 100 лайков
+		let { likesCount } = this.taskDocument;
+		if (service === 'likePro' && likesCount < 100) {
+			likesCount = 100;
+		}
+		
 		const likesTaskDocument = LikesTaskModel.createInstance({
-			likesCount: this.taskDocument.likesCount,
+			likesCount,
 			postLink  : this.taskDocument.postLink,
 			parentTask: this.taskDocument,
 			user      : this.taskDocument.user,
@@ -50,7 +56,7 @@ class LikesCommonTask extends BaseTask {
 		// То создаем задачу на проверку
 		this.taskDocument.status = TaskModel.status.checking;
 		const checkDelay   = this.config.get('likesTask.checkingDelay');
-		const likesToCheck = this.taskDocument.likesCount * parseFloat(this.config.get('likesTask.likesToCheck'));
+		const likesToCheck = likesCount * parseFloat(this.config.get('likesTask.likesToCheck'));
 		
 		const checkTaskDocument = LikesCheckTaskModel.createInstance({
 			serviceIndex,
