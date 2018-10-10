@@ -1,5 +1,6 @@
-import moment       from 'moment/moment';
-import mongoose     from 'mongoose';
+import moment   from 'moment/moment';
+import mongoose from 'mongoose';
+import bluebird from 'bluebird';
 
 import BaseTask           from './BaseTask';
 import LikesCommonTask    from './LikesCommonTask';
@@ -64,68 +65,76 @@ class AutoLikesTask extends BaseTask {
 			}
 			
 			const postLink = Group.getPostLinkById(postId);
+			const tasksToHandle = [];
+			if (this.taskDocument.likesCount > 0) {
+				const likesCommonDocument = LikesCommonModel.createInstance({
+					postLink,
+					user      : this.taskDocument.user,
+					likesCount: this.taskDocument.likesCount,
+					status    : Task.status.pending,
+					parentTask: this.taskDocument,
+				});
+				
+				const likesCommonTask = new LikesCommonTask({
+					logger      : this.logger,
+					taskDocument: likesCommonDocument,
+					rpcClient   : this.rpcClient,
+					config      : this.config,
+				});
+				
+				this.taskDocument.subTasks.push(likesCommonDocument);
+				await likesCommonDocument.save();
+				tasksToHandle.push(likesCommonTask);
+			}
 			
-			const likesCommonDocument = LikesCommonModel.createInstance({
-				postLink,
-				user      : this.taskDocument.user,
-				likesCount: this.taskDocument.likesCount,
-				status    : Task.status.pending,
-				parentTask: this.taskDocument,
-			});
+			if (this.taskDocument.commentsCount > 0) {
+				const commentsCommonDocument = CommentsCommonModel.createInstance({
+					postLink,
+					user         : this.taskDocument.user,
+					commentsCount: this.taskDocument.commentsCount,
+					status       : Task.status.pending,
+					parentTask   : this.taskDocument,
+				});
+				
+				const commentsCommonTask = new CommentsCommonTask({
+					logger      : this.logger,
+					taskDocument: commentsCommonDocument,
+					rpcClient   : this.rpcClient,
+					config      : this.config,
+				});
+				this.taskDocument.subTasks.push(commentsCommonDocument);
+				await commentsCommonDocument.save();
+				tasksToHandle.push(commentsCommonTask);
+			}
 			
-			const likesCommonTask = new LikesCommonTask({
-				logger      : this.logger,
-				taskDocument: likesCommonDocument,
-				rpcClient   : this.rpcClient,
-				config      : this.config,
-			});
+			if (this.taskDocument.repostsCount > 0) {
+				const repostsCommonDocument = RepostsCommonModel.createInstance({
+					postLink,
+					user        : this.taskDocument.user,
+					repostsCount: this.taskDocument.repostsCount,
+					status      : Task.status.pending,
+					parentTask  : this.taskDocument,
+				});
+				
+				const repostsCommonTask = new RepostsCommonTask({
+					logger      : this.logger,
+					taskDocument: repostsCommonDocument,
+					rpcClient   : this.rpcClient,
+					config      : this.config,
+				});
+				
+				this.taskDocument.subTasks.push(repostsCommonDocument);
+				await repostsCommonDocument.save();
+				tasksToHandle.push(repostsCommonTask);
+			}
 			
-			const commentsCommonDocument = CommentsCommonModel.createInstance({
-				postLink,
-				user         : this.taskDocument.user,
-				commentsCount: this.taskDocument.commentsCount,
-				status       : Task.status.pending,
-				parentTask   : this.taskDocument,
-			});
-			
-			const commentsCommonTask = new CommentsCommonTask({
-				logger      : this.logger,
-				taskDocument: commentsCommonDocument,
-				rpcClient   : this.rpcClient,
-				config      : this.config,
-			});
-			
-			const repostsCommonDocument = RepostsCommonModel.createInstance({
-				postLink,
-				user        : this.taskDocument.user,
-				repostsCount: this.taskDocument.repostsCount,
-				status      : Task.status.pending,
-				parentTask  : this.taskDocument,
-			});
-			
-			const repostsCommonTask = new RepostsCommonTask({
-				logger      : this.logger,
-				taskDocument: repostsCommonDocument,
-				rpcClient   : this.rpcClient,
-				config      : this.config,
-			});
-			
-			this.taskDocument.subTasks.push(commentsCommonDocument);
-			this.taskDocument.subTasks.push(likesCommonDocument);
-			this.taskDocument.subTasks.push(repostsCommonDocument);
-			await Promise.all([
-				this.taskDocument.save(),
-				commentsCommonDocument.save(),
-				likesCommonDocument.save(),
-				repostsCommonDocument.save(),
-			]);
+			await this.taskDocument.save();
 			
 			const errors = [];
-			await Promise.all([
-				likesCommonTask.handle().catch(error => errors.push(error)),
-				commentsCommonTask.handle().catch(error => errors.push(error)),
-				repostsCommonTask.handle().catch(error => errors.push(error)),
-			]);
+			await bluebird.map(
+				tasksToHandle,
+				task => task.handle().catch(error => errors.push(error)),
+			);
 			
 			if (errors.length) {
 				throw errors;
