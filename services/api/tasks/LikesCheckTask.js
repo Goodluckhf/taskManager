@@ -10,14 +10,18 @@ class LikesCheckTask extends BaseTask {
 		
 		const request = new LikeCheckRequest(this.config, {
 			postLink  : this.taskDocument.postLink,
-			likesCount: this.config.get('likesTask.likesToCheck'),
+			likesCount: this.taskDocument.likesCount,
 		});
 		
 		try {
 			await this.rpcClient.call(request);
 			this.taskDocument.parentTask.status = Task.status.finished;
 		} catch (error) {
-			this.logger.warn({ error });
+			this.logger.warn({
+				postLink  : this.taskDocument.postLink,
+				likesCount: this.taskDocument.likesCount,
+				error,
+			});
 			const serviceOrder = this.config.get('likesTask.serviceOrder');
 			if (serviceOrder.length === this.taskDocument.serviceIndex + 1) {
 				const wrappedError = TaskErrorFactory.createError(

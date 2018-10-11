@@ -11,14 +11,18 @@ class RepostsCheckTask extends BaseTask {
 		
 		const request = new RepostCheckRequest(this.config, {
 			postLink    : this.taskDocument.postLink,
-			repostsCount: this.config.get('repostsTask.repostsToCheck'),
+			repostsCount: this.taskDocument.repostsCount,
 		});
 		
 		try {
 			await this.rpcClient.call(request);
 			this.taskDocument.parentTask.status = Task.status.finished;
 		} catch (error) {
-			this.logger.warn({ error });
+			this.logger.warn({
+				postLink    : this.taskDocument.postLink,
+				repostsCount: this.taskDocument.repostsCount,
+				error,
+			});
 			const serviceOrder = this.config.get('repostsTask.serviceOrder');
 			if (serviceOrder.length === this.taskDocument.serviceIndex + 1) {
 				const wrappedError = TaskErrorFactory.createError(

@@ -11,14 +11,18 @@ class CommentsCheckTask extends BaseTask {
 		
 		const request = new CommentsCheckRequest(this.config, {
 			postLink     : this.taskDocument.postLink,
-			commentsCount: this.config.get('commentsTask.commentsToCheck'),
+			commentsCount: this.taskDocument.commentsCount,
 		});
 		
 		try {
 			await this.rpcClient.call(request);
 			this.taskDocument.parentTask.status = Task.status.finished;
 		} catch (error) {
-			this.logger.warn({ error });
+			this.logger.warn({
+				postLink     : this.taskDocument.postLink,
+				commentsCount: this.taskDocument.commentsCount,
+				error,
+			});
 			const serviceOrder = this.config.get('commentsTask.serviceOrder');
 			if (serviceOrder.length === this.taskDocument.serviceIndex + 1) {
 				const wrappedError = TaskErrorFactory.createError(
