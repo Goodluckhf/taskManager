@@ -22,18 +22,13 @@ export class CommonLikesError extends BaseTaskError {
 }
 
 export class SetLikesValidation extends CommonLikesError {
-	constructor(messages, ...args) {
-		super(...args);
-		this.messages = messages;
-	}
-	
 	/**
 	 * @return {string}
 	 * @protected
 	 */
 	_toMessage() {
 		const message = super._toMessage();
-		return `${message}\n${this.messages.join('\n')}`;
+		return `${message}\n${this.originalError.messages.join('\n')}`;
 	}
 }
 
@@ -60,18 +55,13 @@ export class CommonCommentsError extends BaseTaskError {
 }
 
 export class SetCommentsValidation extends CommonCommentsError {
-	constructor(messages, ...args) {
-		super(...args);
-		this.messages = messages;
-	}
-	
 	/**
 	 * @return {string}
 	 * @protected
 	 */
 	_toMessage() {
 		const message = super._toMessage();
-		return `${message}\n${this.messages.join('\n')}`;
+		return `${message}\n${this.originalError.messages.join('\n')}`;
 	}
 }
 
@@ -98,18 +88,13 @@ export class CommonRepostsError extends BaseTaskError {
 }
 
 export class SetRepostsValidation extends CommonRepostsError {
-	constructor(messages, ...args) {
-		super(...args);
-		this.messages = messages;
-	}
-	
 	/**
 	 * @return {string}
 	 * @protected
 	 */
 	_toMessage() {
 		const message = super._toMessage();
-		return `${message}\n${this.messages.join('\n')}`;
+		return `${message}\n${this.originalError.messages.join('\n')}`;
 	}
 }
 

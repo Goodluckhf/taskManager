@@ -9,15 +9,15 @@ import BaseTaskError from './BaseTaskError';
 
 const statusToErrorMapper = {
 	likes: {
-		0      : SetLikesValidation,
+		1      : SetLikesValidation,
 		Default: CommonLikesError,
 	},
 	comments: {
-		0      : SetCommentsValidation,
+		1      : SetCommentsValidation,
 		Default: CommonCommentsError,
 	},
 	reposts: {
-		0      : SetRepostsValidation,
+		1      : SetRepostsValidation,
 		Default: CommonRepostsError,
 	},
 	Default: BaseTaskError,
@@ -37,7 +37,7 @@ class TaskErrorFactory {
 			return new statusToErrorMapper[type].Default(...args, _error);
 		}
 		
-		const ErrorClass = statusToErrorMapper[_error.statusCode];
+		const ErrorClass = statusToErrorMapper[type][_error.statusCode];
 		if (!ErrorClass) {
 			const error = new statusToErrorMapper[type].Default(...args, _error);
 			error.message = `Нет обработчика ошибки! ${error.message}`;

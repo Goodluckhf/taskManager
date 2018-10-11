@@ -62,9 +62,9 @@ class LikestResponse extends Response {
 			});
 			
 			if (errors.length) {
-				const error    = new Error('Ошибки валидации');
-				error.messages = errors;
-				error.status   = 0;
+				const error      = new Error('Ошибки валидации');
+				error.messages   = errors;
+				error.statusCode = 1;
 				throw error;
 			}
 		} finally {
