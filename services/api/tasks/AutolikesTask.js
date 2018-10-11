@@ -1,12 +1,11 @@
-import moment   from 'moment/moment';
 import mongoose from 'mongoose';
 import bluebird from 'bluebird';
 
-import BaseTask           from './BaseTask';
-import LikesCommonTask    from './LikesCommonTask';
-import CommentsCommonTask from './CommentsCommonTask';
-import RepostsCommonTask  from './RepostsCommonTask';
-import PostCheckAdRequest from '../api/amqpRequests/PostCheckAdRequest';
+import BaseTask                from './BaseTask';
+import LikesCommonTask         from './LikesCommonTask';
+import CommentsCommonTask      from './CommentsCommonTask';
+import RepostsCommonTask       from './RepostsCommonTask';
+import LastPostWithLinkRequest from '../api/amqpRequests/LastPostWithLinkRequest';
 
 class AutoLikesTask extends BaseTask {
 	async handle() {
@@ -18,12 +17,6 @@ class AutoLikesTask extends BaseTask {
 		
 		let postLink;
 		try {
-			// Проверяем, что прошло 70 минут, Потому что, пост обычно стоит не менее 60 минут
-			const likesInterval = parseInt(this.config.get('autoLikesTask.likesInterval'), 10);
-			if (this.taskDocument.lastHandleAt && moment().diff(moment(this.taskDocument.lastHandleAt), 'minutes') < likesInterval) {
-				return;
-			}
-			
 			await this.taskDocument.populate('group').execPopulate();
 			if (!this.taskDocument.group) {
 				this.logger.warn({
@@ -53,21 +46,35 @@ class AutoLikesTask extends BaseTask {
 			// Потому что она выполняется каждую минуту
 			// И если не выполнится или будет какая-то ошибка
 			// Ничего страшного, потому что через минуту еще раз запустится
-			let postId;
+			let lastPostResult;
 			try {
-				const request = new PostCheckAdRequest(this.config, {
+				const request = new LastPostWithLinkRequest(this.config, {
 					groupLink,
-					targetPublics: targetPublics.map(p => p.publicId),
 				});
-				postId = await this.rpcClient.call(request);
+				lastPostResult = await this.rpcClient.call(request);
 			} catch (error) {
-				this.logger.info({ error });
+				this.logger.info({ groupLink, error });
 				return;
 			}
 			
+			//eslint-disable-next-line no-unused-vars
+			const { postId, mentionId, link } = lastPostResult;
+			this.logger.info({ groupLink, lastPostResult });
 			postLink = Group.getPostLinkById(postId);
 			
 			if (postLink === this.taskDocument.lastPostLink) {
+				return;
+			}
+			
+			if (!mentionId) {
+				return;
+			}
+			
+			const hasTargetGroupInTask = targetPublics.some(targetGroup => (
+				`club${targetGroup.publicId}` === mentionId
+			));
+			
+			if (!hasTargetGroupInTask) {
 				return;
 			}
 			
@@ -147,7 +154,6 @@ class AutoLikesTask extends BaseTask {
 			}
 			
 			this.taskDocument.lastPostLink = postLink;
-			this.taskDocument.lastHandleAt = new Date();
 		} catch (error) {
 			if (!Array.isArray(error)) {
 				//eslint-disable-next-line no-throw-literal
@@ -155,7 +161,6 @@ class AutoLikesTask extends BaseTask {
 			}
 			
 			this.taskDocument.lastPostLink = postLink;
-			this.taskDocument.lastHandleAt = new Date();
 			throw error;
 		} finally {
 			//@TODO: Сделать все таки finished статус

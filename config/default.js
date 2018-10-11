@@ -30,10 +30,6 @@ module.exports = {
 		reconnectInterval: 3000,
 	},
 	
-	autoLikesTask: {
-		likesInterval: 70,
-	},
-	
 	tasksQueue: {
 		name    : 'tasks',
 		timeout : process.env.TASK_QUEUE__TIMEOUT,
@@ -89,9 +85,5 @@ module.exports = {
 	
 	cron: {
 		interval: process.env.CRON__INTERVAL,
-	},
-	
-	vkAlert: {
-		chat_id: process.env.VK_ALERT__CHAT_ID,
 	},
 };
