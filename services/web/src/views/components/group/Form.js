@@ -48,7 +48,7 @@ class Form extends PureComponent {
 						<FormGroup>
 							<Label>Ссылка на паблик</Label>
 							<Input onChange={this.handleInput} type='text' placeholder='https://vk.com/nice.advice'/>
-							<CustomInput id='isTarget' onChange={this.handleCheckbox} type='checkbox' label='Учавствует в лайках'/>
+							<CustomInput id='isTarget' onChange={this.handleCheckbox} type='checkbox' label='Учавствует в автонакрутке'/>
 							{this.props.error ? <ApiError style={{ marginTop: '24px' }} error={this.props.error}/> : ''}
 						</FormGroup>
 					</BootstrapForm>
