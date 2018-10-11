@@ -16,6 +16,7 @@ class AutoLikesTask extends BaseTask {
 		const CommentsCommonModel = mongoose.model('CommentsCommon');
 		const RepostsCommonModel  = mongoose.model('RepostsCommon');
 		
+		let postLink;
 		try {
 			// Проверяем, что прошло 70 минут, Потому что, пост обычно стоит не менее 60 минут
 			const likesInterval = parseInt(this.config.get('autoLikesTask.likesInterval'), 10);
@@ -64,7 +65,12 @@ class AutoLikesTask extends BaseTask {
 				return;
 			}
 			
-			const postLink = Group.getPostLinkById(postId);
+			postLink = Group.getPostLinkById(postId);
+			
+			if (postLink === this.taskDocument.lastPostLink) {
+				return;
+			}
+			
 			const tasksToHandle = [];
 			if (this.taskDocument.likesCount > 0) {
 				const likesCommonDocument = LikesCommonModel.createInstance({
@@ -139,6 +145,8 @@ class AutoLikesTask extends BaseTask {
 			if (errors.length) {
 				throw errors;
 			}
+			
+			this.taskDocument.lastPostLink = postLink;
 			this.taskDocument.lastHandleAt = new Date();
 		} catch (error) {
 			if (!Array.isArray(error)) {
@@ -146,6 +154,7 @@ class AutoLikesTask extends BaseTask {
 				throw [error];
 			}
 			
+			this.taskDocument.lastPostLink = postLink;
 			this.taskDocument.lastHandleAt = new Date();
 			throw error;
 		} finally {
