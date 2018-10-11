@@ -23,8 +23,8 @@ export default (connection) => {
 	connection.model('Group', groupSchema);
 	connection.model('Account', accountSchema);
 	connection.model('User', userSchema);
-	connection.model('AccountUser', accountUserSchema);
-	connection.model('PremiumUser', premiumUserSchema);
+	connection.model('User').discriminator('AccountUser', accountUserSchema);
+	connection.model('User').discriminator('PremiumUser', premiumUserSchema);
 	
 	connection.model('Task', taskSchema);
 	connection.model('Task').discriminator('AutoLikesTask', autoLikesTaskSchema);
