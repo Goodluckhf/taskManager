@@ -10,10 +10,10 @@ class PostCheckAdResponse extends Response {
 		return 'postCheckAd';
 	}
 	
-	async process({ postLink, targetPublics }) {
-		this.logger.info({ postLink, targetPublics });
+	async process({ groupLink, targetPublics }) {
+		this.logger.info({ groupLink, targetPublics });
 		
-		const jsDom = await JSDOM.fromURL(postLink);
+		const jsDom = await JSDOM.fromURL(groupLink);
 		
 		const $lastPost    = jsDom.window.document.querySelectorAll('#page_wall_posts .post')[0];
 		const $mentionLink = $lastPost.querySelector('a.mem_link');

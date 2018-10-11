@@ -28,6 +28,11 @@ const autolikesSchema = new mongoose.Schema({
 		default: null,
 	},
 	
+	// Прошлый пост
+	lastPostLink: {
+		type: String,
+	},
+	
 	repeated: {
 		type   : Boolean,
 		default: true,
@@ -37,6 +42,7 @@ const autolikesSchema = new mongoose.Schema({
 /**
  * @property {ObjectId|GroupDocument} group
  * @property {Number} likesCount
+ * @property {String} lastPostLink
  */
 export class AutoLikesTaskDocument {
 	/**
