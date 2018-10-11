@@ -53,7 +53,7 @@ class AutoLikesTask extends BaseTask {
 				});
 				lastPostResult = await this.rpcClient.call(request);
 			} catch (error) {
-				this.logger.info({ error });
+				this.logger.info({ groupLink, error });
 				return;
 			}
 			
