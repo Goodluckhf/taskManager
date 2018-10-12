@@ -18,6 +18,11 @@ class Billing {
 		this.config = config;
 	}
 	
+	/**
+	 * @param {String} type
+	 * @param {Number} quantity
+	 * @return {InvoiceDocument}
+	 */
 	createInvoice(type, quantity) {
 		const InvoiceModel = mongoose.model('Invoice');
 		
