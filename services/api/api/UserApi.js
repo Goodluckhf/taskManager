@@ -33,7 +33,9 @@ class UserApi extends BaseApi {
 	 * @param {Boolean} data.isActive
 	 */
 	async register(data) {
-		const User = mongoose.model('User');
+		const User        = mongoose.model('User');
+		const AccountUser = mongoose.model('AccountUser');
+		
 		this.validate({
 			properties: {
 				email   : { type: 'string', format: 'email' },
@@ -47,7 +49,8 @@ class UserApi extends BaseApi {
 			throw new UserAlreadyExists({ email: data.email });
 		}
 		
-		const user = User.createInstance({
+		// По умолчанию создаются пользователи с балансом
+		const user = AccountUser.createInstance({
 			email   : data.email.toLowerCase(),
 			password: data.password,
 		});
