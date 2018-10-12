@@ -23,7 +23,7 @@ export class AccountUserDocument {
 	 */
 	static createInstance(opts) {
 		const baseUser   = mongoose.model('User').createInstance(this, opts);
-		baseUser.balance = opts.balance;
+		baseUser.balance = opts.balance || 0;
 		return baseUser;
 	}
 }
