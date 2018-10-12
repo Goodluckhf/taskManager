@@ -6,7 +6,13 @@ import LikesCommonTask         from './LikesCommonTask';
 import CommentsCommonTask      from './CommentsCommonTask';
 import RepostsCommonTask       from './RepostsCommonTask';
 import LastPostWithLinkRequest from '../api/amqpRequests/LastPostWithLinkRequest';
+import BillingAccount          from '../billing/BillingAccount';
+import Billing                 from '../billing/Billing';
+import { NotEnoughBalance }    from '../api/errors/tasks';
 
+/**
+ * @property {AutoLikesTaskDocument} taskDocument
+ */
 class AutoLikesTask extends BaseTask {
 	async handle() {
 		const Task                = mongoose.model('Task');
@@ -19,6 +25,7 @@ class AutoLikesTask extends BaseTask {
 		try {
 			await this.taskDocument.populate('group').execPopulate();
 			if (!this.taskDocument.group) {
+				this.taskDocument.status = Task.status.waiting;
 				this.logger.warn({
 					message: 'Like task has no group',
 					taskId : this.taskDocument._id,
@@ -36,6 +43,7 @@ class AutoLikesTask extends BaseTask {
 				.exec();
 			
 			if (!targetPublics.length) {
+				this.taskDocument.status = Task.status.waiting;
 				this.logger.info({
 					message: 'Нет пабликов для накрутки',
 					userId : this.taskDocument.user.id,
@@ -58,6 +66,7 @@ class AutoLikesTask extends BaseTask {
 				});
 				lastPostResult = await this.rpcClient.call(request);
 			} catch (error) {
+				this.taskDocument.status = Task.status.waiting;
 				this.logger.warn({
 					message: 'LastPostWithLinkRequest error',
 					userId : this.taskDocument.user.id,
@@ -73,6 +82,7 @@ class AutoLikesTask extends BaseTask {
 			postLink = Group.getPostLinkById(postId);
 			
 			if (postLink === this.taskDocument.lastPostLink) {
+				this.taskDocument.status = Task.status.waiting;
 				this.logger.info({
 					message: 'Пост уже учавствовал в накрутке',
 					userId : this.taskDocument.user.id,
@@ -83,6 +93,7 @@ class AutoLikesTask extends BaseTask {
 			}
 			
 			if (!mentionId) {
+				this.taskDocument.status = Task.status.waiting;
 				this.logger.info({
 					message: 'Нет ссылки упоминания mentionId',
 					userId : this.taskDocument.user.id,
@@ -97,6 +108,7 @@ class AutoLikesTask extends BaseTask {
 			));
 			
 			if (!hasTargetGroupInTask) {
+				this.taskDocument.status = Task.status.waiting;
 				this.logger.info({
 					message: 'упоминание не совпало ни с одной из ссылок',
 					userId : this.taskDocument.user.id,
@@ -106,6 +118,19 @@ class AutoLikesTask extends BaseTask {
 					postLink,
 				});
 				return;
+			}
+			
+			// Если пользователь биллинговый
+			// То замораживаем баланс на стоимость задач
+			if (this.account instanceof BillingAccount) {
+				const invoices = [
+					this.billing.createInvoice(Billing.types.like, this.taskDocument.likesCount),
+					this.billing.createInvoice(Billing.types.repost, this.taskDocument.repostsCount),
+					this.billing.createInvoice(Billing.types.comment, this.taskDocument.commentsCount),
+				];
+				
+				this.account.freezeMoney(invoices);
+				await this.taskDocument.user.save();
 			}
 			
 			const tasksToHandle = [];
@@ -119,6 +144,8 @@ class AutoLikesTask extends BaseTask {
 				});
 				
 				const likesCommonTask = new LikesCommonTask({
+					billing     : this.billing,
+					account     : this.account,
 					logger      : this.logger,
 					taskDocument: likesCommonDocument,
 					rpcClient   : this.rpcClient,
@@ -140,6 +167,8 @@ class AutoLikesTask extends BaseTask {
 				});
 				
 				const commentsCommonTask = new CommentsCommonTask({
+					billing     : this.billing,
+					account     : this.account,
 					logger      : this.logger,
 					taskDocument: commentsCommonDocument,
 					rpcClient   : this.rpcClient,
@@ -160,6 +189,8 @@ class AutoLikesTask extends BaseTask {
 				});
 				
 				const repostsCommonTask = new RepostsCommonTask({
+					billing     : this.billing,
+					account     : this.account,
 					logger      : this.logger,
 					taskDocument: repostsCommonDocument,
 					rpcClient   : this.rpcClient,
@@ -186,17 +217,15 @@ class AutoLikesTask extends BaseTask {
 			this.taskDocument.lastHandleAt = new Date();
 			this.taskDocument.lastPostLink = postLink;
 		} catch (error) {
-			if (!Array.isArray(error)) {
-				//eslint-disable-next-line no-throw-literal
-				throw [error];
+			if (error instanceof NotEnoughBalance) {
+				this.taskDocument.status = Task.status.skipped;
 			}
+			const errors = Array.isArray(error) ? error : [error];
 			
 			this.taskDocument.lastHandleAt = new Date();
 			this.taskDocument.lastPostLink = postLink;
-			throw error;
+			throw errors;
 		} finally {
-			//@TODO: Сделать все таки finished статус
-			this.taskDocument.status = Task.status.waiting;
 			await this.taskDocument.save();
 		}
 	}
