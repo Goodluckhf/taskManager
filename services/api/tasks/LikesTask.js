@@ -31,7 +31,8 @@ class LikesTask extends BaseTask {
 			this.taskDocument._error = wrappedError.toObject();
 			throw wrappedError;
 		} finally {
-			this.taskDocument.status = Task.status.finished;
+			this.taskDocument.lastHandleAt = new Date();
+			this.taskDocument.status       = Task.status.finished;
 			await this.taskDocument.save();
 		}
 	}

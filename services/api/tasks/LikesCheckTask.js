@@ -15,7 +15,8 @@ class LikesCheckTask extends BaseTask {
 		
 		try {
 			await this.rpcClient.call(request);
-			this.taskDocument.parentTask.status = Task.status.finished;
+			this.taskDocument.parentTask.status       = Task.status.finished;
+			this.taskDocument.parentTask.lastHandleAt = new Date();
 		} catch (error) {
 			this.logger.warn({
 				postLink  : this.taskDocument.postLink,
@@ -31,8 +32,9 @@ class LikesCheckTask extends BaseTask {
 					this.taskDocument.parentTask.likesCount,
 				);
 				
-				this.taskDocument.parentTask.status = Task.status.finished;
-				this.taskDocument.parentTask._error = wrappedError.toObject();
+				this.taskDocument.parentTask.lastHandleAt = new Date();
+				this.taskDocument.parentTask.status       = Task.status.finished;
+				this.taskDocument.parentTask._error       = wrappedError.toObject();
 				throw wrappedError;
 			}
 			
@@ -50,7 +52,8 @@ class LikesCheckTask extends BaseTask {
 			
 			await likesTask.handle();
 		} finally {
-			this.taskDocument.status = Task.status.finished;
+			this.taskDocument.lastHandleAt = new Date();
+			this.taskDocument.status       = Task.status.finished;
 			await Promise.all([
 				this.taskDocument.save(),
 				this.taskDocument.parentTask.save(),
