@@ -8,7 +8,7 @@ import { NotEnoughBalance } from '../api/errors/tasks';
 class BillingAccount extends BaseAccount {
 	/**
 	 * @param {InvoiceDocument | Array.<InvoiceDocument>} invoice
-	 * @return {Boolean}
+	 * @return {void}
 	 */
 	canPay(invoice) {
 		const totalPrice = this.billing.getTotalPrice(invoice);
@@ -23,8 +23,7 @@ class BillingAccount extends BaseAccount {
 	 */
 	freezeMoney(invoice) {
 		this.canPay(invoice);
-		const totalPrice = this.billing.getTotalPrice(invoice);
-		this.user.freezeBalance += totalPrice;
+		this.user.freezeBalance += this.billing.getTotalPrice(invoice);
 	}
 	
 	/**
@@ -33,8 +32,7 @@ class BillingAccount extends BaseAccount {
 	 * @return {void}
 	 */
 	rollBackInvoice(invoice) {
-		const totalPrice = this.billing.getTotalPrice(invoice);
-		this.user.freezeBalance -= totalPrice;
+		this.user.freezeBalance -= this.billing.getTotalPrice(invoice);
 	}
 	
 	/**

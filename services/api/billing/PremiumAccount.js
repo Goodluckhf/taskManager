@@ -7,7 +7,7 @@ import BaseTaskError from '../api/errors/tasks/BaseTaskError';
 class PremiumAccount extends BaseAccount {
 	/**
 	 * @param {InvoiceDocument | Array.<InvoiceDocument>} invoice
-	 * @return {Boolean}
+	 * @return {void}
 	 */
 	// eslint-disable-next-line no-unused-vars
 	canPay(invoice) {

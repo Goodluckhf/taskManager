@@ -18,7 +18,6 @@ class BaseAccount {
 	
 	/**
 	 * @param {InvoiceDocument | Array.<InvoiceDocument>} invoice
-	 * @return {Boolean}
 	 * @abstract
 	 */
 	//eslint-disable-next-line no-unused-vars,class-methods-use-this
