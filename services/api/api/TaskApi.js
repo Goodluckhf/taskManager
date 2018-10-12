@@ -32,12 +32,14 @@ const mapperModelTypeToTask = {
 /**
  * @property {RpcClient} rpcClient
  * @property {Alert} alert
+ * @property {Billing} billing
  */
 class TaskApi extends BaseApi {
-	constructor(rpcClient, alert, ...args) {
+	constructor(rpcClient, alert, billing, ...args) {
 		super(...args);
 		this.rpcClient = rpcClient;
 		this.alert     = alert;
+		this.billing   = billing;
 	}
 	
 	
@@ -151,6 +153,8 @@ class TaskApi extends BaseApi {
 				}
 				
 				const task = new TaskClass({
+					billing     : this.billing,
+					account     : this.billing.createAccount(_task.user),
 					logger      : this.logger,
 					taskDocument: _task,
 					rpcClient   : this.rpcClient,

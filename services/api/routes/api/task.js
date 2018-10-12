@@ -4,14 +4,20 @@ import logger  from '../../../../lib/logger';
 import TaskApi from '../../api/TaskApi';
 import Alert   from '../../../../lib/Alert';
 
-export default (router, rpcClient, passport) => {
+/**
+ * @param {Router} router
+ * @param {RpcClient} rpcClient
+ * @param {Passport} passport
+ * @param {Billing} billing
+ */
+export default (router, rpcClient, passport, billing) => {
 	const vkApi = new VkApi(config.get('vkApi.token'), {
 		timeout: config.get('vkApi.timeout'),
 	});
 	const alert = new Alert(vkApi, logger);
 	
 	// Сам классс Api
-	const taskApi = new TaskApi(rpcClient, alert, config, logger);
+	const taskApi = new TaskApi(rpcClient, alert, billing, config, logger);
 	
 	router.post('/task/stop/:id', passport.authenticate('jwt', { session: false }), async (ctx) => {
 		const { id } = ctx.params;
