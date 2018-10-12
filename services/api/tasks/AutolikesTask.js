@@ -8,12 +8,92 @@ import RepostsCommonTask       from './RepostsCommonTask';
 import LastPostWithLinkRequest from '../api/amqpRequests/LastPostWithLinkRequest';
 import BillingAccount          from '../billing/BillingAccount';
 import Billing                 from '../billing/Billing';
-import { NotEnoughBalance }    from '../api/errors/tasks';
+import {
+	NotEnoughBalance,
+	NotEnoughBalanceForComments,
+	NotEnoughBalanceForLikes,
+	NotEnoughBalanceForReposts,
+}                              from '../api/errors/tasks';
 
 /**
  * @property {AutoLikesTaskDocument} taskDocument
  */
 class AutoLikesTask extends BaseTask {
+	freezeMoney(type, postLink) {
+		if (!(this.account instanceof BillingAccount)) {
+			return;
+		}
+		
+		if (type === 'like') {
+			const invoice = this.billing.createInvoice(
+				Billing.types.like,
+				this.taskDocument.likesCount,
+			);
+			
+			try {
+				this.account.freezeMoney(invoice);
+			} catch (error) {
+				if (error instanceof NotEnoughBalance) {
+					throw new NotEnoughBalanceForLikes(
+						this.account.availableBalance,
+						invoice.price,
+						postLink,
+						this.taskDocument.likesCount,
+						error,
+					);
+				}
+				
+				throw error;
+			}
+		}
+		
+		if (type === 'repost') {
+			const invoice = this.billing.createInvoice(
+				Billing.types.repost,
+				this.taskDocument.repostsCount,
+			);
+			
+			try {
+				this.account.freezeMoney(invoice);
+			} catch (error) {
+				if (error instanceof NotEnoughBalance) {
+					throw new NotEnoughBalanceForReposts(
+						this.account.availableBalance,
+						invoice.price,
+						postLink,
+						this.taskDocument.repostsCount,
+						error,
+					);
+				}
+				
+				throw error;
+			}
+		}
+		
+		if (type === 'comment') {
+			const invoice = this.billing.createInvoice(
+				Billing.types.comment,
+				this.taskDocument.commentsCount,
+			);
+			
+			try {
+				this.account.freezeMoney(invoice);
+			} catch (error) {
+				if (error instanceof NotEnoughBalance) {
+					throw new NotEnoughBalanceForComments(
+						this.account.availableBalance,
+						invoice.price,
+						postLink,
+						this.taskDocument.commentsCount,
+						error,
+					);
+				}
+				
+				throw error;
+			}
+		}
+	}
+	
 	async handle() {
 		const Task                = mongoose.model('Task');
 		const Group               = mongoose.model('Group');
@@ -120,20 +200,8 @@ class AutoLikesTask extends BaseTask {
 				return;
 			}
 			
-			// Если пользователь биллинговый
-			// То замораживаем баланс на стоимость задач
-			if (this.account instanceof BillingAccount) {
-				const invoices = [
-					this.billing.createInvoice(Billing.types.like, this.taskDocument.likesCount),
-					this.billing.createInvoice(Billing.types.repost, this.taskDocument.repostsCount),
-					this.billing.createInvoice(Billing.types.comment, this.taskDocument.commentsCount),
-				];
-				
-				this.account.freezeMoney(invoices);
-				await this.taskDocument.user.save();
-			}
-			
 			const tasksToHandle = [];
+			const errors        = [];
 			if (this.taskDocument.likesCount > 0) {
 				const likesCommonDocument = LikesCommonModel.createInstance({
 					postLink,
@@ -153,8 +221,17 @@ class AutoLikesTask extends BaseTask {
 				});
 				
 				this.taskDocument.subTasks.push(likesCommonDocument);
-				await likesCommonDocument.save();
-				tasksToHandle.push(likesCommonTask);
+				
+				try {
+					this.freezeMoney('like', postLink);
+					tasksToHandle.push(likesCommonTask);
+				} catch (error) {
+					errors.push(error);
+					likesCommonDocument.status = Task.status.finished;
+				} finally {
+					await likesCommonDocument.save();
+					await this.taskDocument.user.save();
+				}
 			}
 			
 			if (this.taskDocument.commentsCount > 0) {
@@ -175,8 +252,17 @@ class AutoLikesTask extends BaseTask {
 					config      : this.config,
 				});
 				this.taskDocument.subTasks.push(commentsCommonDocument);
-				await commentsCommonDocument.save();
-				tasksToHandle.push(commentsCommonTask);
+				
+				try {
+					this.freezeMoney('comment', postLink);
+					tasksToHandle.push(commentsCommonTask);
+				} catch (error) {
+					errors.push(error);
+					commentsCommonDocument.status = Task.status.finished;
+				} finally {
+					await commentsCommonDocument.save();
+					await this.taskDocument.user.save();
+				}
 			}
 			
 			if (this.taskDocument.repostsCount > 0) {
@@ -198,13 +284,20 @@ class AutoLikesTask extends BaseTask {
 				});
 				
 				this.taskDocument.subTasks.push(repostsCommonDocument);
-				await repostsCommonDocument.save();
-				tasksToHandle.push(repostsCommonTask);
+				try {
+					this.freezeMoney('repost', postLink);
+					tasksToHandle.push(repostsCommonTask);
+				} catch (error) {
+					errors.push(error);
+					repostsCommonDocument.status = Task.status.finished;
+				} finally {
+					await repostsCommonDocument.save();
+					await this.taskDocument.user.save();
+				}
 			}
 			
 			await this.taskDocument.save();
 			
-			const errors = [];
 			await bluebird.map(
 				tasksToHandle,
 				task => task.handle().catch(error => errors.push(error)),
@@ -217,9 +310,6 @@ class AutoLikesTask extends BaseTask {
 			this.taskDocument.lastHandleAt = new Date();
 			this.taskDocument.lastPostLink = postLink;
 		} catch (error) {
-			if (error instanceof NotEnoughBalance) {
-				this.taskDocument.status = Task.status.skipped;
-			}
 			const errors = Array.isArray(error) ? error : [error];
 			
 			this.taskDocument.lastHandleAt = new Date();
