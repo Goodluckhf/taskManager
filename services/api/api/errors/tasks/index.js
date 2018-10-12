@@ -32,6 +32,23 @@ export class SetLikesValidation extends CommonLikesError {
 	}
 }
 
+export class NotEnoughBalanceForLikes extends CommonLikesError {
+	constructor(activeBalance, needBalance, ...args) {
+		super(...args);
+		this.activeBalance = activeBalance;
+		this.needBalance   = needBalance;
+	}
+	
+	/**
+	 * @return {string}
+	 * @protected
+	 */
+	_toMessage() {
+		const message = super._toMessage();
+		return `${message}\nНедостаточно средств на балансе\nДоступный баланс: ${this.activeBalance}\nНеобходимо средств ${this.needBalance}`;
+	}
+}
+
 
 /**
  * @property {String} link
@@ -62,6 +79,24 @@ export class SetCommentsValidation extends CommonCommentsError {
 	_toMessage() {
 		const message = super._toMessage();
 		return `${message}\n${this.originalError.messages.join('\n')}`;
+	}
+}
+
+
+export class NotEnoughBalanceForComments extends CommonCommentsError {
+	constructor(activeBalance, needBalance, ...args) {
+		super(...args);
+		this.activeBalance = activeBalance;
+		this.needBalance   = needBalance;
+	}
+	
+	/**
+	 * @return {string}
+	 * @protected
+	 */
+	_toMessage() {
+		const message = super._toMessage();
+		return `${message}\nНедостаточно средств на балансе\nДоступный баланс: ${this.activeBalance}\nНеобходимо средств ${this.needBalance}`;
 	}
 }
 
@@ -98,6 +133,23 @@ export class SetRepostsValidation extends CommonRepostsError {
 	}
 }
 
+export class NotEnoughBalanceForReposts extends CommonRepostsError {
+	constructor(activeBalance, needBalance, ...args) {
+		super(...args);
+		this.activeBalance = activeBalance;
+		this.needBalance   = needBalance;
+	}
+	
+	/**
+	 * @return {string}
+	 * @protected
+	 */
+	_toMessage() {
+		const message = super._toMessage();
+		return `${message}\nНедостаточно средств на балансе\nДоступный баланс: ${this.activeBalance}\nНеобходимо средств ${this.needBalance}`;
+	}
+}
+
 export class NotEnoughBalance extends BaseTaskError {
 	constructor(activeBalance, needBalance, ...args) {
 		super(...args);
@@ -111,6 +163,6 @@ export class NotEnoughBalance extends BaseTaskError {
 	 */
 	_toMessage() {
 		const message = super._toMessage();
-		return `${message} Недостаточно средств на балансе\nДоступный баланса: ${this.activeBalance}\nНеобходимо средств ${this.needBalance}`;
+		return `${message} Недостаточно средств на балансе\nДоступный баланс: ${this.activeBalance}\nНеобходимо средств ${this.needBalance}`;
 	}
 }
