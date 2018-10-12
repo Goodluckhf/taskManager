@@ -41,6 +41,12 @@ const schema = new mongoose.Schema({
 		type: Date,
 	},
 	
+	// Время последнего выполения задачи
+	lastHandleAt: {
+		type   : Date,
+		default: null,
+	},
+	
 	_error: {
 		type   : Object,
 		default: null,
