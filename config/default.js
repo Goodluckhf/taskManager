@@ -86,4 +86,10 @@ module.exports = {
 	cron: {
 		interval: process.env.CRON__INTERVAL,
 	},
+	
+	prices: {
+		like   : parseInt(process.env.PRICES__LIKE, 10),
+		repost : parseInt(process.env.PRICES__REPOST, 10),
+		comment: parseInt(process.env.PRICES__COMMENT, 10),
+	},
 };
