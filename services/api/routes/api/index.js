@@ -12,6 +12,7 @@ import createAccountRoute       from './account';
 import createGroupRoute         from './group';
 import createWallSeekRoute      from './wallSeek';
 import createUserRoute          from './user';
+import Billing                  from '../../billing/Billing';
 
 // rabbit, RPC client
 const rabbitConfig = config.get('rabbit');
@@ -21,13 +22,15 @@ rpcClient.start().catch((error) => {
 	logger.error({ error });
 });
 
+const billing = new Billing(config);
+
 const router = new Router({ prefix: '/api' });
 
 createTaskRoute(router, rpcClient, passport);
 createAccountRoute(router, rpcClient);
 createWallSeekRoute(router, passport);
 createGroupRoute(router, passport);
-createAutoLikesTaskRoute(router, passport);
+createAutoLikesTaskRoute(router, passport, billing);
 createUserRoute(router, passport);
 
 export default router;
