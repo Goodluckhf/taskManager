@@ -5,17 +5,23 @@ import BaseApi  from './BaseApi';
 import {
 	NotFound,
 	ValidationError,
-	TaskAlreadyExist,
+	TaskAlreadyExist, UserIsNotReady,
 } from './errors';
 
+/**
+ * @property {VkApi} vkApi
+ * @property {Billing} billing
+ */
 class AutoLikesApi extends BaseApi {
-	constructor(vkApi, ...args) {
+	constructor(vkApi, billing, ...args) {
 		super(...args);
-		this.vkApi = vkApi;
+		this.vkApi   = vkApi;
+		this.billing = billing;
 	}
 	
 	/**
 	 * @description Создает задание на лайкание постов по расписанию
+	 * @param {BaseAccount} account
 	 * @param {Object} _data
 	 * @param {String} [_data.groupId] Если groupId нет - будет создана новая группа
 	 * @param {String} _data.publicHref
@@ -23,10 +29,9 @@ class AutoLikesApi extends BaseApi {
 	 * @param {Number} _data.likesCount
 	 * @param {Number} _data.commentsCount
 	 * @param {Number} _data.repostsCount
-	 * @param {UserDocument} _data.user
 	 * @return {Promise<*>}
 	 */
-	async create(_data) {
+	async create(account, _data) {
 		const data = { ..._data };
 		this.validate({
 			properties: {
@@ -50,7 +55,18 @@ class AutoLikesApi extends BaseApi {
 			throw new ValidationError(['commentsCount', 'likesCount', 'repostsCount']);
 		}
 		
-		this.checkUserReady(data.user);
+		if (!account.user.chatId) {
+			throw new UserIsNotReady(['chatId']);
+		}
+		
+		const invoices = [
+			this.billing.createInvoice('like', parseInt(data.likesCount, 10)),
+			this.billing.createInvoice('repost', parseInt(data.repostsCount, 10)),
+			this.billing.createInvoice('comment', parseInt(data.commentsCount, 10)),
+		];
+		
+		account.canPay(invoices);
+		
 		let group;
 		if (data.publicHref) {
 			const vkGroup = await this.vkApi.groupByHref(data.publicHref);
@@ -69,7 +85,7 @@ class AutoLikesApi extends BaseApi {
 		}
 		
 		const existsTask = await mongoose.model('AutoLikesTask').findOne({
-			user     : data.user,
+			user     : account.user,
 			group    : group._id,
 			deletedAt: null,
 		});
@@ -81,7 +97,7 @@ class AutoLikesApi extends BaseApi {
 		try {
 			const likesTask = mongoose.model('AutoLikesTask').createInstance({
 				...data,
-				user : data.user,
+				user : account.user,
 				group: group._id,
 			});
 			await likesTask.save();
@@ -89,7 +105,7 @@ class AutoLikesApi extends BaseApi {
 				...likesTask.toObject(),
 				group: {
 					...group.toObject(),
-					isTarget: !!data.user.targetGroups.find(_id => _id.equals(group._id)),
+					isTarget: !!account.user.targetGroups.find(_id => _id.equals(group._id)),
 				},
 			};
 		} catch (error) {
