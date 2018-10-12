@@ -43,6 +43,17 @@ class Billing {
 		return cost * quantity;
 	}
 	
+	
+	/**
+	 * @param {InvoiceDocument | Array.<InvoiceDocument>} invoice
+	 * @return {Number}
+	 */
+	//eslint-disable-next-line class-methods-use-this
+	getTotalPrice(invoice) {
+		const invoices = Array.isArray(invoice) ? invoice : [invoice];
+		return invoices.reduce((sum, _invoice) => (sum + _invoice.price), 0);
+	}
+	
 	/**
 	 * @param {UserDocument} user
 	 * @return {BaseAccount}
