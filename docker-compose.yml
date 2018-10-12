@@ -29,7 +29,7 @@ services:
     ports:
       - 8081:15672
   prometheus:
-    image: just1ce/tasks_prometheus:${RELEASE_VERSION:-latest}
+    image: just1ce/tasks_prometheus:v0.1.0
     container_name: prometheus
     build:
       context: .

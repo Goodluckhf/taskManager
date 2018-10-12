@@ -153,6 +153,7 @@ class AutoLikesTask extends BaseTask {
 				throw errors;
 			}
 			
+			this.taskDocument.lastHandleAt = new Date();
 			this.taskDocument.lastPostLink = postLink;
 		} catch (error) {
 			if (!Array.isArray(error)) {
@@ -160,6 +161,7 @@ class AutoLikesTask extends BaseTask {
 				throw [error];
 			}
 			
+			this.taskDocument.lastHandleAt = new Date();
 			this.taskDocument.lastPostLink = postLink;
 			throw error;
 		} finally {

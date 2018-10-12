@@ -98,8 +98,9 @@ class RepostsCommonTask extends BaseTask {
 				);
 			}
 			
-			this.taskDocument._error = displayError.toObject();
-			this.taskDocument.status = TaskModel.status.finished;
+			this.taskDocument.lastHandleAt = new Date();
+			this.taskDocument._error       = displayError.toObject();
+			this.taskDocument.status       = TaskModel.status.finished;
 			await this.taskDocument.save();
 			throw displayError;
 		}
