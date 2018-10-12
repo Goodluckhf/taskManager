@@ -27,7 +27,8 @@ class RepostsTask extends BaseTask {
 			this.taskDocument._error  = wrappedError.toObject();
 			throw wrappedError;
 		} finally {
-			this.taskDocument.status = Task.status.finished;
+			this.taskDocument.status       = Task.status.finished;
+			this.taskDocument.lastHandleAt = new Date();
 			await this.taskDocument.save();
 		}
 	}
