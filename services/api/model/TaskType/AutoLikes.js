@@ -36,6 +36,8 @@ const autolikesSchema = new mongoose.Schema({
 /**
  * @property {ObjectId|GroupDocument} group
  * @property {Number} likesCount
+ * @property {Number} commentsCount
+ * @property {Number} repostsCount
  * @property {String} lastPostLink
  */
 export class AutoLikesTaskDocument {
@@ -43,6 +45,7 @@ export class AutoLikesTaskDocument {
 	 * @param {Object} opts
 	 * @param {Number} opts.likesCount
 	 * @param {Number} opts.commentsCount
+	 * @param {Number} opts.repostsCount
 	 * @param {ObjectId} opts.group
 	 * @return {AutoLikesTaskDocument}
 	 */
@@ -50,6 +53,7 @@ export class AutoLikesTaskDocument {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
 		baseTask.likesCount    = opts.likesCount;
 		baseTask.commentsCount = opts.commentsCount;
+		baseTask.repostsCount  = opts.repostsCount;
 		baseTask.group         = opts.group;
 		return baseTask;
 	}
