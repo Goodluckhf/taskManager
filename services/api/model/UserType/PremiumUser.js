@@ -70,6 +70,10 @@ export class PremiumUserDocument {
 		user.services = services;
 		return user.save();
 	}
+	
+	static createInstance(opts) {
+		return mongoose.model('User').createInstance(this, opts);
+	}
 }
 
 premiumUserSchema.loadClass(PremiumUserDocument);

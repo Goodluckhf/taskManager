@@ -2,12 +2,14 @@ import mongoose from 'mongoose';
 
 const accountUserSchema = new mongoose.Schema({
 	balance: {
-		type: Number,
+		type   : Number,
+		default: 0,
 	},
 	
 	// Баланс в работе
 	freezeBalance: {
-		type: Number,
+		type   : Number,
+		default: 0,
 	},
 });
 

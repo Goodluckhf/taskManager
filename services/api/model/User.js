@@ -46,14 +46,14 @@ const hashLength          = 128;
  */
 class UserDocument {
 	/**
+	 * @param {Function} Constructor
 	 * @param {String} email
 	 * @param {String} password
 	 * @param {Boolean} [isActive = false]
 	 * @return UserDocument
 	 */
-	static createInstance({ email, password, isActive = false }) {
-		const user = new this();
-		
+	static createInstance(Constructor, { email, password, isActive = false }) {
+		const user = new Constructor();
 		user.email    = email;
 		user.password = password;
 		user.isActive = isActive;
