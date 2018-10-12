@@ -67,4 +67,10 @@ class Billing {
 	}
 }
 
+Billing.types = {
+	like   : 'like',
+	repost : 'repost',
+	comment: 'comment',
+};
+
 export default Billing;

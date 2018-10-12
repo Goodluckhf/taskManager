@@ -1,12 +1,13 @@
 import _        from 'lodash';
 import mongoose from 'mongoose';
 
-import BaseApi  from './BaseApi';
+import BaseApi from './BaseApi';
 import {
 	NotFound,
 	ValidationError,
 	TaskAlreadyExist, UserIsNotReady,
-} from './errors';
+}              from './errors';
+import Billing from '../billing/Billing';
 
 /**
  * @property {VkApi} vkApi
@@ -60,9 +61,9 @@ class AutoLikesApi extends BaseApi {
 		}
 		
 		const invoices = [
-			this.billing.createInvoice('like', parseInt(data.likesCount, 10)),
-			this.billing.createInvoice('repost', parseInt(data.repostsCount, 10)),
-			this.billing.createInvoice('comment', parseInt(data.commentsCount, 10)),
+			this.billing.createInvoice(Billing.types.like, parseInt(data.likesCount, 10)),
+			this.billing.createInvoice(Billing.types.repost, parseInt(data.repostsCount, 10)),
+			this.billing.createInvoice(Billing.types.comment, parseInt(data.commentsCount, 10)),
 		];
 		
 		account.canPay(invoices);
