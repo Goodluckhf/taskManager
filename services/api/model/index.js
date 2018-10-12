@@ -16,6 +16,7 @@ import accountSchema     from './Account';
 import userSchema        from './User';
 import accountUserSchema from './UserType/AccountUser';
 import premiumUserSchema from './UserType/PremiumUser';
+import invoiceSchema     from './Invoice';
 
 
 // Initialise mongoose models
@@ -25,6 +26,8 @@ export default (connection) => {
 	connection.model('User', userSchema);
 	connection.model('User').discriminator('AccountUser', accountUserSchema);
 	connection.model('User').discriminator('PremiumUser', premiumUserSchema);
+	
+	connection.model('Invoice', invoiceSchema);
 	
 	connection.model('Task', taskSchema);
 	connection.model('Task').discriminator('AutoLikesTask', autoLikesTaskSchema);
