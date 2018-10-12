@@ -98,3 +98,19 @@ export class SetRepostsValidation extends CommonRepostsError {
 	}
 }
 
+export class NotEnoughBalance extends BaseTaskError {
+	constructor(activeBalance, needBalance, ...args) {
+		super(...args);
+		this.activeBalance = activeBalance;
+		this.needBalance   = needBalance;
+	}
+	
+	/**
+	 * @return {string}
+	 * @protected
+	 */
+	_toMessage() {
+		const message = super._toMessage();
+		return `${message} Недостаточно средств на балансе\nДоступный баланса: ${this.activeBalance}\nНеобходимо средств ${this.needBalance}`;
+	}
+}
