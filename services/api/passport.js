@@ -2,7 +2,7 @@ import {
 	ExtractJwt,
 	Strategy as JwtStrategy,
 }               from 'passport-jwt';
-import mongoose from 'mongoose';
+import mongoose from '../../lib/mongoose';
 
 /**
  * @param {Passport} passport

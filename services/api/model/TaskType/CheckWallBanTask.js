@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from '../../../../lib/mongoose';
 
 const checkWallBanTaskSchema = new mongoose.Schema({
 	group: {

@@ -1,4 +1,4 @@
-import mongoose            from 'mongoose';
+import mongoose            from '../../../lib/mongoose';
 import BaseTask            from './BaseTask';
 import BaseApiError        from '../api/errors/BaseApiError';
 import CheckWallBanRequest from '../api/amqpRequests/CheckWallBanRequest';

@@ -1,11 +1,11 @@
-import mongoose  from 'mongoose';
-import bluebird  from 'bluebird';
-import moment    from 'moment';
+import bluebird from 'bluebird';
+import moment   from 'moment';
 
+import mongoose from '../../../lib/mongoose';
 import {
 	NotFound,
 	ValidationError,
-} from './errors';
+}               from './errors';
 
 import BaseApi           from './BaseApi';
 import AutoLikesTask     from '../tasks/AutolikesTask';

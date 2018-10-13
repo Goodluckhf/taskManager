@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
 import crypto   from 'crypto';
+import mongoose from '../../../lib/mongoose';
 
 const userSchema = new mongoose.Schema({
 	email: {

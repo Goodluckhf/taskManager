@@ -1,8 +1,7 @@
-import mongoose from 'mongoose';
-
+import mongoose                        from '../../../lib/mongoose';
 import BaseApi                         from './BaseApi';
 import { GroupAlreadyExist, NotFound } from './errors';
-import { groupForVkApiByHref } from '../../../lib/helper';
+import { groupForVkApiByHref }         from '../../../lib/helper';
 
 /**
  * @property {VkApi} vkApi

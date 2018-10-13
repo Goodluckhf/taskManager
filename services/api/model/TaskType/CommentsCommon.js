@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from '../../../../lib/mongoose';
 
 const commentsCommonTaskSchema = new mongoose.Schema({
 	postLink: {

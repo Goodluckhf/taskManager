@@ -1,13 +1,13 @@
-import _        from 'lodash';
-import mongoose from 'mongoose';
+import _ from 'lodash';
 
-import BaseApi from './BaseApi';
+import mongoose from '../../../lib/mongoose';
+import BaseApi  from './BaseApi';
 import {
 	NotFound,
 	ValidationError,
 	TaskAlreadyExist, UserIsNotReady,
-}              from './errors';
-import Billing from '../billing/Billing';
+}               from './errors';
+import Billing  from '../billing/Billing';
 
 /**
  * @property {VkApi} vkApi

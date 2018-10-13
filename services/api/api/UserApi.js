@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
-import jwt      from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
+import mongoose           from '../../../lib/mongoose';
 import BaseApi            from './BaseApi';
 import {
 	ChatAlreadyExists,

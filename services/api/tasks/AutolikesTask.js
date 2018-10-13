@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
 import bluebird from 'bluebird';
 
+import mongoose                from '../../../lib/mongoose';
 import BaseTask                from './BaseTask';
 import LikesCommonTask         from './LikesCommonTask';
 import CommentsCommonTask      from './CommentsCommonTask';

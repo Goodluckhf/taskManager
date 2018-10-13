@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from '../../../../lib/mongoose';
 
 const autolikesSchema = new mongoose.Schema({
 	group: {

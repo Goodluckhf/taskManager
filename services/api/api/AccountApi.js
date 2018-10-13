@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from '../../../lib/mongoose';
 
 import BaseApi          from './BaseApi';
 import AccountRequest   from './amqpRequests/AccountRequest';

@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
-import moment   from 'moment';
+import moment from 'moment';
 
+import mongoose         from '../../../lib/mongoose';
 import BaseTask         from './BaseTask';
 import RepostsTask      from './RepostsTask';
 import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';

@@ -1,6 +1,5 @@
-import mongoose         from 'mongoose';
-import BaseTask         from './BaseTask';
-
+import mongoose             from '../../../lib/mongoose';
+import BaseTask             from './BaseTask';
 import CommentsCheckRequest from '../api/amqpRequests/CommentCheckRequest';
 import CommentsCommonTask   from './CommentsCommonTask';
 import TaskErrorFactory     from '../api/errors/tasks/TaskErrorFactory';

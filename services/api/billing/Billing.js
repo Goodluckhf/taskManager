@@ -1,4 +1,4 @@
-import mongoose       from 'mongoose';
+import mongoose       from '../../../lib/mongoose';
 import PremiumAccount from './PremiumAccount';
 import BillingAccount from './BillingAccount';
 

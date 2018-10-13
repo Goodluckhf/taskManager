@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from '../../../../lib/mongoose';
 
 import BaseApiError      from '../../api/errors/BaseApiError';
 import logger            from '../../../../lib/logger';

@@ -1,6 +1,5 @@
-import mongoose         from 'mongoose';
-import BaseTask         from './BaseTask';
-
+import mongoose           from '../../../lib/mongoose';
+import BaseTask           from './BaseTask';
 import RepostCheckRequest from '../api/amqpRequests/RepostCheckRequest';
 import RepostsCommonTask  from './RepostsCommonTask';
 import TaskErrorFactory   from '../api/errors/tasks/TaskErrorFactory';
