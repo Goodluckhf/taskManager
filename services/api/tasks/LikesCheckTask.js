@@ -3,10 +3,18 @@ import BaseTask         from './BaseTask';
 import LikeCheckRequest from '../api/amqpRequests/LikeCheckRequest';
 import LikesCommonTask  from './LikesCommonTask';
 import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
+import BillingAccount   from '../billing/BillingAccount';
+import Billing          from '../billing/Billing';
 
+/**
+ * @property {LikesCheckTaskDocument} taskDocument
+ */
 class LikesCheckTask extends BaseTask {
 	async handle() {
-		const Task = mongoose.model('Task');
+		const Task         = mongoose.model('Task');
+		const serviceOrder = this.config.get('likesTask.serviceOrder');
+		const service      = serviceOrder[this.taskDocument.serviceIndex];
+		const likesRatio   = parseFloat(this.config.get('likesTask.likesToCheck'));
 		
 		const request = new LikeCheckRequest(this.config, {
 			postLink  : this.taskDocument.postLink,
@@ -23,6 +31,24 @@ class LikesCheckTask extends BaseTask {
 				postLink  : this.taskDocument.parentTask.postLink,
 				likesCount: this.taskDocument.parentTask.likesCount,
 			});
+			// Успешное выполнение
+			// Снимаем баллы с баланса
+			if (this.account instanceof BillingAccount) {
+				const quantity = service === 'likePro'
+					//eslint-disable-next-line no-mixed-operators
+					? Math.floor(1 / likesRatio * this.taskDocument.likesCount)
+					: this.taskDocument.likesCount;
+				
+				const invoice = this.billing.createInvoice(
+					Billing.types.like,
+					quantity,
+				);
+				invoice.user = this.taskDocument.user;
+				this.account.commitInvoice(invoice);
+				await invoice.save();
+				await this.taskDocument.user.save();
+			}
+			
 			this.taskDocument.parentTask.status       = Task.status.finished;
 			this.taskDocument.parentTask.lastHandleAt = new Date();
 		} catch (error) {
@@ -33,8 +59,20 @@ class LikesCheckTask extends BaseTask {
 				taskId    : this.taskDocument.id,
 				error,
 			});
-			const serviceOrder = this.config.get('likesTask.serviceOrder');
+			
 			if (serviceOrder.length === this.taskDocument.serviceIndex + 1) {
+				if (this.account instanceof BillingAccount) {
+					const quantity = service === 'likePro'
+						//eslint-disable-next-line no-mixed-operators
+						? Math.floor(1 / likesRatio * this.taskDocument.likesCount)
+						: this.taskDocument.likesCount;
+					
+					const invoice  = this.billing.createInvoice(Billing.types.like, quantity);
+					this.account.rollBackInvoice(invoice);
+					await this.taskDocument.user.save();
+				}
+				
+				
 				const wrappedError = TaskErrorFactory.createError(
 					'likes',
 					error,
@@ -62,6 +100,8 @@ class LikesCheckTask extends BaseTask {
 			});
 			
 			const likesTask = new LikesCommonTask({
+				billing     : this.billing,
+				account     : this.account,
 				serviceIndex: this.taskDocument.serviceIndex + 1,
 				logger      : this.logger,
 				taskDocument: this.taskDocument.parentTask,

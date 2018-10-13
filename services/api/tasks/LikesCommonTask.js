@@ -1,10 +1,13 @@
 import mongoose from 'mongoose';
 import moment   from 'moment';
 
-import BaseTask         from './BaseTask';
-import LikesTask        from './LikesTask';
-import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
-import BaseTaskError    from '../api/errors/tasks/BaseTaskError';
+import BaseTask                                       from './BaseTask';
+import LikesTask                                      from './LikesTask';
+import TaskErrorFactory                               from '../api/errors/tasks/TaskErrorFactory';
+import BaseTaskError                                  from '../api/errors/tasks/BaseTaskError';
+import BillingAccount                                 from '../billing/BillingAccount';
+import Billing                                        from '../billing/Billing';
+import { NotEnoughBalance, NotEnoughBalanceForLikes } from '../api/errors/tasks';
 
 /**
  * @property {Number} serviceIndex
@@ -25,6 +28,26 @@ class LikesCommonTask extends BaseTask {
 		// Потому через сервис likePro можно ставить не меньше 100 лайков
 		let { likesCount } = this.taskDocument;
 		if (service === 'likePro' && likesCount < 100) {
+			if (this.account instanceof BillingAccount) {
+				const invoice = this.billing.createInvoice(Billing.types.like, 100 - likesCount);
+				try {
+					this.account.freezeMoney(invoice);
+					await this.taskDocument.user.save();
+				} catch (error) {
+					if (error instanceof NotEnoughBalance) {
+						throw new NotEnoughBalanceForLikes(
+							this.account.availableBalance,
+							invoice.price,
+							this.taskDocument.postLink,
+							this.taskDocument.likesCount,
+							error,
+						);
+					}
+					
+					throw error;
+				}
+			}
+			
 			likesCount = 100;
 		}
 		
@@ -109,8 +132,25 @@ class LikesCommonTask extends BaseTask {
 				service,
 			});
 			
+			if (service === 'likePro' && this.account instanceof BillingAccount) {
+				const quantity = 100 - this.taskDocument.likesCount;
+				const invoice  = this.billing.createInvoice(Billing.types.like, quantity);
+				this.account.rollBackInvoice(invoice);
+				await this.taskDocument.user.save();
+			}
+			
 			if (serviceOrder.length !== serviceIndex + 1) {
 				return this.loopHandleTasks(serviceIndex + 1);
+			}
+			
+			if (this.account instanceof BillingAccount) {
+				const invoice = this.billing.createInvoice(
+					Billing.types.like,
+					this.taskDocument.likesCount,
+				);
+				
+				this.account.rollBackInvoice(invoice);
+				await this.taskDocument.user.save();
 			}
 			
 			// Это последний был, значит пора выкидывать ошибку
