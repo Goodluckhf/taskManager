@@ -32,6 +32,7 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - .:/home/www:cached
+      - ./tmp/.mongodb-prebuilt:/root/.mongodb-prebuilt:delegated
     restart: always
     logging: *default-logging
     env_file:
