@@ -32,7 +32,7 @@ class BaseTask {
 			return userService.toObject();
 		}
 		
-		return this.config.get(`${service}`);
+		return this.config.get(service);
 	}
 	
 	/**
