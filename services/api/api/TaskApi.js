@@ -1,5 +1,6 @@
 import mongoose  from 'mongoose';
 import bluebird  from 'bluebird';
+import moment    from 'moment';
 
 import {
 	NotFound,
@@ -76,8 +77,9 @@ class TaskApi extends BaseApi {
 			throw new ValidationError({ _id });
 		}
 		
-		const task = await mongoose
-			.model('Task')
+		const TaskModel = mongoose.model('Task');
+		
+		const task = await TaskModel
 			.findOne({ _id, user })
 			.populate({
 				path    : 'subTasks',
@@ -106,7 +108,11 @@ class TaskApi extends BaseApi {
 			}, array);
 		}, [task._id]);
 		
-		await mongoose.model('Task').deleteMany({ _id: { $in: tasksToRemove } });
+		await TaskModel.update(
+			{ _id: { $in: tasksToRemove } },
+			{ deletedAt: moment.now() },
+			{ multi: true },
+		);
 	}
 	
 	/**
