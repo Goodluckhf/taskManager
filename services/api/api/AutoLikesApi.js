@@ -69,9 +69,9 @@ class AutoLikesApi extends BaseApi {
 		}
 		
 		const existsTask = await mongoose.model('AutoLikesTask').findOne({
-			user  : data.user,
-			group : group._id,
-			status: mongoose.model('Task').status.waiting,
+			user     : data.user,
+			group    : group._id,
+			deletedAt: null,
 		});
 		
 		if (existsTask) {
