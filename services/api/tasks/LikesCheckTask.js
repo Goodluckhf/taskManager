@@ -13,7 +13,6 @@ class LikesCheckTask extends BaseTask {
 	async handle() {
 		const Task         = mongoose.model('Task');
 		const serviceOrder = this.config.get('likesTask.serviceOrder');
-		const service      = serviceOrder[this.taskDocument.serviceIndex];
 		const likesRatio   = parseFloat(this.config.get('likesTask.likesToCheck'));
 		
 		const request = new LikeCheckRequest(this.config, {
@@ -34,10 +33,8 @@ class LikesCheckTask extends BaseTask {
 			// Успешное выполнение
 			// Снимаем баллы с баланса
 			if (this.account instanceof BillingAccount) {
-				const quantity = service === 'likePro'
-					//eslint-disable-next-line no-mixed-operators
-					? Math.floor(1 / likesRatio * this.taskDocument.likesCount)
-					: this.taskDocument.likesCount;
+				//eslint-disable-next-line no-mixed-operators
+				const quantity = Math.floor(1 / likesRatio * this.taskDocument.likesCount);
 				
 				const invoice = this.billing.createInvoice(
 					Billing.types.like,
@@ -62,10 +59,8 @@ class LikesCheckTask extends BaseTask {
 			
 			if (serviceOrder.length === this.taskDocument.serviceIndex + 1) {
 				if (this.account instanceof BillingAccount) {
-					const quantity = service === 'likePro'
-						//eslint-disable-next-line no-mixed-operators
-						? Math.floor(1 / likesRatio * this.taskDocument.likesCount)
-						: this.taskDocument.likesCount;
+					//eslint-disable-next-line no-mixed-operators
+					const quantity = Math.floor(1 / likesRatio * this.taskDocument.likesCount);
 					
 					const invoice  = this.billing.createInvoice(Billing.types.like, quantity);
 					this.account.rollBackInvoice(invoice);
