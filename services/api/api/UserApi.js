@@ -152,6 +152,22 @@ class UserApi extends BaseApi {
 		const token = this.createToken(user);
 		return { user: displayUser, token };
 	}
+	
+	/**
+	 * @return {Promise.<UserDocument>}
+	 */
+	// eslint-disable-next-line class-methods-use-this
+	async list() {
+		return mongoose
+			.model('User')
+			.find({})
+			.select({
+				passwordHas: 0,
+				salt       : 0,
+			})
+			.lean()
+			.exec();
+	}
 }
 
 export default UserApi;

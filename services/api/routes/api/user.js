@@ -30,6 +30,19 @@ export default (router, passport) => {
 		};
 	});
 	
+	router.get('/users', passport.authenticate('jwt', { session: false }), async (ctx) => {
+		const { user } = ctx.state;
+		if (user.__t !== 'Admin') {
+			ctx.response.statusCode = 403;
+			return;
+		}
+		
+		ctx.body = {
+			success: true,
+			data   : await userApi.list(),
+		};
+	});
+	
 	router.post('/user/chat', passport.authenticate('jwt', { session: false }), async (ctx) => {
 		ctx.body = {
 			success: true,
