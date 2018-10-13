@@ -14,7 +14,7 @@ describe('LikesCommonTask', function () {
 	});
 	
 	it('should throw error if cant setLikes with 1 service', async () => {
-		this.config.likesTask = { serviceOrder: ['likest'] };
+		this.config.likesTask = { ...this.config.likesTask, serviceOrder: ['likest'] };
 		const taskDocument = mongoose.model('LikesCommon').createInstance({
 			likesCount: 10,
 			postLink  : 'tetsLink',
@@ -35,6 +35,8 @@ describe('LikesCommonTask', function () {
 		const promise = likesCommonTask.handle();
 		
 		await expect(promise).to.be.rejectedWith(BaseTaskError);
+		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.finished);
+		expect(taskDocument._error).to.be.not.null;
 	});
 	
 	it('should not throw error if cant setLikes with first service but can with second', async () => {
