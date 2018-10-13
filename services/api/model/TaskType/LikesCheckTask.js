@@ -20,6 +20,7 @@ const likesCheckTaskSchema = new mongoose.Schema({
 /**
  * @property {String} postLink
  * @property {Number} likesCount
+ * @property {Number} serviceIndex
  */
 export class LikesCheckTaskDocument {
 	/**
