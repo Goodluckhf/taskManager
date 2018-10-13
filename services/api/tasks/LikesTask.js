@@ -5,6 +5,7 @@ import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
 
 /**
  * @property {String} service
+ * @property {LikesTaskDocument} taskDocument
  */
 class LikesTask extends BaseTask {
 	async handle() {
