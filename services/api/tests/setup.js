@@ -12,7 +12,7 @@ before(async function () {
 	mockgoose.helper.setDbVersion('3.4.5');
 	await mockgoose.prepareStorage();
 	await mongoose.connect('mongodb://localhost/testDatabase');
-	mongoose.connection.models = {};
+	//mongoose.connection.models = {};
 	initModels(mongoose.connection);
 });
 

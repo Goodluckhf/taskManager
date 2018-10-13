@@ -11,6 +11,7 @@ import { NotEnoughBalance, NotEnoughBalanceForLikes } from '../api/errors/tasks'
 
 /**
  * @property {Number} serviceIndex
+ * @property {LikesCommonDocument} taskDocument
  */
 class LikesCommonTask extends BaseTask {
 	constructor({ serviceIndex = 0, ...args }) {

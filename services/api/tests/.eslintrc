@@ -8,6 +8,7 @@
 		"after": false
 	},
 	"rules": {
-		"no-underscore-dangle": "warn"
+		"no-underscore-dangle": "warn",
+		"no-unused-expressions": "warn"
 	}
 }
