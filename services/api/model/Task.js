@@ -68,7 +68,10 @@ const schema = new mongoose.Schema({
 	}],
 	
 	// Если задача была создана в ручную будет null
-	parentTask: mongoose.Schema.Types.ObjectId,
+	parentTask: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref : 'Task',
+	},
 });
 
 schema.statics.status = statuses;
