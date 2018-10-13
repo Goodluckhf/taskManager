@@ -1,21 +1,12 @@
-import mongoose             from 'mongoose';
 import _                    from 'lodash';
 import config               from 'config';
 import { expect }           from 'chai';
+import mongoose             from '../../../../lib/mongoose';
 import Billing              from '../../billing/Billing';
-import initModels           from '../../model';
 import BillingAccount       from '../../billing/BillingAccount';
 import PremiumAccount       from '../../billing/PremiumAccount';
 import { NotEnoughBalance } from '../../api/errors/tasks';
 
-
-before(() => {
-	initModels(mongoose.connection);
-});
-
-after(() => {
-	mongoose.connection.models = {};
-});
 
 describe('Billing', function () {
 	beforeEach(() => {
