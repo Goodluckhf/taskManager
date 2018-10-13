@@ -6,6 +6,8 @@
  * @property {Billing} billing
  * @property {BaseAccount} account
  */
+import PremiumAccount from '../billing/PremiumAccount';
+
 class BaseTask {
 	//eslint-disable-next-line object-curly-newline
 	constructor({ logger, taskDocument, rpcClient, config, billing, account }) {
@@ -25,13 +27,12 @@ class BaseTask {
 	 * @return {Object}
 	 */
 	getCredentialsForService(service) {
-		const userService = this.taskDocument.user.services[service];
-		const defaultCredentials = this.config.get(`${service}`);
-		if (!userService) {
-			return defaultCredentials;
+		if (this.account instanceof PremiumAccount) {
+			const userService = this.taskDocument.user.services[service];
+			return userService.toObject();
 		}
 		
-		return userService.toObject();
+		return this.config.get(`${service}`);
 	}
 	
 	/**
