@@ -12,7 +12,7 @@ class BillingAccount extends BaseAccount {
 	 */
 	canPay(invoice) {
 		const totalPrice = this.billing.getTotalPrice(invoice);
-		if (this.availableBalance - totalPrice <= 0) {
+		if (this.availableBalance - totalPrice < 0) {
 			throw new NotEnoughBalance(this.availableBalance, totalPrice, new Error('Пополните баланс'));
 		}
 	}

@@ -82,7 +82,7 @@ class GroupDocument {
 	}
 	
 	/**
-	 * @param {String} postId
+	 * @param {String | Number} postId
 	 * @return {String}
 	 */
 	static getPostLinkById(postId) {
