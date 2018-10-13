@@ -45,6 +45,12 @@ class LikestResponse extends Response {
 				document.querySelector('#amount').value     = count;
 			}, postLink, likesCount);
 			
+			this.logger.info({
+				message: 'кликаем накрутить',
+				postLink,
+				likesCount,
+				login,
+			});
 			await page.click('#edit-submit');
 			await page.waitForFunction(() => {
 				const errors = document.querySelectorAll('#hpoints-buy-likes-form .messages.error');
@@ -66,6 +72,13 @@ class LikestResponse extends Response {
 				error.statusCode = 1;
 				throw error;
 			}
+			
+			this.logger.info({
+				message: 'воркер лайков likest',
+				postLink,
+				likesCount,
+				login,
+			});
 		} finally {
 			await browser.close();
 		}

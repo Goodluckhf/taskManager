@@ -36,6 +36,11 @@ const schema = new mongoose.Schema({
 		default: false,
 	},
 	
+	deletedAt: {
+		type   : Date,
+		default: null,
+	},
+	
 	// Задача запланирована на точное время
 	startAt: {
 		type: Date,
@@ -107,8 +112,9 @@ export class TaskDocument {
 	 */
 	static findActive() {
 		return this.find({
-			status: statuses.waiting,
-			$or   : [
+			status   : statuses.waiting,
+			deletedAt: null,
+			$or      : [
 				{ repeated: true },
 				{ startAt: { $lte: new Date() } },
 			],

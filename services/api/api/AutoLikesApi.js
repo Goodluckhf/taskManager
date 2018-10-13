@@ -106,7 +106,7 @@ class AutoLikesApi extends BaseApi {
 	// eslint-disable-next-line class-methods-use-this
 	async list({ filter = 'all', user } = {}) {
 		const LikesTask = mongoose.model('AutoLikesTask');
-		const query     = {};
+		const query     = { deletedAt: null };
 		
 		if (filter === 'active') {
 			query.$or = [

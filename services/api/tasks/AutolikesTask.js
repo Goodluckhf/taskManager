@@ -59,7 +59,6 @@ class AutoLikesTask extends BaseTask {
 			
 			//eslint-disable-next-line no-unused-vars
 			const { postId, mentionId, link } = lastPostResult;
-			this.logger.info({ groupLink, lastPostResult });
 			postLink = Group.getPostLinkById(postId);
 			
 			if (postLink === this.taskDocument.lastPostLink) {

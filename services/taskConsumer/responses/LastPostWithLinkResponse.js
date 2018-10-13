@@ -27,9 +27,8 @@ class LastPostWithLinkResponse extends Response {
 		return 'getLastPostWithLink';
 	}
 	
+	//eslint-disable-next-line class-methods-use-this
 	async process({ groupLink }) {
-		this.logger.info({ groupLink });
-		
 		const jsDom = await JSDOM.fromURL(groupLink);
 		
 		const $lastPost = jsDom.window.document.querySelectorAll('#page_wall_posts .post')[0];
