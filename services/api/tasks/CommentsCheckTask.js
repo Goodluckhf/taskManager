@@ -16,6 +16,12 @@ class CommentsCheckTask extends BaseTask {
 		
 		try {
 			await this.rpcClient.call(request);
+			this.logger.info({
+				message      : 'Успешно накрутились',
+				postLink     : this.taskDocument.parentTask.postLink,
+				commentsCount: this.taskDocument.parentTask.commentsCount,
+			});
+			
 			this.taskDocument.parentTask.status       = Task.status.finished;
 			this.taskDocument.parentTask.lastHandleAt = new Date();
 		} catch (error) {

@@ -15,6 +15,11 @@ class LikesCheckTask extends BaseTask {
 		
 		try {
 			await this.rpcClient.call(request);
+			this.logger.info({
+				message   : 'Успешно накрутились',
+				postLink  : this.taskDocument.parentTask.postLink,
+				likesCount: this.taskDocument.parentTask.likesCount,
+			});
 			this.taskDocument.parentTask.status       = Task.status.finished;
 			this.taskDocument.parentTask.lastHandleAt = new Date();
 		} catch (error) {

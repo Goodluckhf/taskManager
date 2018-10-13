@@ -66,6 +66,13 @@ class LikestResponse extends Response {
 				error.statusCode = 1;
 				throw error;
 			}
+			
+			this.logger.info({
+				message: 'воркер лайков likest',
+				postLink,
+				likesCount,
+				login,
+			});
 		} finally {
 			await browser.close();
 		}
