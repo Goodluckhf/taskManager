@@ -71,6 +71,12 @@ class LikestResponse extends Response {
 			}, postLink, commentsCount);
 			
 			// Нажимаем выполнить и ожидаем ошибки или успешное завершение
+			this.logger.info({
+				message: 'кликаем накрутить',
+				postLink,
+				commentsCount,
+				login,
+			});
 			await page.click('#edit-form3-continue');
 			
 			await page.waitForFunction(() => {

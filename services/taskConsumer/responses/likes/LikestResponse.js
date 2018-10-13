@@ -45,6 +45,12 @@ class LikestResponse extends Response {
 				document.querySelector('#amount').value     = count;
 			}, postLink, likesCount);
 			
+			this.logger.info({
+				message: 'кликаем накрутить',
+				postLink,
+				likesCount,
+				login,
+			});
 			await page.click('#edit-submit');
 			await page.waitForFunction(() => {
 				const errors = document.querySelectorAll('#hpoints-buy-likes-form .messages.error');
