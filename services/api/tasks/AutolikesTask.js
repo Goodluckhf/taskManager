@@ -14,6 +14,8 @@ import {
 	NotEnoughBalanceForLikes,
 	NotEnoughBalanceForReposts,
 }                              from '../api/errors/tasks';
+import BaseTaskError           from '../api/errors/tasks/BaseTaskError';
+import TaskErrorFactory        from '../api/errors/tasks/TaskErrorFactory';
 
 /**
  * @property {AutoLikesTaskDocument} taskDocument
@@ -43,6 +45,15 @@ class AutoLikesTask extends BaseTask {
 					);
 				}
 				
+				if (!(error instanceof BaseTaskError)) {
+					throw TaskErrorFactory.createError(
+						'likes',
+						error,
+						this.taskDocument.postLink,
+						this.taskDocument.likesCount,
+					);
+				}
+				
 				throw error;
 			}
 		}
@@ -66,6 +77,15 @@ class AutoLikesTask extends BaseTask {
 					);
 				}
 				
+				if (!(error instanceof BaseTaskError)) {
+					throw TaskErrorFactory.createError(
+						'reposts',
+						error,
+						this.taskDocument.postLink,
+						this.taskDocument.repostsCount,
+					);
+				}
+				
 				throw error;
 			}
 		}
@@ -86,6 +106,15 @@ class AutoLikesTask extends BaseTask {
 						postLink,
 						this.taskDocument.commentsCount,
 						error,
+					);
+				}
+				
+				if (!(error instanceof BaseTaskError)) {
+					throw TaskErrorFactory.createError(
+						'comments',
+						error,
+						this.taskDocument.postLink,
+						this.taskDocument.commentsCount,
 					);
 				}
 				
@@ -227,7 +256,9 @@ class AutoLikesTask extends BaseTask {
 					tasksToHandle.push(likesCommonTask);
 				} catch (error) {
 					errors.push(error);
-					likesCommonDocument.status = Task.status.finished;
+					likesCommonDocument.status       = Task.status.finished;
+					likesCommonDocument._error       = error.toObject();
+					likesCommonDocument.lastHandleAt = new Date();
 				} finally {
 					await likesCommonDocument.save();
 					await this.taskDocument.user.save();
@@ -258,7 +289,9 @@ class AutoLikesTask extends BaseTask {
 					tasksToHandle.push(commentsCommonTask);
 				} catch (error) {
 					errors.push(error);
-					commentsCommonDocument.status = Task.status.finished;
+					commentsCommonDocument.status       = Task.status.finished;
+					commentsCommonDocument._error       = error.toObject();
+					commentsCommonDocument.lastHandleAt = new Date();
 				} finally {
 					await commentsCommonDocument.save();
 					await this.taskDocument.user.save();
@@ -289,7 +322,9 @@ class AutoLikesTask extends BaseTask {
 					tasksToHandle.push(repostsCommonTask);
 				} catch (error) {
 					errors.push(error);
-					repostsCommonDocument.status = Task.status.finished;
+					repostsCommonDocument.status       = Task.status.finished;
+					repostsCommonDocument._error       = error.toObject();
+					repostsCommonDocument.lastHandleAt = new Date();
 				} finally {
 					await repostsCommonDocument.save();
 					await this.taskDocument.user.save();
