@@ -266,13 +266,13 @@ describe('CommentsCheckTask', function () {
 			config: this.config,
 		});
 		// eslint-disable-next-line no-mixed-operators
-		const likesCount = 1 / 0.3 * taskDocument.commentsCount;
+		const commentsCount = 1 / 0.3 * taskDocument.commentsCount;
 		account.freezeMoney(billing.createInvoice(
 			Billing.types.comment,
-			likesCount,
+			commentsCount,
 		));
 		// eslint-disable-next-line no-mixed-operators
-		const expectedBalance = 1100 - likesCount * 10;
+		const expectedBalance = 1100 - commentsCount * 10;
 		expect(account.availableBalance).to.be.equals(expectedBalance);
 		
 		const promise = task.handle();
