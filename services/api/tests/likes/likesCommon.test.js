@@ -70,7 +70,16 @@ describe('LikesCommonTask', function () {
 		
 		const promise = likesCommonTask.handle();
 		await expect(promise).to.be.fulfilled;
+		
+		const likesTaskDocument = await mongoose
+			.model('LikesTask')
+			.findOne({ parentTask: taskDocument._id, service: 'z1y1x1' })
+			.lean()
+			.exec();
+		
 		expect(taskDocument._error).to.be.null;
+		expect(likesTaskDocument._error).to.be.null;
+		expect(likesTaskDocument.status).to.be.equals(mongoose.model('Task').status.finished);
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.checking);
 	});
 });
