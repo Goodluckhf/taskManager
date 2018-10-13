@@ -5,9 +5,12 @@ import BaseTask         from './BaseTask';
 import RepostsTask      from './RepostsTask';
 import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
 import BaseTaskError    from '../api/errors/tasks/BaseTaskError';
+import Billing          from '../billing/Billing';
+import BillingAccount   from '../billing/BillingAccount';
 
 /**
  * @property {Number} serviceIndex
+ * @property {RepostsCommonTaskDocument} taskDocument
  */
 class RepostsCommonTask extends BaseTask {
 	constructor({ serviceIndex = 0, ...args }) {
@@ -106,6 +109,16 @@ class RepostsCommonTask extends BaseTask {
 			
 			if (serviceOrder.length !== serviceIndex + 1) {
 				return this.loopHandleTasks(serviceIndex + 1);
+			}
+			
+			if (this.account instanceof BillingAccount) {
+				const invoice = this.billing.createInvoice(
+					Billing.types.repost,
+					this.taskDocument.repostsCount,
+				);
+				
+				this.account.rollBackInvoice(invoice);
+				await this.taskDocument.user.save();
 			}
 			
 			// Это последний был, значит пора выкидывать ошибку
