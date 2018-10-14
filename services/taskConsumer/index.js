@@ -16,7 +16,6 @@ import Captcha                  from '../../lib/Captcha';
 import VkApi                    from '../../lib/VkApi';
 import LikesCheckResponse       from './responses/LikesCheckResponse';
 import CommentsCheckResponse    from './responses/CommentsCheckResponse';
-import WallCheckBanResponse     from './responses/WallCheckBanResponse';
 import RepostsCheckResponse     from './responses/RepostsCheckResponse';
 import LastPostWithLinkResponse from './responses/LastPostWithLinkResponse';
 
@@ -76,10 +75,6 @@ rpcServer
 		captcha,
 		logger,
 	}));
-
-
-// Слежка группы на бан
-rpcServer.addResponse(new WallCheckBanResponse({ vkApi, logger }));
 
 // Проверка на выход рекламного поста
 rpcServer.addResponse(new LastPostWithLinkResponse({ logger }));
