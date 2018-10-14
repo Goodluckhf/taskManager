@@ -1,0 +1,126 @@
+version: '2.2'
+
+x-default-logging:
+  &default-logging
+  driver: json-file
+  options:
+    max-size: '5m'
+    max-file: '1'
+
+services:
+  prometheus:
+    image: just1ce/tasks_prometheus:v0.1.0
+    container_name: prometheus
+    networks:
+      - app-net
+    build:
+      context: .
+      dockerfile: ./services/prometheus/Dockerfile
+    volumes:
+      - prometheus-data:/prometheus
+    restart: always
+    logging: *default-logging
+  node-exporter:
+    container_name: node-exporter
+    image: prom/node-exporter:v0.15.2
+    restart: always
+    command: --path.procfs /host/proc --path.sysfs /host/sys --collector.filesystem.ignored-mount-points "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns)($$|/)"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    logging: *default-logging
+    networks:
+      - app-net
+  rabbit-exporter:
+    container_name: rabbit-exporter
+    image: kbudde/rabbitmq-exporter
+    restart: always
+    networks:
+      - app-net
+    logging: *default-logging
+    env_file:
+      - .env.infra
+      - .env.rabbit
+  nginx-exporter:
+    container_name: nginx-exporter
+    image: sophos/nginx-vts-exporter
+    restart: always
+    logging: *default-logging
+    networks:
+      - app-net
+    env_file:
+      - .env.infra
+  mongodb-exporter:
+    container_name: mongodb-exporter
+    image: amazonaws/mongodb_exporter
+    restart: always
+    env_file:
+      - .env.infra
+    networks:
+      - app-net
+    logging: *default-logging
+  cadvisor:
+    image: google/cadvisor:latest
+    restart: always
+    logging: *default-logging
+    networks:
+      - app-net
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+  grafana:
+    container_name: grafana
+    restart: always
+    image: grafana/grafana:5.1.3
+    networks:
+      - app-net
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
+    logging: *default-logging
+    env_file:
+      - .env.infra
+  fluentd:
+    image: just1ce/tasks_fluentd:v0.1.0
+    build:
+      context: .
+      dockerfile: ./services/fluentd/Dockerfile
+    ports:
+      - 24224:24224
+      - 24224:24224/udp
+    logging: *default-logging
+    networks:
+      - app-net
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2
+    container_name: elasticsearch
+    environment:
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elastic-data:/usr/share/elasticsearch/data
+    networks:
+      - app-net
+    logging: *default-logging
+  kibana:
+    image: kibana:6.4.2
+    ports:
+      - 5601:5601
+    logging: *default-logging
+    networks:
+      - app-net
+networks:
+  app-net:
+    external: true
+volumes:
+  prometheus-data:
+  elastic-data:
+  grafana-data:
