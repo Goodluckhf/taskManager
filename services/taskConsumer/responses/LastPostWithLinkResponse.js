@@ -41,7 +41,7 @@ class LastPostWithLinkResponse extends Response {
 			const $ = cheerio.load(data);
 			const fastError = $('.message_page_body');
 			if (fastError.length) {
-				await bluebird.delay(getRandom(300, 2000));
+				await bluebird.delay(getRandom(500, 3000));
 				return this.getHtml(url);
 			}
 			
