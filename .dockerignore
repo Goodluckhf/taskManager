@@ -6,3 +6,5 @@ node_modules
 .env.mongodb
 .env.infra
 release.sh
+tmp
+.nyc_output
