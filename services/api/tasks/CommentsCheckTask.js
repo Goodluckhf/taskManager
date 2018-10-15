@@ -17,20 +17,27 @@ class CommentsCheckTask extends BaseTask {
 		try {
 			await this.rpcClient.call(request);
 			this.logger.info({
+				mark         : 'comments',
 				message      : 'Успешно накрутились',
 				postLink     : this.taskDocument.parentTask.postLink,
 				commentsCount: this.taskDocument.parentTask.commentsCount,
+				userId       : this.taskDocument.user.id,
+				taskId       : this.taskDocument.parentTask.id,
 			});
 			
 			this.taskDocument.parentTask.status       = Task.status.finished;
 			this.taskDocument.parentTask.lastHandleAt = new Date();
 		} catch (error) {
-			this.logger.warn({
+			const serviceOrder = this.config.get('commentsTask.serviceOrder');
+			this.logger.error({
+				mark         : 'comments',
 				postLink     : this.taskDocument.postLink,
 				commentsCount: this.taskDocument.commentsCount,
+				service      : serviceOrder[this.taskDocument.serviceIndex],
+				userId       : this.taskDocument.user.id,
+				taskId       : this.taskDocument.parentTask.id,
 				error,
 			});
-			const serviceOrder = this.config.get('commentsTask.serviceOrder');
 			if (serviceOrder.length === this.taskDocument.serviceIndex + 1) {
 				const wrappedError = TaskErrorFactory.createError(
 					'comments',
@@ -55,6 +62,15 @@ class CommentsCheckTask extends BaseTask {
 				taskDocument: this.taskDocument.parentTask,
 				rpcClient   : this.rpcClient,
 				config      : this.config,
+			});
+			
+			this.logger.info({
+				mark         : 'comments',
+				message      : 'Запускаем задачу на следущий сервис',
+				commentsCount: this.taskDocument.commentsCount,
+				service      : serviceOrder[this.taskDocument.serviceIndex + 1],
+				userId       : this.taskDocument.user.id,
+				taskId       : this.taskDocument.parentTask.id,
 			});
 			
 			await commentsTask.handle();
