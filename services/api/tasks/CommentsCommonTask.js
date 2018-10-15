@@ -45,6 +45,16 @@ class CommentsCommonTask extends BaseTask {
 			taskDocument: commentsTaskDocument,
 		});
 		
+		this.logger.info({
+			service,
+			mark         : 'comments',
+			message      : 'Запускаем задачу накрутки комментов',
+			commentsCount: this.taskDocument.commentsCount,
+			postLink     : this.taskDocument.postLink,
+			userId       : this.taskDocument.user.id,
+			taskId       : this.taskDocument.id,
+		});
+		
 		await commentsTask.handle();
 		
 		// Если задача выполнилась без ошибки
@@ -52,6 +62,16 @@ class CommentsCommonTask extends BaseTask {
 		this.taskDocument.status = TaskModel.status.checking;
 		const checkDelay      = this.config.get('commentsTask.checkingDelay');
 		const commentsToCheck = this.taskDocument.commentsCount * parseFloat(this.config.get('commentsTask.commentsToCheck'));
+		this.logger.info({
+			service,
+			commentsToCheck,
+			mark         : 'comments',
+			message      : 'Выполнилась без ошибки. Создаем задачу на проверку',
+			commentsCount: this.taskDocument.commentsCount,
+			postLink     : this.taskDocument.postLink,
+			userId       : this.taskDocument.user.id,
+			taskId       : this.taskDocument.id,
+		});
 		
 		const checkTaskDocument = CommentsCheckTaskModel.createInstance({
 			serviceIndex,
