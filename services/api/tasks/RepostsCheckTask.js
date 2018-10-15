@@ -17,18 +17,25 @@ class RepostsCheckTask extends BaseTask {
 		try {
 			await this.rpcClient.call(request);
 			this.logger.info({
+				mark        : 'reposts',
 				message     : 'Успешно накрутились',
 				postLink    : this.taskDocument.parentTask.postLink,
 				repostsCount: this.taskDocument.parentTask.repostsCount,
+				userId      : this.taskDocument.user.id,
+				taskId      : this.taskDocument.id,
 			});
 			this.taskDocument.parentTask.status       = Task.status.finished;
 			this.taskDocument.parentTask.lastHandleAt = new Date();
 		} catch (error) {
-			this.logger.warn({
+			this.logger.error({
+				mark        : 'reposts',
 				postLink    : this.taskDocument.postLink,
 				repostsCount: this.taskDocument.repostsCount,
+				userId      : this.taskDocument.user.id,
+				taskId      : this.taskDocument.id,
 				error,
 			});
+			
 			const serviceOrder = this.config.get('repostsTask.serviceOrder');
 			if (serviceOrder.length === this.taskDocument.serviceIndex + 1) {
 				const wrappedError = TaskErrorFactory.createError(
@@ -54,6 +61,16 @@ class RepostsCheckTask extends BaseTask {
 				taskDocument: this.taskDocument.parentTask,
 				rpcClient   : this.rpcClient,
 				config      : this.config,
+			});
+			
+			this.logger.info({
+				mark        : 'reposts',
+				message     : 'Запускаем задачу на следущий сервис',
+				repostsCount: this.taskDocument.repostsCount,
+				service     : serviceOrder[this.taskDocument.serviceIndex + 1],
+				userId      : this.taskDocument.user.id,
+				taskId      : this.taskDocument.parentTask.id,
+				error,
 			});
 			
 			await repostsTask.handle();
