@@ -172,10 +172,17 @@ class TaskApi extends BaseApi {
 								//eslint-disable-next-line no-param-reassign
 								error = TaskErrorFactory.createError('default', error);
 								this.logger.error({
-									message: 'Fatal error',
-									id     : _task.id,
-									user   : _task.user.id,
+									message: 'Fatal error при выполении задач',
+									taskId : _task.id,
+									userId : _task.user.id,
 									error,
+								});
+							} else {
+								this.logger.error({
+									message: 'Ошибки при выполнении задачи',
+									taskId : _task.id,
+									userId : _task.user.id,
+									errors,
 								});
 							}
 							
