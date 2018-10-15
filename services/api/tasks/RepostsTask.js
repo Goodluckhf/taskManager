@@ -14,7 +14,14 @@ class RepostsTask extends BaseTask {
 				repostsCount: this.taskDocument.repostsCount,
 				serviceCredentials,
 			});
-			this.logger.info({ request });
+			
+			this.logger.info({
+				mark   : 'reposts',
+				message: 'rpc request',
+				taskId : this.taskDocument.parentTask.id,
+				userId : this.taskDocument.user.id,
+				request,
+			});
 			
 			await this.rpcClient.call(request);
 		} catch (error) {

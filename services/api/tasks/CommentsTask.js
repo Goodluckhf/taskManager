@@ -14,7 +14,14 @@ class CommentsTask extends BaseTask {
 				commentsCount: this.taskDocument.commentsCount,
 				serviceCredentials,
 			});
-			this.logger.info({ request });
+			
+			this.logger.info({
+				mark   : 'comments',
+				message: 'rpc request',
+				taskId : this.taskDocument.parentTask.id,
+				userId : this.taskDocument.user.id,
+				request,
+			});
 			
 			await this.rpcClient.call(request);
 		} catch (error) {

@@ -50,6 +50,16 @@ class LikesCommonTask extends BaseTask {
 			taskDocument: likesTaskDocument,
 		});
 		
+		this.logger.info({
+			service,
+			mark      : 'likes',
+			message   : 'Запускаем задачу накрутки лайков',
+			likesCount: this.taskDocument.likesCount,
+			postLink  : this.taskDocument.postLink,
+			userId    : this.taskDocument.user.id,
+			taskId    : this.taskDocument.id,
+		});
+		
 		await likesTask.handle();
 		
 		// Если задача выполнилась без ошибки
@@ -57,6 +67,17 @@ class LikesCommonTask extends BaseTask {
 		this.taskDocument.status = TaskModel.status.checking;
 		const checkDelay   = this.config.get('likesTask.checkingDelay');
 		const likesToCheck = likesCount * parseFloat(this.config.get('likesTask.likesToCheck'));
+		
+		this.logger.info({
+			service,
+			likesToCheck,
+			mark      : 'likes',
+			message   : 'Выполнилась без ошибки. Создаем задачу на проверку',
+			likesCount: this.taskDocument.likesCount,
+			postLink  : this.taskDocument.postLink,
+			userId    : this.taskDocument.user.id,
+			taskId    : this.taskDocument.id,
+		});
 		
 		const checkTaskDocument = LikesCheckTaskModel.createInstance({
 			serviceIndex,

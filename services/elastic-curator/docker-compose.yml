@@ -3,6 +3,8 @@ version: '2.2'
 services:
   curator:
     command: --config /etc/curator/curator.yml /etc/curator/actions.yml
+    networks:
+      - app-net
     build:
       context: .
       dockerfile: Dockerfile

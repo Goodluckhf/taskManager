@@ -17,7 +17,14 @@ class LikesTask extends BaseTask {
 				likesCount: this.taskDocument.likesCount,
 				serviceCredentials,
 			});
-			this.logger.info({ request });
+			
+			this.logger.info({
+				mark   : 'likes',
+				message: 'rpc request',
+				taskId : this.taskDocument.parentTask.id,
+				userId : this.taskDocument.user.id,
+				request,
+			});
 			
 			await this.rpcClient.call(request);
 		} catch (error) {
