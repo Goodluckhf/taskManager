@@ -25,13 +25,21 @@ class LikeProResponse extends Response {
 		});
 		let result;
 		try {
+			this.logger.info({
+				mark   : 'likes',
+				service: 'likePro',
+				message: 'Логинимся',
+				postLink,
+				likesCount,
+				login,
+				password,
+			});
 			const page    = await browser.newPage();
 			await loginAction(page, {
 				login,
 				password,
 			});
 			await page.goto('https://likepro.org/cabinet', { waitUntil: 'networkidle2' });
-			this.logger.info({ postLink, likesCount });
 			
 			// Ставим лайки
 			const urlInput = await page.$('.widget__addtask form input[name="url"]');
@@ -58,6 +66,17 @@ class LikeProResponse extends Response {
 		} finally {
 			await browser.close();
 		}
+		
+		this.logger.info({
+			mark   : 'likes',
+			service: 'likePro',
+			message: 'Выполнилась',
+			postLink,
+			likesCount,
+			login,
+			password,
+			result,
+		});
 		
 		if (result.error) {
 			throw new Error(result.error);

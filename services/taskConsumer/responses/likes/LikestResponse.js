@@ -51,6 +51,8 @@ class LikestResponse extends Response {
 			}, postLink, likesCount);
 			
 			this.logger.info({
+				mark   : 'likes',
+				service: 'likest',
 				message: 'кликаем накрутить',
 				postLink,
 				likesCount,
@@ -79,7 +81,9 @@ class LikestResponse extends Response {
 			}
 			
 			this.logger.info({
-				message: 'воркер лайков likest',
+				mark   : 'likes',
+				service: 'likest',
+				message: 'Задача выполнилась',
 				postLink,
 				likesCount,
 				login,
