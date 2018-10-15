@@ -36,6 +36,11 @@ class AutoLikesTask extends BaseTask {
 				.exec();
 			
 			if (!targetPublics.length) {
+				this.logger.info({
+					message: 'Нет пабликов для накрутки',
+					userId : this.taskDocument.user.id,
+					taskId : this.taskDocument.id,
+				});
 				return;
 			}
 			
@@ -53,7 +58,13 @@ class AutoLikesTask extends BaseTask {
 				});
 				lastPostResult = await this.rpcClient.call(request);
 			} catch (error) {
-				this.logger.info({ groupLink, error });
+				this.logger.warn({
+					message: 'LastPostWithLinkRequest error',
+					userId : this.taskDocument.user.id,
+					taskId : this.taskDocument.id,
+					groupLink,
+					error,
+				});
 				return;
 			}
 			
@@ -62,10 +73,22 @@ class AutoLikesTask extends BaseTask {
 			postLink = Group.getPostLinkById(postId);
 			
 			if (postLink === this.taskDocument.lastPostLink) {
+				this.logger.info({
+					message: 'Пост уже учавствовал в накрутке',
+					userId : this.taskDocument.user.id,
+					taskId : this.taskDocument.id,
+					postLink,
+				});
 				return;
 			}
 			
 			if (!mentionId) {
+				this.logger.info({
+					message: 'Нет ссылки упоминания mentionId',
+					userId : this.taskDocument.user.id,
+					taskId : this.taskDocument.id,
+					postLink,
+				});
 				return;
 			}
 			
@@ -74,6 +97,14 @@ class AutoLikesTask extends BaseTask {
 			));
 			
 			if (!hasTargetGroupInTask) {
+				this.logger.info({
+					message: 'упоминание не совпало ни с одной из ссылок',
+					userId : this.taskDocument.user.id,
+					taskId : this.taskDocument.id,
+					mentionId,
+					targetPublics,
+					postLink,
+				});
 				return;
 			}
 			
