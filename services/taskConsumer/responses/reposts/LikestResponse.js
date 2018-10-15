@@ -46,6 +46,14 @@ class LikestResponse extends Response {
 			}, postLink, repostsCount);
 			
 			// Нажимаем выполнить и ожидаем ошибки или успешное завершение
+			this.logger.info({
+				mark   : 'reposts',
+				service: 'likest',
+				message: 'кликаем накрутить',
+				postLink,
+				repostsCount,
+				login,
+			});
 			await page.click('#edit-submit');
 			await page.waitForFunction(() => {
 				const errors = document.querySelectorAll('#hpoints-reposts-add-form .messages.error');
@@ -67,6 +75,15 @@ class LikestResponse extends Response {
 				error.statusCode = 1;
 				throw error;
 			}
+			
+			this.logger.info({
+				mark   : 'reposts',
+				service: 'likest',
+				message: 'Задача выполнилась',
+				postLink,
+				repostsCount,
+				login,
+			});
 		} finally {
 			await browser.close();
 		}

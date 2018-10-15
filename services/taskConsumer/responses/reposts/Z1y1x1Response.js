@@ -11,7 +11,15 @@ class Z1y1x1Response extends Response {
 	}
 	
 	async process({ postLink, repostsCount, serviceCredentials: { token } }) {
-		this.logger.info({ postLink, repostsCount });
+		this.logger.info({
+			mark   : 'reposts',
+			service: 'z1y1x1',
+			message: 'Начало выполения',
+			postLink,
+			repostsCount,
+			token,
+		});
+		
 		const { data } = await axios.get('http://api.z1y1x1.ru/tasks/create', {
 			params: {
 				token,
@@ -21,7 +29,15 @@ class Z1y1x1Response extends Response {
 			},
 		});
 		
-		this.logger.info({ postLink, repostsCount, data });
+		this.logger.info({
+			mark   : 'reposts',
+			service: 'z1y1x1',
+			message: 'ответ от сервиса',
+			postLink,
+			repostsCount,
+			token,
+			data,
+		});
 		
 		if (data.error) {
 			if (data.error.descr) {
