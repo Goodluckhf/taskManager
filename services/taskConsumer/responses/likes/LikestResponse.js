@@ -36,7 +36,12 @@ class LikestResponse extends Response {
 			// Авторизовываемся
 			await page.goto('https://likest.ru/user', { waitUntil: 'networkidle2' });
 			await loginAction(page, this.captcha, login, password);
-			
+			this.logger.info({
+				message: 'залогинились likest',
+				postLink,
+				likesCount,
+				login,
+			});
 			//Заполняем поля для накрутки лайков
 			await page.goto('https://likest.ru/buy-likes', { waitUntil: 'networkidle2' });
 			await page.evaluate((link, count) => {
