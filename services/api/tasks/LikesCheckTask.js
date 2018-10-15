@@ -16,16 +16,21 @@ class LikesCheckTask extends BaseTask {
 		try {
 			await this.rpcClient.call(request);
 			this.logger.info({
+				mark      : 'likes',
 				message   : 'Успешно накрутились',
+				userId    : this.taskDocument.user.id,
+				taskId    : this.taskDocument.id,
 				postLink  : this.taskDocument.parentTask.postLink,
 				likesCount: this.taskDocument.parentTask.likesCount,
 			});
 			this.taskDocument.parentTask.status       = Task.status.finished;
 			this.taskDocument.parentTask.lastHandleAt = new Date();
 		} catch (error) {
-			this.logger.warn({
+			this.logger.error({
 				postLink  : this.taskDocument.postLink,
 				likesCount: this.taskDocument.likesCount,
+				userId    : this.taskDocument.user.id,
+				taskId    : this.taskDocument.id,
 				error,
 			});
 			const serviceOrder = this.config.get('likesTask.serviceOrder');
@@ -46,6 +51,15 @@ class LikesCheckTask extends BaseTask {
 			this.taskDocument.parentTask.status = Task.status.pending;
 			await this.taskDocument.parentTask.save();
 			await this.taskDocument.parentTask.populate('user').execPopulate();
+			
+			this.logger.info({
+				mark      : 'likes',
+				message   : 'Запускаем задачу на следущий сервис',
+				likesCount: this.taskDocument.likesCount,
+				service   : serviceOrder[this.taskDocument.serviceIndex + 1],
+				userId    : this.taskDocument.user.id,
+				taskId    : this.taskDocument.parentTask.id,
+			});
 			
 			const likesTask = new LikesCommonTask({
 				serviceIndex: this.taskDocument.serviceIndex + 1,
