@@ -72,6 +72,8 @@ class LikestResponse extends Response {
 			
 			// Нажимаем выполнить и ожидаем ошибки или успешное завершение
 			this.logger.info({
+				mark   : 'comments',
+				service: 'likest',
 				message: 'кликаем накрутить',
 				postLink,
 				commentsCount,
@@ -99,8 +101,11 @@ class LikestResponse extends Response {
 				error.statusCode = 1;
 				throw error;
 			}
+			
 			this.logger.info({
-				message: 'воркер комментов likest',
+				mark   : 'comments',
+				service: 'likest',
+				message: 'Задача выполнилась',
 				postLink,
 				commentsCount,
 				login,
