@@ -45,6 +45,16 @@ class RepostsCommonTask extends BaseTask {
 			taskDocument: repostsTaskDocument,
 		});
 		
+		this.logger.info({
+			service,
+			mark        : 'reposts',
+			message     : 'Запускаем задачу накрутки репостов',
+			repostsCount: this.taskDocument.repostsCount,
+			postLink    : this.taskDocument.postLink,
+			userId      : this.taskDocument.user.id,
+			taskId      : this.taskDocument.id,
+		});
+		
 		await repostsTask.handle();
 		
 		// Если задача выполнилась без ошибки
@@ -52,6 +62,17 @@ class RepostsCommonTask extends BaseTask {
 		this.taskDocument.status = TaskModel.status.checking;
 		const checkDelay     = this.config.get('repostsTask.checkingDelay');
 		const repostsToCheck = this.taskDocument.repostsCount * parseFloat(this.config.get('repostsTask.repostsToCheck'));
+		
+		this.logger.info({
+			service,
+			repostsToCheck,
+			mark        : 'reposts',
+			message     : 'Выполнилась без ошибки. Создаем задачу на проверку',
+			repostsCount: this.taskDocument.repostsCount,
+			postLink    : this.taskDocument.postLink,
+			userId      : this.taskDocument.user.id,
+			taskId      : this.taskDocument.id,
+		});
 		
 		const checkTaskDocument = RepostsCheckTaskModel.createInstance({
 			serviceIndex,
