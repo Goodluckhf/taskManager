@@ -18,7 +18,7 @@ class RepostsTask extends BaseTask {
 			this.logger.info({
 				mark   : 'reposts',
 				message: 'rpc request',
-				taskId : this.taskDocument.parentTask.id,
+				taskId : this.taskDocument.id,
 				userId : this.taskDocument.user.id,
 				request,
 			});

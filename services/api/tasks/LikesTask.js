@@ -22,7 +22,7 @@ class LikesTask extends BaseTask {
 			this.logger.info({
 				mark   : 'likes',
 				message: 'rpc request',
-				taskId : this.taskDocument.parentTask.id,
+				taskId : this.taskDocument.id,
 				userId : this.taskDocument.user.id,
 				request,
 			});

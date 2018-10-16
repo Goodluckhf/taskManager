@@ -100,7 +100,7 @@ class RepostsCheckTask extends BaseTask {
 				repostsCount: this.taskDocument.repostsCount,
 				service     : serviceOrder[this.taskDocument.serviceIndex + 1],
 				userId      : this.taskDocument.user.id,
-				taskId      : this.taskDocument.parentTask.id,
+				taskId      : this.taskDocument.id,
 				error,
 			});
 			

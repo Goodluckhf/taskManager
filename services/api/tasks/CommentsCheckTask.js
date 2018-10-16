@@ -56,7 +56,7 @@ class CommentsCheckTask extends BaseTask {
 				commentsCount: this.taskDocument.commentsCount,
 				service      : serviceOrder[this.taskDocument.serviceIndex],
 				userId       : this.taskDocument.user.id,
-				taskId       : this.taskDocument.parentTask.id,
+				taskId       : this.taskDocument.id,
 				error,
 			});
 			
@@ -101,7 +101,7 @@ class CommentsCheckTask extends BaseTask {
 				commentsCount: this.taskDocument.commentsCount,
 				service      : serviceOrder[this.taskDocument.serviceIndex + 1],
 				userId       : this.taskDocument.user.id,
-				taskId       : this.taskDocument.parentTask.id,
+				taskId       : this.taskDocument.id,
 			});
 			
 			await commentsTask.handle();
