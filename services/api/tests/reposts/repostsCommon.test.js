@@ -15,9 +15,15 @@ describe('RepostsCommon', function () {
 	
 	it('should throw error if cant setReposts with 1 service', async () => {
 		this.config.repostsTask = { ...this.config.repostsTask, serviceOrder: ['likest'] };
+		const user = mongoose.model('PremiumUser').createInstance({
+			email   : 'test',
+			password: 'test',
+		});
+		
 		const taskDocument = mongoose.model('RepostsCommon').createInstance({
 			repostsCount: 10,
 			postLink    : 'tetsLink',
+			user,
 		});
 		const rpcClient = {
 			call() {

@@ -15,10 +15,17 @@ describe('CommentsCommon', function () {
 	
 	it('should throw error if cant setComments with 1 service', async () => {
 		this.config.commentsTask = { ...this.config.commentsTask, serviceOrder: ['likest'] };
+		const user = mongoose.model('PremiumUser').createInstance({
+			email   : 'test',
+			password: 'test',
+		});
+		
 		const taskDocument = mongoose.model('CommentsCommon').createInstance({
 			commentsCount: 10,
 			postLink     : 'tetsLink',
+			user,
 		});
+		
 		const rpcClient = {
 			call() {
 				throw new Error('fail');

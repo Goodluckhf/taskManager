@@ -15,9 +15,15 @@ describe('LikesCommonTask', function () {
 	
 	it('should throw error if cant setLikes with 1 service', async () => {
 		this.config.likesTask = { ...this.config.likesTask, serviceOrder: ['likest'] };
+		const user = mongoose.model('PremiumUser').createInstance({
+			email   : 'test',
+			password: 'test',
+		});
+		
 		const taskDocument = mongoose.model('LikesCommon').createInstance({
 			likesCount: 10,
 			postLink  : 'tetsLink',
+			user,
 		});
 		const rpcClient = {
 			call() {

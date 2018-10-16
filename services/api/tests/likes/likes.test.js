@@ -7,10 +7,16 @@ const loggerMock = { info() {}, error() {}, warn() {} };
 
 describe('likeTask', () => {
 	it('Should call rpc method with correct request', async () => {
+		const user = mongoose.model('PremiumUser').createInstance({
+			email   : 'test',
+			password: 'test',
+		});
+		
 		const taskDocument = mongoose.model('LikesTask').createInstance({
 			likesCount: 10,
 			postLink  : 'testLink',
 			service   : 'testService',
+			user,
 		});
 		
 		const rpcClient = {
@@ -34,10 +40,16 @@ describe('likeTask', () => {
 	});
 	
 	it('should set status finish if error', async () => {
+		const user = mongoose.model('PremiumUser').createInstance({
+			email   : 'test',
+			password: 'test',
+		});
+		
 		const taskDocument = mongoose.model('LikesTask').createInstance({
 			likesCount: 10,
 			postLink  : 'testLink',
 			service   : 'testService',
+			user,
 		});
 		
 		const rpcClient = {
@@ -60,10 +72,16 @@ describe('likeTask', () => {
 	});
 	
 	it('should set status finish if success', async () => {
+		const user = mongoose.model('PremiumUser').createInstance({
+			email   : 'test',
+			password: 'test',
+		});
+		
 		const taskDocument = mongoose.model('LikesTask').createInstance({
 			likesCount: 10,
 			postLink  : 'testLink',
 			service   : 'testService',
+			user,
 		});
 		
 		const rpcClient = {

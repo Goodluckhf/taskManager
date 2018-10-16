@@ -19,10 +19,16 @@ describe('RepostsCheckTask', function () {
 			serviceOrder: ['likest'],
 		};
 		
+		const user = mongoose.model('PremiumUser').createInstance({
+			email   : 'test',
+			password: 'test',
+		});
+		
 		const parentTask = mongoose.model('RepostsCommon').createInstance({
 			repostsCount: 100,
 			postLink    : 'tetsLink',
 			status      : mongoose.model('Task').status.pending,
+			user,
 		});
 		
 		const taskDocument = mongoose.model('RepostsCheckTask').createInstance({
@@ -30,6 +36,7 @@ describe('RepostsCheckTask', function () {
 			postLink    : 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
+			user,
 		});
 		
 		const rpcClient = {
@@ -53,10 +60,17 @@ describe('RepostsCheckTask', function () {
 	
 	it('should set finished status to parentTask if complete successful', async () => {
 		this.config.repostsTask = { ...this.config.repostsTask, serviceOrder: ['likest'] };
+		
+		const user = mongoose.model('PremiumUser').createInstance({
+			email   : 'test',
+			password: 'test',
+		});
+		
 		const parentTask = mongoose.model('RepostsCommon').createInstance({
 			repostsCount: 100,
 			postLink    : 'tetsLink',
 			status      : mongoose.model('Task').status.pending,
+			user,
 		});
 		
 		const taskDocument = mongoose.model('RepostsCheckTask').createInstance({
@@ -64,6 +78,7 @@ describe('RepostsCheckTask', function () {
 			postLink    : 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
+			user,
 		});
 		
 		const rpcClient = {
@@ -91,6 +106,8 @@ describe('RepostsCheckTask', function () {
 			email   : 'test',
 			password: 'test',
 		});
+		
+		await user.save();
 		
 		const parentTask = mongoose.model('RepostsCommon').createInstance({
 			repostsCount: 10,

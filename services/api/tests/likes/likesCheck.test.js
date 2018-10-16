@@ -15,10 +15,16 @@ describe('LikesCheckTask', function () {
 	
 	it('should throw error if check failed and it was last service', async () => {
 		this.config.likesTask = { ...this.config.likesTask, serviceOrder: ['likest'] };
+		const user = mongoose.model('PremiumUser').createInstance({
+			email   : 'test',
+			password: 'test',
+		});
+		
 		const parentTask = mongoose.model('LikesCommon').createInstance({
 			likesCount: 100,
 			postLink  : 'tetsLink',
 			status    : mongoose.model('Task').status.pending,
+			user,
 		});
 		
 		const taskDocument = mongoose.model('LikesCheckTask').createInstance({
@@ -26,6 +32,7 @@ describe('LikesCheckTask', function () {
 			postLink    : 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
+			user,
 		});
 		
 		const rpcClient = {
@@ -49,10 +56,16 @@ describe('LikesCheckTask', function () {
 	
 	it('should set finished status to parentTask if complete successful', async () => {
 		this.config.likesTask = { ...this.config.likesTask, serviceOrder: ['likest'] };
+		const user = mongoose.model('PremiumUser').createInstance({
+			email   : 'test',
+			password: 'test',
+		});
+		
 		const parentTask = mongoose.model('LikesCommon').createInstance({
 			likesCount: 100,
 			postLink  : 'tetsLink',
 			status    : mongoose.model('Task').status.pending,
+			user,
 		});
 		
 		const taskDocument = mongoose.model('LikesCheckTask').createInstance({
@@ -60,6 +73,7 @@ describe('LikesCheckTask', function () {
 			postLink    : 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
+			user,
 		});
 		
 		const rpcClient = {
@@ -87,6 +101,7 @@ describe('LikesCheckTask', function () {
 			email   : 'test',
 			password: 'test',
 		});
+		await user.save();
 		
 		const parentTask = mongoose.model('LikesCommon').createInstance({
 			likesCount: 10,
