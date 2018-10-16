@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 RELEASE_VERSION=$1 docker-compose -f docker-compose.yml build
 RELEASE_VERSION=$1 docker-compose -f docker-compose.yml push
