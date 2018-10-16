@@ -178,7 +178,7 @@ describe('RepostsCheckTask', function () {
 		};
 		
 		
-		const billing = new Billing(this.config);
+		const billing = new Billing(this.config, loggerMock);
 		/**
 		 * @type {BillingAccount}
 		 */
@@ -252,7 +252,7 @@ describe('RepostsCheckTask', function () {
 		};
 		
 		
-		const billing = new Billing(this.config);
+		const billing = new Billing(this.config, loggerMock);
 		/**
 		 * @type {BillingAccount}
 		 */

@@ -174,7 +174,7 @@ describe('LikesCheckTask', function () {
 		};
 		
 		
-		const billing = new Billing(this.config);
+		const billing = new Billing(this.config, loggerMock);
 		/**
 		 * @type {BillingAccount}
 		 */
@@ -248,7 +248,7 @@ describe('LikesCheckTask', function () {
 		};
 		
 		
-		const billing = new Billing(this.config);
+		const billing = new Billing(this.config, loggerMock);
 		/**
 		 * @type {BillingAccount}
 		 */

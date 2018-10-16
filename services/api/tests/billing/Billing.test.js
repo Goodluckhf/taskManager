@@ -7,6 +7,7 @@ import BillingAccount       from '../../billing/BillingAccount';
 import PremiumAccount       from '../../billing/PremiumAccount';
 import { NotEnoughBalance } from '../../api/errors/tasks';
 
+const loggerMock = { info() {}, error() {}, warn() {} };
 
 describe('Billing', function () {
 	beforeEach(() => {
@@ -16,7 +17,7 @@ describe('Billing', function () {
 	it('Should throw error if try to create invoice with invalid type', () => {
 		this.config.prices = { likes: 10 };
 		
-		const billing = new Billing(this.config);
+		const billing = new Billing(this.config, loggerMock);
 		const action = () => {
 			billing.createInvoice('repos', 10);
 		};
@@ -26,14 +27,14 @@ describe('Billing', function () {
 	
 	it('should calculate price depends on quantity and price from config', () => {
 		this.config.prices = { test: 123 };
-		const billing      = new Billing(this.config);
+		const billing      = new Billing(this.config, loggerMock);
 		
 		expect(billing.calculatePrice('test', 10)).to.be.equals(1230);
 	});
 	
 	it('should create invoice with price depending on config', () => {
 		this.config.prices = { test: 321 };
-		const billing = new Billing(this.config);
+		const billing = new Billing(this.config, loggerMock);
 		
 		const invoice = billing.createInvoice('test', 10);
 		expect(invoice.price).to.be.equals(3210);
@@ -42,21 +43,21 @@ describe('Billing', function () {
 	
 	it('should create billing user if user type is billing', () => {
 		const user = mongoose.model('AccountUser').createInstance({ password: 'asdasd' });
-		const billing = new Billing(this.config);
+		const billing = new Billing(this.config, loggerMock);
 		const account = billing.createAccount(user);
 		expect(account).to.be.instanceOf(BillingAccount);
 	});
 	
 	it('should create premium user if user type is premium', () => {
 		const user = mongoose.model('PremiumUser').createInstance({ password: 'asdasd' });
-		const billing = new Billing(this.config);
+		const billing = new Billing(this.config, loggerMock);
 		const account = billing.createAccount(user);
 		expect(account).to.be.instanceOf(PremiumAccount);
 	});
 	
 	it('getTotalPrice should correct calculate price', () => {
 		this.config.prices = { test: 32, test1: 43 };
-		const billing = new Billing(this.config);
+		const billing = new Billing(this.config, loggerMock);
 		const invoices = [
 			billing.createInvoice('test', 123),
 			billing.createInvoice('test1', 11),
@@ -70,8 +71,8 @@ describe('Billing', function () {
 	describe('BillingAccount', () => {
 		it('new billing user should has empty balance', () => {
 			const user = mongoose.model('AccountUser').createInstance({ password: 'asdasd' });
-			const billing = new Billing(this.config);
-			const account = new BillingAccount(user, this.config, billing);
+			const billing = new Billing(this.config, loggerMock);
+			const account = new BillingAccount(user, this.config, billing, loggerMock);
 			expect(account.availableBalance).to.be.equals(0);
 		});
 		
@@ -82,8 +83,8 @@ describe('Billing', function () {
 				password: 'asdasd',
 				balance : 100,
 			});
-			const billing = new Billing(this.config);
-			const account = new BillingAccount(user, this.config, billing);
+			const billing = new Billing(this.config, loggerMock);
+			const account = new BillingAccount(user, this.config, billing, loggerMock);
 			const invoice = billing.createInvoice('test', 100);
 			expect(account.canPay.bind(account, invoice)).to.throw(NotEnoughBalance);
 		});
@@ -94,8 +95,8 @@ describe('Billing', function () {
 				password: 'asdasd',
 				balance : 100,
 			});
-			const billing = new Billing(this.config);
-			const account = new BillingAccount(user, this.config, billing);
+			const billing = new Billing(this.config, loggerMock);
+			const account = new BillingAccount(user, this.config, billing, loggerMock);
 			const invoice = billing.createInvoice('test', 10);
 			const freezeMoney = () => {
 				account.freezeMoney(invoice);
@@ -110,8 +111,8 @@ describe('Billing', function () {
 				password: 'asdasd',
 				balance : 130,
 			});
-			const billing = new Billing(this.config);
-			const account = new BillingAccount(user, this.config, billing);
+			const billing = new Billing(this.config, loggerMock);
+			const account = new BillingAccount(user, this.config, billing, loggerMock);
 			const invoice = billing.createInvoice('test', 10);
 			account.freezeMoney(invoice);
 			expect(account.user.freezeBalance).to.be.equals(billing.getTotalPrice(invoice));
@@ -123,8 +124,8 @@ describe('Billing', function () {
 				password: 'asdasd',
 				balance : 130,
 			});
-			const billing = new Billing(this.config);
-			const account = new BillingAccount(user, this.config, billing);
+			const billing = new Billing(this.config, loggerMock);
+			const account = new BillingAccount(user, this.config, billing, loggerMock);
 			const invoice = billing.createInvoice('test', 10);
 			expect(account.availableBalance).to.be.equals(130);
 			account.freezeMoney(invoice);
@@ -139,8 +140,8 @@ describe('Billing', function () {
 			});
 			user.freezeBalance = 120;
 			
-			const billing = new Billing(this.config);
-			const account = new BillingAccount(user, this.config, billing);
+			const billing = new Billing(this.config, loggerMock);
+			const account = new BillingAccount(user, this.config, billing, loggerMock);
 			const invoice = billing.createInvoice('test', 10);
 			account.rollBackInvoice(invoice);
 			expect(account.availableBalance).to.be.equals(130);
@@ -154,8 +155,8 @@ describe('Billing', function () {
 			});
 			user.freezeBalance = 120;
 			
-			const billing = new Billing(this.config);
-			const account = new BillingAccount(user, this.config, billing);
+			const billing = new Billing(this.config, loggerMock);
+			const account = new BillingAccount(user, this.config, billing, loggerMock);
 			const invoice = billing.createInvoice('test', 10);
 			account.commitInvoice(invoice);
 			expect(account.availableBalance).to.be.equals(10);
