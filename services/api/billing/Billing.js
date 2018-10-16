@@ -13,9 +13,11 @@ const userMapperToAccount = {
 class Billing {
 	/**
 	 * @param {Config} config
+	 * @param {Logger} logger
 	 */
-	constructor(config) {
+	constructor(config, logger) {
 		this.config = config;
+		this.logger = logger;
 	}
 	
 	/**
@@ -68,6 +70,7 @@ class Billing {
 			user,
 			this.config,
 			this,
+			this.logger,
 		);
 	}
 }

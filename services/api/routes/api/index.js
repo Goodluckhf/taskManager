@@ -23,7 +23,7 @@ rpcClient.start().catch((error) => {
 	logger.error({ error });
 });
 
-const billing = new Billing(config);
+const billing = new Billing(config, logger);
 
 const router = new Router({ prefix: '/api' });
 
