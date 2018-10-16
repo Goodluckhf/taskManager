@@ -1,9 +1,18 @@
-import moment from 'moment';
+import moment   from 'moment';
+import mongoose from '../../../lib/mongoose';
 
-import mongoose        from '../../../lib/mongoose';
-import { arrayToHash } from '../../../lib/helper';
-
-const types = ['like', 'repost', 'comment', 'topUp'];
+const statuses = {
+	// Ждет платежа
+	// Или деньги заморожены
+	active: 0,
+	
+	// Отмена платежа
+	// Или rollback
+	inactive: 1,
+	
+	// Оплачен или пополнен
+	paid: 2,
+};
 
 const invoiceSchema = new mongoose.Schema({
 	createdAt: {
@@ -11,12 +20,17 @@ const invoiceSchema = new mongoose.Schema({
 		default: moment.now,
 	},
 	
-	invoiceType: {
-		type: String,
-		enum: types,
+	paidAt: {
+		type: Date,
 	},
 	
-	price: {
+	status: {
+		type   : Number,
+		enum   : Object.values(statuses),
+		default: statuses.active,
+	},
+	
+	amount: {
 		type    : Number,
 		required: true,
 	},
@@ -27,26 +41,25 @@ const invoiceSchema = new mongoose.Schema({
 	},
 });
 
-invoiceSchema.statics.invoiceType = arrayToHash(types);
+invoiceSchema.statics.status = statuses;
 
 /**
  * @property {Date} createdAt
- * @property {String} invoiceType
- * @property {Number} price
+ * @property {Number} amount
  * @property {UserDocument} user
  */
 class InvoiceDocument {
 	/**
-	 * @param {Number} price
-	 * @param {String} type
+	 * @param {Number} amount
 	 * @param {UserDocument} user
+	 * @param {Number} status
 	 * @return {InvoiceDocument}
 	 */
-	static createInstance({ price, type, user }) {
-		const invoice       = new this();
-		invoice.price       = price;
-		invoice.invoiceType = type;
-		invoice.user        = user;
+	static createInstance(Constructor, { amount, user, status }) {
+		const invoice  = new Constructor();
+		invoice.amount = amount;
+		invoice.user   = user;
+		invoice.status = status;
 		return invoice;
 	}
 }
