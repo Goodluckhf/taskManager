@@ -3,7 +3,7 @@ import moment from 'moment';
 import mongoose        from '../../../lib/mongoose';
 import { arrayToHash } from '../../../lib/helper';
 
-const types = ['like', 'repost', 'comment'];
+const types = ['like', 'repost', 'comment', 'topUp'];
 
 const invoiceSchema = new mongoose.Schema({
 	createdAt: {

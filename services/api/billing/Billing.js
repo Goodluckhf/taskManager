@@ -72,10 +72,14 @@ class Billing {
 	}
 }
 
+
+// Из схемы инвойса
+// Что бы был автокоплит
 Billing.types = {
 	like   : 'like',
 	repost : 'repost',
 	comment: 'comment',
+	topUp  : 'topUp',
 };
 
 export default Billing;
