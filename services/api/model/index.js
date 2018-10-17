@@ -11,12 +11,14 @@ import repostsCommonSchema     from './TaskType/RepostsCommon';
 import repostsTaskSchema       from './TaskType/RepostsTask';
 import checkWallBanTaskSchema  from './TaskType/CheckWallBanTask';
 
-import groupSchema       from './Group';
-import accountSchema     from './Account';
-import userSchema        from './User';
-import accountUserSchema from './UserType/AccountUser';
-import premiumUserSchema from './UserType/PremiumUser';
-import invoiceSchema     from './Invoice';
+import groupSchema        from './Group';
+import accountSchema      from './Account';
+import userSchema         from './User';
+import invoiceSchema      from './Invoice';
+import accountUserSchema  from './UserType/AccountUser';
+import premiumUserSchema  from './UserType/PremiumUser';
+import topUpInvoiceSchema from './InvoiceType/Topup';
+import taskInvoiceSchema  from './InvoiceType/Task';
 
 
 // Initialise mongoose models
@@ -28,6 +30,8 @@ export default (connection) => {
 	connection.model('User').discriminator('PremiumUser', premiumUserSchema);
 	
 	connection.model('Invoice', invoiceSchema);
+	connection.model('Invoice').discriminator('TopUpInvoice', topUpInvoiceSchema);
+	connection.model('Invoice').discriminator('TaskInvoice', taskInvoiceSchema);
 	
 	connection.model('Task', taskSchema);
 	connection.model('Task').discriminator('AutoLikesTask', autoLikesTaskSchema);
