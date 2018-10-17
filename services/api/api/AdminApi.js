@@ -2,7 +2,15 @@ import mongoose                      from '../../../lib/mongoose';
 import BaseApi                       from './BaseApi';
 import { NotFound, ValidationError } from './errors';
 
+/**
+ * @property {Billing} billing
+ */
 class AdminApi extends BaseApi {
+	constructor(billing, ...args) {
+		super(...args);
+		this.billing = billing;
+	}
+	
 	/**
 	 * Пополнить баланс пользователю
 	 * @param {ObjectId} userId
@@ -23,8 +31,12 @@ class AdminApi extends BaseApi {
 			throw new ValidationError(['quantity']);
 		}
 		
+		const invoice = this.billing.createTopUpInvoice(user, quantity);
 		user.balance += quantity;
-		await user.save();
+		await Promise.all([
+			user.save(),
+			invoice.save(),
+		]);
 	}
 }
 
