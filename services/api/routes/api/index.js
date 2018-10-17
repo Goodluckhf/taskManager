@@ -33,6 +33,6 @@ createWallSeekRoute(router, passport);
 createGroupRoute(router, passport);
 createAutoLikesTaskRoute(router, passport, billing);
 createUserRoute(router, passport);
-createAdminRoute(router, passport);
+createAdminRoute(router, passport, billing);
 
 export default router;
