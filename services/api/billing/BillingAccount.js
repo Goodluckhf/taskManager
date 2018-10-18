@@ -71,6 +71,9 @@ class BillingAccount extends BaseAccount {
 		]);
 	}
 	
+	/**
+	 * @return {Number}
+	 */
 	get availableBalance() {
 		return this.user.balance - this.user.freezeBalance;
 	}
