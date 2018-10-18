@@ -6,6 +6,7 @@ import mongoose           from '../../../../lib/mongoose';
 import BaseTaskError      from '../../api/errors/tasks/BaseTaskError';
 import Billing            from '../../billing/Billing';
 import CommentsCommonTask from '../../tasks/CommentsCommonTask';
+import BillingAccount     from '../../billing/BillingAccount';
 
 const loggerMock = { info() {}, error() {}, warn() {} };
 describe('CommentsCommon', function () {
@@ -124,14 +125,8 @@ describe('CommentsCommon', function () {
 		};
 		
 		const billing = new Billing(this.config, loggerMock);
-		/**
-		 * @type {BillingAccount}
-		 */
-		const account = billing.createAccount(user);
-		account.freezeMoney(billing.createInvoice(
-			Billing.types.comment,
-			taskDocument.commentsCount,
-		));
+		const account = new BillingAccount(user, this.config, billing, loggerMock);
+		await account.freezeMoney(taskDocument);
 		expect(account.availableBalance).to.be.equals(100);
 		const commonTask = new CommentsCommonTask({
 			billing,
@@ -181,14 +176,8 @@ describe('CommentsCommon', function () {
 		};
 		
 		const billing = new Billing(this.config, loggerMock);
-		/**
-		 * @type {BillingAccount}
-		 */
-		const account = billing.createAccount(user);
-		account.freezeMoney(billing.createInvoice(
-			Billing.types.comment,
-			taskDocument.commentsCount,
-		));
+		const account = new BillingAccount(user, this.config, billing, loggerMock);
+		await account.freezeMoney(taskDocument);
 		expect(account.availableBalance).to.be.equals(100);
 		const commonTask = new CommentsCommonTask({
 			billing,

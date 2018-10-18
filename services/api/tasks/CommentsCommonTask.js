@@ -5,7 +5,6 @@ import BaseTask         from './BaseTask';
 import CommentsTask     from './CommentsTask';
 import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
 import BaseTaskError    from '../api/errors/tasks/BaseTaskError';
-import Billing          from '../billing/Billing';
 import BillingAccount   from '../billing/BillingAccount';
 
 /**
@@ -111,13 +110,7 @@ class CommentsCommonTask extends BaseTask {
 			}
 			
 			if (this.account instanceof BillingAccount) {
-				const invoice = this.billing.createInvoice(
-					Billing.types.comment,
-					this.taskDocument.commentsCount,
-				);
-				
-				this.account.rollBackInvoice(invoice);
-				await this.taskDocument.user.save();
+				await this.account.rollBack(this.taskDocument);
 			}
 			
 			// Это последний был, значит пора выкидывать ошибку
