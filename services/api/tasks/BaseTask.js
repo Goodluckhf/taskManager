@@ -1,3 +1,5 @@
+import PremiumAccount from '../billing/PremiumAccount';
+
 /**
  * @property {Logger} logger
  * @property {TaskDocument} taskDocument
@@ -6,8 +8,6 @@
  * @property {Billing} billing
  * @property {BaseAccount} account
  */
-import PremiumAccount from '../billing/PremiumAccount';
-
 class BaseTask {
 	//eslint-disable-next-line object-curly-newline
 	constructor({ logger, taskDocument, rpcClient, config, billing, account }) {
