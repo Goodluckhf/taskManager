@@ -18,6 +18,7 @@ const likesTaskSchema = new mongoose.Schema({
 });
 
 /**
+ * @extends TaskDocument
  * @property {String} postLink
  * @property {Number} likesCount
  * @property {String} service

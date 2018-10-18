@@ -18,6 +18,7 @@ const repostsTaskSchema = new mongoose.Schema({
 });
 
 /**
+ * @extends TaskDocument
  * @property {String} postLink
  * @property {Number} repostsCount
  * @property {String} service

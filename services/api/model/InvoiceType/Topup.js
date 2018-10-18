@@ -14,6 +14,7 @@ const topUpInvoiceSchema = new mongoose.Schema({
 
 const noteSize = 10;
 /**
+ * @extends InvoiceDocument
  * @property {String} purse
  * @property {String} note
  */

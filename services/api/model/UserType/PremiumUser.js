@@ -50,6 +50,7 @@ const premiumUserSchema = new mongoose.Schema({
 });
 
 /**
+ * @extends UserDocument
  * @property {Object} services
  */
 export class PremiumUserDocument {

@@ -9,6 +9,7 @@ const taskInvoiceSchema = new mongoose.Schema({
 
 
 /**
+ * @extends InvoiceDocument
  * @property {TaskDocument} task
  */
 class TaskInvoiceDocument {

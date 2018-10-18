@@ -2,6 +2,9 @@ import mongoose from '../../../../lib/mongoose';
 
 const adminSchema = new mongoose.Schema({});
 
+/**
+ * @extends UserDocument
+ */
 export class AdminDocument {
 	/**
 	 * @param {Object} opts

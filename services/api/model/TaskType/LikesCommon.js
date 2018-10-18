@@ -13,6 +13,7 @@ const likesCommonSchema = new mongoose.Schema({
 });
 
 /**
+ * @extends TaskDocument
  * @property {String} postLink
  * @property {Number} likesCount
  */

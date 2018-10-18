@@ -14,6 +14,7 @@ const accountUserSchema = new mongoose.Schema({
 });
 
 /**
+ * @extends UserDocument
  * @property {Number} balance
  * @property {Number} freezeBalance
  */
