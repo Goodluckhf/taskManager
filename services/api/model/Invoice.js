@@ -1,7 +1,8 @@
+import bluebird from 'bluebird';
 import moment   from 'moment';
 import mongoose from '../../../lib/mongoose';
 
-const statuses = {
+export const statuses = {
 	// Ждет платежа
 	// Или деньги заморожены
 	active: 0,
@@ -55,12 +56,44 @@ class InvoiceDocument {
 	 * @param {Number} status
 	 * @return {InvoiceDocument}
 	 */
-	static createInstance(Constructor, { amount, user, status }) {
+	static createInstance(Constructor, { amount, user, status = statuses.active }) {
 		const invoice  = new Constructor();
 		invoice.amount = amount;
 		invoice.user   = user;
 		invoice.status = status;
 		return invoice;
+	}
+	
+	/**
+	 * @param {InvoiceDocument | Array.<InvoiceDocument>} invoice
+	 * @param {Number} status
+	 * @return {Promise<void>}
+	 * @private
+	 */
+	static async _setStatus(invoice, status) {
+		const invoices = Array.isArray(invoice) ? invoice : [invoice];
+		
+		await bluebird.map(
+			invoices,
+			async (_invoice) => {
+				_invoice.status = status;
+				return _invoice.save();
+			},
+		);
+	}
+	
+	/**
+	 * @param {InvoiceDocument | Array.<InvoiceDocument>} invoice
+	 */
+	static async setPaid(invoice) {
+		return this._setStatus(invoice, mongoose.model('Invoice').status.paid);
+	}
+	
+	/**
+	 * @param {InvoiceDocument | Array.<InvoiceDocument>} invoice
+	 */
+	static async setInactive(invoice) {
+		return this._setStatus(invoice, mongoose.model('Invoice').status.inactive);
 	}
 }
 
