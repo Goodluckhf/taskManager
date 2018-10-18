@@ -5,6 +5,7 @@ import _        from 'lodash';
 import mongoose          from '../../../../lib/mongoose';
 import BaseTaskError     from '../../api/errors/tasks/BaseTaskError';
 import Billing           from '../../billing/Billing';
+import BillingAccount    from '../../billing/BillingAccount';
 import CommentsCheckTask from '../../tasks/CommentsCheckTask';
 
 const loggerMock = { info() {}, error() {}, warn() {} };
@@ -172,18 +173,23 @@ describe('CommentsCheckTask', function () {
 		});
 		
 		const parentTask = mongoose.model('CommentsCommon').createInstance({
-			commentsCount: 10,
+			commentsCount: 20,
 			postLink     : 'tetsLink',
 			user,
 		});
 		
 		const taskDocument = mongoose.model('CommentsCheckTask').createInstance({
-			commentsCount: 12,
+			commentsCount: 6,
 			postLink     : 'tetsLink',
 			serviceIndex : 0,
 			parentTask,
 			user,
 		});
+		
+		await Promise.all([
+			parentTask.save(),
+			taskDocument.save(),
+		]);
 		
 		const rpcClient = {
 			call() {
@@ -193,10 +199,7 @@ describe('CommentsCheckTask', function () {
 		
 		
 		const billing = new Billing(this.config, loggerMock);
-		/**
-		 * @type {BillingAccount}
-		 */
-		const account = billing.createAccount(user);
+		const account = new BillingAccount(user, this.config, billing, loggerMock);
 		const task = new CommentsCheckTask({
 			billing,
 			account,
@@ -205,12 +208,9 @@ describe('CommentsCheckTask', function () {
 			logger: loggerMock,
 			config: this.config,
 		});
-		// eslint-disable-next-line no-mixed-operators
-		const commentsCount = 1 / 0.3 * taskDocument.commentsCount;
-		account.freezeMoney(billing.createInvoice(
-			Billing.types.comment,
-			commentsCount,
-		));
+		
+		const commentsCount = taskDocument.commentsCount / 0.3;
+		await account.freezeMoney(parentTask);
 		// eslint-disable-next-line no-mixed-operators
 		const expectedBalance = 1100 - commentsCount * 10;
 		expect(account.availableBalance).to.be.equals(expectedBalance);
@@ -246,7 +246,7 @@ describe('CommentsCheckTask', function () {
 		});
 		
 		const parentTask = mongoose.model('CommentsCommon').createInstance({
-			commentsCount: 10,
+			commentsCount: 40,
 			postLink     : 'tetsLink',
 			user,
 		});
@@ -267,10 +267,7 @@ describe('CommentsCheckTask', function () {
 		
 		
 		const billing = new Billing(this.config, loggerMock);
-		/**
-		 * @type {BillingAccount}
-		 */
-		const account = billing.createAccount(user);
+		const account = new BillingAccount(user, this.config, billing, loggerMock);
 		const task = new CommentsCheckTask({
 			billing,
 			account,
@@ -279,12 +276,9 @@ describe('CommentsCheckTask', function () {
 			logger: loggerMock,
 			config: this.config,
 		});
-		// eslint-disable-next-line no-mixed-operators
-		const commentsCount = 1 / 0.3 * taskDocument.commentsCount;
-		account.freezeMoney(billing.createInvoice(
-			Billing.types.comment,
-			commentsCount,
-		));
+		
+		const commentsCount = taskDocument.commentsCount / 0.3;
+		await account.freezeMoney(parentTask);
 		// eslint-disable-next-line no-mixed-operators
 		const expectedBalance = 1100 - commentsCount * 10;
 		expect(account.availableBalance).to.be.equals(expectedBalance);

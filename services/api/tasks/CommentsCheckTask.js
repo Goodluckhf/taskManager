@@ -3,7 +3,6 @@ import BaseTask             from './BaseTask';
 import CommentsCheckRequest from '../api/amqpRequests/CommentCheckRequest';
 import CommentsCommonTask   from './CommentsCommonTask';
 import TaskErrorFactory     from '../api/errors/tasks/TaskErrorFactory';
-import Billing              from '../billing/Billing';
 import BillingAccount       from '../billing/BillingAccount';
 
 /**
@@ -13,7 +12,6 @@ class CommentsCheckTask extends BaseTask {
 	async handle() {
 		const Task          = mongoose.model('Task');
 		const serviceOrder  = this.config.get('commentsTask.serviceOrder');
-		const commentsRatio = parseFloat(this.config.get('commentsTask.commentsToCheck'));
 		
 		const request = new CommentsCheckRequest(this.config, {
 			postLink     : this.taskDocument.postLink,
@@ -34,17 +32,7 @@ class CommentsCheckTask extends BaseTask {
 			// Успешное выполнение
 			// Снимаем баллы с баланса
 			if (this.account instanceof BillingAccount) {
-				// eslint-disable-next-line no-mixed-operators
-				const quantity = Math.floor(1 / commentsRatio * this.taskDocument.commentsCount);
-				
-				const invoice = this.billing.createInvoice(
-					Billing.types.comment,
-					quantity,
-				);
-				invoice.user = this.taskDocument.user;
-				this.account.commitInvoice(invoice);
-				await invoice.save();
-				await this.taskDocument.user.save();
+				await this.account.commit(this.taskDocument.parentTask);
 			}
 			
 			this.taskDocument.parentTask.status       = Task.status.finished;
@@ -62,12 +50,7 @@ class CommentsCheckTask extends BaseTask {
 			
 			if (serviceOrder.length === this.taskDocument.serviceIndex + 1) {
 				if (this.account instanceof BillingAccount) {
-					//eslint-disable-next-line no-mixed-operators
-					const quantity = Math.floor(1 / commentsRatio * this.taskDocument.commentsCount);
-					
-					const invoice  = this.billing.createInvoice(Billing.types.comment, quantity);
-					this.account.rollBackInvoice(invoice);
-					await this.taskDocument.user.save();
+					await this.account.rollBack(this.taskDocument.parentTask);
 				}
 				
 				const wrappedError = TaskErrorFactory.createError(
