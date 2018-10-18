@@ -6,6 +6,7 @@ import mongoose        from '../../../../lib/mongoose';
 import LikesCommonTask from '../../tasks/LikesCommonTask';
 import BaseTaskError   from '../../api/errors/tasks/BaseTaskError';
 import Billing         from '../../billing/Billing';
+import BillingAccount  from '../../billing/BillingAccount';
 
 const loggerMock = { info() {}, error() {}, warn() {} };
 describe('LikesCommonTask', function () {
@@ -123,14 +124,8 @@ describe('LikesCommonTask', function () {
 		};
 		
 		const billing = new Billing(this.config, loggerMock);
-		/**
-		 * @type {BillingAccount}
-		 */
-		const account = billing.createAccount(user);
-		account.freezeMoney(billing.createInvoice(
-			Billing.types.like,
-			taskDocument.likesCount,
-		));
+		const account = new BillingAccount(user, this.config, billing, loggerMock);
+		await account.freezeMoney(taskDocument);
 		expect(account.availableBalance).to.be.equals(100);
 		const likesCommonTask = new LikesCommonTask({
 			billing,
@@ -180,14 +175,8 @@ describe('LikesCommonTask', function () {
 		};
 		
 		const billing = new Billing(this.config, loggerMock);
-		/**
-		 * @type {BillingAccount}
-		 */
-		const account = billing.createAccount(user);
-		account.freezeMoney(billing.createInvoice(
-			Billing.types.like,
-			taskDocument.likesCount,
-		));
+		const account = new BillingAccount(user, this.config, billing, loggerMock);
+		account.freezeMoney(taskDocument);
 		expect(account.availableBalance).to.be.equals(100);
 		const likesCommonTask = new LikesCommonTask({
 			billing,
@@ -202,6 +191,57 @@ describe('LikesCommonTask', function () {
 		await expect(promise).to.eventually.fulfilled;
 		
 		expect(account.availableBalance).to.be.equals(100);
+		expect(user.balance).to.be.equals(1100);
+		expect(user.freezeBalance).to.be.equals(1000);
+	});
+	
+	it('should create likesTask for 100 likes if original is less for likePro service', async () => {
+		this.config.likesTask = {
+			...this.config.likesTask,
+			serviceOrder: ['likePro'],
+		};
+		
+		this.config.prices = {
+			...this.config.prices,
+			like: 10,
+		};
+		
+		const user = mongoose.model('AccountUser').createInstance({
+			email   : 'test',
+			password: 'test',
+			balance : 1100,
+		});
+		
+		const taskDocument = mongoose.model('LikesCommon').createInstance({
+			likesCount: 90,
+			postLink  : 'tetsLink',
+			status    : mongoose.model('Task').status.pending,
+			user,
+		});
+		
+		const rpcClient = {
+			async call(request) {
+				expect(request.args.likesCount).to.be.equals(100);
+				return true;
+			},
+		};
+		
+		const billing = new Billing(this.config, loggerMock);
+		const account = new BillingAccount(user, this.config, billing, loggerMock);
+		const likesCommonTask = new LikesCommonTask({
+			billing,
+			account,
+			rpcClient,
+			logger: loggerMock,
+			taskDocument,
+			config: this.config,
+		});
+		
+		const promise = likesCommonTask.handle();
+		await expect(promise).to.eventually.fulfilled;
+		
+		expect(account.availableBalance).to.be.equals(100);
+		expect(taskDocument.likesCount).to.be.equals(100);
 		expect(user.balance).to.be.equals(1100);
 		expect(user.freezeBalance).to.be.equals(1000);
 	});

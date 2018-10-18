@@ -6,7 +6,6 @@ import LikesTask                                      from './LikesTask';
 import TaskErrorFactory                               from '../api/errors/tasks/TaskErrorFactory';
 import BaseTaskError                                  from '../api/errors/tasks/BaseTaskError';
 import BillingAccount                                 from '../billing/BillingAccount';
-import Billing                                        from '../billing/Billing';
 import { NotEnoughBalance, NotEnoughBalanceForLikes } from '../api/errors/tasks';
 
 /**
@@ -27,18 +26,20 @@ class LikesCommonTask extends BaseTask {
 		const service      = serviceOrder[serviceIndex];
 		
 		// Потому через сервис likePro можно ставить не меньше 100 лайков
-		let { likesCount } = this.taskDocument;
-		if (service === 'likePro' && likesCount < 100) {
+		// Пока так. Ибо дорого и не красиво на 1 сервис выставлять меньше
+		// Если будет потребность придумаю решение
+		if (service === 'likePro' && this.taskDocument.likesCount < 100) {
+			this.taskDocument.likesCount = 100;
+			
 			if (this.account instanceof BillingAccount) {
-				const invoice = this.billing.createInvoice(Billing.types.like, 100 - likesCount);
+				await this.account.rollBack(this.taskDocument);
 				try {
-					this.account.freezeMoney(invoice);
-					await this.taskDocument.user.save();
+					await this.account.freezeMoney(this.taskDocument);
 				} catch (error) {
 					if (error instanceof NotEnoughBalance) {
 						throw new NotEnoughBalanceForLikes(
 							this.account.availableBalance,
-							invoice.price,
+							this.billing.calculatePrice(this.taskDocument),
 							this.taskDocument.postLink,
 							this.taskDocument.likesCount,
 							error,
@@ -48,12 +49,10 @@ class LikesCommonTask extends BaseTask {
 					throw error;
 				}
 			}
-			
-			likesCount = 100;
 		}
 		
 		const likesTaskDocument = LikesTaskModel.createInstance({
-			likesCount,
+			likesCount: this.taskDocument.likesCount,
 			postLink  : this.taskDocument.postLink,
 			parentTask: this.taskDocument,
 			user      : this.taskDocument.user,
@@ -90,7 +89,7 @@ class LikesCommonTask extends BaseTask {
 		// То создаем задачу на проверку
 		this.taskDocument.status = TaskModel.status.checking;
 		const checkDelay   = this.config.get('likesTask.checkingDelay');
-		const likesToCheck = likesCount * parseFloat(this.config.get('likesTask.likesToCheck'));
+		const likesToCheck = this.taskDocument.likesCount * parseFloat(this.config.get('likesTask.likesToCheck'));
 		
 		this.logger.info({
 			service,
@@ -133,25 +132,12 @@ class LikesCommonTask extends BaseTask {
 				service,
 			});
 			
-			if (service === 'likePro' && this.account instanceof BillingAccount) {
-				const quantity = 100 - this.taskDocument.likesCount;
-				const invoice  = this.billing.createInvoice(Billing.types.like, quantity);
-				this.account.rollBackInvoice(invoice);
-				await this.taskDocument.user.save();
-			}
-			
 			if (serviceOrder.length !== serviceIndex + 1) {
 				return this.loopHandleTasks(serviceIndex + 1);
 			}
 			
 			if (this.account instanceof BillingAccount) {
-				const invoice = this.billing.createInvoice(
-					Billing.types.like,
-					this.taskDocument.likesCount,
-				);
-				
-				this.account.rollBackInvoice(invoice);
-				await this.taskDocument.user.save();
+				await this.account.rollBack(this.taskDocument);
 			}
 			
 			// Это последний был, значит пора выкидывать ошибку
