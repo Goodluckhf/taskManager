@@ -2,10 +2,11 @@ import { expect } from 'chai';
 import config   from 'config';
 import _        from 'lodash';
 
-import mongoose          from '../../../../lib/mongoose';
-import BaseTaskError     from '../../api/errors/tasks/BaseTaskError';
-import Billing           from '../../billing/Billing';
-import RepostsCheckTask  from '../../tasks/RepostsCheckTask';
+import mongoose         from '../../../../lib/mongoose';
+import BaseTaskError    from '../../api/errors/tasks/BaseTaskError';
+import Billing          from '../../billing/Billing';
+import RepostsCheckTask from '../../tasks/RepostsCheckTask';
+import BillingAccount   from '../../billing/BillingAccount';
 
 const loggerMock = { info() {}, error() {}, warn() {} };
 describe('RepostsCheckTask', function () {
@@ -175,7 +176,7 @@ describe('RepostsCheckTask', function () {
 		});
 		
 		const parentTask = mongoose.model('RepostsCommon').createInstance({
-			repostsCount: 10,
+			repostsCount: 40,
 			postLink    : 'tetsLink',
 			user,
 		});
@@ -196,10 +197,7 @@ describe('RepostsCheckTask', function () {
 		
 		
 		const billing = new Billing(this.config, loggerMock);
-		/**
-		 * @type {BillingAccount}
-		 */
-		const account = billing.createAccount(user);
+		const account = new BillingAccount(user, this.config, billing, loggerMock);
 		const task = new RepostsCheckTask({
 			billing,
 			account,
@@ -208,12 +206,8 @@ describe('RepostsCheckTask', function () {
 			logger: loggerMock,
 			config: this.config,
 		});
-		// eslint-disable-next-line no-mixed-operators
-		const repostsCount = 1 / 0.3 * taskDocument.repostsCount;
-		account.freezeMoney(billing.createInvoice(
-			Billing.types.repost,
-			repostsCount,
-		));
+		const repostsCount = taskDocument.repostsCount / 0.3;
+		await account.freezeMoney(parentTask);
 		// eslint-disable-next-line no-mixed-operators
 		const expectedBalance = 1100 - repostsCount * 10;
 		expect(account.availableBalance).to.be.equals(expectedBalance);
@@ -249,7 +243,7 @@ describe('RepostsCheckTask', function () {
 		});
 		
 		const parentTask = mongoose.model('RepostsCommon').createInstance({
-			repostsCount: 10,
+			repostsCount: 40,
 			postLink    : 'tetsLink',
 			user,
 		});
@@ -270,10 +264,7 @@ describe('RepostsCheckTask', function () {
 		
 		
 		const billing = new Billing(this.config, loggerMock);
-		/**
-		 * @type {BillingAccount}
-		 */
-		const account = billing.createAccount(user);
+		const account = new BillingAccount(user, this.config, billing, loggerMock);
 		const task = new RepostsCheckTask({
 			billing,
 			account,
@@ -283,11 +274,8 @@ describe('RepostsCheckTask', function () {
 			config: this.config,
 		});
 		// eslint-disable-next-line no-mixed-operators
-		const repostsCount = 1 / 0.3 * taskDocument.repostsCount;
-		account.freezeMoney(billing.createInvoice(
-			Billing.types.repost,
-			repostsCount,
-		));
+		const repostsCount = taskDocument.repostsCount / 0.3;
+		await account.freezeMoney(parentTask);
 		// eslint-disable-next-line no-mixed-operators
 		const expectedBalance = 1100 - repostsCount * 10;
 		expect(account.availableBalance).to.be.equals(expectedBalance);
