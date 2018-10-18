@@ -6,6 +6,7 @@ import mongoose       from '../../../../lib/mongoose';
 import LikesCheckTask from '../../tasks/LikesCheckTask';
 import BaseTaskError  from '../../api/errors/tasks/BaseTaskError';
 import Billing        from '../../billing/Billing';
+import BillingAccount from '../../billing/BillingAccount';
 
 const loggerMock = { info() {}, error() {}, warn() {} };
 describe('LikesCheckTask', function () {
@@ -169,7 +170,7 @@ describe('LikesCheckTask', function () {
 		});
 		
 		const parentTask = mongoose.model('LikesCommon').createInstance({
-			likesCount: 10,
+			likesCount: 40,
 			postLink  : 'tetsLink',
 			user,
 		});
@@ -190,10 +191,7 @@ describe('LikesCheckTask', function () {
 		
 		
 		const billing = new Billing(this.config, loggerMock);
-		/**
-		 * @type {BillingAccount}
-		 */
-		const account = billing.createAccount(user);
+		const account = new BillingAccount(user, this.config, billing, loggerMock);
 		const task = new LikesCheckTask({
 			billing,
 			account,
@@ -202,12 +200,9 @@ describe('LikesCheckTask', function () {
 			logger: loggerMock,
 			config: this.config,
 		});
-		// eslint-disable-next-line no-mixed-operators
-		const likesCount = 1 / 0.3 * taskDocument.likesCount;
-		account.freezeMoney(billing.createInvoice(
-			Billing.types.like,
-			likesCount,
-		));
+		
+		const likesCount =  taskDocument.likesCount / 0.3;
+		await account.freezeMoney(parentTask);
 		// eslint-disable-next-line no-mixed-operators
 		const expectedBalance = 1100 - likesCount * 10;
 		expect(account.availableBalance).to.be.equals(expectedBalance);
@@ -243,7 +238,7 @@ describe('LikesCheckTask', function () {
 		});
 		
 		const parentTask = mongoose.model('LikesCommon').createInstance({
-			likesCount: 10,
+			likesCount: 40,
 			postLink  : 'tetsLink',
 			user,
 		});
@@ -264,10 +259,7 @@ describe('LikesCheckTask', function () {
 		
 		
 		const billing = new Billing(this.config, loggerMock);
-		/**
-		 * @type {BillingAccount}
-		 */
-		const account = billing.createAccount(user);
+		const account = new BillingAccount(user, this.config, billing, loggerMock);
 		const task = new LikesCheckTask({
 			billing,
 			account,
@@ -276,12 +268,9 @@ describe('LikesCheckTask', function () {
 			logger: loggerMock,
 			config: this.config,
 		});
-		// eslint-disable-next-line no-mixed-operators
-		const likesCount = 1 / 0.3 * taskDocument.likesCount;
-		account.freezeMoney(billing.createInvoice(
-			Billing.types.like,
-			likesCount,
-		));
+		
+		const likesCount = taskDocument.likesCount / 0.3;
+		await account.freezeMoney(parentTask);
 		// eslint-disable-next-line no-mixed-operators
 		const expectedBalance = 1100 - likesCount * 10;
 		expect(account.availableBalance).to.be.equals(expectedBalance);
