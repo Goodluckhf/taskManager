@@ -1,3 +1,5 @@
+import bluebird from 'bluebird';
+import mongoose from '../../../lib/mongoose';
 import BaseAccount          from './BaseAccount';
 import { NotEnoughBalance } from '../api/errors/tasks';
 
@@ -18,33 +20,55 @@ class BillingAccount extends BaseAccount {
 	}
 	
 	/**
-	 * @param {InvoiceDocument | Array.<InvoiceDocument>} invoice
+	 * @param {TaskDocument | Array.<TaskDocument>} task
 	 * @return {void}
 	 */
-	freezeMoney(invoice) {
-		this.canPay(invoice);
-		this.user.freezeBalance += this.billing.getTotalPrice(invoice);
+	async freezeMoney(task) {
+		const tasks    = Array.isArray(task) ? task : [task];
+		const invoices = tasks.map(t => this.billing.createTaskInvoice(t, this.user));
+		this.canPay(invoices);
+		
+		this.user.freezeBalance += this.billing.getTotalPrice(invoices);
+		await bluebird.map(invoices, invoice => invoice.save());
+		await this.user.save();
 	}
 	
 	/**
 	 * @description Размараживает баланс на сумму инвойса
-	 * @param {InvoiceDocument | Array.<InvoiceDocument>} invoice
+	 * @param {TaskDocument | Array.<TaskDocument>} task
 	 * @return {void}
 	 */
-	rollBackInvoice(invoice) {
-		this.user.freezeBalance -= this.billing.getTotalPrice(invoice);
+	async rollBack(task) {
+		const TaskInvoice = mongoose.model('TaskInvoice');
+		const tasks       = Array.isArray(task) ? task : [task];
+		const taskIds     = tasks.map(t => t.id);
+		const invoices    = await TaskInvoice.find({ task: { $in: taskIds } });
+		
+		this.user.freezeBalance -= this.billing.getTotalPrice(invoices);
+		await Promise.all([
+			TaskInvoice.setInactive(invoices),
+			this.user.save(),
+		]);
 	}
 	
 	/**
-	 * @description Переводит из замороженного реальный баланс
-	 * @param {InvoiceDocument | Array.<InvoiceDocument>} invoice
+	 * @description Переводит из замороженного в реальный баланс
+	 * @param {TaskDocument | Array.<TaskDocument>} task
 	 * @return {void}
 	 */
-	commitInvoice(invoice) {
-		const totalPrice = this.billing.getTotalPrice(invoice);
+	async commit(task) {
+		const TaskInvoice = mongoose.model('TaskInvoice');
+		const tasks      = Array.isArray(task) ? task : [task];
+		const taskIds    = tasks.map(t => t.id);
+		const invoices   = await TaskInvoice.find({ task: { $in: taskIds } });
+		const totalPrice = this.billing.getTotalPrice(invoices);
 		
 		this.user.freezeBalance -= totalPrice;
 		this.user.balance       -= totalPrice;
+		await Promise.all([
+			TaskInvoice.setPaid(invoices),
+			this.user.save(),
+		]);
 	}
 	
 	get availableBalance() {

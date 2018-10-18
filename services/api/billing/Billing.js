@@ -20,34 +20,73 @@ class Billing {
 		this.logger = logger;
 	}
 	
+	
 	/**
-	 * @param {String} type
-	 * @param {Number} quantity
+	 * @param {UserDocument} user
+	 * @param {Number} amount
 	 * @return {InvoiceDocument}
 	 */
-	createInvoice(type, quantity) {
-		const InvoiceModel = mongoose.model('Invoice');
-		
-		const tariffs = this.config.get('prices');
-		if (!Object.keys(tariffs).includes(type)) {
-			throw new Error('Invalid invoice type');
-		}
-		
-		return InvoiceModel.createInstance({
-			price: this.calculatePrice(type, quantity),
-			type,
+	createTopUpInvoice(user, amount) {
+		const TopUpInvoiceModel = mongoose.model('TopUpInvoice');
+		const invoice = TopUpInvoiceModel.createInstance({
+			user,
+			amount,
 		});
+		
+		this.logger.info({
+			mark   : 'billing',
+			message: 'Создался инвойс на пополнения баланса',
+			invoice: invoice.id,
+			userId : user.id,
+		});
+		
+		return invoice;
+	}
+	
+	/**
+	 * @param {TaskDocument} task
+	 * @param {UserDocument} user
+	 * @return {InvoiceDocument}
+	 */
+	createTaskInvoice(task, user) {
+		const TaskInvoiceModel = mongoose.model('TaskInvoice');
+		const invoice = TaskInvoiceModel.createInstance({
+			amount: this.calculatePrice(task),
+			task,
+			user,
+		});
+		
+		this.logger.info({
+			mark     : 'billing',
+			message  : 'Создался инвойс на оплату задачи',
+			invoiceId: invoice.id,
+			userId   : user.id,
+		});
+		
+		return invoice;
 	}
 	
 	/**
 	 * Считает цену за кол-во
-	 * @param {String} type
-	 * @param {Number} quantity
+	 * @param {TaskDocument} task
 	 * @return {Number}
 	 */
-	calculatePrice(type, quantity) {
-		const cost = this.config.get(`prices.${type}`);
-		return cost * quantity;
+	calculatePrice(task) {
+		const prices = this.config.get('prices');
+		
+		if (task.likesCount) {
+			return task.likesCount * prices.like;
+		}
+		
+		if (task.commentsCount) {
+			return task.commentsCount * prices.comment;
+		}
+		
+		if (task.repostsCount) {
+			return task.repostsCount * prices.repost;
+		}
+		
+		throw new Error('there is not price for this task type');
 	}
 	
 	
@@ -58,7 +97,7 @@ class Billing {
 	//eslint-disable-next-line class-methods-use-this
 	getTotalPrice(invoice) {
 		const invoices = Array.isArray(invoice) ? invoice : [invoice];
-		return invoices.reduce((sum, _invoice) => (sum + _invoice.price), 0);
+		return invoices.reduce((sum, _invoice) => (sum + _invoice.amount), 0);
 	}
 	
 	/**

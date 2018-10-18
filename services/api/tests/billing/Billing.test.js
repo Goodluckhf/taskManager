@@ -14,31 +14,40 @@ describe('Billing', function () {
 		this.config = _.cloneDeep(config);
 	});
 	
-	it('Should throw error if try to create invoice with invalid type', () => {
-		this.config.prices = { likes: 10 };
-		
-		const billing = new Billing(this.config, loggerMock);
-		const action = () => {
-			billing.createInvoice('repos', 10);
-		};
-		
-		expect(action).to.throw(/Invalid invoice type/);
-	});
-	
-	it('should calculate price depends on quantity and price from config', () => {
-		this.config.prices = { test: 123 };
+	it('should calculate price for likestTask', () => {
+		this.config.prices = { like: 123 };
 		const billing      = new Billing(this.config, loggerMock);
 		
-		expect(billing.calculatePrice('test', 10)).to.be.equals(1230);
+		const task = mongoose.model('LikesTask').createInstance({
+			postLink  : 'test',
+			likesCount: 200,
+		});
+		
+		expect(billing.calculatePrice(task)).to.be.equals(200 * 123);
 	});
 	
-	it('should create invoice with price depending on config', () => {
-		this.config.prices = { test: 321 };
-		const billing = new Billing(this.config, loggerMock);
+	it('should calculate price for commentsTask', () => {
+		this.config.prices = { comment: 321 };
+		const billing      = new Billing(this.config, loggerMock);
 		
-		const invoice = billing.createInvoice('test', 10);
-		expect(invoice.price).to.be.equals(3210);
-		expect(invoice.invoiceType).to.be.equals('test');
+		const task = mongoose.model('CommentsTask').createInstance({
+			postLink     : 'test',
+			commentsCount: 200,
+		});
+		
+		expect(billing.calculatePrice(task)).to.be.equals(200 * 321);
+	});
+	
+	it('should calculate price for repostsTask', () => {
+		this.config.prices = { repost: 223 };
+		const billing      = new Billing(this.config, loggerMock);
+		
+		const task = mongoose.model('RepostsTask').createInstance({
+			postLink    : 'test',
+			repostsCount: 200,
+		});
+		
+		expect(billing.calculatePrice(task)).to.be.equals(200 * 223);
 	});
 	
 	it('should create billing user if user type is billing', () => {
@@ -56,15 +65,20 @@ describe('Billing', function () {
 	});
 	
 	it('getTotalPrice should correct calculate price', () => {
-		this.config.prices = { test: 32, test1: 43 };
+		this.config.prices = { like: 32, repost: 43, comment: 23 };
 		const billing = new Billing(this.config, loggerMock);
+		const user = mongoose.model('AccountUser').createInstance({ email: 'test', password: '123' });
+		const repostTask   = mongoose.model('RepostsTask').createInstance({ repostsCount: 123 });
+		const likesTask    = mongoose.model('LikesTask').createInstance({ likesCount: 223 });
+		const commentsTask = mongoose.model('CommentsTask').createInstance({ commentsCount: 321 });
 		const invoices = [
-			billing.createInvoice('test', 123),
-			billing.createInvoice('test1', 11),
+			billing.createTaskInvoice(repostTask, user),
+			billing.createTaskInvoice(likesTask, user),
+			billing.createTaskInvoice(commentsTask, user),
 		];
 		
 		// eslint-disable-next-line no-mixed-operators
-		const expectedPrice = 32 * 123 + 11 * 43;
+		const expectedPrice = 32 * 223 + 43 * 123 + 23 * 321;
 		expect(billing.getTotalPrice(invoices)).to.be.equals(expectedPrice);
 	});
 	
@@ -77,89 +91,150 @@ describe('Billing', function () {
 		});
 		
 		it('should throw error if invoice is more then available balance', () => {
-			this.config.prices = { test: 12 };
+			this.config.prices = { like: 12 };
 			
 			const user = mongoose.model('AccountUser').createInstance({
 				password: 'asdasd',
 				balance : 100,
 			});
+			const task = mongoose.model('LikesTask').createInstance({ likesCount: 100 });
+			
 			const billing = new Billing(this.config, loggerMock);
 			const account = new BillingAccount(user, this.config, billing, loggerMock);
-			const invoice = billing.createInvoice('test', 100);
+			const invoice = billing.createTaskInvoice(task, user);
 			expect(account.canPay.bind(account, invoice)).to.throw(NotEnoughBalance);
 		});
 		
-		it('should throw error trying freeze balance with less balance', () => {
-			this.config.prices = { test: 12 };
+		it('should throw error trying freeze balance with less balance', async () => {
+			this.config.prices = { like: 12 };
 			const user = mongoose.model('AccountUser').createInstance({
 				password: 'asdasd',
 				balance : 100,
 			});
-			const billing = new Billing(this.config, loggerMock);
-			const account = new BillingAccount(user, this.config, billing, loggerMock);
-			const invoice = billing.createInvoice('test', 10);
-			const freezeMoney = () => {
-				account.freezeMoney(invoice);
-			};
+			const task = mongoose.model('LikesTask').createInstance({
+				likesCount: 100,
+				user,
+			});
 			
-			expect(freezeMoney).to.throw(NotEnoughBalance);
+			const billing = new Billing(this.config, loggerMock);
+			const account = new BillingAccount(user, this.config, billing, loggerMock);
+			const promise = account.freezeMoney(task);
+			
+			await expect(promise).to.be.rejectedWith(NotEnoughBalance);
 		});
 		
-		it('should freeze money', () => {
-			this.config.prices = { test: 12 };
+		it('should freeze money', async () => {
+			this.config.prices = { like: 12 };
 			const user = mongoose.model('AccountUser').createInstance({
+				email   : 'test',
 				password: 'asdasd',
 				balance : 130,
 			});
+			
+			const task = mongoose.model('LikesTask').createInstance({
+				likesCount: 10,
+				user,
+			});
+			
 			const billing = new Billing(this.config, loggerMock);
 			const account = new BillingAccount(user, this.config, billing, loggerMock);
-			const invoice = billing.createInvoice('test', 10);
-			account.freezeMoney(invoice);
-			expect(account.user.freezeBalance).to.be.equals(billing.getTotalPrice(invoice));
+			const promise = account.freezeMoney(task);
+			await expect(promise).to.be.fulfilled;
+			expect(account.user.freezeBalance).to.be.equals(10 * 12);
+			expect(account.user.balance).to.be.equals(130);
+			expect(account.availableBalance).to.be.equals(130 - 120);
 		});
 		
-		it('available balance should decrease after freeze money', () => {
-			this.config.prices = { test: 12 };
+		it('should create invoice after freeze', async () => {
+			this.config.prices = { like: 12 };
 			const user = mongoose.model('AccountUser').createInstance({
+				email   : 'test',
 				password: 'asdasd',
 				balance : 130,
 			});
+			
+			const task = mongoose.model('LikesTask').createInstance({
+				likesCount: 10,
+				user,
+			});
+			
 			const billing = new Billing(this.config, loggerMock);
 			const account = new BillingAccount(user, this.config, billing, loggerMock);
-			const invoice = billing.createInvoice('test', 10);
+			const promise = account.freezeMoney(task);
+			await expect(promise).to.be.fulfilled;
+			const invoice = await mongoose.model('TaskInvoice').findOne({ task: task.id });
+			expect(invoice).to.be.not.null;
+			expect(invoice.amount).to.be.equals(10 * 12);
+		});
+		
+		it('invoice can be rollbacked', async () => {
+			this.config.prices = { like: 12 };
+			const user = mongoose.model('AccountUser').createInstance({
+				email   : 'test',
+				password: 'asdasd',
+				balance : 130,
+			});
+			const task = mongoose.model('LikesTask').createInstance({
+				likesCount: 10,
+				postLink  : 'test',
+				service   : 'likest',
+			});
+			user.freezeBalance = 120;
+			const invoice = mongoose.model('TaskInvoice').createInstance({
+				amount: 120,
+				user,
+				task,
+			});
+			await Promise.all([
+				invoice.save(),
+				task.save(),
+				user.save(),
+			]);
+			
+			const billing = new Billing(this.config, loggerMock);
+			const account = new BillingAccount(user, this.config, billing, loggerMock);
+			await account.rollBack(task);
 			expect(account.availableBalance).to.be.equals(130);
-			account.freezeMoney(invoice);
-			expect(account.availableBalance).to.be.equals(10);
+			expect(user.balance).to.be.equals(130);
+			expect(user.freezeBalance).to.be.equals(0);
 		});
 		
-		it('invoice can be rollbacked', () => {
+		it('invoice can be committed', async () => {
 			this.config.prices = { test: 12 };
 			const user = mongoose.model('AccountUser').createInstance({
+				email   : 'test',
 				password: 'asdasd',
 				balance : 130,
 			});
 			user.freezeBalance = 120;
-			
-			const billing = new Billing(this.config, loggerMock);
-			const account = new BillingAccount(user, this.config, billing, loggerMock);
-			const invoice = billing.createInvoice('test', 10);
-			account.rollBackInvoice(invoice);
-			expect(account.availableBalance).to.be.equals(130);
-		});
-		
-		it('invoice can be committed', () => {
-			this.config.prices = { test: 12 };
-			const user = mongoose.model('AccountUser').createInstance({
-				password: 'asdasd',
-				balance : 130,
+			const task = mongoose.model('LikesTask').createInstance({
+				likesCount: 10,
+				postLink  : 'test',
+				service   : 'likest',
 			});
-			user.freezeBalance = 120;
+			const invoice = mongoose.model('TaskInvoice').createInstance({
+				amount: 120,
+				user,
+				task,
+			});
+			await Promise.all([
+				invoice.save(),
+				task.save(),
+				user.save(),
+			]);
 			
 			const billing = new Billing(this.config, loggerMock);
 			const account = new BillingAccount(user, this.config, billing, loggerMock);
-			const invoice = billing.createInvoice('test', 10);
-			account.commitInvoice(invoice);
+			await account.commit(task);
 			expect(account.availableBalance).to.be.equals(10);
+			expect(user.freezeBalance).to.be.equals(0);
+			expect(user.balance).to.be.equals(10);
 		});
+	});
+	
+	it('Should create invoice with random string note', () => {
+		const invoice1 = mongoose.model('TopUpInvoice').createInstance({});
+		const invoice2 = mongoose.model('TopUpInvoice').createInstance({});
+		expect(invoice1.note).to.be.not.equals(invoice2.note);
 	});
 });
