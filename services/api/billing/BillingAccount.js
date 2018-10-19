@@ -27,8 +27,15 @@ class BillingAccount extends BaseAccount {
 		const tasks    = Array.isArray(task) ? task : [task];
 		const invoices = tasks.map(t => this.billing.createTaskInvoice(t, this.user));
 		this.canPay(invoices);
-		
-		this.user.freezeBalance += this.billing.getTotalPrice(invoices);
+		const totalPrice = this.billing.getTotalPrice(invoices);
+		this.logger.info({
+			mark   : 'billing',
+			message: 'freezeMoney',
+			userId : this.user.id,
+			tasksId: tasks.map(t => t.id),
+			amount : totalPrice,
+		});
+		this.user.freezeBalance += totalPrice;
 		await bluebird.map(invoices, invoice => invoice.save());
 		await this.user.save();
 	}
@@ -43,8 +50,17 @@ class BillingAccount extends BaseAccount {
 		const tasks       = Array.isArray(task) ? task : [task];
 		const taskIds     = tasks.map(t => t.id);
 		const invoices    = await TaskInvoice.find({ task: { $in: taskIds } });
+		const totalPrice = this.billing.getTotalPrice(invoices);
 		
-		this.user.freezeBalance -= this.billing.getTotalPrice(invoices);
+		this.logger.info({
+			mark   : 'billing',
+			message: 'rollBack',
+			userId : this.user.id,
+			tasksId: tasks.map(t => t.id),
+			amount : totalPrice,
+		});
+		
+		this.user.freezeBalance -= totalPrice;
 		await Promise.all([
 			TaskInvoice.setInactive(invoices),
 			this.user.save(),
@@ -62,6 +78,14 @@ class BillingAccount extends BaseAccount {
 		const taskIds    = tasks.map(t => t.id);
 		const invoices   = await TaskInvoice.find({ task: { $in: taskIds } });
 		const totalPrice = this.billing.getTotalPrice(invoices);
+		
+		this.logger.info({
+			mark   : 'billing',
+			message: 'commit',
+			userId : this.user.id,
+			tasksId: tasks.map(t => t.id),
+			amount : totalPrice,
+		});
 		
 		this.user.freezeBalance -= totalPrice;
 		this.user.balance       -= totalPrice;
