@@ -2,10 +2,11 @@ import { expect } from 'chai';
 import config   from 'config';
 import _        from 'lodash';
 
-import mongoose           from '../../../../lib/mongoose';
-import BaseTaskError      from '../../api/errors/tasks/BaseTaskError';
-import Billing            from '../../billing/Billing';
-import RepostsCommonTask  from '../../tasks/RepostsCommonTask';
+import mongoose          from '../../../../lib/mongoose';
+import BaseTaskError     from '../../api/errors/tasks/BaseTaskError';
+import Billing           from '../../billing/Billing';
+import RepostsCommonTask from '../../tasks/RepostsCommonTask';
+import BillingAccount    from '../../billing/BillingAccount';
 
 const loggerMock = { info() {}, error() {}, warn() {} };
 describe('RepostsCommon', function () {
@@ -123,14 +124,8 @@ describe('RepostsCommon', function () {
 		};
 		
 		const billing = new Billing(this.config, loggerMock);
-		/**
-		 * @type {BillingAccount}
-		 */
-		const account = billing.createAccount(user);
-		account.freezeMoney(billing.createInvoice(
-			Billing.types.repost,
-			taskDocument.repostsCount,
-		));
+		const account = new BillingAccount(user, this.config, billing, loggerMock);
+		await account.freezeMoney(taskDocument);
 		expect(account.availableBalance).to.be.equals(100);
 		const commonTask = new RepostsCommonTask({
 			billing,
@@ -180,14 +175,8 @@ describe('RepostsCommon', function () {
 		};
 		
 		const billing = new Billing(this.config, loggerMock);
-		/**
-		 * @type {BillingAccount}
-		 */
-		const account = billing.createAccount(user);
-		account.freezeMoney(billing.createInvoice(
-			Billing.types.repost,
-			taskDocument.repostsCount,
-		));
+		const account = new BillingAccount(user, this.config, billing, loggerMock);
+		await account.freezeMoney(taskDocument);
 		expect(account.availableBalance).to.be.equals(100);
 		const commonTask = new RepostsCommonTask({
 			billing,
@@ -201,6 +190,9 @@ describe('RepostsCommon', function () {
 		const promise = commonTask.handle();
 		await expect(promise).to.eventually.fulfilled;
 		
+		const invoice = await mongoose.model('TaskInvoice').findOne({ task: taskDocument.id });
+		
+		expect(invoice.status).to.be.equals(mongoose.model('TaskInvoice').status.active);
 		expect(account.availableBalance).to.be.equals(100);
 		expect(user.balance).to.be.equals(1100);
 		expect(user.freezeBalance).to.be.equals(1000);

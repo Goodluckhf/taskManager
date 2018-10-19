@@ -5,7 +5,6 @@ import BaseTask         from './BaseTask';
 import RepostsTask      from './RepostsTask';
 import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
 import BaseTaskError    from '../api/errors/tasks/BaseTaskError';
-import Billing          from '../billing/Billing';
 import BillingAccount   from '../billing/BillingAccount';
 
 /**
@@ -112,13 +111,7 @@ class RepostsCommonTask extends BaseTask {
 			}
 			
 			if (this.account instanceof BillingAccount) {
-				const invoice = this.billing.createInvoice(
-					Billing.types.repost,
-					this.taskDocument.repostsCount,
-				);
-				
-				this.account.rollBackInvoice(invoice);
-				await this.taskDocument.user.save();
+				this.account.rollBack(this.taskDocument);
 			}
 			
 			// Это последний был, значит пора выкидывать ошибку
