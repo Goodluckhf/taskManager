@@ -3,11 +3,16 @@ import logger  from '../../../../lib/logger';
 import UserApi from '../../api/UserApi';
 import VkApi   from '../../../../lib/VkApi';
 
-export default (router, passport) => {
+/**
+ * @param {Router} router
+ * @param {Passport} passport
+ * @param {Billing} billing
+ */
+export default (router, passport, billing) => {
 	const vkApi = new VkApi(config.get('vkApi.token'), {
 		timeout: config.get('vkApi.timeout'),
 	});
-	const userApi = new UserApi(vkApi, config, logger);
+	const userApi = new UserApi(vkApi, billing, config, logger);
 	
 	router.post('/login', async (ctx) => {
 		ctx.body = {
@@ -50,6 +55,17 @@ export default (router, passport) => {
 				...ctx.request.body,
 				user: ctx.state.user,
 			}),
+		};
+	});
+	
+	router.post('/user/balance/:amount',  passport.authenticate('jwt', { session: false }), async (ctx) => {
+		const { amount } = ctx.params;
+		const { user }   = ctx.state;
+		const account    = billing.createAccount(user);
+		
+		ctx.body = {
+			success: true,
+			data   : await userApi.createTopUpInvoice(account, amount),
 		};
 	});
 };

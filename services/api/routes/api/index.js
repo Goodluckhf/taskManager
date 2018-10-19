@@ -32,7 +32,7 @@ createAccountRoute(router, rpcClient);
 createWallSeekRoute(router, passport);
 createGroupRoute(router, passport);
 createAutoLikesTaskRoute(router, passport, billing);
-createUserRoute(router, passport);
+createUserRoute(router, passport, billing);
 createAdminRoute(router, passport, billing);
 
 export default router;
