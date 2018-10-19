@@ -7,7 +7,6 @@ import CommentsCommonTask      from './CommentsCommonTask';
 import RepostsCommonTask       from './RepostsCommonTask';
 import LastPostWithLinkRequest from '../api/amqpRequests/LastPostWithLinkRequest';
 import BillingAccount          from '../billing/BillingAccount';
-import Billing                 from '../billing/Billing';
 import {
 	NotEnoughBalance,
 	NotEnoughBalanceForComments,
@@ -21,27 +20,24 @@ import TaskErrorFactory        from '../api/errors/tasks/TaskErrorFactory';
  * @property {AutoLikesTaskDocument} taskDocument
  */
 class AutoLikesTask extends BaseTask {
-	freezeMoney(type, postLink) {
+	/**
+	 * @TODO: Зарефакторить сделать через фабрику
+	 * @param {TaskDocument} task
+	 */
+	async freezeMoney(task) {
 		if (!(this.account instanceof BillingAccount)) {
 			return;
 		}
 		
-		if (type === 'like') {
-			const invoice = this.billing.createInvoice(
-				Billing.types.like,
-				this.taskDocument.likesCount,
-			);
-			
-			try {
-				this.account.freezeMoney(invoice);
-			} catch (error) {
+		try {
+			await this.account.freezeMoney(task);
+		} catch (error) {
+			if (task.__t === 'LikesCommon') {
 				if (error instanceof NotEnoughBalance) {
-					throw new NotEnoughBalanceForLikes(
-						this.account.availableBalance,
-						invoice.price,
-						postLink,
-						this.taskDocument.likesCount,
+					throw NotEnoughBalanceForLikes.fromNotEnoughBalance(
 						error,
+						this.taskDocument.postLink,
+						this.taskDocument.likesCount,
 					);
 				}
 				
@@ -53,27 +49,14 @@ class AutoLikesTask extends BaseTask {
 						this.taskDocument.likesCount,
 					);
 				}
-				
-				throw error;
 			}
-		}
-		
-		if (type === 'repost') {
-			const invoice = this.billing.createInvoice(
-				Billing.types.repost,
-				this.taskDocument.repostsCount,
-			);
 			
-			try {
-				this.account.freezeMoney(invoice);
-			} catch (error) {
+			if (task.__t === 'RepostsCommon') {
 				if (error instanceof NotEnoughBalance) {
-					throw new NotEnoughBalanceForReposts(
-						this.account.availableBalance,
-						invoice.price,
-						postLink,
-						this.taskDocument.repostsCount,
+					throw NotEnoughBalanceForReposts.fromNotEnoughBalance(
 						error,
+						this.taskDocument.postLink,
+						this.taskDocument.likesCount,
 					);
 				}
 				
@@ -85,27 +68,14 @@ class AutoLikesTask extends BaseTask {
 						this.taskDocument.repostsCount,
 					);
 				}
-				
-				throw error;
 			}
-		}
-		
-		if (type === 'comment') {
-			const invoice = this.billing.createInvoice(
-				Billing.types.comment,
-				this.taskDocument.commentsCount,
-			);
 			
-			try {
-				this.account.freezeMoney(invoice);
-			} catch (error) {
+			if (task.__t === 'CommentsCommon') {
 				if (error instanceof NotEnoughBalance) {
-					throw new NotEnoughBalanceForComments(
-						this.account.availableBalance,
-						invoice.price,
-						postLink,
-						this.taskDocument.commentsCount,
+					throw NotEnoughBalanceForComments.fromNotEnoughBalance(
 						error,
+						this.taskDocument.postLink,
+						this.taskDocument.commentsCount,
 					);
 				}
 				
@@ -117,9 +87,9 @@ class AutoLikesTask extends BaseTask {
 						this.taskDocument.commentsCount,
 					);
 				}
-				
-				throw error;
 			}
+			
+			throw error;
 		}
 	}
 	
@@ -252,7 +222,7 @@ class AutoLikesTask extends BaseTask {
 				this.taskDocument.subTasks.push(likesCommonDocument);
 				
 				try {
-					this.freezeMoney('like', postLink);
+					await this.freezeMoney(likesCommonDocument);
 					tasksToHandle.push(likesCommonTask);
 				} catch (error) {
 					errors.push(error);
@@ -285,7 +255,7 @@ class AutoLikesTask extends BaseTask {
 				this.taskDocument.subTasks.push(commentsCommonDocument);
 				
 				try {
-					this.freezeMoney('comment', postLink);
+					await this.freezeMoney(commentsCommonDocument);
 					tasksToHandle.push(commentsCommonTask);
 				} catch (error) {
 					errors.push(error);
@@ -318,7 +288,7 @@ class AutoLikesTask extends BaseTask {
 				
 				this.taskDocument.subTasks.push(repostsCommonDocument);
 				try {
-					this.freezeMoney('repost', postLink);
+					await this.freezeMoney(repostsCommonDocument);
 					tasksToHandle.push(repostsCommonTask);
 				} catch (error) {
 					errors.push(error);
