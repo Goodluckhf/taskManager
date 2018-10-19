@@ -2,13 +2,14 @@ import { expect } from 'chai';
 import config     from 'config';
 import _          from 'lodash';
 
-import mongoose      from '../../../lib/mongoose';
-import Billing       from '../billing/Billing';
-import AutoLikesTask from '../tasks/AutolikesTask';
+import mongoose       from '../../../lib/mongoose';
+import Billing        from '../billing/Billing';
+import AutoLikesTask  from '../tasks/AutolikesTask';
 import {
 	NotEnoughBalanceForComments,
 	NotEnoughBalanceForLikes,
-}                    from '../api/errors/tasks';
+}                     from '../api/errors/tasks';
+import BillingAccount from '../billing/BillingAccount';
 
 const loggerMock = { info() {}, error() {}, warn() {} };
 describe('AutolikesTask', function () {
@@ -528,11 +529,8 @@ describe('AutolikesTask', function () {
 			user,
 		});
 		
-		const billing = new Billing(this.config);
-		/**
-		 * @type {BillingAccount}
-		 */
-		const account = billing.createAccount(user);
+		const billing = new Billing(this.config, loggerMock);
+		const account = new BillingAccount(user, this.config, billing, loggerMock);
 		
 		const task = new AutoLikesTask({
 			billing,
@@ -610,11 +608,8 @@ describe('AutolikesTask', function () {
 			user,
 		});
 		
-		const billing = new Billing(this.config);
-		/**
-		 * @type {BillingAccount}
-		 */
-		const account = billing.createAccount(user);
+		const billing = new Billing(this.config, loggerMock);
+		const account = new BillingAccount(user, this.config, billing, loggerMock);
 		
 		const task = new AutoLikesTask({
 			billing,
@@ -645,6 +640,98 @@ describe('AutolikesTask', function () {
 		expect(setCommentsCalled).to.be.true;
 		expect(setLikesCalled).to.be.true;
 		expect(taskDocument.subTasks.length).to.be.equals(2);
+		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.waiting);
+	});
+	
+	it('Should take money for 100 likes if task complete from LikePro service', async () => {
+		this.config.likesTask = {
+			...this.config.likesTask,
+			serviceOrder: ['likePro'],
+		};
+		
+		this.config.prices = {
+			...this.config.prices,
+			like: 10,
+		};
+		
+		const group       = mongoose.model('Group').createInstance({ id: 'testId' });
+		const targetGroup = mongoose.model('Group').createInstance({ id: 'testId2' });
+		
+		await group.save();
+		await targetGroup.save();
+		const user = mongoose.model('AccountUser').createInstance({
+			email   : 'test',
+			password: 'test',
+			balance : 2000,
+		});
+		
+		user.targetGroups.push(targetGroup);
+		
+		let rpcCalledTimes = 0;
+		let setLikesCalled    = false;
+		const rpcClient = {
+			call(request) {
+				rpcCalledTimes += 1;
+				
+				if (/^setLikes_/.test(request.method)) {
+					expect(request.args.likesCount).to.be.equals(100);
+					setLikesCalled = true;
+				}
+				
+				return { postId: 123, mentionId: 'clubtestId2' };
+			},
+		};
+		
+		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
+			likesCount   : 70,
+			commentsCount: 0,
+			repostsCount : 0,
+			group,
+			user,
+		});
+		
+		const billing = new Billing(this.config, loggerMock);
+		const account = new BillingAccount(user, this.config, billing, loggerMock);
+		
+		const task = new AutoLikesTask({
+			billing,
+			account,
+			taskDocument,
+			logger: loggerMock,
+			config: this.config,
+			rpcClient,
+		});
+		
+		const promise = task.handle();
+		let errors = [];
+		await promise.catch((_errors) => {
+			errors = _errors;
+		});
+		
+		const subTasks = await mongoose
+			.model('Task')
+			.find({ _id: { $in: taskDocument.subTasks.map(t => t._id) } })
+			.lean()
+			.exec();
+		
+		const invoice = await mongoose.model('TaskInvoice').findOne({
+			user  : user.id,
+			status: mongoose.model('Invoice').status.active,
+		});
+		const likesTask = await mongoose.model('LikesTask').findOne({ parentTask: invoice.task });
+		expect(invoice.amount).to.be.equals(1000);
+		expect(user.balance).to.be.equals(2000);
+		expect(user.freezeBalance).to.be.equals(1000);
+		expect(account.availableBalance).to.be.equals(1000);
+		expect(likesTask.likesCount).to.be.equals(100);
+		
+		const subTasksHasNoErrors = subTasks.every(_task => !_task._error);
+		
+		expect(subTasksHasNoErrors).to.be.true;
+		expect(errors.length).to.be.equals(0);
+		expect(rpcCalledTimes).to.be.equals(2);
+		expect(setLikesCalled).to.be.true;
+		expect(taskDocument.subTasks.length).to.be.equals(1);
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.waiting);
 	});
 });

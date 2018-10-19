@@ -215,6 +215,9 @@ describe('RepostsCheckTask', function () {
 		const promise = task.handle();
 		await expect(promise).to.eventually.fulfilled;
 		
+		const invoice = await mongoose.model('TaskInvoice').findOne({ task: parentTask.id });
+		expect(invoice.status).to.be.equals(mongoose.model('TaskInvoice').status.paid);
+		
 		expect(account.availableBalance).to.be.equals(expectedBalance);
 		expect(user.balance).to.be.equals(expectedBalance);
 		expect(user.freezeBalance).to.be.equals(0);
@@ -256,12 +259,17 @@ describe('RepostsCheckTask', function () {
 			user,
 		});
 		
+		await Promise.all([
+			user.save(),
+			parentTask.save(),
+			taskDocument.save(),
+		]);
+		
 		const rpcClient = {
 			call() {
 				throw new Error('failed');
 			},
 		};
-		
 		
 		const billing = new Billing(this.config, loggerMock);
 		const account = new BillingAccount(user, this.config, billing, loggerMock);
@@ -283,6 +291,8 @@ describe('RepostsCheckTask', function () {
 		const promise = task.handle();
 		await expect(promise).to.eventually.rejectedWith(BaseTaskError);
 		
+		const invoice = await mongoose.model('TaskInvoice').findOne({ task: parentTask.id });
+		expect(invoice.status).to.be.equals(mongoose.model('TaskInvoice').status.inactive);
 		expect(account.availableBalance).to.be.equals(1100);
 		expect(user.balance).to.be.equals(1100);
 		expect(user.freezeBalance).to.be.equals(0);
