@@ -40,6 +40,21 @@ export class NotEnoughBalanceForLikes extends CommonLikesError {
 	}
 	
 	/**
+	 * @param {NotEnoughBalance} error
+	 * @param {String} link
+	 * @param {Number} count
+	 */
+	static fromNotEnoughBalance(error, link, count) {
+		return new this(
+			error.activeBalance,
+			error.needBalance,
+			link,
+			count,
+			error,
+		);
+	}
+	
+	/**
 	 * @return {string}
 	 * @protected
 	 */
@@ -91,6 +106,21 @@ export class NotEnoughBalanceForComments extends CommonCommentsError {
 	}
 	
 	/**
+	 * @param {NotEnoughBalance} error
+	 * @param {String} link
+	 * @param {Number} count
+	 */
+	static fromNotEnoughBalance(error, link, count) {
+		return new this(
+			error.activeBalance,
+			error.needBalance,
+			link,
+			count,
+			error,
+		);
+	}
+	
+	/**
 	 * @return {string}
 	 * @protected
 	 */
@@ -138,6 +168,21 @@ export class NotEnoughBalanceForReposts extends CommonRepostsError {
 		super(...args);
 		this.activeBalance = activeBalance;
 		this.needBalance   = needBalance;
+	}
+	
+	/**
+	 * @param {NotEnoughBalance} error
+	 * @param {String} link
+	 * @param {Number} count
+	 */
+	static fromNotEnoughBalance(error, link, count) {
+		return new this(
+			error.activeBalance,
+			error.needBalance,
+			link,
+			count,
+			error,
+		);
 	}
 	
 	/**
