@@ -6,17 +6,20 @@ import {
 	ChatAlreadyExists,
 	LoginFailed,
 	NoFriendsInvite,
-	UserAlreadyExists,
-}                         from './errors';
+	UserAlreadyExists, ValidationError,
+} from './errors';
 import { linkByVkUserId } from '../../../lib/helper';
+import BillingAccount     from '../billing/BillingAccount';
 
 /**
  * @property {VkApi} vkApi
+ * @property {Billing} billing
  */
 class UserApi extends BaseApi {
-	constructor(vkApi, ...args) {
+	constructor(vkApi, billing, ...args) {
 		super(...args);
-		this.vkApi = vkApi;
+		this.vkApi   = vkApi;
+		this.billing = billing;
 	}
 	
 	createToken(user) {
@@ -151,6 +154,36 @@ class UserApi extends BaseApi {
 		delete displayUser.salt;
 		const token = this.createToken(user);
 		return { user: displayUser, token };
+	}
+	
+	async createTopUpInvoice(account, amount) {
+		if (!(account instanceof BillingAccount)) {
+			throw new ValidationError(['Account type']);
+		}
+		
+		const TopUpInvoice = mongoose.model('TopUpInvoice');
+		
+		let topUpInvoice = await TopUpInvoice.findOne({
+			user  : account.user,
+			status: TopUpInvoice.status.active,
+		});
+		
+		if (topUpInvoice) {
+			this.logger.info({
+				mark     : 'billing',
+				message  : 'у инвойса изменилась сумма',
+				invoiceId: topUpInvoice.id,
+				userId   : account.user.id,
+				newAmount: amount,
+				oldAmount: topUpInvoice.amount,
+			});
+			topUpInvoice.amount = amount;
+		} else {
+			topUpInvoice = this.billing.createTopUpInvoice(account.user, amount);
+		}
+		
+		await topUpInvoice.save();
+		return topUpInvoice.toObject();
 	}
 	
 	/**
