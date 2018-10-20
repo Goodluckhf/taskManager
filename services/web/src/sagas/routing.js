@@ -23,6 +23,10 @@ const mapperPathToUpdateFunction = {
 		function: getUserData,
 		loop    : false,
 	},
+	'/balance': {
+		function: updateBalance,
+		loop    : false,
+	},
 };
 
 const loopUpdate = function* (updateFunction, interval) {
