@@ -4,10 +4,10 @@ import { connect }                       from 'react-redux';
 import Immutable                         from 'immutable';
 import propTypes                         from 'prop-types';
 
-import TopUpForm                                          from '../components/balance/TopUpForm';
-import Layout                                             from '../layout/Layout';
-import { loaderSelector }                                 from '../../lib/loader';
-import { convertMoneyRequest, createTopUpInvoiceRequest } from '../../actions/billing';
+import TopUpForm                                                               from '../components/balance/TopUpForm';
+import Layout                                                                  from '../layout/Layout';
+import { loaderSelector }                                                      from '../../lib/loader';
+import { checkPaymentRequest, convertMoneyRequest, createTopUpInvoiceRequest } from '../../actions/billing';
 
 class Balance extends PureComponent {
 	static propTypes = {
@@ -16,6 +16,7 @@ class Balance extends PureComponent {
 		comment           : propTypes.string,
 		convertMoney      : propTypes.func,
 		createTopUpInvoice: propTypes.func,
+		checkPayment      : propTypes.func,
 		convert           : propTypes.instanceOf(Immutable.Map),
 	};
 	
@@ -25,10 +26,12 @@ class Balance extends PureComponent {
 				<Container fluid={true}>
 					<TopUpForm
 						create_loading={this.props.form.get('create_loading')}
+						check_loading={this.props.form.get('check_loading')}
 						error={this.props.form.get('error')}
 						balance={this.props.balance}
 						convertMoney={this.props.convertMoney}
 						createTopUpInvoice={this.props.createTopUpInvoice}
+						checkPayment={this.props.checkPayment}
 						money={this.props.convert.get('money')}
 						rate={this.props.convert.get('rate')}
 						comment={this.props.comment}
@@ -42,12 +45,13 @@ class Balance extends PureComponent {
 const mapDispatchToProps = dispatch => ({
 	convertMoney      : data => dispatch(convertMoneyRequest(data)),
 	createTopUpInvoice: data => dispatch(createTopUpInvoiceRequest(data)),
+	checkPayment      : () => dispatch(checkPaymentRequest()),
 });
 
 const mapStateToProps = state => ({
 	form: loaderSelector({
 		BILLING__CREATE_TOPUP_INVOICE: 'create_loading',
-		
+		BILLING__CHECK_PAYMENT       : 'check_loading',
 	}, 'billingPage', state, ['form']),
 	convert: state.billingPage.get('convert'),
 	comment: state.billingPage.get('comment'),

@@ -15,8 +15,10 @@ class TopUpForm extends PureComponent {
 		money             : propTypes.number,
 		rate              : propTypes.number,
 		create_loading    : propTypes.bool,
+		check_loading     : propTypes.bool,
 		error             : propTypes.object,
 		createTopUpInvoice: propTypes.func,
+		checkPayment      : propTypes.func,
 		comment           : propTypes.string,
 		convertMoney      : propTypes.func,
 	};
@@ -52,6 +54,10 @@ class TopUpForm extends PureComponent {
 		this.props.createTopUpInvoice(parseInt(this.state.amount, 10));
 	};
 	
+	onClickCheck = () => {
+		this.props.checkPayment();
+	};
+	
 	render() {
 		const validStyle = !this.state.valid ? { borderColor: 'red' } : {};
 		return (
@@ -63,6 +69,8 @@ class TopUpForm extends PureComponent {
 					{/*eslint-disable-next-line*/}
 					2) Нажмите кнопку "Пополнить"<br/>
 					3) Отправьте деньги на Yandex кашелек: <span style={{ color: 'tomato' }}>41001385438248</span><br/>
+					{/*eslint-disable-next-line*/}
+					4) Нажите на кнопку "Оплатил"<br/>
 					<span style={{ color: 'tomato' }}>Обязательно: </span>Укажите примечание (появится после нажатия)
 					<hr/>
 					Текущий баланс: <b>{this.props.balance}</b><br/>
@@ -96,6 +104,8 @@ class TopUpForm extends PureComponent {
 				</CardBody>
 				<CardFooter>
 					<LoadingButton
+						disabled={!!this.props.comment.length}
+						style={this.props.comment.length ? { backgroundColor: 'gray' } : {}}
 						data-size={S}
 						data-color='green'
 						loading={this.props.create_loading}
@@ -103,6 +113,17 @@ class TopUpForm extends PureComponent {
 					>
 						Пополнить
 					</LoadingButton>
+					{ !!this.props.comment.length &&
+						<LoadingButton
+							style={{ marginLeft: '10px' }}
+							data-size={S}
+							data-color='green'
+							loading={this.props.check_loading}
+							onClick={this.onClickCheck}
+						>
+							Оплатил
+						</LoadingButton>
+					}
 				</CardFooter>
 			</Card>
 		);
