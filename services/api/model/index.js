@@ -19,6 +19,7 @@ import accountUserSchema  from './UserType/AccountUser';
 import premiumUserSchema  from './UserType/PremiumUser';
 import topUpInvoiceSchema from './InvoiceType/Topup';
 import taskInvoiceSchema  from './InvoiceType/Task';
+import adminSchema        from './UserType/AdminUser';
 
 
 // Initialise mongoose models
@@ -28,6 +29,7 @@ export default (connection) => {
 	connection.model('User', userSchema);
 	connection.model('User').discriminator('AccountUser', accountUserSchema);
 	connection.model('User').discriminator('PremiumUser', premiumUserSchema);
+	connection.model('User').discriminator('AdminUser', adminSchema);
 	
 	connection.model('Invoice', invoiceSchema);
 	connection.model('Invoice').discriminator('TopUpInvoice', topUpInvoiceSchema);

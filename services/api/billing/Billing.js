@@ -1,10 +1,12 @@
 import mongoose       from '../../../lib/mongoose';
 import PremiumAccount from './PremiumAccount';
 import BillingAccount from './BillingAccount';
+import AdminAccount   from './AdminAccount';
 
 const userMapperToAccount = {
 	PremiumUser: PremiumAccount,
 	AccountUser: BillingAccount,
+	AdminUser  : AdminAccount,
 };
 
 /**

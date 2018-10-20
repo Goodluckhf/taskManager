@@ -5,16 +5,16 @@ const adminSchema = new mongoose.Schema({});
 /**
  * @extends UserDocument
  */
-export class AdminDocument {
+export class AdminUserDocument {
 	/**
 	 * @param {Object} opts
-	 * @return {AdminDocument}
+	 * @return {AdminUserDocument}
 	 */
 	static createInstance(opts) {
 		return mongoose.model('User').createInstance(this, opts);
 	}
 }
 
-adminSchema.loadClass(AdminDocument);
+adminSchema.loadClass(AdminUserDocument);
 
 export default adminSchema;
