@@ -5,9 +5,9 @@ export const convertMoneyRequest  = amount => ({
 });
 
 export const CONVERT_MONEY_SUCCESS = 'BILLING__CONVERT_MONEY_SUCCESS';
-export const convertMoneySuccess = task => ({
+export const convertMoneySuccess = convert => ({
 	type   : CONVERT_MONEY_SUCCESS,
-	payload: { task },
+	payload: convert,
 });
 
 export const CONVERT_MONEY_FAILURE = 'BILLING__CONVERT_MONEY_FAILURE';

@@ -11,11 +11,11 @@ export default function* () {
 				method: 'get',
 			});
 			if (!result.success) {
-				yield put(convertMoneySuccess(result.data));
+				yield put(convertMoneyFailure(result.data));
 				return;
 			}
 			
-			yield put(convertMoneyFailure(result.data));
+			yield put(convertMoneySuccess(result.data));
 		} catch (error) {
 			if (error.response && error.response.data) {
 				yield put(convertMoneyFailure(error.response.data));

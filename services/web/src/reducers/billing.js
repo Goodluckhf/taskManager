@@ -1,3 +1,5 @@
+import { Map } from 'immutable';
+
 import { billingPage }           from '../store/initialState';
 import { CONVERT_MONEY_SUCCESS } from '../actions/billing';
 
@@ -6,8 +8,8 @@ export default (billingState = billingPage, { type, payload }) => {
 		console.log(payload);
 		return billingState
 			.updateIn(
-				['form', 'money'],
-				() => payload,
+				['convert'],
+				() => Map(payload),
 			);
 	}
 	

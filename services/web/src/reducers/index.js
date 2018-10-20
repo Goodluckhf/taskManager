@@ -5,6 +5,7 @@ import autoLikesPage       from './autolikes';
 import wallSeekPage        from './wallSeek';
 import fatalError          from './fatalError';
 import auth                from './auth';
+import billingPage         from './billing';
 import { loaderReducer, errorReducer } from '../lib/loader';
 
 export default combineReducers({
@@ -13,6 +14,7 @@ export default combineReducers({
 	groupPage,
 	autoLikesPage,
 	wallSeekPage,
+	billingPage,
 	fatalError,
 	loader: loaderReducer,
 	error : errorReducer,

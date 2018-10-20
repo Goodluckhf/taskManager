@@ -62,9 +62,12 @@ export const billingPage = Map({
 		items: List([]),
 	}),
 	
-	form: Map({
+	convert: Map({
 		money: 0,
+		rate : 0,
 	}),
+	
+	form: Map({}),
 });
 
 export const fatalError = Map({});
