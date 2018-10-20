@@ -211,3 +211,19 @@ export class ChatAlreadyExists extends BaseApiError {
 	}
 }
 
+export class CheckPaymentFailure extends BaseApiError {
+	constructor(amount, note) {
+		super('Ошибка проверки оплаты. Убедитесь что перевели деньги');
+		this.amount = amount;
+		this.note   = note;
+	}
+	
+	toObject() {
+		return {
+			...super.toObject(),
+			amount : this.amount,
+			comment: this.note,
+		};
+	}
+}
+
