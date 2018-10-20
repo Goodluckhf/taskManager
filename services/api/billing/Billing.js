@@ -86,20 +86,20 @@ class Billing {
 	 */
 	calculatePrice(task) {
 		const prices = this.config.get('prices');
-		
+		let sum = 0;
 		if (task.likesCount) {
-			return task.likesCount * prices.like;
+			sum += task.likesCount * prices.like;
 		}
 		
 		if (task.commentsCount) {
-			return task.commentsCount * prices.comment;
+			sum += task.commentsCount * prices.comment;
 		}
 		
 		if (task.repostsCount) {
-			return task.repostsCount * prices.repost;
+			sum += task.repostsCount * prices.repost;
 		}
 		
-		throw new Error('there is not price for this task type');
+		return sum;
 	}
 	
 	

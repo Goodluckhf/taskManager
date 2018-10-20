@@ -1,13 +1,14 @@
 import _ from 'lodash';
 
-import mongoose from '../../../lib/mongoose';
-import BaseApi  from './BaseApi';
+import mongoose             from '../../../lib/mongoose';
+import BaseApi              from './BaseApi';
 import {
 	NotFound,
 	ValidationError,
 	TaskAlreadyExist, UserIsNotReady,
-}               from './errors';
-import Billing  from '../billing/Billing';
+}                           from './errors';
+import BillingAccount       from '../billing/BillingAccount';
+import { NotEnoughBalance } from './errors/tasks';
 
 /**
  * @property {VkApi} vkApi
@@ -60,13 +61,21 @@ class AutoLikesApi extends BaseApi {
 			throw new UserIsNotReady(['chatId']);
 		}
 		
-		const invoices = [
-			this.billing.createInvoice(Billing.types.like, parseInt(data.likesCount, 10)),
-			this.billing.createInvoice(Billing.types.repost, parseInt(data.repostsCount, 10)),
-			this.billing.createInvoice(Billing.types.comment, parseInt(data.commentsCount, 10)),
-		];
+		/**
+		 * @TODO: зарефакторить. злоебучий костыль
+		 */
+		const price = this.billing.calculatePrice({
+			likesCount   : parseInt(data.likesCount, 10),
+			repostsCount : parseInt(data.repostsCount, 10),
+			commentsCount: parseInt(data.commentsCount, 10),
+		});
 		
-		account.canPay(invoices);
+		if (account instanceof BillingAccount && account.availableBalance < price) {
+			const error = new NotEnoughBalance(account.availableBalance, price, new Error('Не достаточно сердец'));
+			error.status = 400;
+			throw error;
+		}
+		
 		
 		let group;
 		if (data.publicHref) {
