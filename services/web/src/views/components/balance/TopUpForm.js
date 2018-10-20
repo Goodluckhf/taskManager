@@ -58,8 +58,15 @@ class TopUpForm extends PureComponent {
 			<Card>
 				<CardHeader><b>Пополнеине баланса</b></CardHeader>
 				<CardBody>
+					Пополнение баланса возможно через Yandex.Деньги<br/>
+					1) Укажите сумму пополнения<br/>
+					{/*eslint-disable-next-line*/}
+					2) Нажмите кнопку "Пополнить"<br/>
+					3) Отправьте деньги на Yandex кашелек: <span style={{ color: 'tomato' }}>41001385438248</span><br/>
+					<span style={{ color: 'tomato' }}>Обязательно: </span>Укажите примечание (появится после нажатия)
+					<hr/>
 					Текущий баланс: <b>{this.props.balance}</b><br/>
-					Цена за 1 балл: <b>{this.props.rate} руб.</b>
+					Цена за 1 сердце: <b>{this.props.rate} руб.</b>
 					<hr/>
 					<BootstrapForm>
 						<FormGroup>
@@ -79,7 +86,7 @@ class TopUpForm extends PureComponent {
 								</Col>
 								<Col lg='6' md='6' sm='6'>
 									<Label>Примечание к платежу</Label>
-									<Input disabled={true} type='text' value='adasd'/>
+									<Input disabled={true} type='text' value={this.props.comment}/>
 									<span style={{ color: 'tomato' }}>Не забудьте указать примечание</span>
 								</Col>
 							</Row>

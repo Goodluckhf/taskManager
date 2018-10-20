@@ -62,6 +62,8 @@ export const billingPage = Map({
 		items: List([]),
 	}),
 	
+	comment: '',
+	
 	convert: Map({
 		money: 0,
 		rate : 0,

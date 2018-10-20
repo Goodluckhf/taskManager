@@ -13,6 +13,7 @@ class Balance extends PureComponent {
 	static propTypes = {
 		form        : propTypes.instanceOf(Immutable.Map),
 		balance     : propTypes.number,
+		comment     : propTypes.string,
 		convertMoney: propTypes.func,
 		convert     : propTypes.instanceOf(Immutable.Map),
 	};
@@ -28,6 +29,7 @@ class Balance extends PureComponent {
 						convertMoney={this.props.convertMoney}
 						money={this.props.convert.get('money')}
 						rate={this.props.convert.get('rate')}
+						comment={this.props.comment}
 					/>
 				</Container>
 			</Layout>
@@ -42,6 +44,7 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
 	form   : loaderSelector({ GROUPS__CREATE: 'loading' }, 'billingPage', state, ['form']),
 	convert: state.billingPage.get('convert'),
+	comment: state.billingPage.get('comment'),
 	balance: state.auth.get('balance'),
 });
 
