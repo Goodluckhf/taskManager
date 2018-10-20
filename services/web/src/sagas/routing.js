@@ -34,7 +34,7 @@ const loopUpdate = function* (updateFunction, interval) {
 
 const loopUpdateBalance = function* () {
 	while (true) {
-		yield fork(updateBalance);
+		yield updateBalance();
 		yield call(delay, 5000);
 	}
 };
@@ -49,14 +49,17 @@ export default function* () {
 			currentLoopTask = null;
 		}
 		
+		if (currentBalanceTask) {
+			yield cancel(currentBalanceTask);
+			currentBalanceTask = null;
+		}
+		
 		const updateOption = mapperPathToUpdateFunction[location.pathname];
 		if (!updateOption) {
 			return;
 		}
 		
-		if (!currentBalanceTask) {
-			currentBalanceTask = yield fork(loopUpdateBalance);
-		}
+		currentBalanceTask = yield fork(loopUpdateBalance);
 		
 		if (!updateOption.loop) {
 			yield updateOption.function();
