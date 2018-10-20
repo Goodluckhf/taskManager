@@ -24,7 +24,7 @@ class Balance extends PureComponent {
 			<Layout>
 				<Container fluid={true}>
 					<TopUpForm
-						loading={this.props.form.get('loading')}
+						create_loading={this.props.form.get('create_loading')}
 						error={this.props.form.get('error')}
 						balance={this.props.balance}
 						convertMoney={this.props.convertMoney}
@@ -45,7 +45,10 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-	form   : loaderSelector({ GROUPS__CREATE: 'loading' }, 'billingPage', state, ['form']),
+	form: loaderSelector({
+		BILLING__CREATE_TOPUP_INVOICE: 'create_loading',
+		
+	}, 'billingPage', state, ['form']),
 	convert: state.billingPage.get('convert'),
 	comment: state.billingPage.get('comment'),
 	balance: state.auth.get('balance'),

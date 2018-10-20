@@ -14,7 +14,7 @@ class TopUpForm extends PureComponent {
 		balance           : propTypes.number,
 		money             : propTypes.number,
 		rate              : propTypes.number,
-		loading           : propTypes.bool,
+		create_loading    : propTypes.bool,
 		error             : propTypes.object,
 		createTopUpInvoice: propTypes.func,
 		comment           : propTypes.string,
@@ -98,7 +98,7 @@ class TopUpForm extends PureComponent {
 					<LoadingButton
 						data-size={S}
 						data-color='green'
-						loading={this.props.loading}
+						loading={this.props.create_loading}
 						onClick={this.onClick}
 					>
 						Пополнить
