@@ -5,6 +5,7 @@ import { update as updateGroup }         from './group';
 import { update as updateAutolikes }     from './autolikes';
 import { update as updateWallSeek }      from './wallSeek';
 import { getUserData, updateBalance }    from './auth';
+import { update }    from './billing';
 
 const mapperPathToUpdateFunction = {
 	'/groups': {
@@ -24,8 +25,8 @@ const mapperPathToUpdateFunction = {
 		loop    : false,
 	},
 	'/balance': {
-		function: updateBalance,
-		loop    : false,
+		function: update,
+		loop    : true,
 	},
 };
 
