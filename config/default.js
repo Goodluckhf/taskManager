@@ -92,4 +92,10 @@ module.exports = {
 		repost : parseInt(process.env.PRICES__REPOST, 10),
 		comment: parseInt(process.env.PRICES__COMMENT, 10),
 	},
+	
+	rubbleRatio: process.env.RUBBLE_RATIO,
+	
+	yandex: {
+		token: process.env.YANDEX_MONEY__TOKEN,
+	},
 };
