@@ -50,6 +50,7 @@ class Form extends PureComponent {
 			<Card>
 				<CardHeader><b>Добавить задачу на автонакрутку</b></CardHeader>
 				<CardBody>
+					Лайк = <b>1 сердце</b>; Коммент = <b>3 сердца</b>; Репост = <b>4 сердца</b><br/><br/>
 					<BootstrapForm>
 						<FormGroup>
 							<Row>
