@@ -64,10 +64,12 @@ export class VkApiError extends BaseApiError {
 	}
 	
 	toObject() {
+		//eslint-disable-next-line camelcase
+		const { access_token, ...request } = this.request;
 		return {
 			...super.toObject(),
 			vkError: this.vkError,
-			request: this.request,
+			request,
 		};
 	}
 }
