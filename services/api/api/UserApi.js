@@ -122,15 +122,21 @@ class UserApi extends BaseApi {
 	
 	/**
 	 * Возвращает инфу о пользователе
-	 * @param {UserDocument} user
-	 * @return {Promise<void>}
+	 * @param {BaseAccount} account
+	 * @return {Promise<Object>}
 	 */
-	async getUser(user) {
-		return {
-			chatId      : user.chatId,
-			vkLink      : linkByVkUserId(user.vkId),
+	async getUser(account) {
+		const data = {
+			chatId      : account.user.chatId,
+			vkLink      : linkByVkUserId(account.user.vkId),
 			systemVkLink: linkByVkUserId(this.config.get('vkApi.id')),
 		};
+		
+		if (account instanceof BillingAccount) {
+			data.balance = account.availableBalance;
+		}
+		
+		return data;
 	}
 	
 	/**

@@ -30,9 +30,12 @@ export default (router, passport, billing, axios) => {
 	});
 	
 	router.get('/user', passport.authenticate('jwt', { session: false }), async (ctx) => {
+		const { user }   = ctx.state;
+		const account    = billing.createAccount(user);
+		
 		ctx.body = {
 			success: true,
-			data   : await userApi.getUser(ctx.state.user),
+			data   : await userApi.getUser(account),
 		};
 	});
 	
