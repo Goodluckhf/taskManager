@@ -77,6 +77,10 @@ class InvoiceDocument {
 			invoices,
 			async (_invoice) => {
 				_invoice.status = status;
+				// @TODO: Зарефакторить
+				if (status === mongoose.model('Invoice').status.paid) {
+					_invoice.paidAt = moment.now();
+				}
 				return _invoice.save();
 			},
 		);
