@@ -20,17 +20,27 @@ class Billing {
 		this.logger = logger;
 	}
 	
+	/**
+	 * @param {Number} amount
+	 * @return {number}
+	 */
+	getMoneyByAmount(amount) {
+		return amount * this.config.get('rubbleRatio');
+	}
 	
 	/**
 	 * @param {UserDocument} user
 	 * @param {Number} amount
-	 * @return {InvoiceDocument}
+	 * @return {TopUpInvoiceDocument}
 	 */
 	createTopUpInvoice(user, amount) {
 		const TopUpInvoiceModel = mongoose.model('TopUpInvoice');
+		const money             = this.getMoneyByAmount(amount);
+		
 		const invoice = TopUpInvoiceModel.createInstance({
 			user,
 			amount,
+			money,
 		});
 		
 		this.logger.info({
@@ -38,6 +48,7 @@ class Billing {
 			message: 'Создался инвойс на пополнения баланса',
 			invoice: invoice.id,
 			userId : user.id,
+			money,
 		});
 		
 		return invoice;

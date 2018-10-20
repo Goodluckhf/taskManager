@@ -237,4 +237,25 @@ describe('Billing', function () {
 		const invoice2 = mongoose.model('TopUpInvoice').createInstance({});
 		expect(invoice1.note).to.be.not.equals(invoice2.note);
 	});
+	
+	it('should convert amount to money', () => {
+		this.config.rubbleRatio = 0.05;
+		
+		const billing = new Billing(this.config, loggerMock);
+		expect(billing.getMoneyByAmount(100)).to.be.equals(5);
+	});
+	
+	it('should create topUp invoice with converted money', () => {
+		this.config.rubbleRatio = 0.01;
+		const user = mongoose.model('AccountUser').createInstance({
+			email   : 'test',
+			password: 'asdasd',
+			balance : 130,
+		});
+		
+		const billing = new Billing(this.config, loggerMock);
+		const invoice = billing.createTopUpInvoice(user, 100);
+		expect(invoice.amount).to.be.equals(100);
+		expect(invoice.money).to.be.equals(1);
+	});
 });
