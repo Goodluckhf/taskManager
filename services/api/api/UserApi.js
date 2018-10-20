@@ -1,6 +1,6 @@
-import jwt    from 'jsonwebtoken';
-import moment from 'moment';
-import { stringify }     from 'querystring';
+import jwt           from 'jsonwebtoken';
+import moment        from 'moment';
+import { stringify } from 'querystring';
 
 import mongoose           from '../../../lib/mongoose';
 import BaseApi            from './BaseApi';
@@ -287,6 +287,40 @@ class UserApi extends BaseApi {
 			money: this.billing.getMoneyByAmount(parseInt(amount, 10)),
 			rate : parseFloat(this.config.get('rubbleRatio')),
 		};
+	}
+	
+	/**
+	 * @param {UserDocument} user
+	 * @param {String} status
+	 * @return {Promise.<Array<InvoiceDocument>>}
+	 */
+	// eslint-disable-next-line class-methods-use-this
+	async getInvoices(user, status) {
+		const query = {
+			user  : user.id,
+			status: mongoose.model('Invoice').status.paid,
+		};
+		
+		if (status === 'tasks') {
+			query.__t = 'TaskInvoice';
+		}
+		
+		if (status === 'topup') {
+			query.__t = 'TopUpInvoice';
+		}
+		
+		return mongoose
+			.model('Invoice')
+			.find(query)
+			.populate({
+				path   : 'task',
+				options: {
+					lean: true,
+				},
+			})
+			.limit(100)
+			.lean()
+			.exec();
 	}
 	
 	/**

@@ -91,4 +91,13 @@ export default (router, passport, billing, axios) => {
 			data   : userApi.convertMoney(amount),
 		};
 	});
+	
+	router.get('/billing/invoices', passport.authenticate('jwt', { session: false }), async (ctx) => {
+		const { user } = ctx.state;
+		
+		ctx.body = {
+			success: true,
+			data   : await userApi.getInvoices(user, ctx.request.query.status),
+		};
+	});
 };
