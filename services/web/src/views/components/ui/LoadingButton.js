@@ -19,10 +19,16 @@ export const SIZES = [
 class LoadingButton extends PureComponent {
 	static propTypes = {
 		loading     : propTypes.bool.isRequired,
+		style       : propTypes.object,
+		disabled    : propTypes.bool,
 		children    : propTypes.node,
 		onClick     : propTypes.func,
 		'data-size' : propTypes.oneOf(SIZES),
 		'data-color': propTypes.oneOf(['green', 'red', 'blue', 'purple', 'mint']),
+	};
+	
+	static defaultProps = {
+		disabled: false,
 	};
 	
 	componentDidMount() {
@@ -52,6 +58,8 @@ class LoadingButton extends PureComponent {
 		return (
 			<button
 				ref={this.setNode}
+				style={this.props.style}
+				disabled={this.props.disabled}
 				onClick={this.props.onClick}
 				className='ladda-button'
 				data-style='zoom-in'
