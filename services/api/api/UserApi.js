@@ -1,5 +1,6 @@
 import jwt    from 'jsonwebtoken';
 import moment from 'moment';
+import { stringify }     from 'querystring';
 
 import mongoose           from '../../../lib/mongoose';
 import BaseApi            from './BaseApi';
@@ -226,13 +227,21 @@ class UserApi extends BaseApi {
 		
 		const token = this.config.get('yandex.token');
 		
-		const { data: { operations } } = await this.axios.post('https://money.yandex.ru/api/operation-history', {
-			type   : 'deposition',
-			details: true,
-			records: 100,
-		}, {
-			headers: { Authorization: `bearer ${token}` },
-		});
+		const { data: { operations } } = await this.axios.post(
+			'https://money.yandex.ru/api/operation-history',
+			stringify({
+				type   : 'deposition',
+				details: true,
+				records: 100,
+			}),
+			{
+				headers: {
+					'User-Agent'  : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0',
+					Authorization : `Bearer ${token}`,
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
+			},
+		);
 		
 		const payment = operations.find((operation) => {
 			if (operation.amount < invoice.money) {
@@ -266,7 +275,7 @@ class UserApi extends BaseApi {
 			account.user.save(),
 		]);
 		
-		return invoice.amount;
+		return account.availableBalance;
 	}
 	
 	/**
