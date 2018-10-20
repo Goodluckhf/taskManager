@@ -45,11 +45,11 @@ class TopUpForm extends PureComponent {
 	};
 	
 	onClick = () => {
-		if (!this.valid) {
+		if (!this.state.valid) {
 			return;
 		}
 		
-		this.props.createTopUpInvoice(this.amount);
+		this.props.createTopUpInvoice(parseInt(this.state.amount, 10));
 	};
 	
 	render() {
