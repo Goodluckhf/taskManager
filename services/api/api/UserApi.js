@@ -270,6 +270,17 @@ class UserApi extends BaseApi {
 	}
 	
 	/**
+	 * @param {Number | String} amount
+	 * @return {Promise<number>}
+	 */
+	convertMoney(amount) {
+		return {
+			money: this.billing.getMoneyByAmount(parseInt(amount, 10)),
+			rate : this.config.get('rubbleRatio'),
+		};
+	}
+	
+	/**
 	 * @return {Promise.<UserDocument>}
 	 */
 	// eslint-disable-next-line class-methods-use-this

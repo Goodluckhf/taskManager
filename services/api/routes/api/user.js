@@ -82,4 +82,13 @@ export default (router, passport, billing, axios) => {
 			data   : await userApi.createTopUpInvoice(account, amount),
 		};
 	});
+	
+	router.get('/billing/convert/:amount', passport.authenticate('jwt', { session: false }), async (ctx) => {
+		const { amount } = ctx.params;
+		
+		ctx.body = {
+			success: true,
+			data   : userApi.convertMoney(amount),
+		};
+	});
 };
