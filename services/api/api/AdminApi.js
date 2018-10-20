@@ -1,3 +1,4 @@
+import moment                        from 'moment';
 import mongoose                      from '../../../lib/mongoose';
 import BaseApi                       from './BaseApi';
 import { NotFound, ValidationError } from './errors';
@@ -33,6 +34,8 @@ class AdminApi extends BaseApi {
 		
 		const invoice = this.billing.createTopUpInvoice(user, quantity);
 		user.balance += quantity;
+		invoice.status = mongoose.model('Invoice').status.paid;
+		invoice.paidAt = moment.now();
 		await Promise.all([
 			user.save(),
 			invoice.save(),

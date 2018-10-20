@@ -18,7 +18,7 @@ describe('AdminApi', function () {
 		await expect(adminApi.increaseBalance(userId, 10)).to.be.rejectedWith(NotFound);
 	});
 	
-	it('Should throw validation error if quantity doesnt is not number', async () => {
+	it('Should throw validation error if quantity is not number', async () => {
 		const adminApi = new AdminApi(config, loggerMock);
 		const user = mongoose.model('AccountUser').createInstance({ email: 'asd', password: 'asd' });
 		await user.save();
@@ -38,6 +38,8 @@ describe('AdminApi', function () {
 	});
 	
 	it('Should create invoice', async () => {
+		this.config.rubbleRatio = 0.1;
+		
 		const billing  = new Billing(this.config, loggerMock);
 		const adminApi = new AdminApi(billing, config, loggerMock);
 		const user = mongoose.model('AccountUser').createInstance({ email: 'asd', password: 'asd' });
@@ -47,5 +49,8 @@ describe('AdminApi', function () {
 		const invoice = await mongoose.model('TopUpInvoice').findOne({ user: user._id });
 		
 		expect(invoice.amount).to.be.equals(10);
+		expect(invoice.paidAt).to.be.not.null;
+		expect(invoice.money).to.be.equals(1);
+		expect(invoice.status).to.be.equals(mongoose.model('Invoice').status.paid);
 	});
 });
