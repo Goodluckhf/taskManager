@@ -24,6 +24,11 @@ export default async (ctx, next) => {
 			if (error.request) {
 				delete error.request;
 			}
+			
+			if (error.response && error.response.request) {
+				delete error.response.request;
+			}
+			
 			error = new BaseApiError(error.message, 500).combine({ error });
 		}
 		
