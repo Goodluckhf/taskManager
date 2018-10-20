@@ -59,7 +59,7 @@ class TopUpForm extends PureComponent {
 				<CardHeader><b>Пополнеине баланса</b></CardHeader>
 				<CardBody>
 					Текущий баланс: <b>{this.props.balance}</b><br/>
-					Цена за 1 балл: <b>{this.props.rate}</b>
+					Цена за 1 балл: <b>{this.props.rate} руб.</b>
 					<hr/>
 					<BootstrapForm>
 						<FormGroup>
