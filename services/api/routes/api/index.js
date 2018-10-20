@@ -1,7 +1,7 @@
-import config   from 'config';
-import Router   from 'koa-router';
-import passport from 'koa-passport';
-
+import config    from 'config';
+import Router    from 'koa-router';
+import passport  from 'koa-passport';
+import axios     from 'axios';
 import logger    from '../../../../lib/logger';
 import RpcClient from '../../../../lib/amqp/RpcClient';
 import Amqp      from '../../../../lib/amqp/Amqp';
@@ -32,7 +32,7 @@ createAccountRoute(router, rpcClient);
 createWallSeekRoute(router, passport);
 createGroupRoute(router, passport);
 createAutoLikesTaskRoute(router, passport, billing);
-createUserRoute(router, passport, billing);
+createUserRoute(router, passport, billing, axios);
 createAdminRoute(router, passport, billing);
 
 export default router;

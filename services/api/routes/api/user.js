@@ -7,12 +7,13 @@ import VkApi   from '../../../../lib/VkApi';
  * @param {Router} router
  * @param {Passport} passport
  * @param {Billing} billing
+ * @param {Axios} axios
  */
-export default (router, passport, billing) => {
+export default (router, passport, billing, axios) => {
 	const vkApi = new VkApi(config.get('vkApi.token'), {
 		timeout: config.get('vkApi.timeout'),
 	});
-	const userApi = new UserApi(vkApi, billing, config, logger);
+	const userApi = new UserApi(vkApi, billing, axios, config, logger);
 	
 	router.post('/login', async (ctx) => {
 		ctx.body = {
@@ -55,6 +56,16 @@ export default (router, passport, billing) => {
 				...ctx.request.body,
 				user: ctx.state.user,
 			}),
+		};
+	});
+	
+	router.post('/user/balance/check',  passport.authenticate('jwt', { session: false }), async (ctx) => {
+		const { user }   = ctx.state;
+		const account    = billing.createAccount(user);
+		
+		ctx.body = {
+			success: true,
+			data   : await userApi.checkPayment(account),
 		};
 	});
 	

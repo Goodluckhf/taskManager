@@ -1,4 +1,5 @@
-import jwt from 'jsonwebtoken';
+import jwt    from 'jsonwebtoken';
+import moment from 'moment';
 
 import mongoose           from '../../../lib/mongoose';
 import BaseApi            from './BaseApi';
@@ -7,19 +8,22 @@ import {
 	LoginFailed,
 	NoFriendsInvite,
 	UserAlreadyExists, ValidationError,
-} from './errors';
+	CheckPaymentFailure,
+}                         from './errors';
 import { linkByVkUserId } from '../../../lib/helper';
 import BillingAccount     from '../billing/BillingAccount';
 
 /**
  * @property {VkApi} vkApi
  * @property {Billing} billing
+ * @property {Axios} axios
  */
 class UserApi extends BaseApi {
-	constructor(vkApi, billing, ...args) {
+	constructor(vkApi, billing, axios, ...args) {
 		super(...args);
 		this.vkApi   = vkApi;
 		this.billing = billing;
+		this.axios   = axios;
 	}
 	
 	createToken(user) {
@@ -160,7 +164,12 @@ class UserApi extends BaseApi {
 		if (!(account instanceof BillingAccount)) {
 			throw new ValidationError(['Account type']);
 		}
+		const amountNumber = parseInt(amount, 10);
+		if (!amountNumber) {
+			throw new ValidationError(['amount']);
+		}
 		
+		const money        = this.billing.getMoneyByAmount(amount);
 		const TopUpInvoice = mongoose.model('TopUpInvoice');
 		
 		let topUpInvoice = await TopUpInvoice.findOne({
@@ -174,16 +183,84 @@ class UserApi extends BaseApi {
 				message  : 'у инвойса изменилась сумма',
 				invoiceId: topUpInvoice.id,
 				userId   : account.user.id,
-				newAmount: amount,
+				newAmount: amountNumber,
 				oldAmount: topUpInvoice.amount,
+				money,
 			});
-			topUpInvoice.amount = amount;
+			topUpInvoice.amount = amountNumber;
+			topUpInvoice.money  = money;
 		} else {
-			topUpInvoice = this.billing.createTopUpInvoice(account.user, amount);
+			topUpInvoice = this.billing.createTopUpInvoice(account.user, amountNumber);
 		}
 		
 		await topUpInvoice.save();
 		return topUpInvoice.toObject();
+	}
+	
+	/**
+	 *
+	 * @param {BillingAccount} account
+	 * @return {Promise<Number>}
+	 */
+	async checkPayment(account) {
+		if (!(account instanceof BillingAccount)) {
+			throw new ValidationError(['Account type']);
+		}
+		
+		const TopUpInvoice = mongoose.model('TopUpInvoice');
+		
+		const invoice = await TopUpInvoice.findOne({
+			user  : account.user,
+			status: TopUpInvoice.status.active,
+		});
+		
+		if (!invoice) {
+			throw new ValidationError(['invoice']);
+		}
+		
+		const token = this.config.get('yandex.token');
+		
+		const { data: { operations } } = await this.axios.post('https://money.yandex.ru/api/operation-history', {
+			type   : 'deposition',
+			details: true,
+			records: 100,
+		}, {
+			headers: { Authorization: `bearer ${token}` },
+		});
+		
+		const payment = operations.find((operation) => {
+			if (operation.amount < invoice.money) {
+				return false;
+			}
+			
+			if (operation.codepro) {
+				return false;
+			}
+			
+			if (operation.type !== 'incoming-transfer') {
+				return false;
+			}
+			
+			if (operation.status !== 'success') {
+				return false;
+			}
+			
+			return operation.message === invoice.note;
+		});
+		
+		if (!payment) {
+			throw new CheckPaymentFailure(invoice.money, invoice.note);
+		}
+		
+		account.user.balance += invoice.amount;
+		invoice.status = TopUpInvoice.status.paid;
+		invoice.paidAt = moment.now();
+		await Promise.all([
+			invoice.save(),
+			account.user.save(),
+		]);
+		
+		return invoice.amount;
 	}
 	
 	/**
