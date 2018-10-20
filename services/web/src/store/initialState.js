@@ -57,6 +57,16 @@ export const wallSeekPage = Map({
 	form: Map({}),
 });
 
+export const billingPage = Map({
+	list: Map({
+		items: List([]),
+	}),
+	
+	form: Map({
+		money: 0,
+	}),
+});
+
 export const fatalError = Map({});
 
 // Вытаскиваем из jwt данные
@@ -88,5 +98,6 @@ export default {
 	fatalError,
 	wallSeekPage,
 	auth,
+	billingPage,
 };
 

@@ -4,6 +4,7 @@ import autolikes from './autolikes';
 import wallSeek  from './wallSeek';
 import routing   from './routing';
 import auth      from './auth';
+import billing   from './billing';
 
 export default function* rootSage() {
 	yield fork(auth);
@@ -11,4 +12,5 @@ export default function* rootSage() {
 	yield fork(autolikes);
 	yield fork(routing);
 	yield fork(wallSeek);
+	yield fork(billing);
 }
