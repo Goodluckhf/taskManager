@@ -59,7 +59,8 @@ export const wallSeekPage = Map({
 
 export const billingPage = Map({
 	list: Map({
-		items: List([]),
+		items : List([]),
+		filter: 'all',
 	}),
 	
 	comment: '',
