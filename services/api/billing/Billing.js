@@ -27,7 +27,7 @@ class Billing {
 	 * @return {number}
 	 */
 	getMoneyByAmount(amount) {
-		return amount * this.config.get('rubbleRatio');
+		return Math.round(amount * this.config.get('rubbleRatio') * 100) / 100;
 	}
 	
 	/**
