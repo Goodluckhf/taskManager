@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import propTypes                from 'prop-types';
+import { Card, CardHeader, CardBody }  from 'reactstrap';
 
 class RepostsTaskInvoice extends PureComponent {
 	static propTypes = {
@@ -10,13 +11,16 @@ class RepostsTaskInvoice extends PureComponent {
 	
 	render() {
 		return (
-			<div>
-				{this.props.invoice}
-				<hr/>
-				Задача накрутки репостов<br/>
-				Кол-во: {this.props.repostsCount}
-				Ссылка: <a rel='noopener noreferrer' target='_blank' href={this.props.postLink}>{this.props.postLink}</a>
-			</div>
+			<Card>
+				<CardHeader>Задача накрутки лайков</CardHeader>
+				<CardBody>
+					{this.props.invoice}
+					<hr/>
+					Задача накрутки репостов<br/>
+					Кол-во: {this.props.repostsCount}<br/>
+					Ссылка: <a rel='noopener noreferrer' target='_blank' href={this.props.postLink}>{this.props.postLink}</a>
+				</CardBody>
+			</Card>
 		);
 	}
 }

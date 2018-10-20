@@ -1,5 +1,5 @@
 import Immutable                from 'immutable';
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import propTypes           from 'prop-types';
 import {
 	Card, CardHeader, CardBody,
@@ -31,7 +31,7 @@ class InvoiceList extends PureComponent {
 		const list = this.props.items.map((item) => {
 			const baseInvoice = <Invoice
 				amount={item.get('amount')}
-				createdAt={item.get('createAt')}
+				createdAt={item.get('createdAt')}
 				paidAt={item.get('paidAt')}
 			/>;
 			let Item = null;
@@ -43,18 +43,15 @@ class InvoiceList extends PureComponent {
 				/>;
 			}
 			
-			const ConcreteInvoice = invoiceMapper[item.get('__t')];
+			const ConcreteInvoice = invoiceMapper[item.getIn(['task', '__t'])];
 			if (!Item && !ConcreteInvoice) {
-				console.error('no concrete invoice', item.get('__t'), item.get('_id'));
+				console.error('no concrete invoice', item.getIn(['task', '__t'], item.get('_id')));
 				Item = baseInvoice;
 			}
 			
-			return <Fragment key={item.get('_id')}>
-				<Col>
-					{Item || <ConcreteInvoice  invoice={baseInvoice} {...item.get('task').toJS()}/>}
-					<hr/>
-				</Col>
-			</Fragment>;
+			return <Col xs='12' lg='4' md='6' key={item.get('_id')}>
+				{Item || <ConcreteInvoice  invoice={baseInvoice} {...item.get('task').toJS()}/>}
+			</Col>;
 		});
 		
 		return (
