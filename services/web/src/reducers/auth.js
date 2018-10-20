@@ -1,5 +1,12 @@
 import { auth }                                                                          from '../store/initialState';
-import { CREATE_CHAT_SUCCESS, GET_USER_DATA_SUCCESS, LOGIN_SUCCESS, LOGOUT, NEED_LOGIN } from '../actions/auth';
+import {
+	CREATE_CHAT_SUCCESS,
+	GET_USER_BALANCE_SUCCESS,
+	GET_USER_DATA_SUCCESS,
+	LOGIN_SUCCESS,
+	LOGOUT,
+	NEED_LOGIN,
+} from '../actions/auth';
 
 export default (authState = auth, { type, payload }) => {
 	if (type === NEED_LOGIN) {
@@ -23,6 +30,11 @@ export default (authState = auth, { type, payload }) => {
 			.update('vkLink', () => payload.vkLink)
 			.update('chatId', () => payload.chatId)
 			.update('systemVkLink', () => payload.systemVkLink);
+	}
+	
+	if (type === GET_USER_BALANCE_SUCCESS) {
+		return authState
+			.update('balance', () => payload);
 	}
 	
 	if (type === CREATE_CHAT_SUCCESS) {

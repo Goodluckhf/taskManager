@@ -6,20 +6,13 @@ import axios    from 'axios';
 import { push } from 'connected-react-router';
 
 import {
-	LOGIN_REQUEST,
-	NEED_LOGIN,
-	LOGOUT,
-	REGISTER_REQUEST,
-	loginFailure,
-	loginSuccess,
-	registerFailure,
-	needLogin,
-	getUserDataFailure,
-	getUserDataSuccess,
-	GET_USER_DATA_REQUEST,
-	getUserDataRequest,
-	CREATE_CHAT_REQUEST,
-	createChatSuccess, createChatFailure,
+	LOGIN_REQUEST, NEED_LOGIN, LOGOUT,
+	REGISTER_REQUEST, GET_USER_DATA_REQUEST,
+	CREATE_CHAT_REQUEST, GET_USER_BALANCE_REQUEST,
+	loginFailure, loginSuccess, registerFailure,
+	needLogin, getUserDataFailure, getUserDataSuccess,
+	getUserDataRequest, createChatSuccess, createChatFailure,
+	getUserBalanceRequest, getUserBalanceSuccess,
 } from '../actions/auth';
 import { callApi } from './api';
 
@@ -32,6 +25,15 @@ export const getDefaultRoute = function* () {
 	}
 	
 	return route;
+};
+
+export const updateBalance = function* () {
+	const balance = yield select(state => state.auth.get('balance'));
+	if (typeof balance === 'undefined') {
+		return;
+	}
+	
+	yield put(getUserBalanceRequest());
 };
 
 export const checkLogin = function* () {
@@ -52,6 +54,10 @@ export const checkLogin = function* () {
 	}
 	
 	return jwt;
+};
+
+export const getUserData = function* () {
+	yield put(getUserDataRequest());
 };
 
 export default function* () {
@@ -132,12 +138,17 @@ export default function* () {
 		}
 	});
 	
+	yield takeEvery(GET_USER_BALANCE_REQUEST, function* () {
+		try {
+			const { data: { balance } } = yield callApi({ url: 'user' });
+			yield put(getUserBalanceSuccess(balance));
+		} catch (error) {
+			console.error(error);
+		}
+	});
+	
 	yield takeEvery(LOGOUT, function* () {
 		window.localStorage.removeItem(localstorageJwtKey);
 		yield put(push('/login'));
 	});
 }
-
-export const getUserData = function* () {
-	yield put(getUserDataRequest());
-};

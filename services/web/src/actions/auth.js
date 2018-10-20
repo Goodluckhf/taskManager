@@ -78,6 +78,19 @@ export const getUserDataSuccess = data => ({
 });
 
 
+export const GET_USER_BALANCE_REQUEST = 'AUTH__GET_USER_BALANCE_REQUEST';
+export const getUserBalanceRequest  = () => ({
+	type   : GET_USER_BALANCE_REQUEST,
+	payload: {},
+});
+
+export const GET_USER_BALANCE_SUCCESS = 'AUTH__GET_USER_BALANCE_SUCCESS';
+export const getUserBalanceSuccess = balance => ({
+	type   : GET_USER_BALANCE_SUCCESS,
+	payload: balance,
+});
+
+
 export const LOGOUT = 'AUTH__LOGOUT';
 export const logout = () => ({
 	type   : LOGOUT,
