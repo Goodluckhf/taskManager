@@ -67,6 +67,7 @@ const _auth = {
 	vkLink      : '',
 	systemVkLink: '',
 	lastRoute   : '',
+	balance     : null,
 };
 
 try {

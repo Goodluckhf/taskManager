@@ -8,8 +8,9 @@ import logo from '../../assets/img/brand/logo.svg';
 import sygnet from '../../assets/img/brand/sygnet.svg';
 
 const propTypes = {
-	email : PropTypes.string.isRequired,
-	logout: PropTypes.func.isRequired,
+	email  : PropTypes.string.isRequired,
+	logout : PropTypes.func.isRequired,
+	balance: PropTypes.number,
 };
 
 const defaultProps = {};
@@ -35,11 +36,16 @@ class Header extends PureComponent {
 				<AppSidebarToggler className="d-md-down-none" display="lg" />
 
 				<Nav className="d-md-down-none ml-auto" navbar>
-					<NavItem className="px-3">
-						<NavLink href='#' onClick={this.onLogout}>Выйти</NavLink>
-					</NavItem>
+					{typeof this.props.balance !== 'undefined' &&
+						<NavItem className="px-3">
+							<Link to="/balance">Баланс: {this.props.balance}</Link>
+						</NavItem>
+					}
 					<NavItem className="px-3">
 						<Link to="/settings">{this.props.email}</Link>
+					</NavItem>
+					<NavItem className="px-3">
+						<NavLink href='#' onClick={this.onLogout}>Выйти</NavLink>
 					</NavItem>
 				</Nav>
 			</React.Fragment>

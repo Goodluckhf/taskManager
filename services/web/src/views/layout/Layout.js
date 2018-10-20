@@ -23,7 +23,7 @@ class Layout extends PureComponent {
 		return (
 			<div className="app">
 				<AppHeader fixed>
-					<Header logout={this.props.logout} email={this.props.email}/>
+					<Header balance={this.props.balance} logout={this.props.logout} email={this.props.email}/>
 				</AppHeader>
 				<div className="app-body">
 					<AppSidebar fixed display="lg">
@@ -53,12 +53,14 @@ Layout.propTypes = {
 	fatalError: PropTypes.object,
 	email     : PropTypes.string.isRequired,
 	logout    : PropTypes.func.isRequired,
+	balance   : PropTypes.number,
 };
 
 const mapStateToProps = state => ({
 	routes    : state.routes,
 	fatalError: state.fatalError,
 	email     : state.auth.get('email'),
+	balance   : state.auth.get('balance'),
 });
 
 const mapDispatchToProps = dispatch => ({

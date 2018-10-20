@@ -1,10 +1,10 @@
 import { takeEvery, call, fork, cancel } from 'redux-saga/effects';
-import { delay }                     from 'redux-saga';
-import { LOCATION_CHANGE }           from 'connected-react-router';
-import { update as updateGroup }     from './group';
-import { update as updateAutolikes } from './autolikes';
-import { update as updateWallSeek }  from './wallSeek';
-import { getUserData }               from './auth';
+import { delay }                         from 'redux-saga';
+import { LOCATION_CHANGE }               from 'connected-react-router';
+import { update as updateGroup }         from './group';
+import { update as updateAutolikes }     from './autolikes';
+import { update as updateWallSeek }      from './wallSeek';
+import { getUserData, updateBalance }    from './auth';
 
 const mapperPathToUpdateFunction = {
 	'/groups': {
@@ -32,9 +32,17 @@ const loopUpdate = function* (updateFunction, interval) {
 	}
 };
 
+const loopUpdateBalance = function* () {
+	while (true) {
+		yield fork(updateBalance);
+		yield call(delay, 5000);
+	}
+};
+
 export default function* () {
-	const interval = 5 * 1000;
-	let currentLoopTask = null;
+	const interval         = 5 * 1000;
+	let currentLoopTask    = null;
+	let currentBalanceTask = null;
 	yield takeEvery(LOCATION_CHANGE, function* ({ payload: { location } }) {
 		if (currentLoopTask) {
 			yield cancel(currentLoopTask);
@@ -44,6 +52,10 @@ export default function* () {
 		const updateOption = mapperPathToUpdateFunction[location.pathname];
 		if (!updateOption) {
 			return;
+		}
+		
+		if (!currentBalanceTask) {
+			currentBalanceTask = yield fork(loopUpdateBalance);
 		}
 		
 		if (!updateOption.loop) {
