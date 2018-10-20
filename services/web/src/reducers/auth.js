@@ -1,4 +1,4 @@
-import { auth }                                                                          from '../store/initialState';
+import { auth } from '../store/initialState';
 import {
 	CREATE_CHAT_SUCCESS,
 	GET_USER_BALANCE_SUCCESS,
@@ -6,7 +6,7 @@ import {
 	LOGIN_SUCCESS,
 	LOGOUT,
 	NEED_LOGIN,
-} from '../actions/auth';
+}               from '../actions/auth';
 
 export default (authState = auth, { type, payload }) => {
 	if (type === NEED_LOGIN) {

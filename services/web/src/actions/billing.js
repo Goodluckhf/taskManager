@@ -35,3 +35,22 @@ export const createTopUpInvoiceFailure = error => ({
 	payload: { error },
 });
 
+
+export const CHECK_PAYMENT_REQUEST = 'BILLING__CHECK_PAYMENT_REQUEST';
+export const checkPaymentRequest  = () => ({
+	type   : CHECK_PAYMENT_REQUEST,
+	payload: {},
+});
+
+export const CHECK_PAYMENT_SUCCESS = 'BILLING__CHECK_PAYMENT_SUCCESS';
+export const checkPaymentSuccess = convert => ({
+	type   : CHECK_PAYMENT_SUCCESS,
+	payload: convert,
+});
+
+export const CHECK_PAYMENT_FAILURE = 'BILLING__CHECK_PAYMENT_FAILURE';
+export const checkPaymentFailure = error => ({
+	type   : CHECK_PAYMENT_FAILURE,
+	payload: { error },
+});
+
