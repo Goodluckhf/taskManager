@@ -276,7 +276,7 @@ class UserApi extends BaseApi {
 	convertMoney(amount) {
 		return {
 			money: this.billing.getMoneyByAmount(parseInt(amount, 10)),
-			rate : this.config.get('rubbleRatio'),
+			rate : parseFloat(this.config.get('rubbleRatio')),
 		};
 	}
 	
