@@ -558,7 +558,7 @@ describe('AutolikesTask', function () {
 		const condition = setCommentsCalled && !setLikesCalled || !setCommentsCalled && setLikesCalled;
 		expect(condition).to.be.true;
 		expect(taskDocument.subTasks.length).to.be.equals(2);
-		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.waiting);
+		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.skipped);
 	});
 	
 	it('should freeze balance and start tasks if user has enogh money', async () => {

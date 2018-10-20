@@ -312,12 +312,14 @@ class AutoLikesTask extends BaseTask {
 				throw errors;
 			}
 			
+			this.taskDocument.status       = Task.status.waiting;
 			this.taskDocument.lastHandleAt = new Date();
 			this.taskDocument.lastPostLink = postLink;
 		} catch (error) {
 			const errors = Array.isArray(error) ? error : [error];
 			
 			this.taskDocument.lastHandleAt = new Date();
+			this.taskDocument.status       = Task.status.skipped;
 			this.taskDocument.lastPostLink = postLink;
 			throw errors;
 		} finally {
