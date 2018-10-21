@@ -345,7 +345,22 @@ class AutoLikesTask extends BaseTask {
 			const errors = Array.isArray(error) ? error : [error];
 			
 			this.taskDocument.lastHandleAt = new Date();
-			this.taskDocument.status       = Task.status.skipped;
+			
+			// По идее статус пропущенный нужно ставить
+			// если задача выполнилась с ошибкой
+			// Только в случае, что баланса не хватает
+			// В остальных случая задача пусть будет
+			const hasNotEnoughError = errors.some((_error) => {
+				return _error instanceof NotEnoughBalanceForReposts
+					|| _error instanceof NotEnoughBalanceForComments
+					|| _error instanceof NotEnoughBalanceForLikes;
+			});
+			
+			if (hasNotEnoughError) {
+				this.taskDocument.status = Task.status.skipped;
+			} else {
+				this.taskDocument.status = Task.status.waiting;
+			}
 			this.taskDocument.lastPostLink = postLink;
 			throw errors;
 		} finally {
