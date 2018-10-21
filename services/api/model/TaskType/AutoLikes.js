@@ -7,6 +7,12 @@ const autolikesSchema = new mongoose.Schema({
 		ref     : 'Group',
 	},
 	
+	// Ставить на все посты без ссылки тоже
+	contentPosts: {
+		type   : Boolean,
+		default: false,
+	},
+	
 	likesCount: {
 		type    : Number,
 		required: true,
@@ -35,6 +41,7 @@ const autolikesSchema = new mongoose.Schema({
 
 /**
  * @property {ObjectId|GroupDocument} group
+ * @property {Boolean} contentPosts
  * @property {Number} likesCount
  * @property {Number} commentsCount
  * @property {Number} repostsCount
@@ -43,6 +50,7 @@ const autolikesSchema = new mongoose.Schema({
 export class AutoLikesTaskDocument {
 	/**
 	 * @param {Object} opts
+	 * @param {Boolean} opts.contentPosts
 	 * @param {Number} opts.likesCount
 	 * @param {Number} opts.commentsCount
 	 * @param {Number} opts.repostsCount
@@ -51,6 +59,7 @@ export class AutoLikesTaskDocument {
 	 */
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
+		baseTask.contentPosts  = opts.contentPosts || false;
 		baseTask.likesCount    = opts.likesCount;
 		baseTask.commentsCount = opts.commentsCount;
 		baseTask.repostsCount  = opts.repostsCount;

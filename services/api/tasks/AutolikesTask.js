@@ -93,6 +93,55 @@ class AutoLikesTask extends BaseTask {
 		}
 	}
 	
+	/**
+	 * @param {String} mentionId
+	 * @param {String} link
+	 * @param {String} postLink
+	 * @param {Array.<GroupDocument>} targetPublics
+	 * @return {Boolean}
+	 */
+	needToStartTask(mentionId, link, postLink, targetPublics) {
+		if (this.taskDocument.contentPosts && !link && !mentionId) {
+			this.logger.info({
+				message: 'Вышел следущий контентный пост',
+				userId : this.taskDocument.user.id,
+				taskId : this.taskDocument.id,
+				postLink,
+			});
+			return true;
+		}
+		
+		if (!mentionId) {
+			this.logger.info({
+				message: 'Нет ссылки упоминания mentionId',
+				userId : this.taskDocument.user.id,
+				taskId : this.taskDocument.id,
+				postLink,
+			});
+			
+			return false;
+		}
+		
+		const hasTargetGroupInTask = targetPublics.some(targetGroup => (
+			`club${targetGroup.publicId}` === mentionId
+		));
+		
+		if (!hasTargetGroupInTask) {
+			this.logger.info({
+				message: 'упоминание не совпало ни с одной из ссылок',
+				userId : this.taskDocument.user.id,
+				taskId : this.taskDocument.id,
+				mentionId,
+				targetPublics,
+				postLink,
+			});
+			
+			return false;
+		}
+		
+		return true;
+	}
+	
 	async handle() {
 		const Task                = mongoose.model('Task');
 		const Group               = mongoose.model('Group');
@@ -171,31 +220,8 @@ class AutoLikesTask extends BaseTask {
 				return;
 			}
 			
-			if (!mentionId) {
+			if (!this.needToStartTask(mentionId, link, postLink, targetPublics)) {
 				this.taskDocument.status = Task.status.waiting;
-				this.logger.info({
-					message: 'Нет ссылки упоминания mentionId',
-					userId : this.taskDocument.user.id,
-					taskId : this.taskDocument.id,
-					postLink,
-				});
-				return;
-			}
-			
-			const hasTargetGroupInTask = targetPublics.some(targetGroup => (
-				`club${targetGroup.publicId}` === mentionId
-			));
-			
-			if (!hasTargetGroupInTask) {
-				this.taskDocument.status = Task.status.waiting;
-				this.logger.info({
-					message: 'упоминание не совпало ни с одной из ссылок',
-					userId : this.taskDocument.user.id,
-					taskId : this.taskDocument.id,
-					mentionId,
-					targetPublics,
-					postLink,
-				});
 				return;
 			}
 			
