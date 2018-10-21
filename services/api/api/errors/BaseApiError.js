@@ -25,6 +25,13 @@ export default class BaseApiError extends Error {
 	}
 	
 	/**
+	 * @return {String}
+	 */
+	toMessage() {
+		return `Не предвиденная ошибка!\n${this.message}`;
+	}
+	
+	/**
 	 * @description Добавляет параметр к ошибке
 	 * @param {*} param
 	 * @return {BaseApiError}

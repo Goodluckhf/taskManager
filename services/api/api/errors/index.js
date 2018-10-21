@@ -2,10 +2,14 @@ import BaseApiError from './BaseApiError';
 
 export class NotFound extends BaseApiError {
 	constructor({ what, query }) {
-		super('Nothing found');
+		super('Ничего не найдено');
 		this.what   = what;
 		this.query  = query;
 		this.status = 404;
+	}
+	
+	toMessage() {
+		return `${this.message}\nПо запросу "${this.what}" ничего не найдено`;
 	}
 	
 	toObject() {
@@ -19,8 +23,12 @@ export class NotFound extends BaseApiError {
 
 export class ValidationError extends BaseApiError {
 	constructor(invalidParams) {
-		super('Validation error. Please check data');
+		super('Ошибка валидации. Проверьте введенные данные');
 		this.invalidParams = invalidParams;
+	}
+	
+	toMessage() {
+		return `${this.message}\n${this.invalidParams.join('\n')}`;
 	}
 	
 	toObject() {
@@ -58,9 +66,13 @@ export class ValidationError extends BaseApiError {
 
 export class VkApiError extends BaseApiError {
 	constructor(error, request) {
-		super('Vk Api error');
+		super('Ошибка от API vk.com');
 		this.vkError = error;
 		this.request = request;
+	}
+	
+	toMessage() {
+		return `${this.message}\nПроверьте введенные данные и попробуйте еще раз\nЕсли ошибка повторяется свяжитесь с админом`;
 	}
 	
 	toObject() {
@@ -80,9 +92,13 @@ export class VkApiError extends BaseApiError {
  */
 export class TaskApiError extends BaseApiError {
 	constructor(request, error) {
-		super('During task handling error occurred');
+		super('Во время выполнения задачи произошла ошибка');
 		this.request = request;
 		this.error   = error;
+	}
+	
+	toMessage() {
+		return `${this.message}`;
 	}
 	
 	toObject() {
@@ -96,9 +112,13 @@ export class TaskApiError extends BaseApiError {
 
 export class TaskAlreadyExist extends BaseApiError {
 	constructor({ id, groupId }) {
-		super('Task for such group already exists');
+		super('Для этой группы задача уже создана');
 		this.id      = id;
 		this.groupId = groupId;
+	}
+	
+	toMessage() {
+		return `${this.message}`;
 	}
 	
 	toObject() {
@@ -112,9 +132,13 @@ export class TaskAlreadyExist extends BaseApiError {
 
 export class GroupAlreadyExist extends BaseApiError {
 	constructor({ id, name }) {
-		super('Group has already exists');
+		super('Группа уже существует');
 		this.id   = id;
 		this.name = name;
+	}
+	
+	toMessage() {
+		return `${this.message}\nПопробуйте сменить фильтр. Возможно ее уже кто-то добавил`;
 	}
 	
 	toObject() {
@@ -144,8 +168,12 @@ export class WallSeekAlreadyExist extends BaseApiError {
 
 export class LoginFailed extends BaseApiError {
 	constructor({ email }) {
-		super('Login failed. Check login or password');
+		super('Ошбика авторизации');
 		this.email = email;
+	}
+	
+	toMessage() {
+		return `${this.message}\nНе правильный логин или пароль`;
 	}
 	
 	toObject() {
@@ -159,8 +187,12 @@ export class LoginFailed extends BaseApiError {
 
 export class UserAlreadyExists extends BaseApiError {
 	constructor({ email }) {
-		super('User has already exists');
+		super('Пользоветель уже сущесвует');
 		this.email = email;
+	}
+	
+	toMessage() {
+		return `${this.message}\nПочта "${this.email}" уже занята (возможно вами)`;
 	}
 	
 	toObject() {
@@ -173,8 +205,12 @@ export class UserAlreadyExists extends BaseApiError {
 
 export class UserIsNotReady extends BaseApiError {
 	constructor(fields) {
-		super('You have to fill settings for your account');
+		super('Пользователь не готов к создании задачи');
 		this.fields = fields;
+	}
+	
+	toMessage() {
+		return `${this.message}\nНеобходимо заполнить данные (${this.fields.join(', ')})`;
 	}
 	
 	toObject() {
@@ -187,8 +223,12 @@ export class UserIsNotReady extends BaseApiError {
 
 export class NoFriendsInvite extends BaseApiError {
 	constructor(link) {
-		super('Нужно отправить запрос в друзья пользователю по ссылке');
+		super('Вы не отправили запрос в друзья боту');
 		this.link = link;
+	}
+	
+	toMessage() {
+		return `${this.message}\nНужно отправить запрос в друзья пользователю по ссылке: ${this.link}`;
 	}
 	
 	toObject() {
@@ -205,6 +245,10 @@ export class ChatAlreadyExists extends BaseApiError {
 		this.chatId = chatId;
 	}
 	
+	toMessage() {
+		return `${this.message}\nЧат с ботом для алертов уже был создан ранее`;
+	}
+	
 	toObject() {
 		return {
 			...super.toObject(),
@@ -215,9 +259,13 @@ export class ChatAlreadyExists extends BaseApiError {
 
 export class CheckPaymentFailure extends BaseApiError {
 	constructor(amount, note) {
-		super('Ошибка проверки оплаты. Убедитесь что перевели деньги');
+		super('Ошибка проверки оплаты');
 		this.amount = amount;
 		this.note   = note;
+	}
+	
+	toMessage() {
+		return `${this.message}\nУбедитесь что перевели нужную сумму: ${this.amount}; с примечанием "${this.note}"`;
 	}
 	
 	toObject() {
