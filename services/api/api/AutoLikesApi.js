@@ -63,19 +63,30 @@ class AutoLikesApi extends BaseApi {
 		
 		/**
 		 * @TODO: зарефакторить. злоебучий костыль
+		 * Проверяем может ли пользователи оплатить задачу
+		 * При условии что уже могут быть созданы задачи
+		 * Но они в ожидании и деньги еще не заморозились
 		 */
-		const price = this.billing.calculatePrice({
+		const waitingTasks = await mongoose.model('AutoLikesTask').find({
+			user     : account.user.id,
+			deletedAt: null,
+			status   : mongoose.model('Task').status.waiting,
+		}).lean().exec();
+		const totalPriceTasks = [...waitingTasks, {
 			likesCount   : parseInt(data.likesCount, 10),
 			repostsCount : parseInt(data.repostsCount, 10),
 			commentsCount: parseInt(data.commentsCount, 10),
-		});
+		}];
+		
+		const price = totalPriceTasks.reduce((sum, task) => (
+			sum + this.billing.calculatePrice(task)
+		), 0);
 		
 		if (account instanceof BillingAccount && account.availableBalance < price) {
-			const error = new NotEnoughBalance(account.availableBalance, price, new Error('Не достаточно сердец'));
+			const error = new NotEnoughBalance(account.availableBalance, price, new Error('Недостаточно сердец'));
 			error.status = 400;
 			throw error;
 		}
-		
 		
 		let group;
 		if (data.publicHref) {
@@ -95,7 +106,7 @@ class AutoLikesApi extends BaseApi {
 		}
 		
 		const existsTask = await mongoose.model('AutoLikesTask').findOne({
-			user     : account.user,
+			user     : account.user.id,
 			group    : group._id,
 			deletedAt: null,
 		});
