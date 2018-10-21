@@ -100,18 +100,6 @@ describe('UserApi', function () {
 		
 		it('should not accept payment if money lt invoice money', async () => {
 			this.config.rubbleRatio = 0.1;
-			const axios = {
-				post() {
-					return {
-						data: {
-							operations: [
-								{ amount: 8 },
-							],
-						},
-					};
-				},
-			};
-			
 			const user = mongoose.model('AccountUser').createInstance({
 				password: 'test',
 				email   : 'test',
@@ -122,29 +110,18 @@ describe('UserApi', function () {
 			const invoice = billing.createTopUpInvoice(user, 100);
 			await invoice.save();
 			
-			const account = billing.createAccount(user);
-			const api = new UserApi({}, billing, axios, this.config, loggerMock);
-			const promise = api.checkPayment(account);
-			await expect(promise).to.be.rejectedWith(CheckPaymentFailure);
-		});
-		
-		it('should not accept payment if note is not equals', async () => {
-			this.config.rubbleRatio = 0.1;
-			const user = mongoose.model('AccountUser').createInstance({
-				password: 'test',
-				email   : 'test',
-			});
-			
-			const billing = new Billing(this.config, loggerMock);
-			const invoice = billing.createTopUpInvoice(user, 100);
-			await invoice.save();
-			
 			const axios = {
 				post() {
 					return {
 						data: {
 							operations: [
-								{ amount: 10, message: `${invoice.note}asd` },
+								{
+									amount : 8,
+									message: invoice.note,
+									codepro: false,
+									status : 'success',
+									type   : 'incoming-transfer',
+								},
 							],
 						},
 					};
@@ -173,7 +150,13 @@ describe('UserApi', function () {
 					return {
 						data: {
 							operations: [
-								{ amount: 10, message: `${invoice.note}asd` },
+								{
+									amount : 10,
+									message: `${invoice.note}asd`,
+									codepro: false,
+									status : 'success',
+									type   : 'incoming-transfer',
+								},
 							],
 						},
 					};
@@ -185,6 +168,7 @@ describe('UserApi', function () {
 			const promise = api.checkPayment(account);
 			await expect(promise).to.be.rejectedWith(CheckPaymentFailure);
 		});
+		
 		
 		it('should not accept payment if payment with protection', async () => {
 			this.config.rubbleRatio = 0.1;
@@ -202,7 +186,13 @@ describe('UserApi', function () {
 					return {
 						data: {
 							operations: [
-								{ amount: 10, message: invoice.note, codepro: true },
+								{
+									amount : 10,
+									message: invoice.note,
+									codepro: true,
+									status : 'success',
+									type   : 'incoming-transfer',
+								},
 							],
 						},
 					};
@@ -231,8 +221,12 @@ describe('UserApi', function () {
 					return {
 						data: {
 							operations: [
-								//eslint-disable-next-line object-curly-newline
-								{ amount: 10, message: invoice.note, codepro: false, status: false },
+								{
+									amount : 10,
+									message: invoice.note,
+									codepro: false,
+									type   : 'incoming-transfer',
+								},
 							],
 						},
 					};
@@ -261,13 +255,12 @@ describe('UserApi', function () {
 					return {
 						data: {
 							operations: [
-								//eslint-disable-next-line object-curly-newline
 								{
 									amount : 10,
 									message: invoice.note,
-									codepro: false,
+									codepro: true,
 									status : 'success',
-									type   : 'trans',
+									type   : 'incsfer',
 								},
 							],
 						},
