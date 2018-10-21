@@ -243,39 +243,28 @@ class UserApi extends BaseApi {
 			},
 		);
 		
-		let reason = null;
-		
 		const payment = operations.find((operation) => {
 			if (operation.amount < invoice.money) {
-				reason = `operation.amount < invoice.money: ${operation.amount} < ${invoice.money}`;
 				return false;
 			}
 			
 			if (operation.codepro) {
-				reason = 'operation.codepro';
 				return false;
 			}
 			
 			if (operation.type !== 'incoming-transfer') {
-				reason = 'operation.type !== incoming-transfer';
 				return false;
 			}
 			
 			if (operation.status !== 'success') {
-				reason = 'operation.status !== success';
 				return false;
 			}
 			
-			if (operation.message.trim() !== invoice.note) {
-				reason = `operation.message !== invoice.note: ${operation.message} !== ${invoice.note}`;
-				return false;
-			}
-			
-			return true;
+			return operation.message && operation.message.trim() === invoice.note;
 		});
 		
 		if (!payment) {
-			throw new CheckPaymentFailure(invoice.money, invoice.note, reason);
+			throw new CheckPaymentFailure(invoice.money, invoice.note);
 		}
 		
 		this.logger.info({

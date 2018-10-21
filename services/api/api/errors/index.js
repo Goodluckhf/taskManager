@@ -272,11 +272,10 @@ export class ChatAlreadyExists extends BaseApiError {
 }
 
 export class CheckPaymentFailure extends BaseApiError {
-	constructor(amount, note, reason) {
+	constructor(amount, note) {
 		super('Ошибка проверки оплаты');
 		this.amount = amount;
 		this.note   = note;
-		this.reason = reason;
 	}
 	
 	toMessageString() {
@@ -288,7 +287,6 @@ export class CheckPaymentFailure extends BaseApiError {
 			...super.toObject(),
 			amount : this.amount,
 			comment: this.note,
-			reason : this.reason,
 		};
 	}
 }
