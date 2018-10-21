@@ -10,6 +10,7 @@ import repostsCheckTaskSchema  from './TaskType/RepostsCheckTask';
 import repostsCommonSchema     from './TaskType/RepostsCommon';
 import repostsTaskSchema       from './TaskType/RepostsTask';
 import checkWallBanTaskSchema  from './TaskType/CheckWallBanTask';
+import checkBalanceTaskSchema  from './TaskType/CheckBalanceTask';
 
 import groupSchema        from './Group';
 import accountSchema      from './Account';
@@ -47,4 +48,5 @@ export default (connection) => {
 	connection.model('Task').discriminator('RepostsCommon', repostsCommonSchema);
 	connection.model('Task').discriminator('RepostsTask', repostsTaskSchema);
 	connection.model('Task').discriminator('CheckWallBanTask', checkWallBanTaskSchema);
+	connection.model('Task').discriminator('CheckBalanceTask', checkBalanceTaskSchema);
 };

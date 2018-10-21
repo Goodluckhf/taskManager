@@ -81,6 +81,8 @@ schema.statics.status = statuses;
  * @property {Object<*>} status
  * @property {Boolean} repeated
  * @property {Date} startAt
+ * @property {Date} lastHandleAt
+ * @property {UserDocument} user
  * @property {Object} _error
  * @property {Array.<TaskDocument>} subTasks
  * @property {TaskDocument} parentTask
