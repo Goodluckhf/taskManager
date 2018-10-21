@@ -15,6 +15,7 @@ class List extends PureComponent {
 		filterChange: propTypes.func.isRequired,
 		stop        : propTypes.func.isRequired,
 		remove      : propTypes.func.isRequired,
+		resume      : propTypes.func.isRequired,
 		loading     : propTypes.bool.isRequired,
 		filter      : propTypes.string.isRequired,
 	};
@@ -29,6 +30,7 @@ class List extends PureComponent {
 					<Item
 						stop={this.props.stop}
 						remove={this.props.remove}
+						resume={this.props.resume}
 						_id={item.get('_id')}
 						createdAt={item.get('createdAt')}
 						lastHandleAt={item.get('lastHandleAt')}
@@ -38,6 +40,7 @@ class List extends PureComponent {
 						status={item.get('status')}
 						stop_loading={item.get('stop_loading')}
 						remove_loading={item.get('remove_loading')}
+						resume_loading={item.get('resume_loading')}
 						error={item.get('error')}
 						lastTasks={lastTasks}
 					>

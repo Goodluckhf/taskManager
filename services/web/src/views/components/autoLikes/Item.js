@@ -35,8 +35,10 @@ class Item extends PureComponent {
 		lastTasks     : propTypes.instanceOf(List),
 		stop_loading  : propTypes.bool,
 		remove_loading: propTypes.bool,
+		resume_loading: propTypes.bool,
 		stop          : propTypes.func,
 		remove        : propTypes.func,
+		resume        : propTypes.func,
 	};
 	
 	onStop = () => {
@@ -45,6 +47,10 @@ class Item extends PureComponent {
 	
 	onRemove = () => {
 		this.props.remove(this.props._id);
+	};
+	
+	onResume = () => {
+		this.props.resume(this.props._id);
 	};
 	
 	render() {
@@ -73,16 +79,30 @@ class Item extends PureComponent {
 				</Col>
 				<Col>
 					<h4>Действия</h4>
-					<div>
-						<LoadingButton
-							data-size={XS}
-							data-color='green'
-							loading={this.props.stop_loading}
-							onClick={this.onStop}
-						>
-							Остановить
-						</LoadingButton>
-					</div>
+					{
+						this.props.status === 3 ?
+							<div>
+								<LoadingButton
+									data-size={XS}
+									data-color='green'
+									loading={this.props.resume_loading}
+									onClick={this.onResume}
+								>
+									Возобновить
+								</LoadingButton>
+							</div> :
+							<div>
+								<LoadingButton
+									data-size={XS}
+									data-color='mint'
+									loading={this.props.stop_loading}
+									onClick={this.onStop}
+								>
+									Остановить
+								</LoadingButton>
+							</div>
+					}
+					
 					<div style={{ marginTop: '10px' }}>
 						<LoadingButton
 							data-size={XS}
