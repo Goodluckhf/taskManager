@@ -561,12 +561,13 @@ describe('AutolikesTask', function () {
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.skipped);
 	});
 	
-	it('should freeze balance and start tasks if user has enogh money', async () => {
+	it('should freeze balance and start tasks if user has enough money', async () => {
 		this.config.prices = {
 			...this.config.prices,
 			like   : 10,
 			comment: 11,
 		};
+		this.config.likesTask.serviceOrder = ['likest'];
 		
 		const group       = mongoose.model('Group').createInstance({ id: 'testId' });
 		const targetGroup = mongoose.model('Group').createInstance({ id: 'testId2' });
