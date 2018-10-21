@@ -20,15 +20,13 @@ export const loaderReducer = (state = {}, action) => {
 	};
 };
 
-export const errorReducer = (_state = {}, action) => {
+export const errorReducer = (state = {}, action) => {
 	const { type, payload: { id, error } = {} } = action;
 	const matches = /(.*)_(REQUEST|SUCCESS|FAILURE)/.exec(type);
 	if (!matches) {
-		return _state;
+		return state;
 	}
 	
-	// Обновляем, что бы удалить все предыдущие ошибки
-	const state = {};
 	const [, requestName, requestState] = matches;
 	const value  = requestState === 'FAILURE' ? error : null;
 	const result =
