@@ -31,10 +31,13 @@ export default async (ctx, next) => {
 			
 			error = new BaseApiError(error.message, 500).combine({ error });
 		}
-		
+		const { user } = ctx.state;
 		logger.warn({
-			message: 'API error',
 			error,
+			message: 'API error',
+			userId : user ? user.id : null,
+			url    : ctx.url,
+			method : ctx.method,
 		});
 		ctx.body   = error.toObject();
 		ctx.status = error.status;
