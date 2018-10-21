@@ -159,6 +159,7 @@ class TaskApi extends BaseApi {
 					taskDocument: _task,
 					rpcClient   : this.rpcClient,
 					config      : this.config,
+					alert       : this.alert,
 				});
 				
 				// eslint-disable-next-line consistent-return
@@ -192,7 +193,12 @@ class TaskApi extends BaseApi {
 							
 							return this.alert
 								.sendError(error.toMessageString(), _task.user.chatId)
-								.catch(_error => this.logger.error({ error: _error }));
+								.catch(_error => this.logger.error({
+									message: 'fatal error',
+									error  : _error,
+									userId : _task.user.id,
+									taskId : _task.id,
+								}));
 						},
 					);
 				});
