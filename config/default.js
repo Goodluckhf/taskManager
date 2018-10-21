@@ -54,6 +54,11 @@ module.exports = {
 		serviceOrder   : process.env.COMMENTS_TASK__SERVICE_ORDER.split(','),
 	},
 	
+	checkBalanceTask: {
+		interval: parseInt(process.env.CHECK_BALANCE_TASK__INTERVAL, 10),
+		ratio   : parseFloat(process.env.CHECK_BALANCE_TASK__RATIO),
+	},
+	
 	// @TODO: Поправить
 	accountTask: {
 		method: 'tasks.account',
