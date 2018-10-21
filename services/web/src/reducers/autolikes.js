@@ -1,10 +1,11 @@
 import { fromJS } from 'immutable';
 
-import { autoLikesPage } from '../store/initialState';
+import { autoLikesPage }  from '../store/initialState';
 import {
 	CREATE_SUCCESS, FILTER_CHANGE_REQUEST,
 	LIST_SUCCESS, REMOVE_SUCCESS, STOP_SUCCESS,
-} from '../actions/autolikes';
+	RESUME_SUCCESS,
+}                         from '../actions/autolikes';
 
 //eslint-disable-next-line
 export default (state = autoLikesPage, { type, payload }) => {
@@ -39,6 +40,14 @@ export default (state = autoLikesPage, { type, payload }) => {
 		return state.updateIn(
 			['list', 'filter'],
 			() => payload.filterState.filter,
+		);
+	}
+	
+	if (type === RESUME_SUCCESS) {
+		const index = state.getIn(['list', 'items']).findIndex(item => item.get('_id') === payload.id);
+		return state.updateIn(
+			['list', 'items', index],
+			task => task.set('status', 0),
 		);
 	}
 	
