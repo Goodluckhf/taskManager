@@ -11,7 +11,7 @@ class CommentsTaskInvoice extends PureComponent {
 	
 	render() {
 		return (
-			<Card>
+			<Card style={{ border: '1px solid #ffc107' }}>
 				<CardHeader>Задача накрутки комментов</CardHeader>
 				<CardBody>
 					{this.props.invoice}
