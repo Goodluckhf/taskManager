@@ -40,6 +40,7 @@ class AutoLikesApi extends BaseApi {
 				likesCount   : { oneOf: [{ type: 'string' }, { type: 'number' }] }, // @TODO: Разобраться, чтобы сам конверитил в int
 				commentsCount: { oneOf: [{ type: 'string' }, { type: 'number' }] },
 				repostsCount : { oneOf: [{ type: 'string' }, { type: 'number' }] },
+				contentPosts : { oneOf: [{ type: 'string' }, { type: 'boolean' }] },
 				publicHref   : { type: 'string' },
 				admin        : { type: 'string' },
 				groupId      : { type: 'string' },
@@ -117,8 +118,9 @@ class AutoLikesApi extends BaseApi {
 		try {
 			const likesTask = mongoose.model('AutoLikesTask').createInstance({
 				...data,
-				user : account.user,
-				group: group._id,
+				user        : account.user,
+				group       : group._id,
+				contentPosts: data.contentPosts,
 			});
 			await likesTask.save();
 			return {
