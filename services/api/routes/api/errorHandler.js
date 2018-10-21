@@ -1,8 +1,9 @@
 import mongoose from '../../../../lib/mongoose';
 
-import BaseApiError      from '../../api/errors/BaseApiError';
-import logger            from '../../../../lib/logger';
+import BaseApiError        from '../../api/errors/BaseApiError';
+import logger              from '../../../../lib/logger';
 import { ValidationError } from '../../api/errors';
+import BaseError           from '../../api/errors/BaseError';
 
 export default async (ctx, next) => {
 	try {
@@ -20,7 +21,7 @@ export default async (ctx, next) => {
 		// Пока оборачиваем в ошбику
 		// Чтобы на клиент все равно пришла ошибка
 		
-		if (!(error instanceof BaseApiError)) {
+		if (!(error instanceof BaseError)) {
 			if (error.request) {
 				delete error.request;
 			}
@@ -39,7 +40,12 @@ export default async (ctx, next) => {
 			url    : ctx.url,
 			method : ctx.method,
 		});
-		ctx.body   = error.toObject();
+		
+		const errorMessage = error.toMessageString ? error.toMessageString() : error.message;
+		ctx.body   = {
+			message    : error.message,
+			description: errorMessage,
+		};
 		ctx.status = error.status;
 	}
 };
