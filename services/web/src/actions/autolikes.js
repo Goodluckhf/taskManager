@@ -72,3 +72,21 @@ export const removeFailure = (error, id) => ({
 	type   : REMOVE_FAILURE,
 	payload: { error, id },
 });
+
+export const RESUME_REQUEST = 'AUTO_LIKES__RESUME_REQUEST';
+export const resumeRequest = id => ({
+	type   : RESUME_REQUEST,
+	payload: { id },
+});
+
+export const RESUME_SUCCESS = 'AUTO_LIKES__RESUME_SUCCESS';
+export const resumeSuccess = id => ({
+	type   : RESUME_SUCCESS,
+	payload: { id },
+});
+
+export const RESUME_FAILURE = 'AUTO_LIKES__RESUME_FAILURE';
+export const resumeFailure = (error, id) => ({
+	type   : RESUME_FAILURE,
+	payload: { error, id },
+});
