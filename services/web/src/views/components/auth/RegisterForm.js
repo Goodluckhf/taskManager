@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import propTypes from 'prop-types';
+import propTypes            from 'prop-types';
+import { Link }             from 'react-router-dom';
 
 import {
 	Card,
@@ -12,7 +13,7 @@ import {
 	InputGroupAddon,
 	InputGroupText,
 	Row,
-} from 'reactstrap';
+}                           from 'reactstrap';
 import LoadingButton, { S } from '../ui/LoadingButton';
 import ApiError             from '../ui/ApiError';
 
@@ -28,9 +29,10 @@ class Register extends Component {
 	}
 	
 	static propTypes = {
-		register: propTypes.func.isRequired,
-		error   : propTypes.object,
-		loading : propTypes.bool,
+		register      : propTypes.func.isRequired,
+		error         : propTypes.object,
+		loading       : propTypes.bool,
+		hasAccountLink: propTypes.string,
 	};
 	
 	onEmailChange = (e) => {
@@ -106,6 +108,7 @@ class Register extends Component {
 										>
 											Создать
 										</LoadingButton>
+										<Link style={{ marginLeft: '15px' }} to={this.props.hasAccountLink}>Уже есть аккаунт</Link>
 									</Form>
 								</CardBody>
 							</Card>

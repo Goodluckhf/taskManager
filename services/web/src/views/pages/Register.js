@@ -8,8 +8,9 @@ import { registerRequest } from '../../actions/auth';
 
 class Register extends PureComponent {
 	static propTypes = {
-		register    : propTypes.func.isRequired,
-		registerForm: propTypes.object.isRequired,
+		register      : propTypes.func.isRequired,
+		registerForm  : propTypes.object.isRequired,
+		hasAccountLink: propTypes.string.isRequired,
 	};
 	
 	render() {
@@ -18,6 +19,7 @@ class Register extends PureComponent {
 				loading={this.props.registerForm.get('loading')}
 				error={this.props.registerForm.get('error')}
 				register={this.props.register}
+				hasAccountLink={this.props.hasAccountLink}
 			/>
 		);
 	}
@@ -28,7 +30,8 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-	registerForm: loaderSelector({ AUTH__REGISTER: 'loading' }, 'auth', state),
+	registerForm  : loaderSelector({ AUTH__REGISTER: 'loading' }, 'auth', state),
+	hasAccountLink: '/login',
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Register);
