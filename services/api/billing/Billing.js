@@ -102,6 +102,16 @@ class Billing {
 		return sum;
 	}
 	
+	/**
+	 * @param {Array.<TaskDocument>} tasks
+	 * @return {*}
+	 */
+	calculatePriceForTasks(tasks) {
+		return tasks.reduce((total, task) => (
+			total + this.calculatePrice(task)
+		), 0);
+	}
+	
 	
 	/**
 	 * @param {InvoiceDocument | Array.<InvoiceDocument>} invoice

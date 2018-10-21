@@ -50,6 +50,24 @@ describe('Billing', function () {
 		expect(billing.calculatePrice(task)).to.be.equals(200 * 223);
 	});
 	
+	it('should calculate price for several tasks', () => {
+		this.config.prices = { repost: 223, like: 10 };
+		const billing      = new Billing(this.config, loggerMock);
+		
+		const task = mongoose.model('RepostsTask').createInstance({
+			postLink    : 'test',
+			repostsCount: 200,
+		});
+		
+		const task1 = mongoose.model('LikesTask').createInstance({
+			postLink  : 'test',
+			likesCount: 200,
+		});
+		const expectedPrice = billing.calculatePriceForTasks([task, task1]);
+		//eslint-disable-next-line no-mixed-operators
+		expect(expectedPrice).to.be.equals(200 * 223 + 2000);
+	});
+	
 	it('should create billing user if user type is billing', () => {
 		const user = mongoose.model('AccountUser').createInstance({ password: 'asdasd' });
 		const billing = new Billing(this.config, loggerMock);
