@@ -1,13 +1,15 @@
-import { takeEvery, put, call, select } from 'redux-saga/effects';
+import { takeEvery, put, call, select }                 from 'redux-saga/effects';
 import {
 	CREATE_REQUEST, LIST_REQUEST, REMOVE_REQUEST,
 	FILTER_CHANGE_REQUEST, STOP_REQUEST,
+	RESUME_REQUEST,
 	createSuccess, createFailure,
 	stopSuccess, listSuccess, stopFailure,
 	removeSuccess, removeFailure, listRequest,
-}                                       from '../actions/autolikes';
-import { fatalError }                   from '../actions/fatalError';
-import { callApi }                      from './api';
+	resumeFailure, resumeSuccess,
+}                                                       from '../actions/autolikes';
+import { fatalError }                                   from '../actions/fatalError';
+import { callApi }                                      from './api';
 
 const list = function* (filterState) {
 	try {
@@ -85,6 +87,23 @@ export default function* () {
 		} catch (error) {
 			if (error.response && error.response.data) {
 				yield put(removeFailure(error.response.data, id));
+				return;
+			}
+			
+			yield put(fatalError(error));
+		}
+	});
+	
+	yield takeEvery(RESUME_REQUEST, function* ({ payload: { id } }) {
+		try {
+			yield call(callApi, {
+				url   : `autolikes/${id}/resume`,
+				method: 'put',
+			});
+			yield put(resumeSuccess(id));
+		} catch (error) {
+			if (error.response && error.response.data) {
+				yield put(resumeFailure(error.response.data, id));
 				return;
 			}
 			
