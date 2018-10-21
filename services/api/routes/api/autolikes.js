@@ -36,6 +36,17 @@ export default (router, passport, billing) => {
 		};
 	});
 	
+	router.put('/autolikes/:id/resume', passport.authenticate('jwt', { session: false }), async (ctx) => {
+		const { id }    = ctx.params;
+		const { user }  = ctx.state;
+		const account   = billing.createAccount(user);
+		
+		ctx.body = {
+			success: true,
+			data   : await taskApi.resume(id, account),
+		};
+	});
+	
 	// router.put('/autolikes/:id', passport.authenticate('jwt', { session: false }), async (ctx) => {
 	// 	const { id } = ctx.params;
 	//

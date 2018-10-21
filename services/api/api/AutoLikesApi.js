@@ -195,6 +195,43 @@ class AutoLikesApi extends BaseApi {
 	}
 	
 	/**
+	 * @param {String} _id
+	 * @param {BaseAccount} account
+	 * @return {Promise<*>}
+	 */
+	// eslint-disable-next-line class-methods-use-this
+	async resume(_id, account) {
+		const AutoLikesTask = mongoose.model('AutoLikesTask');
+		const Task          = mongoose.model('Task');
+		const task          = await AutoLikesTask
+			.findOne({
+				_id,
+				user  : account.user,
+				status: Task.status.skipped,
+			})
+			.populate('group')
+			.exec();
+		
+		if (!task) {
+			throw new NotFound({
+				what : 'AutoLikesTask',
+				query: { _id },
+			});
+		}
+		
+		const price = this.billing.calculatePrice(task);
+		if (account instanceof BillingAccount && account.availableBalance < price) {
+			const error = new NotEnoughBalance(account.availableBalance, price, new Error('Недостаточно сердец'));
+			error.status = 400;
+			throw error;
+		}
+		
+		task.status = Task.status.waiting;
+		return task.save();
+	}
+	
+	
+	/**
 	 * TODO: Добавить пользователя
 	 * @description Обновляет задание
 	 * @param {String} _id
