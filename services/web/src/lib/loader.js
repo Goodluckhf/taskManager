@@ -1,4 +1,6 @@
-import { List, Map } from 'immutable';
+import { List, Map }       from 'immutable';
+import { LOCATION_CHANGE } from 'connected-react-router';
+
 
 export const loaderReducer = (state = {}, action) => {
 	const { type, payload: { id } = {} } = action;
@@ -24,6 +26,10 @@ export const errorReducer = (state = {}, action) => {
 	const { type, payload: { id, error } = {} } = action;
 	const matches = /(.*)_(REQUEST|SUCCESS|FAILURE)/.exec(type);
 	if (!matches) {
+		if (type === LOCATION_CHANGE) {
+			return {};
+		}
+		
 		return state;
 	}
 	
