@@ -72,15 +72,14 @@ class AutoLikesApi extends BaseApi {
 			deletedAt: null,
 			status   : mongoose.model('Task').status.waiting,
 		}).lean().exec();
+		
 		const totalPriceTasks = [...waitingTasks, {
 			likesCount   : parseInt(data.likesCount, 10),
 			repostsCount : parseInt(data.repostsCount, 10),
 			commentsCount: parseInt(data.commentsCount, 10),
 		}];
 		
-		const price = totalPriceTasks.reduce((sum, task) => (
-			sum + this.billing.calculatePrice(task)
-		), 0);
+		const price = this.billing.calculatePriceForTasks(totalPriceTasks);
 		
 		if (account instanceof BillingAccount && account.availableBalance < price) {
 			const error = new NotEnoughBalance(account.availableBalance, price, new Error('Недостаточно сердец'));
