@@ -34,7 +34,7 @@ const rpcServer = new RpcServer(amqp, logger, gracefulStop, {
 
 const captcha = new Captcha(axios, config.get('rucaptcha.token'));
 
-const vkApi = new VkApi(config.get('vkApi.token'), {
+const vkApi = new VkApi(captcha, logger, config.get('vkApi.token'), {
 	timeout: config.get('vkApi.timeout'),
 });
 
