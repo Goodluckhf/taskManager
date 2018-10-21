@@ -132,12 +132,17 @@ class LikesCommonTask extends BaseTask {
 				service,
 			});
 			
-			if (serviceOrder.length !== serviceIndex + 1) {
-				return this.loopHandleTasks(serviceIndex + 1);
+			if (!(error instanceof NotEnoughBalanceForLikes)) {
+				if (serviceOrder.length !== serviceIndex + 1) {
+					return this.loopHandleTasks(serviceIndex + 1);
+				}
 			}
 			
-			if (this.account instanceof BillingAccount) {
-				await this.account.rollBack(this.taskDocument);
+			if (service !== 'likePro' || this.taskDocument.likesCount >= 100) {
+				//eslint-disable-next-line max-len
+				if (this.account instanceof BillingAccount && !(error instanceof NotEnoughBalanceForLikes)) {
+					await this.account.rollBack(this.taskDocument);
+				}
 			}
 			
 			// Это последний был, значит пора выкидывать ошибку
