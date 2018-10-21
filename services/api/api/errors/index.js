@@ -291,3 +291,13 @@ export class CheckPaymentFailure extends BaseApiError {
 	}
 }
 
+export class CantRemovePendingTask extends BaseApiError {
+	constructor() {
+		super('Ошибка удаления');
+	}
+	
+	toMessageString() {
+		return `${this.message}\nНельзя удалять задачи пока они выполняются.\nОстановите задачу. И дождитесь пока сменятся статусы подзадач`;
+	}
+}
+

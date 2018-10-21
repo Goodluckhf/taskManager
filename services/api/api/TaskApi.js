@@ -3,9 +3,10 @@ import moment   from 'moment';
 
 import mongoose from '../../../lib/mongoose';
 import {
+	CantRemovePendingTask,
 	NotFound,
 	ValidationError,
-}               from './errors';
+} from './errors';
 
 import BaseApi           from './BaseApi';
 import AutoLikesTask     from '../tasks/AutolikesTask';
@@ -96,6 +97,14 @@ class TaskApi extends BaseApi {
 		
 		if (!task) {
 			return;
+		}
+		
+		const hasPendingSubTask = task.subTasks.some(_task => (
+			_task.status === mongoose.model('Task').status.pending
+		));
+		
+		if (hasPendingSubTask) {
+			throw new CantRemovePendingTask();
 		}
 		
 		const tasksToRemove = task.subTasks.reduce((array, subTask) => {
