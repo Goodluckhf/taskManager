@@ -243,29 +243,48 @@ class UserApi extends BaseApi {
 			},
 		);
 		
+		let reason = null;
+		
 		const payment = operations.find((operation) => {
 			if (operation.amount < invoice.money) {
+				reason = `operation.amount < invoice.money: ${operation.amount} < ${invoice.money}`;
 				return false;
 			}
 			
 			if (operation.codepro) {
+				reason = 'operation.codepro';
 				return false;
 			}
 			
 			if (operation.type !== 'incoming-transfer') {
+				reason = 'operation.type !== incoming-transfer';
 				return false;
 			}
 			
 			if (operation.status !== 'success') {
+				reason = 'operation.status !== success';
 				return false;
 			}
 			
-			return operation.message === invoice.note;
+			if (operation.message.trim() !== invoice.note) {
+				reason = `operation.message !== invoice.note: ${operation.message} !== ${invoice.note}`;
+				return false;
+			}
+			
+			return true;
 		});
 		
 		if (!payment) {
-			throw new CheckPaymentFailure(invoice.money, invoice.note);
+			throw new CheckPaymentFailure(invoice.money, invoice.note, reason);
 		}
+		
+		this.logger.info({
+			mark   : 'billing',
+			message: 'Пополнение баланса',
+			userId : account.user.id,
+			amount : invoice.amount,
+			money  : invoice.money,
+		});
 		
 		account.user.balance += invoice.amount;
 		invoice.status = TopUpInvoice.status.paid;
@@ -317,6 +336,9 @@ class UserApi extends BaseApi {
 				options: {
 					lean: true,
 				},
+			})
+			.sort({
+				paidAt: -1,
 			})
 			.limit(100)
 			.lean()
