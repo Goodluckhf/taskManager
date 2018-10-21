@@ -1,8 +1,10 @@
+import BaseError from '../BaseError';
+
 /**
  * @property {Number} statusCode
  * @property {Error} originalError
  */
-class BaseTaskError extends Error {
+class BaseTaskError extends BaseError {
 	/**
 	 * @param {Error} error
 	 */

@@ -1,4 +1,6 @@
-export default class BaseApiError extends Error {
+import BaseError from './BaseError';
+
+export default class BaseApiError extends BaseError {
 	/**
 	 * @param {String} message
 	 * @param {Number} [status]
@@ -27,7 +29,7 @@ export default class BaseApiError extends Error {
 	/**
 	 * @return {String}
 	 */
-	toMessage() {
+	toMessageString() {
 		return `Не предвиденная ошибка!\n${this.message}`;
 	}
 	

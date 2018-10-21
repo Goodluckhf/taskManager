@@ -208,6 +208,6 @@ export class NotEnoughBalance extends BaseTaskError {
 	 */
 	_toMessage() {
 		const message = super._toMessage();
-		return `${message} Недостаточно средств на балансе\nДоступный баланс: ${this.activeBalance}\nНеобходимо средств ${this.needBalance}`;
+		return `${message}\nНедостаточно средств на балансе\nДоступный баланс: ${this.activeBalance}\nНеобходимо средств: ${this.needBalance}`;
 	}
 }

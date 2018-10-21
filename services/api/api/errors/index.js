@@ -8,7 +8,7 @@ export class NotFound extends BaseApiError {
 		this.status = 404;
 	}
 	
-	toMessage() {
+	toMessageString() {
 		return `${this.message}\nПо запросу "${this.what}" ничего не найдено`;
 	}
 	
@@ -27,8 +27,19 @@ export class ValidationError extends BaseApiError {
 		this.invalidParams = invalidParams;
 	}
 	
-	toMessage() {
-		return `${this.message}\n${this.invalidParams.join('\n')}`;
+	toMessageString() {
+		const params = this.invalidParams.map((param) => {
+			if (param.dataPath) {
+				return param.dataPath;
+			}
+			
+			if (typeof param === 'object') {
+				return JSON.stringify(param, null, 2);
+			}
+			
+			return param;
+		});
+		return `${this.message}\n${params.join('\n')}`;
 	}
 	
 	toObject() {
@@ -71,7 +82,7 @@ export class VkApiError extends BaseApiError {
 		this.request = request;
 	}
 	
-	toMessage() {
+	toMessageString() {
 		return `${this.message}\nПроверьте введенные данные и попробуйте еще раз\nЕсли ошибка повторяется свяжитесь с админом`;
 	}
 	
@@ -97,7 +108,7 @@ export class TaskApiError extends BaseApiError {
 		this.error   = error;
 	}
 	
-	toMessage() {
+	toMessageString() {
 		return `${this.message}`;
 	}
 	
@@ -117,7 +128,7 @@ export class TaskAlreadyExist extends BaseApiError {
 		this.groupId = groupId;
 	}
 	
-	toMessage() {
+	toMessageString() {
 		return `${this.message}`;
 	}
 	
@@ -137,7 +148,7 @@ export class GroupAlreadyExist extends BaseApiError {
 		this.name = name;
 	}
 	
-	toMessage() {
+	toMessageString() {
 		return `${this.message}\nПопробуйте сменить фильтр. Возможно ее уже кто-то добавил`;
 	}
 	
@@ -150,6 +161,9 @@ export class GroupAlreadyExist extends BaseApiError {
 	}
 }
 
+/**
+ * @TODO: Когда понадобится доделать
+ */
 export class WallSeekAlreadyExist extends BaseApiError {
 	constructor({ link, id }) {
 		super('Wall seek task for this group has already exists');
@@ -172,7 +186,7 @@ export class LoginFailed extends BaseApiError {
 		this.email = email;
 	}
 	
-	toMessage() {
+	toMessageString() {
 		return `${this.message}\nНе правильный логин или пароль`;
 	}
 	
@@ -191,7 +205,7 @@ export class UserAlreadyExists extends BaseApiError {
 		this.email = email;
 	}
 	
-	toMessage() {
+	toMessageString() {
 		return `${this.message}\nПочта "${this.email}" уже занята (возможно вами)`;
 	}
 	
@@ -209,7 +223,7 @@ export class UserIsNotReady extends BaseApiError {
 		this.fields = fields;
 	}
 	
-	toMessage() {
+	toMessageString() {
 		return `${this.message}\nНеобходимо заполнить данные (${this.fields.join(', ')})`;
 	}
 	
@@ -227,7 +241,7 @@ export class NoFriendsInvite extends BaseApiError {
 		this.link = link;
 	}
 	
-	toMessage() {
+	toMessageString() {
 		return `${this.message}\nНужно отправить запрос в друзья пользователю по ссылке: ${this.link}`;
 	}
 	
@@ -245,7 +259,7 @@ export class ChatAlreadyExists extends BaseApiError {
 		this.chatId = chatId;
 	}
 	
-	toMessage() {
+	toMessageString() {
 		return `${this.message}\nЧат с ботом для алертов уже был создан ранее`;
 	}
 	
@@ -264,7 +278,7 @@ export class CheckPaymentFailure extends BaseApiError {
 		this.note   = note;
 	}
 	
-	toMessage() {
+	toMessageString() {
 		return `${this.message}\nУбедитесь что перевели нужную сумму: ${this.amount}; с примечанием "${this.note}"`;
 	}
 	

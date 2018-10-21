@@ -21,11 +21,10 @@ class ApiError extends PureComponent {
 			const message = this.props.error.get('message') || this.props.error.getIn(['originalError', 'message']) || '';
 			title = _title ? `${_title}: ${message}` : message;
 		} else {
-			error = JSON.stringify(this.props.error, null, 2);
+			error = this.props.error.description || '';
 			const { message } = this.props.error;
 			title = this.props.title ? `${this.props.title}: ${message}` : message;
 		}
-		
 		return (
 			<Alert color="danger" {...this.props}>
 				<h4 className="alert-heading">{title}!</h4>
