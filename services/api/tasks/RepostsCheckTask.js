@@ -49,7 +49,7 @@ class RepostsCheckTask extends BaseTask {
 			
 			if (serviceOrder.length === this.taskDocument.serviceIndex + 1) {
 				if (this.account instanceof BillingAccount) {
-					this.account.rollBack(this.taskDocument.parentTask);
+					await this.account.rollBack(this.taskDocument.parentTask);
 				}
 				
 				const wrappedError = TaskErrorFactory.createError(

@@ -111,7 +111,7 @@ class RepostsCommonTask extends BaseTask {
 			}
 			
 			if (this.account instanceof BillingAccount) {
-				this.account.rollBack(this.taskDocument);
+				await this.account.rollBack(this.taskDocument);
 			}
 			
 			// Это последний был, значит пора выкидывать ошибку
