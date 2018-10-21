@@ -5,6 +5,7 @@ import WallSeekApi from '../../api/WallSeekApi';
 import VkApi       from '../../../../lib/VkApi';
 
 export default (router, passport) => {
+	//@TODO: обновить DI
 	const vkApi = new VkApi(config.get('vkApi.token'), {
 		timeout: config.get('vkApi.timeout'),
 	});

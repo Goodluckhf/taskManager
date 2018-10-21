@@ -8,9 +8,10 @@ import VkApi   from '../../../../lib/VkApi';
  * @param {Passport} passport
  * @param {Billing} billing
  * @param {Axios} axios
+ * @param {Captcha} captcha
  */
-export default (router, passport, billing, axios) => {
-	const vkApi = new VkApi(config.get('vkApi.token'), {
+export default (router, passport, billing, axios, captcha) => {
+	const vkApi = new VkApi(captcha, logger, config.get('vkApi.token'), {
 		timeout: config.get('vkApi.timeout'),
 	});
 	const userApi = new UserApi(vkApi, billing, axios, config, logger);

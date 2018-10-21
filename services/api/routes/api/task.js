@@ -9,9 +9,10 @@ import Alert   from '../../../../lib/Alert';
  * @param {RpcClient} rpcClient
  * @param {Passport} passport
  * @param {Billing} billing
+ * @param {Captcha} captcha
  */
-export default (router, rpcClient, passport, billing) => {
-	const vkApi = new VkApi(config.get('vkApi.token'), {
+export default (router, rpcClient, passport, billing, captcha) => {
+	const vkApi = new VkApi(captcha, logger, config.get('vkApi.token'), {
 		timeout: config.get('vkApi.timeout'),
 	});
 	const alert = new Alert(vkApi, logger);

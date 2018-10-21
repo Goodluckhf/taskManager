@@ -14,6 +14,7 @@ import createWallSeekRoute      from './wallSeek';
 import createUserRoute          from './user';
 import createAdminRoute         from './admin';
 import Billing                  from '../../billing/Billing';
+import Captcha                  from '../../../../lib/Captcha';
 
 // rabbit, RPC client
 const rabbitConfig = config.get('rabbit');
@@ -24,15 +25,17 @@ rpcClient.start().catch((error) => {
 });
 
 const billing = new Billing(config, logger);
+const captcha = new Captcha(axios, config.get('rucaptcha.token'));
 
 const router = new Router({ prefix: '/api' });
 
-createTaskRoute(router, rpcClient, passport, billing);
-createAccountRoute(router, rpcClient);
-createWallSeekRoute(router, passport);
-createGroupRoute(router, passport);
-createAutoLikesTaskRoute(router, passport, billing);
-createUserRoute(router, passport, billing, axios);
+createTaskRoute(router, rpcClient, passport, billing, captcha);
+createGroupRoute(router, passport, captcha);
+createAutoLikesTaskRoute(router, passport, billing, captcha);
+createUserRoute(router, passport, billing, axios, captcha);
 createAdminRoute(router, passport, billing);
 
+// Пока не используются
+createWallSeekRoute(router, passport);
+createAccountRoute(router, rpcClient);
 export default router;

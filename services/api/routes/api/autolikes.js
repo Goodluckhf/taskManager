@@ -7,9 +7,10 @@ import AutoLikesApi   from '../../api/AutoLikesApi';
  * @param {Router} router
  * @param {Passport} passport
  * @param {Billing} billing
+ * @param {Captcha} captcha
  */
-export default (router, passport, billing) => {
-	const vkApi = new VkApi(config.get('vkApi.token'), {
+export default (router, passport, billing, captcha) => {
+	const vkApi = new VkApi(captcha, logger, config.get('vkApi.token'), {
 		timeout: config.get('vkApi.timeout'),
 	});
 	

@@ -4,8 +4,13 @@ import GroupApi from '../../api/GroupApi';
 import VkApi    from '../../../../lib/VkApi';
 import logger   from '../../../../lib/logger';
 
-export default (router, passport) => {
-	const vkApi = new VkApi(config.get('vkApi.token'), {
+/**
+ * @param {Router} router
+ * @param {Passport} passport
+ * @param {Captcha} captcha
+ */
+export default (router, passport, captcha) => {
+	const vkApi = new VkApi(captcha, logger, config.get('vkApi.token'), {
 		timeout: config.get('vkApi.timeout'),
 	});
 	
