@@ -3,7 +3,7 @@ import propTypes from 'prop-types';
 import {
 	Card, CardHeader, CardBody,
 	Form as BootstrapForm, FormGroup,
-	Label, Input, CardFooter, Row, Col,
+	Label, Input, CardFooter, Row, Col, CustomInput,
 } from 'reactstrap';
 
 import LoadingButton, { S }  from '../ui/LoadingButton';
@@ -17,6 +17,7 @@ class Form extends PureComponent {
 			likesCount   : 100,
 			commentsCount: 33,
 			repostsCount : 15,
+			contentPosts : false,
 		};
 	}
 	static propTypes = {
@@ -39,6 +40,10 @@ class Form extends PureComponent {
 	
 	handlePublicInput = (e) => {
 		this.setState({ publicHref: e.target.value.trim() });
+	};
+	
+	handleContentCheckbox = (e) => {
+		this.setState({ contentPosts: !!e.target.checked });
 	};
 	
 	onClick = () => {
@@ -69,6 +74,14 @@ class Form extends PureComponent {
 								<Col lg='6' md='6' sm='6'>
 									<Label>Кол-во репостов</Label>
 									<Input onChange={this.handleRepostsCountInput} type='number' value={this.state.repostsCount}/>
+								</Col>
+								<Col lg='12' md='12' sm='12' xs='12'>
+									<CustomInput
+										id='handleContentCheckbox'
+										onChange={this.handleContentCheckbox}
+										type='checkbox'
+										label='Проверять контентные посты тоже (все посты без ссылок)'
+									/>
 								</Col>
 							</Row>
 						</FormGroup>

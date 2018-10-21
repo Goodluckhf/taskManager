@@ -37,6 +37,7 @@ class List extends PureComponent {
 						likesCount={item.get('likesCount')}
 						commentsCount={item.get('commentsCount')}
 						repostsCount={item.get('repostsCount')}
+						contentPosts={item.get('contentPosts')}
 						status={item.get('status')}
 						stop_loading={item.get('stop_loading')}
 						remove_loading={item.get('remove_loading')}

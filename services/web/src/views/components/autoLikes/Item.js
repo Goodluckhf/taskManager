@@ -29,6 +29,7 @@ class Item extends PureComponent {
 		likesCount    : propTypes.number,
 		commentsCount : propTypes.number,
 		repostsCount  : propTypes.number,
+		contentPosts  : propTypes.bool,
 		_id           : propTypes.string,
 		status        : propTypes.number,
 		error         : propTypes.object,
@@ -71,6 +72,7 @@ class Item extends PureComponent {
 					<div><span className='h6'>Кол-во лайков:</span> {this.props.likesCount}</div>
 					<div><span className='h6'>Кол-во комментов:</span> {this.props.commentsCount}</div>
 					<div><span className='h6'>Кол-во репостов:</span> {this.props.repostsCount}</div>
+					<div><span className='h6'>Включаяя контентные посты:</span> {this.props.contentPosts ? 'Да' : 'Нет'}</div>
 					<div><span className='h6'>Создана:</span> {moment(this.props.createdAt).format('MMMM Do YYYY, HH:mm:ss')}</div>
 					<div><span className='h6'>Последняя в :</span> {moment(this.props.lastHandleAt).format('MMMM Do YYYY, HH:mm:ss')}</div>
 					<div><span className='h6'>Статус:</span> {statusCodeToString[this.props.status]}</div>
