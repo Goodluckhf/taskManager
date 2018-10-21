@@ -26,8 +26,9 @@ class TopUpForm extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			amount: 0,
-			valid : false,
+			amount             : 0,
+			valid              : false,
+			changedAfterConfirm: false,
 		};
 	}
 	
@@ -38,7 +39,8 @@ class TopUpForm extends PureComponent {
 		const valid = !!amount && !isNaN(value) && !/[^0-9.]/.test(value);
 		this.setState({
 			valid,
-			amount: value,
+			amount             : value,
+			changedAfterConfirm: true,
 		}, () => {
 			if (valid) {
 				this.props.convertMoney(amount);
@@ -51,6 +53,9 @@ class TopUpForm extends PureComponent {
 			return;
 		}
 		
+		this.setState({
+			changedAfterConfirm: false,
+		});
 		this.props.createTopUpInvoice(parseInt(this.state.amount, 10));
 	};
 	
@@ -104,8 +109,8 @@ class TopUpForm extends PureComponent {
 				</CardBody>
 				<CardFooter>
 					<LoadingButton
-						disabled={!!this.props.comment.length}
-						style={this.props.comment.length ? { backgroundColor: 'gray' } : {}}
+						disabled={!!this.props.comment.length && !this.state.changedAfterConfirm}
+						style={this.props.comment.length && !this.state.changedAfterConfirm ? { backgroundColor: 'gray' } : {}}
 						data-size={S}
 						data-color='green'
 						loading={this.props.create_loading}
@@ -113,7 +118,7 @@ class TopUpForm extends PureComponent {
 					>
 						Пополнить
 					</LoadingButton>
-					{ !!this.props.comment.length &&
+					{ !!this.props.comment.length && !this.state.changedAfterConfirm &&
 						<LoadingButton
 							style={{ marginLeft: '10px' }}
 							data-size={S}
