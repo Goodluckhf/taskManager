@@ -186,7 +186,7 @@ class TaskApi extends BaseApi {
 									message: 'Ошибки при выполнении задачи',
 									taskId : _task.id,
 									userId : _task.user.id,
-									errors,
+									error,
 								});
 							}
 							

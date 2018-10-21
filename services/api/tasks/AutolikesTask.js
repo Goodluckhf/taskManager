@@ -36,8 +36,8 @@ class AutoLikesTask extends BaseTask {
 				if (error instanceof NotEnoughBalance) {
 					throw NotEnoughBalanceForLikes.fromNotEnoughBalance(
 						error,
-						this.taskDocument.postLink,
-						this.taskDocument.likesCount,
+						task.postLink,
+						task.likesCount,
 					);
 				}
 				
@@ -45,8 +45,8 @@ class AutoLikesTask extends BaseTask {
 					throw TaskErrorFactory.createError(
 						'likes',
 						error,
-						this.taskDocument.postLink,
-						this.taskDocument.likesCount,
+						task.postLink,
+						task.likesCount,
 					);
 				}
 			}
@@ -55,8 +55,8 @@ class AutoLikesTask extends BaseTask {
 				if (error instanceof NotEnoughBalance) {
 					throw NotEnoughBalanceForReposts.fromNotEnoughBalance(
 						error,
-						this.taskDocument.postLink,
-						this.taskDocument.likesCount,
+						task.postLink,
+						task.repostsCount,
 					);
 				}
 				
@@ -64,8 +64,8 @@ class AutoLikesTask extends BaseTask {
 					throw TaskErrorFactory.createError(
 						'reposts',
 						error,
-						this.taskDocument.postLink,
-						this.taskDocument.repostsCount,
+						task.postLink,
+						task.repostsCount,
 					);
 				}
 			}
@@ -74,8 +74,8 @@ class AutoLikesTask extends BaseTask {
 				if (error instanceof NotEnoughBalance) {
 					throw NotEnoughBalanceForComments.fromNotEnoughBalance(
 						error,
-						this.taskDocument.postLink,
-						this.taskDocument.commentsCount,
+						task.postLink,
+						task.commentsCount,
 					);
 				}
 				
@@ -83,8 +83,8 @@ class AutoLikesTask extends BaseTask {
 					throw TaskErrorFactory.createError(
 						'comments',
 						error,
-						this.taskDocument.postLink,
-						this.taskDocument.commentsCount,
+						task.postLink,
+						task.commentsCount,
 					);
 				}
 			}
