@@ -277,6 +277,7 @@ class UserApi extends BaseApi {
 		
 		account.user.balance += invoice.amount;
 		invoice.status = TopUpInvoice.status.paid;
+		invoice.purse  = payment.sender;
 		invoice.paidAt = moment.now();
 		await Promise.all([
 			invoice.save(),
