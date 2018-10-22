@@ -45,6 +45,7 @@ class CommentsCommonTask extends BaseTask {
 			logger      : this.logger,
 			config      : this.config,
 			taskDocument: commentsTaskDocument,
+			account     : this.account,
 		});
 		
 		this.logger.info({

@@ -71,6 +71,7 @@ class LikesCommonTask extends BaseTask {
 			logger      : this.logger,
 			config      : this.config,
 			taskDocument: likesTaskDocument,
+			account     : this.account,
 		});
 		
 		this.logger.info({
