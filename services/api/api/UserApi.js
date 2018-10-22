@@ -64,6 +64,11 @@ class UserApi extends BaseApi {
 		});
 		
 		await user.save();
+		
+		const checkBalanceTask = mongoose.model('CheckBalanceTask').createInstance({
+			user,
+		});
+		await checkBalanceTask.save();
 		const token = this.createToken(user);
 		
 		const displayUser = user.toObject();

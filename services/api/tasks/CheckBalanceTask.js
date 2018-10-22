@@ -62,6 +62,7 @@ class CheckBalanceTask extends BaseTask {
 					this.account.user.chatId,
 				);
 			}
+			this.taskDocument.lastHandleAt = moment.now();
 		} catch (error) {
 			this.logger.error({
 				error,
@@ -69,8 +70,8 @@ class CheckBalanceTask extends BaseTask {
 				userId: this.account.user.id,
 				taskId: this.taskDocument.id,
 			});
-		} finally {
 			this.taskDocument.lastHandleAt = moment.now();
+		} finally {
 			this.taskDocument.status       = Task.status.waiting;
 			await this.taskDocument.save();
 		}
