@@ -111,6 +111,15 @@ class AutoLikesTask extends BaseTask {
 			return true;
 		}
 		
+		if (!targetPublics.length) {
+			this.logger.info({
+				message: 'Нет пабликов для накрутки',
+				userId : this.taskDocument.user.id,
+				taskId : this.taskDocument.id,
+			});
+			return false;
+		}
+		
 		if (!mentionId) {
 			this.logger.info({
 				message: 'Нет ссылки упоминания mentionId',
@@ -169,16 +178,6 @@ class AutoLikesTask extends BaseTask {
 				})
 				.lean()
 				.exec();
-			
-			if (!targetPublics.length) {
-				this.taskDocument.status = Task.status.waiting;
-				this.logger.info({
-					message: 'Нет пабликов для накрутки',
-					userId : this.taskDocument.user.id,
-					taskId : this.taskDocument.id,
-				});
-				return;
-			}
 			
 			const groupLink = Group.getLinkByPublicId(this.taskDocument.group.publicId);
 			
