@@ -90,8 +90,8 @@ services:
       context: .
       dockerfile: ./services/fluentd/Dockerfile
     ports:
-      - 24224:24224
-      - 24224:24224/udp
+      - 127.0.0.1:24224:24224
+      - 127.0.0.1:24224:24224/udp
     logging: *default-logging
     networks:
       - app-net
@@ -110,10 +110,20 @@ services:
     networks:
       - app-net
     logging: *default-logging
-  kibana:
-    image: kibana:6.4.2
+  kibana-nginx:
+    image: nginx
+    depends_on:
+      - kibana
+    networks:
+      - app-net
+    volumes:
+      - ./.htpasswd:/etc/nginx/.htpasswd
+      - ./kibana-nginx.conf:/etc/nginx/nginx.conf
     ports:
       - 5601:5601
+    logging: *default-logging
+  kibana:
+    image: kibana:6.4.2
     logging: *default-logging
     networks:
       - app-net
