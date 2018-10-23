@@ -72,6 +72,7 @@ class LikesCommonTask extends BaseTask {
 			config      : this.config,
 			taskDocument: likesTaskDocument,
 			account     : this.account,
+			uMetrics    : this.uMetrics,
 		});
 		
 		this.logger.info({

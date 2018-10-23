@@ -75,6 +75,7 @@ class RepostsCheckTask extends BaseTask {
 				taskDocument: this.taskDocument.parentTask,
 				rpcClient   : this.rpcClient,
 				config      : this.config,
+				uMetrics    : this.uMetrics,
 			});
 			
 			this.logger.info({
