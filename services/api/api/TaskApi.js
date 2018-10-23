@@ -150,69 +150,72 @@ class TaskApi extends BaseApi {
 		bluebird.map(
 			tasks,
 			async (_task) => {
-				//eslint-disable-next-line no-param-reassign
-				_task.status = Task.status.pending;
-				await _task.save();
-				const TaskClass = mapperModelTypeToTask[_task.__t];
-				
-				if (!TaskClass) {
-					this.logger.warn({
-						message: 'task is not instance of BaseTask',
-						task   : _task.toObject(),
+				try {
+					//eslint-disable-next-line no-param-reassign
+					_task.status = Task.status.pending;
+					await _task.save();
+					const TaskClass = mapperModelTypeToTask[_task.__t];
+					
+					if (!TaskClass) {
+						this.logger.warn({
+							message: 'task is not instance of BaseTask',
+							task   : _task.toObject(),
+						});
+						return;
+					}
+					
+					const task = new TaskClass({
+						billing     : this.billing,
+						account     : this.billing.createAccount(_task.user),
+						logger      : this.logger,
+						taskDocument: _task,
+						rpcClient   : this.rpcClient,
+						config      : this.config,
+						alert       : this.alert,
 					});
-					return;
-				}
 				
-				const task = new TaskClass({
-					billing     : this.billing,
-					account     : this.billing.createAccount(_task.user),
-					logger      : this.logger,
-					taskDocument: _task,
-					rpcClient   : this.rpcClient,
-					config      : this.config,
-					alert       : this.alert,
-				});
-				
-				// eslint-disable-next-line consistent-return
-				return task.handle().catch((errors) => {
+					await task.handle();
+				} catch (errors) {
 					if (!Array.isArray(errors)) {
-						// eslint-disable-next-line no-param-reassign
+						// eslint-disable-next-line no-ex-assign
 						errors = [errors];
 					}
 					
-					return bluebird.map(
+					await bluebird.map(
 						errors,
-						(error) => {
-							// Не предвиденная ошибка
-							if (!(error instanceof BaseTaskError)) {
-								//eslint-disable-next-line no-param-reassign
-								error = TaskErrorFactory.createError('default', error);
+						async (error) => {
+							try {
+								// Не предвиденная ошибка
+								if (!(error instanceof BaseTaskError)) {
+									//eslint-disable-next-line no-param-reassign
+									error = TaskErrorFactory.createError('default', error);
+									this.logger.error({
+										message: 'Fatal error при выполении задач',
+										taskId : _task.id,
+										userId : _task.user.id,
+										error,
+									});
+								} else {
+									this.logger.error({
+										message: 'Ошибки при выполнении задачи',
+										taskId : _task.id,
+										userId : _task.user.id,
+										error,
+									});
+								}
+								
+								await this.alert.sendError(error.toMessageString(), _task.user.chatId);
+							} catch (_error) {
 								this.logger.error({
-									message: 'Fatal error при выполении задач',
-									taskId : _task.id,
-									userId : _task.user.id,
-									error,
-								});
-							} else {
-								this.logger.error({
-									message: 'Ошибки при выполнении задачи',
-									taskId : _task.id,
-									userId : _task.user.id,
-									error,
-								});
-							}
-							
-							return this.alert
-								.sendError(error.toMessageString(), _task.user.chatId)
-								.catch(_error => this.logger.error({
 									message: 'fatal error',
 									error  : _error,
 									userId : _task.user.id,
 									taskId : _task.id,
-								}));
+								});
+							}
 						},
 					);
-				});
+				}
 			},
 		).then(() => {
 			// Graceful reload
