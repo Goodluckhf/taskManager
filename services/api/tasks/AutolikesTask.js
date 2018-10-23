@@ -242,6 +242,7 @@ class AutoLikesTask extends BaseTask {
 					taskDocument: likesCommonDocument,
 					rpcClient   : this.rpcClient,
 					config      : this.config,
+					uMetrics    : this.uMetrics,
 				});
 				
 				this.taskDocument.subTasks.push(likesCommonDocument);
@@ -276,6 +277,7 @@ class AutoLikesTask extends BaseTask {
 					taskDocument: commentsCommonDocument,
 					rpcClient   : this.rpcClient,
 					config      : this.config,
+					uMetrics    : this.uMetrics,
 				});
 				this.taskDocument.subTasks.push(commentsCommonDocument);
 				
@@ -309,6 +311,7 @@ class AutoLikesTask extends BaseTask {
 					taskDocument: repostsCommonDocument,
 					rpcClient   : this.rpcClient,
 					config      : this.config,
+					uMetrics    : this.uMetrics,
 				});
 				
 				this.taskDocument.subTasks.push(repostsCommonDocument);
@@ -330,7 +333,43 @@ class AutoLikesTask extends BaseTask {
 			
 			await bluebird.map(
 				tasksToHandle,
-				task => task.handle().catch(error => errors.push(error)),
+				async (task) => {
+					const startTime = new Date();
+					try {
+						await task.handle();
+						try {
+							this.uMetrics.taskSuccessCount.inc(1, { task_type: task.taskDocument.__t });
+						} catch (error) {
+							this.logger.error({
+								mark   : 'uMetrics',
+								message: 'unexpected error',
+								error,
+							});
+						}
+					} catch (error) {
+						try {
+							this.uMetrics.taskErrorCount.inc(1, { task_type: task.taskDocument.__t });
+						} catch (_error) {
+							this.logger.error({
+								mark   : 'uMetrics',
+								message: 'unexpected error',
+								error  : _error,
+							});
+						}
+						errors.push(error);
+					} finally {
+						try {
+							const taskDuration = Date.now() - startTime;
+							this.uMetrics.taskDuration.set(taskDuration, { task_type: task.taskDocument.__t });
+						} catch (error) {
+							this.logger.error({
+								mark   : 'uMetrics',
+								message: 'unexpected error',
+								error,
+							});
+						}
+					}
+				},
 			);
 			
 			if (errors.length) {

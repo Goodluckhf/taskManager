@@ -20,6 +20,7 @@ import Captcha                  from '../../../../lib/Captcha';
 
 const transport = new PullTransport(logger, config.get('uMetrics.port'));
 const uMetrics  = new UMetrics(transport, { prefix: 'umetrics' });
+uMetrics.start();
 // @TODO: Переложить в отдельное место
 // Пока метрики регистриурются здесь
 

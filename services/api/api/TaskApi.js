@@ -36,13 +36,15 @@ const mapperModelTypeToTask = {
  * @property {RpcClient} rpcClient
  * @property {Alert} alert
  * @property {Billing} billing
+ * @property {UMetrics} uMetrics
  */
 class TaskApi extends BaseApi {
-	constructor(rpcClient, alert, billing, ...args) {
+	constructor(rpcClient, alert, billing, uMetrics, ...args) {
 		super(...args);
 		this.rpcClient = rpcClient;
 		this.alert     = alert;
 		this.billing   = billing;
+		this.uMetrics  = uMetrics;
 	}
 	
 	
@@ -150,6 +152,7 @@ class TaskApi extends BaseApi {
 		bluebird.map(
 			tasks,
 			async (_task) => {
+				const startTime = new Date();
 				try {
 					//eslint-disable-next-line no-param-reassign
 					_task.status = Task.status.pending;
@@ -172,9 +175,19 @@ class TaskApi extends BaseApi {
 						rpcClient   : this.rpcClient,
 						config      : this.config,
 						alert       : this.alert,
+						uMetrics    : this.uMetrics,
 					});
-				
+					
 					await task.handle();
+					try {
+						this.uMetrics.taskSuccessCount.inc(1, { task_type: _task.__t });
+					} catch (error) {
+						this.logger.error({
+							mark   : 'uMetrics',
+							message: 'unexpected error',
+							error,
+						});
+					}
 				} catch (errors) {
 					if (!Array.isArray(errors)) {
 						// eslint-disable-next-line no-ex-assign
@@ -185,6 +198,15 @@ class TaskApi extends BaseApi {
 						errors,
 						async (error) => {
 							try {
+								try {
+									this.uMetrics.taskErrorCount.inc(1, { task_type: _task.__t });
+								} catch (_error) {
+									this.logger.error({
+										mark   : 'uMetrics',
+										message: 'unexpected error',
+										error  : _error,
+									});
+								}
 								// Не предвиденная ошибка
 								if (!(error instanceof BaseTaskError)) {
 									//eslint-disable-next-line no-param-reassign
@@ -215,6 +237,17 @@ class TaskApi extends BaseApi {
 							}
 						},
 					);
+				} finally {
+					try {
+						const taskDuration = Date.now() - startTime;
+						this.uMetrics.taskDuration.set(taskDuration, { task_type: _task.__t });
+					} catch (error) {
+						this.logger.error({
+							mark   : 'uMetrics',
+							message: 'unexpected error',
+							error,
+						});
+					}
 				}
 			},
 		).then(() => {
