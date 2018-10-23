@@ -36,13 +36,15 @@ const mapperModelTypeToTask = {
  * @property {RpcClient} rpcClient
  * @property {Alert} alert
  * @property {Billing} billing
+ * @property {UMetrics} uMetrics
  */
 class TaskApi extends BaseApi {
-	constructor(rpcClient, alert, billing, ...args) {
+	constructor(rpcClient, alert, billing, uMetrics, ...args) {
 		super(...args);
 		this.rpcClient = rpcClient;
 		this.alert     = alert;
 		this.billing   = billing;
+		this.uMetrics  = uMetrics;
 	}
 	
 	
@@ -150,69 +152,103 @@ class TaskApi extends BaseApi {
 		bluebird.map(
 			tasks,
 			async (_task) => {
-				//eslint-disable-next-line no-param-reassign
-				_task.status = Task.status.pending;
-				await _task.save();
-				const TaskClass = mapperModelTypeToTask[_task.__t];
-				
-				if (!TaskClass) {
-					this.logger.warn({
-						message: 'task is not instance of BaseTask',
-						task   : _task.toObject(),
+				const startTime = new Date();
+				try {
+					//eslint-disable-next-line no-param-reassign
+					_task.status = Task.status.pending;
+					await _task.save();
+					const TaskClass = mapperModelTypeToTask[_task.__t];
+					
+					if (!TaskClass) {
+						this.logger.warn({
+							message: 'task is not instance of BaseTask',
+							task   : _task.toObject(),
+						});
+						return;
+					}
+					
+					const task = new TaskClass({
+						billing     : this.billing,
+						account     : this.billing.createAccount(_task.user),
+						logger      : this.logger,
+						taskDocument: _task,
+						rpcClient   : this.rpcClient,
+						config      : this.config,
+						alert       : this.alert,
+						uMetrics    : this.uMetrics,
 					});
-					return;
-				}
-				
-				const task = new TaskClass({
-					billing     : this.billing,
-					account     : this.billing.createAccount(_task.user),
-					logger      : this.logger,
-					taskDocument: _task,
-					rpcClient   : this.rpcClient,
-					config      : this.config,
-					alert       : this.alert,
-				});
-				
-				// eslint-disable-next-line consistent-return
-				return task.handle().catch((errors) => {
+					
+					await task.handle();
+					try {
+						this.uMetrics.taskSuccessCount.inc(1, { task_type: _task.__t });
+					} catch (error) {
+						this.logger.error({
+							mark   : 'uMetrics',
+							message: 'unexpected error',
+							error,
+						});
+					}
+				} catch (errors) {
 					if (!Array.isArray(errors)) {
-						// eslint-disable-next-line no-param-reassign
+						// eslint-disable-next-line no-ex-assign
 						errors = [errors];
 					}
 					
-					return bluebird.map(
+					await bluebird.map(
 						errors,
-						(error) => {
-							// Не предвиденная ошибка
-							if (!(error instanceof BaseTaskError)) {
-								//eslint-disable-next-line no-param-reassign
-								error = TaskErrorFactory.createError('default', error);
+						async (error) => {
+							try {
+								try {
+									this.uMetrics.taskErrorCount.inc(1, { task_type: _task.__t });
+								} catch (_error) {
+									this.logger.error({
+										mark   : 'uMetrics',
+										message: 'unexpected error',
+										error  : _error,
+									});
+								}
+								// Не предвиденная ошибка
+								if (!(error instanceof BaseTaskError)) {
+									//eslint-disable-next-line no-param-reassign
+									error = TaskErrorFactory.createError('default', error);
+									this.logger.error({
+										message: 'Fatal error при выполении задач',
+										taskId : _task.id,
+										userId : _task.user.id,
+										error,
+									});
+								} else {
+									this.logger.error({
+										message: 'Ошибки при выполнении задачи',
+										taskId : _task.id,
+										userId : _task.user.id,
+										error,
+									});
+								}
+								
+								await this.alert.sendError(error.toMessageString(), _task.user.chatId);
+							} catch (_error) {
 								this.logger.error({
-									message: 'Fatal error при выполении задач',
-									taskId : _task.id,
-									userId : _task.user.id,
-									error,
-								});
-							} else {
-								this.logger.error({
-									message: 'Ошибки при выполнении задачи',
-									taskId : _task.id,
-									userId : _task.user.id,
-									error,
-								});
-							}
-							
-							return this.alert
-								.sendError(error.toMessageString(), _task.user.chatId)
-								.catch(_error => this.logger.error({
 									message: 'fatal error',
 									error  : _error,
 									userId : _task.user.id,
 									taskId : _task.id,
-								}));
+								});
+							}
 						},
 					);
-				});
+				} finally {
+					try {
+						const taskDuration = Date.now() - startTime;
+						this.uMetrics.taskDuration.set(taskDuration, { task_type: _task.__t });
+					} catch (error) {
+						this.logger.error({
+							mark   : 'uMetrics',
+							message: 'unexpected error',
+							error,
+						});
+					}
+				}
 			},
 		).then(() => {
 			// Graceful reload

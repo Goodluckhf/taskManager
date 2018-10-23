@@ -7,16 +7,18 @@ import PremiumAccount from '../billing/PremiumAccount';
  * @property {Config} config
  * @property {Billing} billing
  * @property {BaseAccount} account
+ * @property {UMetrics} uMetrics
  */
 class BaseTask {
 	//eslint-disable-next-line object-curly-newline
-	constructor({ logger, taskDocument, rpcClient, config, billing, account }) {
+	constructor({ logger, taskDocument, rpcClient, config, billing, account, uMetrics }) {
 		this.logger       = logger;
 		this.taskDocument = taskDocument;
 		this.rpcClient    = rpcClient;
 		this.config       = config;
 		this.billing      = billing;
 		this.account      = account;
+		this.uMetrics     = uMetrics;
 	}
 	
 	/**

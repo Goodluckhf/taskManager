@@ -46,6 +46,7 @@ class RepostsCommonTask extends BaseTask {
 			config      : this.config,
 			taskDocument: repostsTaskDocument,
 			account     : this.account,
+			uMetrics    : this.uMetrics,
 		});
 		
 		this.logger.info({

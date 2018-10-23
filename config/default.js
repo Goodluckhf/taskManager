@@ -22,6 +22,11 @@ module.exports = {
 		host: 'api',
 	},
 	
+	uMetrics: {
+		port: process.env.U_METRICS__PORT,
+		ttl : process.env.U_METRICS__TTL,
+	},
+	
 	rabbit: {
 		host             : 'rabbit',
 		port             : 5672,

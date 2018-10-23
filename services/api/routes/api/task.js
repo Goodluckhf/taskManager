@@ -10,15 +10,16 @@ import Alert   from '../../../../lib/Alert';
  * @param {Passport} passport
  * @param {Billing} billing
  * @param {Captcha} captcha
+ * @param {UMetrics} uMetrics
  */
-export default (router, rpcClient, passport, billing, captcha) => {
+export default (router, rpcClient, passport, billing, captcha, uMetrics) => {
 	const vkApi = new VkApi(captcha, logger, config.get('vkApi.token'), {
 		timeout: config.get('vkApi.timeout'),
 	});
 	const alert = new Alert(vkApi, logger);
 	
 	// Сам классс Api
-	const taskApi = new TaskApi(rpcClient, alert, billing, config, logger);
+	const taskApi = new TaskApi(rpcClient, alert, billing, uMetrics, config, logger);
 	
 	router.post('/task/stop/:id', passport.authenticate('jwt', { session: false }), async (ctx) => {
 		const { id } = ctx.params;
