@@ -96,3 +96,22 @@ export const logout = () => ({
 	type   : LOGOUT,
 	payload: {},
 });
+
+// @TODO: Вынести в отдельный файл
+export const SET_EXTERNAL_LINKS_REQUEST = 'AUTH__SET_EXTERNAL_LINKS_REQUEST';
+export const setExternalLinksRequest  = links => ({
+	type   : SET_EXTERNAL_LINKS_REQUEST,
+	payload: { links },
+});
+
+export const SET_EXTERNAL_LINKS_FAILURE = 'AUTH__SET_EXTERNAL_LINKS_FAILURE';
+export const setExternalLinksFailure = error => ({
+	type   : SET_EXTERNAL_LINKS_FAILURE,
+	payload: { error },
+});
+
+export const SET_EXTERNAL_LINKS_SUCCESS = 'AUTH__SET_EXTERNAL_LINKS_SUCCESS';
+export const setExternalLinksSuccess = () => ({
+	type   : SET_EXTERNAL_LINKS_SUCCESS,
+	payload: {},
+});
