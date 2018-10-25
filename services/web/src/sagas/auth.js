@@ -6,13 +6,27 @@ import axios    from 'axios';
 import { push } from 'connected-react-router';
 
 import {
-	LOGIN_REQUEST, NEED_LOGIN, LOGOUT,
-	REGISTER_REQUEST, GET_USER_DATA_REQUEST,
-	CREATE_CHAT_REQUEST, GET_USER_BALANCE_REQUEST,
-	loginFailure, loginSuccess, registerFailure,
-	needLogin, getUserDataFailure, getUserDataSuccess,
-	getUserDataRequest, createChatSuccess, createChatFailure,
-	getUserBalanceRequest, getUserBalanceSuccess,
+	LOGIN_REQUEST,
+	NEED_LOGIN,
+	LOGOUT,
+	REGISTER_REQUEST,
+	GET_USER_DATA_REQUEST,
+	CREATE_CHAT_REQUEST,
+	GET_USER_BALANCE_REQUEST,
+	loginFailure,
+	loginSuccess,
+	registerFailure,
+	needLogin,
+	getUserDataFailure,
+	getUserDataSuccess,
+	getUserDataRequest,
+	createChatSuccess,
+	createChatFailure,
+	getUserBalanceRequest,
+	getUserBalanceSuccess,
+	SET_EXTERNAL_LINKS_REQUEST,
+	setExternalLinksSuccess,
+	setExternalLinksFailure,
 } from '../actions/auth';
 import { callApi } from './api';
 
@@ -150,5 +164,23 @@ export default function* () {
 	yield takeEvery(LOGOUT, function* () {
 		window.localStorage.removeItem(localstorageJwtKey);
 		yield put(push('/login'));
+	});
+	
+	yield takeEvery(SET_EXTERNAL_LINKS_REQUEST, function* ({ payload: links }) {
+		try {
+			yield callApi({
+				url   : 'user/links',
+				method: 'put',
+				data  : links,
+			});
+			yield put(setExternalLinksSuccess());
+		} catch (error) {
+			if (error.response && error.response.data) {
+				yield put(setExternalLinksFailure(error.response.data));
+				return;
+			}
+			
+			yield put(setExternalLinksFailure(error));
+		}
 	});
 }

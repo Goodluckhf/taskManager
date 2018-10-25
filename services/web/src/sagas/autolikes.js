@@ -112,6 +112,7 @@ export default function* () {
 	});
 }
 
+// @TODO: переименовать в refresh
 export const update = function* () {
 	const filter = yield select(state => (
 		state.autoLikesPage.getIn(['list', 'filter'])

@@ -48,6 +48,11 @@ export default function* () {
 	const interval         = 5 * 1000;
 	let currentLoopTask    = null;
 	let currentBalanceTask = null;
+	
+	// @TODO: пока идет 2 запроса
+	// Но сейчас это вообще не узкое место
+	yield getUserData();
+	
 	yield takeEvery(LOCATION_CHANGE, function* ({ payload: { location } }) {
 		if (currentLoopTask) {
 			yield cancel(currentLoopTask);
