@@ -133,9 +133,10 @@ class UserApi extends BaseApi {
 	 */
 	async getUser(account) {
 		const data = {
-			chatId      : account.user.chatId,
-			vkLink      : linkByVkUserId(account.user.vkId),
-			systemVkLink: linkByVkUserId(this.config.get('vkApi.id')),
+			chatId       : account.user.chatId,
+			vkLink       : linkByVkUserId(account.user.vkId),
+			systemVkLink : linkByVkUserId(this.config.get('vkApi.id')),
+			externalLinks: account.user.targetLinks,
 		};
 		
 		if (account instanceof BillingAccount) {
@@ -354,6 +355,17 @@ class UserApi extends BaseApi {
 			})
 			.lean()
 			.exec();
+	}
+	
+	/**
+	 * @param {UserDocument} user
+	 * @param {Array.<String>} links
+	 * @return {Promise<void>}
+	 */
+	// eslint-disable-next-line class-methods-use-this
+	async setExternalLinks(user, links) {
+		user.targetLinks = links;
+		await user.save();
 	}
 }
 
