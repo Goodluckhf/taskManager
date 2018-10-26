@@ -78,6 +78,8 @@ class LikesCommonTask extends BaseTask {
 		this.logger.info({
 			service,
 			mark      : 'likes',
+			status    : 'pending',
+			try       : serviceIndex,
 			message   : 'Запускаем задачу накрутки лайков',
 			likesCount: this.taskDocument.likesCount,
 			postLink  : this.taskDocument.postLink,
@@ -97,6 +99,8 @@ class LikesCommonTask extends BaseTask {
 			service,
 			likesToCheck,
 			mark      : 'likes',
+			status    : 'success',
+			try       : serviceIndex,
 			message   : 'Выполнилась без ошибки. Создаем задачу на проверку',
 			likesCount: this.taskDocument.likesCount,
 			postLink  : this.taskDocument.postLink,
@@ -132,6 +136,13 @@ class LikesCommonTask extends BaseTask {
 			this.logger.error({
 				error,
 				service,
+				mark      : 'likes',
+				status    : 'fail',
+				try       : serviceIndex,
+				likesCount: this.taskDocument.likesCount,
+				postLink  : this.taskDocument.postLink,
+				userId    : this.taskDocument.user.id,
+				taskId    : this.taskDocument.id,
 			});
 			
 			if (!(error instanceof NotEnoughBalanceForLikes)) {
