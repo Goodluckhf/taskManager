@@ -30,6 +30,9 @@ const userSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref : 'Group',
 	}],
+	
+	// Внешние ссылки учавствующие в автонакртуке
+	targetLinks: [String],
 });
 
 const algorithmIterations = 100;
@@ -43,6 +46,7 @@ const hashLength          = 128;
  * @property {String} chatId
  * @property {String} vkId
  * @property {Array.<GroupDocument>} targetGroups
+ * @property {Array.<String>} targetLinks
  */
 class UserDocument {
 	/**

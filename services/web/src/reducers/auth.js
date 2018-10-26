@@ -29,7 +29,8 @@ export default (authState = auth, { type, payload }) => {
 		return authState
 			.update('vkLink', () => payload.vkLink)
 			.update('chatId', () => payload.chatId)
-			.update('systemVkLink', () => payload.systemVkLink);
+			.update('systemVkLink', () => payload.systemVkLink)
+			.update('externalLinks', () => payload.externalLinks);
 	}
 	
 	if (type === GET_USER_BALANCE_SUCCESS) {

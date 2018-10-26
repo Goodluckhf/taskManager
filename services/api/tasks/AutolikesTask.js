@@ -15,6 +15,7 @@ import {
 }                              from '../api/errors/tasks';
 import BaseTaskError           from '../api/errors/tasks/BaseTaskError';
 import TaskErrorFactory        from '../api/errors/tasks/TaskErrorFactory';
+import { cleanLink }           from '../../../lib/helper';
 
 /**
  * @property {AutoLikesTaskDocument} taskDocument
@@ -94,23 +95,48 @@ class AutoLikesTask extends BaseTask {
 	}
 	
 	/**
-	 * @param {String} mentionId
 	 * @param {String} link
-	 * @param {String} postLink
-	 * @param {Array.<GroupDocument>} targetPublics
+	 * @param {Array.<String>} targetLinks
 	 * @return {Boolean}
 	 */
-	needToStartTask(mentionId, link, postLink, targetPublics) {
-		if (this.taskDocument.contentPosts && !link && !mentionId) {
-			this.logger.info({
-				message: 'Вышел следущий контентный пост',
-				userId : this.taskDocument.user.id,
-				taskId : this.taskDocument.id,
-				postLink,
-			});
+	checkExternalLink(link, targetLinks) {
+		try {
+			if (!link || !targetLinks.length) {
+				return false;
+			}
+			const cleanedLink = cleanLink(link);
+			const hasExternalLink = targetLinks.some(targetLink => (
+				cleanedLink === cleanLink(targetLink)
+			));
+			if (!hasExternalLink) {
+				this.logger.info({
+					message    : 'не совпало не с 1 из внешних ссылок',
+					targetLinks: targetLinks.toObject(),
+					cleanedLink,
+					link,
+				});
+				return false;
+			}
+			
 			return true;
+		} catch (error) {
+			this.logger.error({
+				error,
+				link,
+				userId: this.taskDocument.user.id,
+				taskId: this.taskDocument.id,
+			});
+			return false;
 		}
-		
+	}
+	
+	/**
+	 * @param {String} postLink
+	 * @param {String} mentionId
+	 * @param {Array.<String>} targetPublics
+	 * @return {boolean}
+	 */
+	checkTargetPublics(postLink, mentionId, targetPublics) {
 		if (!targetPublics.length) {
 			this.logger.info({
 				message: 'Нет пабликов для накрутки',
@@ -149,6 +175,29 @@ class AutoLikesTask extends BaseTask {
 		}
 		
 		return true;
+	}
+	
+	/**
+	 * @param {String} mentionId
+	 * @param {String} link
+	 * @param {String} postLink
+	 * @param {Array.<GroupDocument>} targetPublics
+	 * @param {Array.<String>} targetLinks
+	 * @return {Boolean}
+	 */
+	needToStartTask(mentionId, link, postLink, targetPublics, targetLinks) {
+		if (this.taskDocument.contentPosts && !link && !mentionId) {
+			this.logger.info({
+				message: 'Вышел следущий контентный пост',
+				userId : this.taskDocument.user.id,
+				taskId : this.taskDocument.id,
+				postLink,
+			});
+			return true;
+		}
+		
+		return this.checkExternalLink(link, targetLinks) ||
+			this.checkTargetPublics(postLink, mentionId, targetPublics);
 	}
 	
 	async handle() {
@@ -219,7 +268,8 @@ class AutoLikesTask extends BaseTask {
 				return;
 			}
 			
-			if (!this.needToStartTask(mentionId, link, postLink, targetPublics)) {
+			const { targetLinks } = this.taskDocument.user;
+			if (!this.needToStartTask(mentionId, link, postLink, targetPublics, targetLinks)) {
 				this.taskDocument.status = Task.status.waiting;
 				return;
 			}

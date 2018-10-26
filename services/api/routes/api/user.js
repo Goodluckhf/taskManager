@@ -63,6 +63,13 @@ export default (router, passport, billing, axios, captcha) => {
 		};
 	});
 	
+	router.put('/user/links', passport.authenticate('jwt', { session: false }), async (ctx) => {
+		ctx.body = {
+			success: true,
+			data   : await userApi.setExternalLinks(ctx.state.user, ctx.request.body.links),
+		};
+	});
+	
 	router.post('/user/balance/check',  passport.authenticate('jwt', { session: false }), async (ctx) => {
 		const { user }   = ctx.state;
 		const account    = billing.createAccount(user);

@@ -77,13 +77,14 @@ export const fatalError = Map({});
 
 // Вытаскиваем из jwt данные
 const _auth = {
-	jwt         : null,
-	email       : '',
-	chatId      : null,
-	vkLink      : '',
-	systemVkLink: '',
-	lastRoute   : '',
-	balance     : null,
+	jwt          : null,
+	email        : '',
+	chatId       : null,
+	vkLink       : '',
+	systemVkLink : '',
+	lastRoute    : '',
+	balance      : null,
+	externalLinks: [],
 };
 
 try {

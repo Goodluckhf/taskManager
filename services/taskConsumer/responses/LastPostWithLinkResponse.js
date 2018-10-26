@@ -80,7 +80,11 @@ class LastPostWithLinkResponse extends Response {
 		} else {
 			const anyLink = $lastPost.find('.wall_post_text a:not(.wall_post_more)').eq(0);
 			if (anyLink.length && anyLink.attr('href')) {
-				result.link = parseLink(anyLink.attr('href'));
+				if (/vk\.cc/.test(anyLink.text())) {
+					result.link = parseLink(anyLink.text());
+				} else {
+					result.link = parseLink(anyLink.attr('href'));
+				}
 			}
 		}
 		

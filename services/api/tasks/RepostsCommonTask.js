@@ -52,6 +52,8 @@ class RepostsCommonTask extends BaseTask {
 		this.logger.info({
 			service,
 			mark        : 'reposts',
+			status      : 'pending',
+			try         : serviceIndex,
 			message     : 'Запускаем задачу накрутки репостов',
 			repostsCount: this.taskDocument.repostsCount,
 			postLink    : this.taskDocument.postLink,
@@ -71,6 +73,8 @@ class RepostsCommonTask extends BaseTask {
 			service,
 			repostsToCheck,
 			mark        : 'reposts',
+			status      : 'success',
+			try         : serviceIndex,
 			message     : 'Выполнилась без ошибки. Создаем задачу на проверку',
 			repostsCount: this.taskDocument.repostsCount,
 			postLink    : this.taskDocument.postLink,
@@ -106,6 +110,13 @@ class RepostsCommonTask extends BaseTask {
 			this.logger.error({
 				error,
 				service,
+				try         : serviceIndex,
+				mark        : 'reposts',
+				status      : 'fail',
+				repostsCount: this.taskDocument.repostsCount,
+				postLink    : this.taskDocument.postLink,
+				userId      : this.taskDocument.user.id,
+				taskId      : this.taskDocument.id,
 			});
 			
 			if (serviceOrder.length !== serviceIndex + 1) {
