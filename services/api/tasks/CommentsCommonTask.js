@@ -52,6 +52,8 @@ class CommentsCommonTask extends BaseTask {
 		this.logger.info({
 			service,
 			mark         : 'comments',
+			status       : 'pending',
+			try          : serviceIndex,
 			message      : 'Запускаем задачу накрутки комментов',
 			commentsCount: this.taskDocument.commentsCount,
 			postLink     : this.taskDocument.postLink,
@@ -70,6 +72,8 @@ class CommentsCommonTask extends BaseTask {
 			service,
 			commentsToCheck,
 			mark         : 'comments',
+			status       : 'success',
+			try          : serviceIndex,
 			message      : 'Выполнилась без ошибки. Создаем задачу на проверку',
 			commentsCount: this.taskDocument.commentsCount,
 			postLink     : this.taskDocument.postLink,
@@ -105,6 +109,13 @@ class CommentsCommonTask extends BaseTask {
 			this.logger.error({
 				error,
 				service,
+				mark         : 'comments',
+				status       : 'fail',
+				try          : serviceIndex,
+				commentsCount: this.taskDocument.commentsCount,
+				postLink     : this.taskDocument.postLink,
+				userId       : this.taskDocument.user.id,
+				taskId       : this.taskDocument.id,
 			});
 			
 			if (serviceOrder.length !== serviceIndex + 1) {
