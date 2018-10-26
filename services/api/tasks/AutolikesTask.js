@@ -101,7 +101,7 @@ class AutoLikesTask extends BaseTask {
 	 */
 	checkExternalLink(link, targetLinks) {
 		try {
-			if (!targetLinks.length) {
+			if (!link || !targetLinks.length) {
 				return false;
 			}
 			const cleanedLink = cleanLink(link);
@@ -110,9 +110,9 @@ class AutoLikesTask extends BaseTask {
 			));
 			if (!hasExternalLink) {
 				this.logger.info({
-					message: 'не совпало не с 1 из внешних ссылок',
+					message    : 'не совпало не с 1 из внешних ссылок',
+					targetLinks: targetLinks.toObject(),
 					cleanedLink,
-					targetLinks,
 					link,
 				});
 				return false;
