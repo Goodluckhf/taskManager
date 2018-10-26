@@ -246,6 +246,7 @@ class UserApi extends BaseApi {
 					Authorization : `Bearer ${token}`,
 					'Content-Type': 'application/x-www-form-urlencoded',
 				},
+				timeout: 10000,
 			},
 		);
 		
