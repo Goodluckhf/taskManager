@@ -27,6 +27,7 @@ class Z1y1x1Response extends Response {
 				content: postLink,
 				count  : repostsCount,
 			},
+			timeout: 7000,
 		});
 		
 		this.logger.info({
