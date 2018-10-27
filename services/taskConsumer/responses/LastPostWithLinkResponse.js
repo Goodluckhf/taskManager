@@ -2,24 +2,7 @@ import cheerio  from 'cheerio';
 import axios    from 'axios';
 import bluebird  from 'bluebird';
 import Response from '../../../lib/amqp/Response';
-import { getRandom } from '../../../lib/helper';
-
-const cleanLink = (link) => {
-	return link.replace(/^(?:https?:\/\/)?(?:www\.)?/, '');
-};
-
-const parseLink = (link) => {
-	if (!/\/away\.php\?/.test(link)) {
-		return cleanLink(link);
-	}
-	
-	const matches = link.match(/to=(.+?)&/);
-	if (!matches || !matches[1]) {
-		return cleanLink(link);
-	}
-	
-	return cleanLink(decodeURIComponent(matches[1]));
-};
+import { getRandom, cleanLink } from '../../../lib/helper';
 
 class LastPostWithLinkResponse extends Response {
 	/**
@@ -81,13 +64,13 @@ class LastPostWithLinkResponse extends Response {
 			const anyLink = $lastPost.find('.wall_post_text a:not(.wall_post_more)').eq(0);
 			if (anyLink.length && anyLink.attr('href')) {
 				if (/vk\.cc/.test(anyLink.text())) {
-					result.link = parseLink(anyLink.text());
+					result.link = cleanLink(anyLink.text());
 				} else {
 					// Для кирилических ссылок vk в href выдают подную чушь
 					// Поэтому берем из текста ссылки
 					// Если что-то не так
 					try {
-						result.link = parseLink(anyLink.attr('href'));
+						result.link = cleanLink(anyLink.attr('href'));
 					} catch (error) {
 						this.logger.warn({
 							error,
@@ -96,7 +79,7 @@ class LastPostWithLinkResponse extends Response {
 							linkText: anyLink.text(),
 						});
 						
-						result.link = parseLink(anyLink.text());
+						result.link = cleanLink(anyLink.text());
 					}
 				}
 			}
