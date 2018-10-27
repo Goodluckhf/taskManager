@@ -42,7 +42,7 @@ class Item extends PureComponent {
 						/>
 						:
 						<span className='h6'>
-							{this.props.isTarget ? 'Учавстует в лайках' : 'Не учавствует в лайках' }
+							{this.props.isTarget ? 'Учавстует в автонакрутке' : 'Не учавствует в автонакрутке' }
 						</span>
 					}
 				</CardBody>
