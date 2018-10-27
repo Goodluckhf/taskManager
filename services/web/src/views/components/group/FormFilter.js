@@ -67,7 +67,7 @@ class FormFilter extends PureComponent {
 							id={this.inputId}
 							onChange={this.onFilterChange}
 							type='checkbox'
-							label='Только для лайков'
+							label='Только для автонакрутки'
 							checked={this.state.isTarget}
 						/>
 					</InputGroup>

@@ -2,24 +2,7 @@ import cheerio  from 'cheerio';
 import axios    from 'axios';
 import bluebird  from 'bluebird';
 import Response from '../../../lib/amqp/Response';
-import { getRandom } from '../../../lib/helper';
-
-const cleanLink = (link) => {
-	return link.replace(/^(?:https?:\/\/)?(?:www\.)?/, '');
-};
-
-const parseLink = (link) => {
-	if (!/^\/away\.php\?/.test(link)) {
-		return cleanLink(link);
-	}
-	
-	const matches = link.match(/to=(.+?)&/);
-	if (!matches[1]) {
-		return cleanLink(link);
-	}
-	
-	return cleanLink(decodeURIComponent(matches[1]));
-};
+import { getRandom, cleanLink } from '../../../lib/helper';
 
 class LastPostWithLinkResponse extends Response {
 	/**
@@ -35,7 +18,7 @@ class LastPostWithLinkResponse extends Response {
 			const { data } = await axios({
 				url,
 				method : 'get',
-				timeout: 5000,
+				timeout: 8000,
 				headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0' },
 			});
 			const $ = cheerio.load(data);
@@ -81,9 +64,23 @@ class LastPostWithLinkResponse extends Response {
 			const anyLink = $lastPost.find('.wall_post_text a:not(.wall_post_more)').eq(0);
 			if (anyLink.length && anyLink.attr('href')) {
 				if (/vk\.cc/.test(anyLink.text())) {
-					result.link = parseLink(anyLink.text());
+					result.link = cleanLink(anyLink.text());
 				} else {
-					result.link = parseLink(anyLink.attr('href'));
+					// Для кирилических ссылок vk в href выдают подную чушь
+					// Поэтому берем из текста ссылки
+					// Если что-то не так
+					try {
+						result.link = cleanLink(anyLink.attr('href'));
+					} catch (error) {
+						this.logger.warn({
+							error,
+							groupLink,
+							link    : anyLink.attr('href'),
+							linkText: anyLink.text(),
+						});
+						
+						result.link = cleanLink(anyLink.text());
+					}
 				}
 			}
 		}
