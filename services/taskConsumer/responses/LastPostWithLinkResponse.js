@@ -9,12 +9,12 @@ const cleanLink = (link) => {
 };
 
 const parseLink = (link) => {
-	if (!/^\/away\.php\?/.test(link)) {
+	if (!/\/away\.php\?/.test(link)) {
 		return cleanLink(link);
 	}
 	
 	const matches = link.match(/to=(.+?)&/);
-	if (!matches[1]) {
+	if (!matches || !matches[1]) {
 		return cleanLink(link);
 	}
 	
@@ -35,7 +35,7 @@ class LastPostWithLinkResponse extends Response {
 			const { data } = await axios({
 				url,
 				method : 'get',
-				timeout: 5000,
+				timeout: 8000,
 				headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0' },
 			});
 			const $ = cheerio.load(data);
@@ -83,7 +83,21 @@ class LastPostWithLinkResponse extends Response {
 				if (/vk\.cc/.test(anyLink.text())) {
 					result.link = parseLink(anyLink.text());
 				} else {
-					result.link = parseLink(anyLink.attr('href'));
+					// Для кирилических ссылок vk в href выдают подную чушь
+					// Поэтому берем из текста ссылки
+					// Если что-то не так
+					try {
+						result.link = parseLink(anyLink.attr('href'));
+					} catch (error) {
+						this.logger.warn({
+							error,
+							groupLink,
+							link    : anyLink.attr('href'),
+							linkText: anyLink.text(),
+						});
+						
+						result.link = parseLink(anyLink.text());
+					}
 				}
 			}
 		}
