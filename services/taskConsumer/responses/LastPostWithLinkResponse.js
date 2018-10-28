@@ -18,7 +18,7 @@ class LastPostWithLinkResponse extends Response {
 			const { data } = await axios({
 				url,
 				method : 'get',
-				timeout: 8000,
+				timeout: 6000,
 				headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0' },
 			});
 			const $ = cheerio.load(data);
@@ -44,7 +44,18 @@ class LastPostWithLinkResponse extends Response {
 	
 	//eslint-disable-next-line class-methods-use-this
 	async process({ groupLink }) {
-		const $ = await this.getHtml(groupLink);
+		let $;
+		// Пока такой retry
+		try {
+			$ = await this.getHtml(groupLink);
+		} catch (error) {
+			this.logger.warn({
+				error,
+				groupLink,
+				mark: 'lastPost',
+			});
+			$ = await this.getHtml(groupLink);
+		}
 		const $lastPost = $('#page_wall_posts .post').eq(0);
 		if (!$lastPost.length) {
 			throw new Error('Группа пустая');

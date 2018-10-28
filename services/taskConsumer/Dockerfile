@@ -9,7 +9,7 @@ RUN npm i
 
 COPY . .
 
-RUN npx babel ./ -d ./dist --ignore node_modules,services/web
+RUN npx babel ./ -d ./dist --ignore node_modules,services/web,*.test.js
 
 ENV NODE_ENV=production
 RUN npm prune
