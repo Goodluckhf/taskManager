@@ -7,7 +7,10 @@ services:
     volumes:
       - mongo-data:/data/db
     logging:
-      driver: none
+      driver: "fluentd"
+      options:
+        fluentd-address: 0.0.0.0:24224
+        tag: default.mongo
     networks:
       - app-net
     ports:
@@ -18,7 +21,10 @@ services:
     volumes:
       - rabbit-data:/var/lib/rabbitmq:cached
     logging:
-      driver: none
+      driver: "fluentd"
+      options:
+        fluentd-address: 0.0.0.0:24224
+        tag: default.rabbit
     networks:
       - app-net
     env_file:
