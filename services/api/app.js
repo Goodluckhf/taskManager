@@ -84,4 +84,12 @@ process.on('SIGTERM', () => {
 	
 	app.listen(config.get('api.port'));
 	logger.info(`server listening on port: ${config.get('api.port')}`);
-})();
+})().catch((error) => {
+	logger.error({
+		message: 'fatal error',
+		error,
+	});
+	setTimeout(() => {
+		process.exit(1);
+	}, 1000);
+});
