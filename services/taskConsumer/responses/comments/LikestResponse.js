@@ -32,7 +32,11 @@ class LikestResponse extends Response {
 		try {
 			const page = await browser.newPage();
 			// Авторизовываемся
-			await page.goto('https://likest.ru/user', { waitUntil: 'networkidle2' });
+			const loginPageResponse = await page.goto('https://likest.ru/user', { waitUntil: 'networkidle2' });
+			if (loginPageResponse.status() !== 200) {
+				throw new Error('Сервис не доступен');
+			}
+			
 			await loginAction(page, this.captcha, login, password);
 			
 			await page.goto('https://likest.ru/comments/add', { waitUntil: 'networkidle2' });
