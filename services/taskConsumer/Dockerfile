@@ -2,7 +2,7 @@ FROM cheerlesscloud/node:8.7.0
 
 WORKDIR /home/www
 ENV NODE_ENV=development
-RUN apt-get install -y mc
+RUN apk update && apk add mc
 USER 1001
 
 COPY package*.json ./

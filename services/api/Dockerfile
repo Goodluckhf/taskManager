@@ -2,7 +2,7 @@ FROM node:8.12.0-alpine
 
 WORKDIR /home/www
 ENV NODE_ENV=development
-RUN apt-get install -y mc
+RUN apk update && apk add mc
 COPY package*.json ./
 RUN npm i
 
