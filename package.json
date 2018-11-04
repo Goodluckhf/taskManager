@@ -35,7 +35,6 @@
     "passport": "0.4.0",
     "passport-jwt": "4.0.0",
     "passport-local": "1.0.0",
-    "source-map-support": "^0.5.9",
     "umetrics": "^1.0.4",
     "uuid": "3.3.2"
   },
