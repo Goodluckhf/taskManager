@@ -1,3 +1,4 @@
+import 'source-map-support/register';
 import Koa        from 'koa';
 import morgan     from 'koa-morgan';
 import bodyParser from 'koa-bodyparser';
