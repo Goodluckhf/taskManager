@@ -5,18 +5,13 @@ import passport   from 'koa-passport';
 import config     from 'config';
 
 import logger             from '../../lib/logger';
+import mongoose           from '../../lib/mongoose';
 import routes             from './routes';
 import errorHandler       from './routes/api/errorHandler';
 import initModels         from './model';
 import gracefulStop       from '../../lib/GracefulStop';
 import db                 from '../../lib/db';
 import passportStrategies from './passport';
-
-// Подключаемся к бд
-const dbConnection = db.connect();
-
-// Инициализируем модели
-initModels(dbConnection);
 
 const app = new Koa();
 
@@ -46,9 +41,6 @@ app.on('error', (error, ctx) => {
 	});
 });
 
-app.listen(config.get('api.port'));
-logger.info(`server listening on port: ${config.get('api.port')}`);
-
 process.on('uncaughtException', (error) => {
 	logger.error({ error });
 	gracefulStop.stop(1);
@@ -71,4 +63,33 @@ process.on('SIGTERM', () => {
 	}
 	
 	gracefulStop.stop(0);
+});
+
+(async () => {
+	// Подключаемся к бд
+	const dbConnection = db.connect();
+	// Инициализируем модели
+	initModels(dbConnection);
+
+	// При рестарте api нужно убрать статус pending
+	// Т.к рестарт не всегда бывает graceful
+	await mongoose.model('AutoLikesTask').update(
+		{
+			deletedAt: null,
+			status   : mongoose.model('Task').status.pending,
+		},
+		{ $set: { status: mongoose.model('Task').status.waiting } },
+		{ multi: true },
+	);
+	
+	app.listen(config.get('api.port'));
+	logger.info(`server listening on port: ${config.get('api.port')}`);
+})().catch((error) => {
+	logger.error({
+		message: 'fatal error',
+		error,
+	});
+	setTimeout(() => {
+		process.exit(1);
+	}, 1000);
 });

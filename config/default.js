@@ -80,7 +80,8 @@ module.exports = {
 	},
 	
 	z1y1x1: {
-		token: process.env.Z1Y1X1__TOKEN,
+		token  : process.env.Z1Y1X1__TOKEN,
+		timeout: process.env.Z1Y1X1__TIMEOUT,
 	},
 	
 	vkApi: {

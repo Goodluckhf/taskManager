@@ -28,7 +28,7 @@ class Z1y1x1Response extends Response {
 				content: postLink,
 				count  : commentsCount,
 			},
-			timeout: 7000,
+			timeout: this.config.get('z1y1x1.timeout'),
 		});
 		
 		this.logger.info({

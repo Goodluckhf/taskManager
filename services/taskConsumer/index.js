@@ -40,44 +40,50 @@ const vkApi = new VkApi(captcha, logger, config.get('vkApi.token'), {
 
 // Обработчики накрутки лайков
 rpcServer
-	.addResponse(new LikeProResponse({ logger }))
-	.addResponse(new Z1y1x1Response({ logger }))
+	.addResponse(new LikeProResponse({ logger, config }))
+	.addResponse(new Z1y1x1Response({ logger, config }))
 	.addResponse(new LikestResponse({
 		captcha,
 		logger,
+		config,
 	}));
 
 rpcServer.addResponse(new LikesCheckResponse({
 	logger,
 	vkApi,
+	config,
 })).addResponse(new CommentsCheckResponse({
 	logger,
 	vkApi,
+	config,
 })).addResponse(new RepostsCheckResponse({
 	logger,
 	vkApi,
+	config,
 }));
 
 
 // Обработчики накрутки комментов
 rpcServer
-	.addResponse(new Z1y1x1CommentsResponse({ logger }))
+	.addResponse(new Z1y1x1CommentsResponse({ logger, config }))
 	.addResponse(new LikestCommentsResponse({
 		captcha,
 		logger,
+		config,
 	}));
 
 
 // Обработчики накрутки репостов
 rpcServer
-	.addResponse(new Z1y1x1RepostsResponse({ logger }))
+	.addResponse(new Z1y1x1RepostsResponse({ logger, config }))
 	.addResponse(new LikestRepostsResponse({
 		captcha,
 		logger,
+		config,
 	}));
 
 // Проверка на выход рекламного поста
-rpcServer.addResponse(new LastPostWithLinkResponse({ logger }));
+rpcServer.addResponse(new LastPostWithLinkResponse({ logger, config }));
 
 (async () => {
 	try {
