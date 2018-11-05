@@ -44,18 +44,13 @@ class LastPostWithLinkResponse extends Response {
 	
 	//eslint-disable-next-line class-methods-use-this
 	async process({ groupLink }) {
-		let $;
 		// Пока такой retry
-		try {
-			$ = await this.getHtml(groupLink);
-		} catch (error) {
-			this.logger.warn({
-				error,
-				groupLink,
-				mark: 'lastPost',
-			});
-			$ = await this.getHtml(groupLink);
-		}
+		const $ = await this
+			.getHtml(groupLink)
+			.catch(() => this.getHtml(groupLink))
+			.catch(() => this.getHtml(groupLink))
+			.catch(() => this.getHtml(groupLink));
+		
 		const $lastPost = $('#page_wall_posts .post').eq(0);
 		if (!$lastPost.length) {
 			throw new Error('Группа пустая');
