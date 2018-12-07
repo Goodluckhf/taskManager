@@ -15,7 +15,7 @@ import LikestResponse from './responses/likes/LikestResponse';
 import Captcha from '../../lib/Captcha';
 import VkApi from '../../lib/VkApi';
 import LikesCheckResponse from './responses/LikesCheckResponse';
-import CommentsCheckResponse from './responses/CommentsCheckResponse';
+import PostByLinkResponse from './responses/PostByLinkResponse';
 import RepostsCheckResponse from './responses/RepostsCheckResponse';
 import LastPostWithLinkResponse from './responses/LastPostWithLinkResponse';
 
@@ -59,7 +59,7 @@ rpcServer
 		}),
 	)
 	.addResponse(
-		new CommentsCheckResponse({
+		new PostByLinkResponse({
 			logger,
 			vkApi,
 			config,
