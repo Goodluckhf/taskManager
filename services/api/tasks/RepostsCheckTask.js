@@ -66,7 +66,7 @@ class RepostsCheckTask extends BaseTask {
 			repostsCount: this.taskDocument.repostsCount,
 			userId: this.taskDocument.user.id,
 			taskId: this.taskDocument.id,
-			message: '',
+			message: 'репосты не накрутились',
 		});
 
 		if (serviceOrder.length === this.taskDocument.serviceIndex + 1) {
