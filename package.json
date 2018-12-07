@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/polyfill": "^7.0.0-beta.42",
     "ajv": "6.5.3",
     "amqplib": "0.5.2",
     "axios": "0.18.0",
