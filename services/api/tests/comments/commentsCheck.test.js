@@ -104,6 +104,51 @@ describe('CommentsCheckTask', function() {
 		expect(taskDocument.parentTask._error).to.be.null;
 	});
 
+	it('should not finish task if error happens', async () => {
+		this.config.commentsTask = {
+			...this.config.commentsTask,
+			serviceOrder: ['likest'],
+		};
+
+		const user = mongoose.model('PremiumUser').createInstance({
+			email: 'test',
+			password: 'test',
+		});
+
+		const parentTask = mongoose.model('CommentsCommon').createInstance({
+			commentsCount: 100,
+			postLink: 'tetsLink',
+			status: mongoose.model('Task').status.pending,
+			user,
+		});
+
+		const taskDocument = mongoose.model('CommentsCheckTask').createInstance({
+			commentsCount: 10,
+			postLink: 'tetsLink',
+			serviceIndex: 0,
+			parentTask,
+			user,
+		});
+
+		const rpcClient = {
+			call() {
+				throw new Error('some error');
+			},
+		};
+
+		const task = new CommentsCheckTask({
+			rpcClient,
+			taskDocument,
+			logger: loggerMock,
+			config: this.config,
+		});
+		const promise = task.handle();
+		await expect(promise).to.eventually.fulfilled;
+		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.waiting);
+		expect(taskDocument.parentTask.status).to.be.equals(mongoose.model('Task').status.waiting);
+		expect(taskDocument.parentTask._error).to.be.null;
+	});
+
 	it('should handle second task if 1st finished with unsuccessful check', async () => {
 		this.config.commentsTask = {
 			...this.config.commentsTask,
