@@ -8,7 +8,7 @@ RUN npm i
 
 COPY . .
 
-RUN npx babel ./ -d ./dist --ignore node_modules,services/web,*.test.js
+RUN npx babel --source-maps --out-dir ./dist/ --ignore node_modules,test.js,spec.js,coverage,dist,.nyc_output,services/web .
 
 ENV NODE_ENV=production
 RUN npm prune
