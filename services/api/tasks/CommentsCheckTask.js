@@ -31,6 +31,8 @@ class CommentsCheckTask extends BaseTask {
 				taskId: this.taskDocument.id,
 				error,
 			});
+			this.taskDocument.parentTask.status = Task.status.waiting;
+			await this.taskDocument.parentTask.save();
 			return;
 		}
 
