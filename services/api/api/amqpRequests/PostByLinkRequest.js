@@ -1,10 +1,10 @@
 import Request from '../../../../lib/amqp/Request';
 
-class CommentCheckRequest extends Request {
+class PostByLinkRequest extends Request {
 	constructor(config, args) {
 		const queue = config.get('tasksQueue.name');
 		const timeout = config.get('tasksQueue.timeout');
-		const method = 'checkComments';
+		const method = 'postByLink';
 		super({
 			args,
 			queue,
@@ -14,4 +14,4 @@ class CommentCheckRequest extends Request {
 	}
 }
 
-export default CommentCheckRequest;
+export default PostByLinkRequest;
