@@ -14,9 +14,7 @@ import Z1y1x1Response from './responses/likes/Z1y1x1Response';
 import LikestResponse from './responses/likes/LikestResponse';
 import Captcha from '../../lib/Captcha';
 import VkApi from '../../lib/VkApi';
-import LikesCheckResponse from './responses/LikesCheckResponse';
 import PostByLinkResponse from './responses/PostByLinkResponse';
-import RepostsCheckResponse from './responses/RepostsCheckResponse';
 import LastPostWithLinkResponse from './responses/LastPostWithLinkResponse';
 
 const rabbitConfig = config.get('rabbit');
@@ -50,28 +48,13 @@ rpcServer
 		}),
 	);
 
-rpcServer
-	.addResponse(
-		new LikesCheckResponse({
-			logger,
-			vkApi,
-			config,
-		}),
-	)
-	.addResponse(
-		new PostByLinkResponse({
-			logger,
-			vkApi,
-			config,
-		}),
-	)
-	.addResponse(
-		new RepostsCheckResponse({
-			logger,
-			vkApi,
-			config,
-		}),
-	);
+rpcServer.addResponse(
+	new PostByLinkResponse({
+		logger,
+		vkApi,
+		config,
+	}),
+);
 
 // Обработчики накрутки комментов
 rpcServer.addResponse(new Z1y1x1CommentsResponse({ logger, config })).addResponse(
