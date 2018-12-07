@@ -42,7 +42,9 @@ describe('CommentsCheckTask', function() {
 
 		const rpcClient = {
 			call() {
-				throw new Error('fail');
+				return {
+					comments: 9,
+				};
 			},
 		};
 
@@ -83,7 +85,9 @@ describe('CommentsCheckTask', function() {
 
 		const rpcClient = {
 			call() {
-				return true;
+				return {
+					comments: 11,
+				};
 			},
 		};
 
@@ -100,7 +104,7 @@ describe('CommentsCheckTask', function() {
 		expect(taskDocument.parentTask._error).to.be.null;
 	});
 
-	it('should handle second task if 1st finished with error', async () => {
+	it('should handle second task if 1st finished with unsuccessful check', async () => {
 		this.config.commentsTask = {
 			...this.config.commentsTask,
 			serviceOrder: ['likest', 'z1y1x1'],
@@ -127,7 +131,9 @@ describe('CommentsCheckTask', function() {
 		const rpcClient = {
 			call(request) {
 				if (request.method === 'checkComments') {
-					throw new Error('fail');
+					return {
+						comments: 9,
+					};
 				}
 
 				return true;
@@ -193,7 +199,9 @@ describe('CommentsCheckTask', function() {
 
 		const rpcClient = {
 			call() {
-				return true;
+				return {
+					comments: 7,
+				};
 			},
 		};
 
@@ -229,7 +237,7 @@ describe('CommentsCheckTask', function() {
 		expect(taskDocument.parentTask._error).to.be.null;
 	});
 
-	it('should rollback transaction if last task complete with error', async () => {
+	it('should rollback transaction if last task complete without success', async () => {
 		this.config.commentsTask = {
 			...this.config.commentsTask,
 			serviceOrder: ['likest'],
@@ -263,7 +271,9 @@ describe('CommentsCheckTask', function() {
 
 		const rpcClient = {
 			call() {
-				throw new Error('failed');
+				return {
+					comments: 11,
+				};
 			},
 		};
 
