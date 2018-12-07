@@ -4,9 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start:dev": "node --require babel-register app.js",
-    "test": "mocha --exit --ui bdd --reporter spec --require babel-register ./services/api/tests/setup.js ./services/api/tests/**/*.test.js ./services/api/tests/*.test.js",
-    "test:coverage:dev": "nyc --reporter=text mocha --exit --ui bdd --reporter spec --require babel-register ./services/api/tests/setup.js ./services/api/tests/**/*.test.js ./services/api/tests/*.test.js",
+    "start:dev": "node --require @babel/register app.js",
+    "test": "mocha --exit --ui bdd --reporter spec --require @babel/register ./services/api/tests/setup.js ./services/api/tests/**/*.test.js ./services/api/tests/*.test.js",
+    "test:coverage:dev": "nyc --reporter=text mocha --exit --ui bdd --reporter spec --require @babel/register ./services/api/tests/setup.js ./services/api/tests/**/*.test.js ./services/api/tests/*.test.js",
     "precommit": "lint-staged",
     "lint": "eslint ."
   },
