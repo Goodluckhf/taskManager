@@ -54,11 +54,14 @@
     "lint-staged": "^7.2.2",
     "mocha": "^5.2.0",
     "mockgoose": "^7.3.5",
-    "nyc": "^13.0.1"
+    "nyc": "^13.0.1",
+    "prettier": "^1.15.3"
   },
   "lint-staged": {
     "*.js": [
-      "eslint --quiet"
+      "eslint --fix --ignore-path .gitignore",
+      "prettier --write",
+      "git add"
     ]
   },
   "nyc": {
