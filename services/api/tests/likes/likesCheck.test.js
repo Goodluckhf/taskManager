@@ -38,7 +38,9 @@ describe('LikesCheckTask', function() {
 
 		const rpcClient = {
 			call() {
-				throw new Error('fail');
+				return {
+					likes: 9,
+				};
 			},
 		};
 
@@ -79,7 +81,9 @@ describe('LikesCheckTask', function() {
 
 		const rpcClient = {
 			call() {
-				return true;
+				return {
+					likes: 11,
+				};
 			},
 		};
 
@@ -93,6 +97,47 @@ describe('LikesCheckTask', function() {
 		await expect(promise).to.eventually.fulfilled;
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.finished);
 		expect(taskDocument.parentTask.status).to.be.equals(mongoose.model('Task').status.finished);
+		expect(taskDocument.parentTask._error).to.be.null;
+	});
+
+	it('should not finish task if error happens', async () => {
+		this.config.likesTask = { ...this.config.likesTask, serviceOrder: ['likest'] };
+		const user = mongoose.model('PremiumUser').createInstance({
+			email: 'test',
+			password: 'test',
+		});
+
+		const parentTask = mongoose.model('LikesCommon').createInstance({
+			likesCount: 100,
+			postLink: 'tetsLink',
+			status: mongoose.model('Task').status.pending,
+			user,
+		});
+
+		const taskDocument = mongoose.model('LikesCheckTask').createInstance({
+			likesCount: 10,
+			postLink: 'tetsLink',
+			serviceIndex: 0,
+			parentTask,
+			user,
+		});
+
+		const rpcClient = {
+			call() {
+				throw new Error('some error');
+			},
+		};
+
+		const task = new LikesCheckTask({
+			rpcClient,
+			taskDocument,
+			logger: loggerMock,
+			config: this.config,
+		});
+		const promise = task.handle();
+		await expect(promise).to.eventually.fulfilled;
+		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.waiting);
+		expect(taskDocument.parentTask.status).to.be.equals(mongoose.model('Task').status.waiting);
 		expect(taskDocument.parentTask._error).to.be.null;
 	});
 
@@ -121,7 +166,9 @@ describe('LikesCheckTask', function() {
 		const rpcClient = {
 			call(request) {
 				if (request.method === 'checkLikes') {
-					throw new Error('fail');
+					return {
+						likes: 9,
+					};
 				}
 
 				return true;
@@ -185,7 +232,9 @@ describe('LikesCheckTask', function() {
 
 		const rpcClient = {
 			call() {
-				return true;
+				return {
+					likes: 13,
+				};
 			},
 		};
 
@@ -255,7 +304,9 @@ describe('LikesCheckTask', function() {
 
 		const rpcClient = {
 			call() {
-				throw new Error('failed');
+				return {
+					likes: 11,
+				};
 			},
 		};
 
