@@ -1,5 +1,5 @@
-import mongoose                           from '../../../lib/mongoose';
-import BaseApi                            from './BaseApi';
+import mongoose from '../../../lib/mongoose';
+import BaseApi from './BaseApi';
 import { NotFound, WallSeekAlreadyExist } from './errors';
 
 /**
@@ -10,7 +10,7 @@ class WallSeekApi extends BaseApi {
 		super(...args);
 		this.vkApi = vkApi;
 	}
-	
+
 	/**
 	 * @description Добавляет новую задачу на слежку группы на бан ссылок
 	 * @param {Object} data
@@ -19,37 +19,40 @@ class WallSeekApi extends BaseApi {
 	 * @param {UserDocument} data.user
 	 */
 	async add(data) {
-		const Group            = mongoose.model('Group');
+		const Group = mongoose.model('Group');
 		const CheckWallBanTask = mongoose.model('CheckWallBanTask');
-		
-		this.validate({
-			properties: {
-				link     : { type: 'string' },
-				postCount: { oneOf: [{ type: 'string' }, { type: 'number' }] },
+
+		this.validate(
+			{
+				properties: {
+					link: { type: 'string' },
+					postCount: { oneOf: [{ type: 'string' }, { type: 'number' }] },
+				},
+				required: ['link', 'postCount'],
 			},
-			required: ['link', 'postCount'],
-		}, data);
+			data,
+		);
 		this.checkUserReady(data.user);
 		const vkGroup = await this.vkApi.groupByHref(data.link);
-		const group   = await Group.findOrCreateByPublicId(vkGroup.id, vkGroup);
-		const count   = await CheckWallBanTask.count({ group: group._id, user: data.user });
-		
+		const group = await Group.findOrCreateByPublicId(vkGroup.id, vkGroup);
+		const count = await CheckWallBanTask.count({ group: group._id, user: data.user });
+
 		if (count) {
 			throw new WallSeekAlreadyExist({
 				link: data.link,
-				id  : group._id,
+				id: group._id,
 			});
 		}
-		
+
 		const task = CheckWallBanTask.createInstance({
 			postCount: data.postCount,
-			user     : data.user,
+			user: data.user,
 			group,
 		});
-		
+
 		return task.save();
 	}
-	
+
 	/**
 	 * @description Возвращает список задач
 	 * @property {UserDocument} user
@@ -58,13 +61,12 @@ class WallSeekApi extends BaseApi {
 	// eslint-disable-next-line class-methods-use-this
 	async list(user) {
 		const CheckWallBanTask = mongoose.model('CheckWallBanTask');
-		return CheckWallBanTask
-			.find({ user })
+		return CheckWallBanTask.find({ user })
 			.populate('group')
 			.lean()
 			.exec();
 	}
-	
+
 	/**
 	 * @param {String} _id
 	 * @param {UserDocument} user
@@ -73,16 +75,18 @@ class WallSeekApi extends BaseApi {
 	// eslint-disable-next-line class-methods-use-this
 	async resume(_id, user) {
 		const CheckWallBanTask = mongoose.model('CheckWallBanTask');
-		const Task             = mongoose.model('Task');
-		const task             = await CheckWallBanTask.findOne({ _id, user }).populate('group').exec();
-		
+		const Task = mongoose.model('Task');
+		const task = await CheckWallBanTask.findOne({ _id, user })
+			.populate('group')
+			.exec();
+
 		if (!task) {
 			throw new NotFound({
-				what : 'WallSeekTask',
+				what: 'WallSeekTask',
 				query: { _id },
 			});
 		}
-		
+
 		task.status = Task.status.waiting;
 		return task.save();
 	}

@@ -1,12 +1,12 @@
 import chai from 'chai';
-import chaiAsPromised    from 'chai-as-promised';
+import chaiAsPromised from 'chai-as-promised';
 import { Mockgoose } from 'mockgoose';
-import mongoose      from '../../../lib/mongoose';
-import initModels    from '../model';
+import mongoose from '../../../lib/mongoose';
+import initModels from '../model';
 
 chai.use(chaiAsPromised);
 let mockgoose;
-before(async function () {
+before(async function() {
 	this.timeout(60000);
 	mockgoose = new Mockgoose(mongoose);
 	mockgoose.helper.setDbVersion('3.4.5');
@@ -19,4 +19,3 @@ before(async function () {
 beforeEach(async () => {
 	await mockgoose.helper.reset();
 });
-

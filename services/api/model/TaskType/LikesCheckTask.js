@@ -2,17 +2,17 @@ import mongoose from '../../../../lib/mongoose';
 
 const likesCheckTaskSchema = new mongoose.Schema({
 	postLink: {
-		type    : String,
+		type: String,
 		required: true,
 	},
-	
+
 	likesCount: {
-		type    : Number,
+		type: Number,
 		required: true,
 	},
-	
+
 	serviceIndex: {
-		type    : Number,
+		type: Number,
 		required: true,
 	},
 });
@@ -35,10 +35,10 @@ export class LikesCheckTaskDocument {
 	 */
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
-		baseTask.likesCount   = opts.likesCount;
-		baseTask.postLink     = opts.postLink;
-		baseTask.parentTask   = opts.parentTask;
-		baseTask.startAt      = opts.startAt;
+		baseTask.likesCount = opts.likesCount;
+		baseTask.postLink = opts.postLink;
+		baseTask.parentTask = opts.parentTask;
+		baseTask.startAt = opts.startAt;
 		baseTask.serviceIndex = opts.serviceIndex;
 		return baseTask;
 	}

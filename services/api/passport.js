@@ -1,7 +1,4 @@
-import {
-	ExtractJwt,
-	Strategy as JwtStrategy,
-}               from 'passport-jwt';
+import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import mongoose from '../../lib/mongoose';
 
 /**
@@ -16,10 +13,9 @@ export default (passport, jwtSecret) => {
 		]),
 		secretOrKey: jwtSecret,
 	};
-	
-	passport.use(new JwtStrategy(
-		jwtOptions,
-		async (payload, done) => {
+
+	passport.use(
+		new JwtStrategy(jwtOptions, async (payload, done) => {
 			try {
 				const user = await mongoose.model('User').findById(payload.id);
 				if (user) {
@@ -30,7 +26,6 @@ export default (passport, jwtSecret) => {
 			} catch (error) {
 				done(error);
 			}
-		},
-	));
+		}),
+	);
 };
-

@@ -12,15 +12,15 @@ import PremiumAccount from '../billing/PremiumAccount';
 class BaseTask {
 	//eslint-disable-next-line object-curly-newline
 	constructor({ logger, taskDocument, rpcClient, config, billing, account, uMetrics }) {
-		this.logger       = logger;
+		this.logger = logger;
 		this.taskDocument = taskDocument;
-		this.rpcClient    = rpcClient;
-		this.config       = config;
-		this.billing      = billing;
-		this.account      = account;
-		this.uMetrics     = uMetrics;
+		this.rpcClient = rpcClient;
+		this.config = config;
+		this.billing = billing;
+		this.account = account;
+		this.uMetrics = uMetrics;
 	}
-	
+
 	/**
 	 * @TODO: Вынести в другое место
 	 * Возвращает доступы для сервисов
@@ -33,10 +33,10 @@ class BaseTask {
 			const userService = this.taskDocument.user.services[service];
 			return userService.toObject();
 		}
-		
+
 		return this.config.get(service);
 	}
-	
+
 	/**
 	 * Базовый метод выполнения задачи
 	 * Нужно переопределить

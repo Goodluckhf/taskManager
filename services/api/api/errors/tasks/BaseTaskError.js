@@ -15,14 +15,14 @@ class BaseTaskError extends BaseError {
 			this.statusCode = error.statusCode;
 		}
 	}
-	
+
 	toObject() {
 		const error = this;
 		error.formattedMessage = this._toMessage();
-		error.message          = this.message;
+		error.message = this.message;
 		return error;
 	}
-	
+
 	/**
 	 * @abstract
 	 * @protected
@@ -31,7 +31,7 @@ class BaseTaskError extends BaseError {
 	_toMessage() {
 		return `${this.message}`;
 	}
-	
+
 	/**
 	 * @return {string}
 	 */

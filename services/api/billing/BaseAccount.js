@@ -11,13 +11,12 @@ class BaseAccount {
 	 * @param {Logger} logger
 	 */
 	constructor(userDocument, config, billing, logger) {
-		this.user    = userDocument;
-		this.config  = config;
+		this.user = userDocument;
+		this.config = config;
 		this.billing = billing;
-		this.logger  = logger;
+		this.logger = logger;
 	}
-	
-	
+
 	/**
 	 * @param {InvoiceDocument | Array.<InvoiceDocument>} invoice
 	 * @abstract

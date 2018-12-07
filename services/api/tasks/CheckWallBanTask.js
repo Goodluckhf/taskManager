@@ -1,20 +1,20 @@
-import mongoose            from '../../../lib/mongoose';
-import BaseTask            from './BaseTask';
-import BaseApiError        from '../api/errors/BaseApiError';
+import mongoose from '../../../lib/mongoose';
+import BaseTask from './BaseTask';
+import BaseApiError from '../api/errors/BaseApiError';
 import CheckWallBanRequest from '../api/amqpRequests/CheckWallBanRequest';
 
 class CheckWallBanTask extends BaseTask {
 	async handle() {
-		const Task  = mongoose.model('Task');
+		const Task = mongoose.model('Task');
 		try {
 			await this.taskDocument.populate('group').execPopulate();
-			
+
 			const request = new CheckWallBanRequest(this.config, {
 				postCount: this.taskDocument.postCount,
-				link     : this.taskDocument.group.link,
+				link: this.taskDocument.group.link,
 			});
 			this.logger.info({ request });
-			
+
 			await this.rpcClient.call(request);
 			this.taskDocument.status = Task.status.waiting;
 		} catch (error) {

@@ -1,4 +1,4 @@
-import Ajv                 from 'ajv';
+import Ajv from 'ajv';
 import { ValidationError } from './errors';
 
 /**
@@ -10,7 +10,7 @@ class BaseApi {
 		this.config = config;
 		this.logger = logger;
 	}
-	
+
 	/**
 	 * @param {Object<*>} rules
 	 * @param {Object<*>} values

@@ -2,23 +2,23 @@ import mongoose from '../../../lib/mongoose';
 
 const accountSchema = new mongoose.Schema({
 	login: {
-		type    : String,
+		type: String,
 		required: true,
 	},
-	
+
 	password: {
-		type    : String,
+		type: String,
 		required: true,
 	},
-	
+
 	isActive: {
-		type   : Boolean,
+		type: Boolean,
 		default: true,
 	},
-	
+
 	// Ссылка на профиль в вк
 	link: {
-		type   : String,
+		type: String,
 		default: '',
 	},
 });
@@ -38,10 +38,10 @@ class AccountDocument {
 	 */
 	static createInstance({ login, password, link }) {
 		const account = new this();
-		
-		account.login    = login;
+
+		account.login = login;
 		account.password = password;
-		account.link     = link;
+		account.link = link;
 		return account;
 	}
 }

@@ -2,13 +2,13 @@ import mongoose from '../../../../lib/mongoose';
 
 const accountUserSchema = new mongoose.Schema({
 	balance: {
-		type   : Number,
+		type: Number,
 		default: 0,
 	},
-	
+
 	// Баланс в работе
 	freezeBalance: {
-		type   : Number,
+		type: Number,
 		default: 0,
 	},
 });
@@ -25,7 +25,7 @@ export class AccountUserDocument {
 	 * @return {AccountUserDocument}
 	 */
 	static createInstance(opts) {
-		const baseUser   = mongoose.model('User').createInstance(this, opts);
+		const baseUser = mongoose.model('User').createInstance(this, opts);
 		baseUser.balance = opts.balance || 0;
 		return baseUser;
 	}

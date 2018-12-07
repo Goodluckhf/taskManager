@@ -1,6 +1,6 @@
-import mongoose         from '../../../lib/mongoose';
-import BaseTask         from './BaseTask';
-import CommentRequest   from '../api/amqpRequests/CommentRequest';
+import mongoose from '../../../lib/mongoose';
+import BaseTask from './BaseTask';
+import CommentRequest from '../api/amqpRequests/CommentRequest';
 import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
 
 class CommentsTask extends BaseTask {
@@ -8,21 +8,21 @@ class CommentsTask extends BaseTask {
 		const Task = mongoose.model('Task');
 		try {
 			const serviceCredentials = this.getCredentialsForService(this.taskDocument.service);
-			
+
 			const request = new CommentRequest(this.taskDocument.service, this.config, {
-				postLink     : this.taskDocument.postLink,
+				postLink: this.taskDocument.postLink,
 				commentsCount: this.taskDocument.commentsCount,
 				serviceCredentials,
 			});
-			
+
 			this.logger.info({
-				mark   : 'comments',
+				mark: 'comments',
 				message: 'rpc request',
-				taskId : this.taskDocument.id,
-				userId : this.taskDocument.user.id,
+				taskId: this.taskDocument.id,
+				userId: this.taskDocument.user.id,
 				request,
 			});
-			
+
 			await this.rpcClient.call(request);
 		} catch (error) {
 			const wrappedError = TaskErrorFactory.createError(
@@ -31,12 +31,12 @@ class CommentsTask extends BaseTask {
 				this.taskDocument.postLink,
 				this.taskDocument.commentsCount,
 			);
-			
-			this.taskDocument._error  = wrappedError.toObject();
+
+			this.taskDocument._error = wrappedError.toObject();
 			throw wrappedError;
 		} finally {
 			this.taskDocument.lastHandleAt = new Date();
-			this.taskDocument.status       = Task.status.finished;
+			this.taskDocument.status = Task.status.finished;
 			await this.taskDocument.save();
 		}
 	}

@@ -9,6 +9,7 @@
 	},
 	"rules": {
 		"no-underscore-dangle": "warn",
-		"no-unused-expressions": "warn"
+		"no-unused-expressions": "warn",
+		"import/no-extraneous-dependencies": "warn"
 	}
 }

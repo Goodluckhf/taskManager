@@ -1,6 +1,6 @@
-import moment                        from 'moment';
-import mongoose                      from '../../../lib/mongoose';
-import BaseApi                       from './BaseApi';
+import moment from 'moment';
+import mongoose from '../../../lib/mongoose';
+import BaseApi from './BaseApi';
 import { NotFound, ValidationError } from './errors';
 
 /**
@@ -11,7 +11,7 @@ class AdminApi extends BaseApi {
 		super(...args);
 		this.billing = billing;
 	}
-	
+
 	/**
 	 * Пополнить баланс пользователю
 	 * @param {ObjectId} userId
@@ -23,23 +23,20 @@ class AdminApi extends BaseApi {
 		const user = await mongoose.model('AccountUser').findById(userId);
 		if (!user) {
 			throw new NotFound({
-				what : 'User',
+				what: 'User',
 				query: { userId },
 			});
 		}
-		
+
 		if (!quantity) {
 			throw new ValidationError(['quantity']);
 		}
-		
+
 		const invoice = this.billing.createTopUpInvoice(user, quantity);
 		user.balance += quantity;
 		invoice.status = mongoose.model('Invoice').status.paid;
 		invoice.paidAt = moment.now();
-		await Promise.all([
-			user.save(),
-			invoice.save(),
-		]);
+		await Promise.all([user.save(), invoice.save()]);
 	}
 }
 

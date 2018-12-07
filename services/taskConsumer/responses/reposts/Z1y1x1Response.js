@@ -1,4 +1,4 @@
-import axios    from 'axios/index';
+import axios from 'axios/index';
 import Response from '../../../../lib/amqp/Response';
 
 class Z1y1x1Response extends Response {
@@ -9,29 +9,29 @@ class Z1y1x1Response extends Response {
 	get method() {
 		return 'setReposts_z1y1x1';
 	}
-	
+
 	async process({ postLink, repostsCount, serviceCredentials: { token } }) {
 		this.logger.info({
-			mark   : 'reposts',
+			mark: 'reposts',
 			service: 'z1y1x1',
 			message: 'Начало выполения',
 			postLink,
 			repostsCount,
 			token,
 		});
-		
+
 		const { data } = await axios.get('http://api.z1y1x1.ru/tasks/create', {
 			params: {
 				token,
-				type   : 3,
+				type: 3,
 				content: postLink,
-				count  : repostsCount,
+				count: repostsCount,
 			},
 			timeout: this.config.get('z1y1x1.timeout'),
 		});
-		
+
 		this.logger.info({
-			mark   : 'reposts',
+			mark: 'reposts',
 			service: 'z1y1x1',
 			message: 'ответ от сервиса',
 			postLink,
@@ -39,15 +39,15 @@ class Z1y1x1Response extends Response {
 			token,
 			data,
 		});
-		
+
 		if (data.error) {
 			if (data.error.descr) {
 				throw new Error(data.error.descr);
 			}
-			
+
 			throw data.error;
 		}
-		
+
 		return data;
 	}
 }

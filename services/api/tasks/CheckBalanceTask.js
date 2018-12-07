@@ -1,6 +1,6 @@
-import moment         from 'moment';
-import mongoose       from '../../../lib/mongoose';
-import BaseTask       from './BaseTask';
+import moment from 'moment';
+import mongoose from '../../../lib/mongoose';
+import BaseTask from './BaseTask';
 import BillingAccount from '../billing/BillingAccount';
 
 /**
@@ -11,54 +11,60 @@ class CheckBalanceTask extends BaseTask {
 		super(args);
 		this.alert = alert;
 	}
-	
+
 	async check() {
-		const Task  = mongoose.model('Task');
+		const Task = mongoose.model('Task');
 		try {
 			const interval = this.config.get('checkBalanceTask.interval');
 			const momentLastHandled = moment(this.taskDocument.lastHandleAt);
-			if (this.taskDocument.lastHandleAt && moment().diff(momentLastHandled, 'minutes') < interval) {
+			if (
+				this.taskDocument.lastHandleAt &&
+				moment().diff(momentLastHandled, 'minutes') < interval
+			) {
 				return;
 			}
-			
+
 			if (!(this.account instanceof BillingAccount)) {
 				this.logger.warn({
-					mark   : 'checkBalance',
+					mark: 'checkBalance',
 					message: 'account is not billing',
-					userId : this.account.user.id,
-					taskId : this.taskDocument.id,
+					userId: this.account.user.id,
+					taskId: this.taskDocument.id,
 				});
 				return;
 			}
-			
+
 			//Проверяем если у пользователя задачи, которые потенциально выполниться
-			const tasks = await mongoose.model('AutoLikesTask').find({
-				user     : this.account.user.id,
-				deletedAt: null,
-				
-				$or: [
-					{ status: Task.status.waiting },
-					{ status: Task.status.pending },
-				],
-			}).lean().exec();
-			
+			const tasks = await mongoose
+				.model('AutoLikesTask')
+				.find({
+					user: this.account.user.id,
+					deletedAt: null,
+
+					$or: [{ status: Task.status.waiting }, { status: Task.status.pending }],
+				})
+				.lean()
+				.exec();
+
 			if (!tasks.length) {
 				return;
 			}
-			
+
 			const checkRatio = this.config.get('checkBalanceTask.ratio');
 			const total = this.billing.calculatePriceForTasks(tasks);
 			if (total / this.account.user.balance > checkRatio) {
 				this.logger.info({
-					mark            : 'checkBalance',
-					message         : 'Мало баланса',
+					mark: 'checkBalance',
+					message: 'Мало баланса',
 					total,
 					availableBalance: this.account.availableBalance,
-					userId          : this.account.user.id,
-					taskId          : this.taskDocument.id,
+					userId: this.account.user.id,
+					taskId: this.taskDocument.id,
 				});
 				await this.alert.sendError(
-					`----------\nБаланс почти на исходе.\nДоступно: ${this.account.availableBalance}\n-------------`,
+					`----------\nБаланс почти на исходе.\nДоступно: ${
+						this.account.availableBalance
+					}\n-------------`,
 					this.account.user.chatId,
 				);
 			}
@@ -66,17 +72,17 @@ class CheckBalanceTask extends BaseTask {
 		} catch (error) {
 			this.logger.error({
 				error,
-				mark  : 'checkBalance',
+				mark: 'checkBalance',
 				userId: this.account.user.id,
 				taskId: this.taskDocument.id,
 			});
 			this.taskDocument.lastHandleAt = moment.now();
 		} finally {
-			this.taskDocument.status       = Task.status.waiting;
+			this.taskDocument.status = Task.status.waiting;
 			await this.taskDocument.save();
 		}
 	}
-	
+
 	async handle() {
 		try {
 			await this.check();

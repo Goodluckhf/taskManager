@@ -2,18 +2,18 @@ import mongoose from '../../../../lib/mongoose';
 
 const checkWallBanTaskSchema = new mongoose.Schema({
 	group: {
-		type    : mongoose.Schema.Types.ObjectId,
+		type: mongoose.Schema.Types.ObjectId,
 		required: true,
-		ref     : 'Group',
+		ref: 'Group',
 	},
-	
+
 	postCount: {
-		type    : Number,
+		type: Number,
 		required: true,
 	},
-	
+
 	repeated: {
-		type   : Boolean,
+		type: Boolean,
 		default: true,
 	},
 });
@@ -32,7 +32,7 @@ export class CheckWallBanTaskDocument {
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
 		baseTask.postCount = opts.postCount;
-		baseTask.group     = opts.group;
+		baseTask.group = opts.group;
 		return baseTask;
 	}
 }
