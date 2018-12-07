@@ -5,7 +5,7 @@ import { postIdByLink } from '../../../lib/helper';
  * @property {String} token
  * @property {VkApi} vkApi
  */
-class CommentsCheckResponse extends Response {
+class PostByLinkResponse extends Response {
 	constructor({ vkApi, ...args }) {
 		super(args);
 		this.vkApi = vkApi;
@@ -16,11 +16,11 @@ class CommentsCheckResponse extends Response {
 	 */
 	// eslint-disable-next-line class-methods-use-this,
 	get method() {
-		return 'checkComments';
+		return 'postByLink';
 	}
 
-	async process({ postLink, commentsCount }) {
-		this.logger.info({ postLink, commentsCount });
+	async process({ postLink }) {
+		this.logger.info({ postLink });
 		const postId = postIdByLink(postLink);
 		const {
 			response: [post],
@@ -29,10 +29,12 @@ class CommentsCheckResponse extends Response {
 			copy_history_depth: 1,
 		});
 
-		if (post.comments.count < commentsCount) {
-			throw new Error('Комменты не накрутились');
-		}
+		return {
+			comments: post.comments.count,
+			likes: post.likes.count,
+			reposts: post.reposts.count,
+		};
 	}
 }
 
-export default CommentsCheckResponse;
+export default PostByLinkResponse;
