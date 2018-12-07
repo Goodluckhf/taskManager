@@ -2,27 +2,27 @@ import mongoose from '../../../lib/mongoose';
 
 const schema = new mongoose.Schema({
 	publicId: {
-		type   : String,
+		type: String,
 		default: null,
 	},
-	
+
 	name: {
-		type   : String,
+		type: String,
 		default: null,
 	},
-	
+
 	domain: {
-		type   : String,
+		type: String,
 		default: null,
 	},
-	
+
 	image: {
-		type   : String,
+		type: String,
 		default: null,
 	},
-	
+
 	admin: {
-		type   : String,
+		type: String,
 		default: null,
 	},
 });
@@ -45,14 +45,14 @@ class GroupDocument {
 	// eslint-disable-next-line object-curly-newline
 	static createInstance({ name, photo_200, id, screen_name }) {
 		const group = new this();
-		
+
 		group.publicId = id;
-		group.name     = name;
-		group.image    = photo_200;
-		group.domain   = screen_name;
+		group.name = name;
+		group.image = photo_200;
+		group.domain = screen_name;
 		return group;
 	}
-	
+
 	/**
 	 * @param {Number} id
 	 * @param {Object} data
@@ -60,19 +60,19 @@ class GroupDocument {
 	 */
 	static async findOrCreateByPublicId(id, data) {
 		const group = await this.findOne({ publicId: id });
-		
+
 		if (group) {
 			return group;
 		}
-		
+
 		const newGroup = this.createInstance(data);
 		return newGroup.save();
 	}
-	
+
 	get link() {
 		return GroupDocument.getLinkByPublicId(this.publicId);
 	}
-	
+
 	/**
 	 * @param {String | Number} publicId
 	 * @return {String}
@@ -80,7 +80,7 @@ class GroupDocument {
 	static getLinkByPublicId(publicId) {
 		return `https://vk.com/club${publicId}`;
 	}
-	
+
 	/**
 	 * @param {String | Number} postId
 	 * @return {String}

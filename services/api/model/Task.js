@@ -1,76 +1,78 @@
-import moment   from 'moment';
+import moment from 'moment';
 import mongoose from '../../../lib/mongoose';
 
 const statuses = {
 	// Ожидает взятия в работу
 	waiting: 0,
-	
+
 	// Выполняется
 	pending: 1,
-	
+
 	// Задача завершена
 	finished: 2,
-	
+
 	// Прорущена
 	skipped: 3,
-	
+
 	// Проверяется
 	checking: 4,
 };
 
 const schema = new mongoose.Schema({
 	createdAt: {
-		type   : Date,
+		type: Date,
 		default: moment.now,
 	},
-	
+
 	status: {
-		type   : Number,
-		enum   : Object.values(statuses),
+		type: Number,
+		enum: Object.values(statuses),
 		default: statuses.waiting,
 	},
-	
+
 	// Задача повторяется по крону
 	repeated: {
-		type   : Boolean,
+		type: Boolean,
 		default: false,
 	},
-	
+
 	deletedAt: {
-		type   : Date,
+		type: Date,
 		default: null,
 	},
-	
+
 	// Задача запланирована на точное время
 	startAt: {
 		type: Date,
 	},
-	
+
 	// Время последнего выполения задачи
 	lastHandleAt: {
-		type   : Date,
+		type: Date,
 		default: null,
 	},
-	
+
 	_error: {
-		type   : Object,
+		type: Object,
 		default: null,
 	},
-	
+
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
-		ref : 'User',
+		ref: 'User',
 	},
-	
-	subTasks: [{
-		type: mongoose.Schema.Types.ObjectId,
-		ref : 'Task',
-	}],
-	
+
+	subTasks: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Task',
+		},
+	],
+
 	// Если задача была создана в ручную будет null
 	parentTask: {
 		type: mongoose.Schema.Types.ObjectId,
-		ref : 'Task',
+		ref: 'Task',
 	},
 });
 
@@ -96,7 +98,7 @@ export class TaskDocument {
 	static createInstance(Constructor, opts) {
 		return new Constructor(opts);
 	}
-	
+
 	/**
 	 * @return {TaskDocument}
 	 */
@@ -104,12 +106,11 @@ export class TaskDocument {
 		this.status = statuses.skipped;
 		return this;
 	}
-	
+
 	get active() {
-		return this.status !== statuses.waiting ||
-			this.status !== statuses.finished;
+		return this.status !== statuses.waiting || this.status !== statuses.finished;
 	}
-	
+
 	/**
 	 * Получить список тасков для крона
 	 * Которые готовы к выполнению
@@ -117,13 +118,13 @@ export class TaskDocument {
 	 */
 	static findActive() {
 		return this.find({
-			status   : statuses.waiting,
+			status: statuses.waiting,
 			deletedAt: null,
-			$or      : [
-				{ repeated: true },
-				{ startAt: { $lte: new Date() } },
-			],
-		}).populate('parentTask').populate('user').exec();
+			$or: [{ repeated: true }, { startAt: { $lte: new Date() } }],
+		})
+			.populate('parentTask')
+			.populate('user')
+			.exec();
 	}
 }
 

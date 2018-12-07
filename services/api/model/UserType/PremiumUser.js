@@ -1,50 +1,60 @@
 import mongoose from '../../../../lib/mongoose';
 
+const likestServiceSchema = new mongoose.Schema(
+	{
+		login: {
+			type: String,
+		},
 
-const likestServiceSchema = new mongoose.Schema({
-	login: {
-		type: String,
+		password: {
+			type: String,
+		},
 	},
-	
-	password: {
-		type: String,
-	},
-}, { _id: false });
+	{ _id: false },
+);
 
-const z1x1y1ServiceSchema = new mongoose.Schema({
-	token: {
-		type: String,
+const z1x1y1ServiceSchema = new mongoose.Schema(
+	{
+		token: {
+			type: String,
+		},
 	},
-}, { _id: false });
+	{ _id: false },
+);
 
-const likeProServiceSchema = new mongoose.Schema({
-	login: {
-		type: String,
-	},
-	
-	password: {
-		type: String,
-	},
-}, { _id: false });
+const likeProServiceSchema = new mongoose.Schema(
+	{
+		login: {
+			type: String,
+		},
 
-const servicesSchema = new mongoose.Schema({
-	likest: {
-		type: likestServiceSchema,
+		password: {
+			type: String,
+		},
 	},
-	
-	z1y1x1: {
-		type: z1x1y1ServiceSchema,
-	},
-	
-	likePro: {
-		type: likeProServiceSchema,
-	},
-}, { _id: false });
+	{ _id: false },
+);
 
+const servicesSchema = new mongoose.Schema(
+	{
+		likest: {
+			type: likestServiceSchema,
+		},
+
+		z1y1x1: {
+			type: z1x1y1ServiceSchema,
+		},
+
+		likePro: {
+			type: likeProServiceSchema,
+		},
+	},
+	{ _id: false },
+);
 
 const premiumUserSchema = new mongoose.Schema({
 	services: {
-		type   : servicesSchema,
+		type: servicesSchema,
 		default: {},
 	},
 });
@@ -71,7 +81,7 @@ export class PremiumUserDocument {
 		user.services = services;
 		return user.save();
 	}
-	
+
 	static createInstance(opts) {
 		return mongoose.model('User').createInstance(this, opts);
 	}

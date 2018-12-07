@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { getRandom, getRandomNumberString } from '../../../../lib/helper';
 
-
 describe('Random helper', () => {
 	describe('getRandom', () => {
 		Array.from({ length: 5 }).forEach((_, i) => {
@@ -15,7 +14,7 @@ describe('Random helper', () => {
 			expect(getRandom(0, 10)).to.be.not.equals(getRandom(0, 10));
 		});
 	});
-	
+
 	describe('getRandomNumberString', () => {
 		Array.from({ length: 5 }).forEach((_, i) => {
 			const length = i + 5;
@@ -24,7 +23,7 @@ describe('Random helper', () => {
 				expect(random.length).to.be.equals(length);
 			});
 		});
-		
+
 		it('2 call should return different string', () => {
 			expect(getRandomNumberString(10)).to.be.not.equals(getRandomNumberString(10));
 		});

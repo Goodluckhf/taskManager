@@ -2,7 +2,7 @@ import mongoose from '../../../../lib/mongoose';
 
 const checkBalanceTaskSchema = new mongoose.Schema({
 	repeated: {
-		type   : Boolean,
+		type: Boolean,
 		default: true,
 	},
 });

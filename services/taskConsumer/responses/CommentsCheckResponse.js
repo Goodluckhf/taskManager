@@ -1,4 +1,4 @@
-import Response         from '../../../lib/amqp/Response';
+import Response from '../../../lib/amqp/Response';
 import { postIdByLink } from '../../../lib/helper';
 
 /**
@@ -10,7 +10,7 @@ class CommentsCheckResponse extends Response {
 		super(args);
 		this.vkApi = vkApi;
 	}
-	
+
 	/**
 	 * @return {String}
 	 */
@@ -18,15 +18,17 @@ class CommentsCheckResponse extends Response {
 	get method() {
 		return 'checkComments';
 	}
-	
+
 	async process({ postLink, commentsCount }) {
 		this.logger.info({ postLink, commentsCount });
 		const postId = postIdByLink(postLink);
-		const { response: [post] } = await this.vkApi.apiRequest('wall.getById', {
-			posts             : postId,
+		const {
+			response: [post],
+		} = await this.vkApi.apiRequest('wall.getById', {
+			posts: postId,
 			copy_history_depth: 1,
 		});
-		
+
 		if (post.comments.count < commentsCount) {
 			throw new Error('Комменты не накрутились');
 		}

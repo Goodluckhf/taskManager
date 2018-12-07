@@ -1,4 +1,4 @@
-import BaseAccount   from './BaseAccount';
+import BaseAccount from './BaseAccount';
 
 /**
  * @property {AdminUserDocument} user

@@ -1,4 +1,4 @@
-import Response         from '../../../lib/amqp/Response';
+import Response from '../../../lib/amqp/Response';
 import { postIdByLink } from '../../../lib/helper';
 
 /**
@@ -10,7 +10,7 @@ class LikesCheckResponse extends Response {
 		super(args);
 		this.vkApi = vkApi;
 	}
-	
+
 	/**
 	 * @return {String}
 	 */
@@ -18,15 +18,17 @@ class LikesCheckResponse extends Response {
 	get method() {
 		return 'checkLikes';
 	}
-	
+
 	async process({ postLink, likesCount }) {
 		this.logger.info({ postLink, likesCount });
 		const postId = postIdByLink(postLink);
-		const { response: [post] } = await this.vkApi.apiRequest('wall.getById', {
-			posts             : postId,
+		const {
+			response: [post],
+		} = await this.vkApi.apiRequest('wall.getById', {
+			posts: postId,
 			copy_history_depth: 1,
 		});
-		
+
 		if (post.likes.count < likesCount) {
 			throw new Error('Лайки не накрутились');
 		}

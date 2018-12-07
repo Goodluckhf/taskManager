@@ -2,17 +2,17 @@ import mongoose from '../../../../lib/mongoose';
 
 const commentsTaskSchema = new mongoose.Schema({
 	postLink: {
-		type    : String,
+		type: String,
 		required: true,
 	},
-	
+
 	commentsCount: {
-		type    : Number,
+		type: Number,
 		required: true,
 	},
-	
+
 	service: {
-		type    : String,
+		type: String,
 		required: true,
 	},
 });
@@ -36,9 +36,9 @@ export class CommentsTaskDocument {
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
 		baseTask.commentsCount = opts.commentsCount;
-		baseTask.postLink      = opts.postLink;
-		baseTask.service       = opts.service;
-		baseTask.parentTask    = opts.parentTask || null;
+		baseTask.postLink = opts.postLink;
+		baseTask.service = opts.service;
+		baseTask.parentTask = opts.parentTask || null;
 		return baseTask;
 	}
 }

@@ -7,10 +7,10 @@ import BaseTaskError from './BaseTaskError';
 export class CommonLikesError extends BaseTaskError {
 	constructor(link, count, ...args) {
 		super(...args);
-		this.link  = link;
+		this.link = link;
 		this.count = count;
 	}
-	
+
 	/**
 	 * @return {string}
 	 * @protected
@@ -36,34 +36,29 @@ export class NotEnoughBalanceForLikes extends CommonLikesError {
 	constructor(activeBalance, needBalance, ...args) {
 		super(...args);
 		this.activeBalance = activeBalance;
-		this.needBalance   = needBalance;
+		this.needBalance = needBalance;
 	}
-	
+
 	/**
 	 * @param {NotEnoughBalance} error
 	 * @param {String} link
 	 * @param {Number} count
 	 */
 	static fromNotEnoughBalance(error, link, count) {
-		return new this(
-			error.activeBalance,
-			error.needBalance,
-			link,
-			count,
-			error,
-		);
+		return new this(error.activeBalance, error.needBalance, link, count, error);
 	}
-	
+
 	/**
 	 * @return {string}
 	 * @protected
 	 */
 	_toMessage() {
 		const message = super._toMessage();
-		return `${message}\nНедостаточно средств на балансе\nДоступный баланс: ${this.activeBalance}\nНеобходимо средств ${this.needBalance}`;
+		return `${message}\nНедостаточно средств на балансе\nДоступный баланс: ${
+			this.activeBalance
+		}\nНеобходимо средств ${this.needBalance}`;
 	}
 }
-
 
 /**
  * @property {String} link
@@ -72,10 +67,10 @@ export class NotEnoughBalanceForLikes extends CommonLikesError {
 export class CommonCommentsError extends BaseTaskError {
 	constructor(link, count, ...args) {
 		super(...args);
-		this.link  = link;
+		this.link = link;
 		this.count = count;
 	}
-	
+
 	/**
 	 * @return {string}
 	 * @protected
@@ -97,39 +92,33 @@ export class SetCommentsValidation extends CommonCommentsError {
 	}
 }
 
-
 export class NotEnoughBalanceForComments extends CommonCommentsError {
 	constructor(activeBalance, needBalance, ...args) {
 		super(...args);
 		this.activeBalance = activeBalance;
-		this.needBalance   = needBalance;
+		this.needBalance = needBalance;
 	}
-	
+
 	/**
 	 * @param {NotEnoughBalance} error
 	 * @param {String} link
 	 * @param {Number} count
 	 */
 	static fromNotEnoughBalance(error, link, count) {
-		return new this(
-			error.activeBalance,
-			error.needBalance,
-			link,
-			count,
-			error,
-		);
+		return new this(error.activeBalance, error.needBalance, link, count, error);
 	}
-	
+
 	/**
 	 * @return {string}
 	 * @protected
 	 */
 	_toMessage() {
 		const message = super._toMessage();
-		return `${message}\nНедостаточно средств на балансе\nДоступный баланс: ${this.activeBalance}\nНеобходимо средств ${this.needBalance}`;
+		return `${message}\nНедостаточно средств на балансе\nДоступный баланс: ${
+			this.activeBalance
+		}\nНеобходимо средств ${this.needBalance}`;
 	}
 }
-
 
 /**
  * @property {String} link
@@ -138,10 +127,10 @@ export class NotEnoughBalanceForComments extends CommonCommentsError {
 export class CommonRepostsError extends BaseTaskError {
 	constructor(link, count, ...args) {
 		super(...args);
-		this.link  = link;
+		this.link = link;
 		this.count = count;
 	}
-	
+
 	/**
 	 * @return {string}
 	 * @protected
@@ -167,31 +156,27 @@ export class NotEnoughBalanceForReposts extends CommonRepostsError {
 	constructor(activeBalance, needBalance, ...args) {
 		super(...args);
 		this.activeBalance = activeBalance;
-		this.needBalance   = needBalance;
+		this.needBalance = needBalance;
 	}
-	
+
 	/**
 	 * @param {NotEnoughBalance} error
 	 * @param {String} link
 	 * @param {Number} count
 	 */
 	static fromNotEnoughBalance(error, link, count) {
-		return new this(
-			error.activeBalance,
-			error.needBalance,
-			link,
-			count,
-			error,
-		);
+		return new this(error.activeBalance, error.needBalance, link, count, error);
 	}
-	
+
 	/**
 	 * @return {string}
 	 * @protected
 	 */
 	_toMessage() {
 		const message = super._toMessage();
-		return `${message}\nНедостаточно средств на балансе\nДоступный баланс: ${this.activeBalance}\nНеобходимо средств ${this.needBalance}`;
+		return `${message}\nНедостаточно средств на балансе\nДоступный баланс: ${
+			this.activeBalance
+		}\nНеобходимо средств ${this.needBalance}`;
 	}
 }
 
@@ -199,15 +184,17 @@ export class NotEnoughBalance extends BaseTaskError {
 	constructor(activeBalance, needBalance, ...args) {
 		super(...args);
 		this.activeBalance = activeBalance;
-		this.needBalance   = needBalance;
+		this.needBalance = needBalance;
 	}
-	
+
 	/**
 	 * @return {string}
 	 * @protected
 	 */
 	_toMessage() {
 		const message = super._toMessage();
-		return `${message}\nНедостаточно средств на балансе\nДоступный баланс: ${this.activeBalance}\nНеобходимо средств: ${this.needBalance}`;
+		return `${message}\nНедостаточно средств на балансе\nДоступный баланс: ${
+			this.activeBalance
+		}\nНеобходимо средств: ${this.needBalance}`;
 	}
 }

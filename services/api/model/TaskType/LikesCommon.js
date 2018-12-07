@@ -2,12 +2,12 @@ import mongoose from '../../../../lib/mongoose';
 
 const likesCommonSchema = new mongoose.Schema({
 	postLink: {
-		type    : String,
+		type: String,
 		required: true,
 	},
-	
+
 	likesCount: {
-		type    : Number,
+		type: Number,
 		required: true,
 	},
 });
@@ -28,11 +28,11 @@ export class LikesCommonDocument {
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
 		baseTask.likesCount = opts.likesCount;
-		baseTask.postLink   = opts.postLink;
+		baseTask.postLink = opts.postLink;
 		baseTask.parentTask = opts.parentTask || null;
 		return baseTask;
 	}
-	
+
 	/**
 	 * @param {Object} opts
 	 * @param {Number} opts.likesCount
@@ -44,11 +44,11 @@ export class LikesCommonDocument {
 		if (likesCount) {
 			this.likesCount = likesCount;
 		}
-		
+
 		if (postLink) {
 			this.postLink = postLink;
 		}
-		
+
 		return this;
 	}
 }

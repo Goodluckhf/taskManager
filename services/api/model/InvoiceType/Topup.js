@@ -5,12 +5,12 @@ const topUpInvoiceSchema = new mongoose.Schema({
 	purse: {
 		type: String,
 	},
-	
+
 	note: {
-		type    : String,
+		type: String,
 		required: true,
 	},
-	
+
 	// Реальные деньги
 	money: {
 		type: Number,
@@ -34,7 +34,7 @@ class TopUpInvoiceDocument {
 		const invoice = mongoose.model('Invoice').createInstance(this, args);
 		invoice.purse = purse;
 		invoice.money = money;
-		invoice.note  = getRandomNumberString(noteSize);
+		invoice.note = getRandomNumberString(noteSize);
 		return invoice;
 	}
 }

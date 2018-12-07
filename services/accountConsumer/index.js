@@ -1,17 +1,17 @@
-import config    from 'config';
+import config from 'config';
 
-import Amqp            from '../../lib/amqp/Amqp';
-import logger          from '../../lib/logger';
-import RpcServer       from '../../lib/amqp/RpcServer';
+import Amqp from '../../lib/amqp/Amqp';
+import logger from '../../lib/logger';
+import RpcServer from '../../lib/amqp/RpcServer';
 import AccountResponse from './AccountResponse';
 
 const rabbitConfig = config.get('rabbit');
 const amqp = new Amqp(logger, {
-	host    : process.env.NODE_ENV === 'development' ? 'localhost' : rabbitConfig.host,
-	port    : rabbitConfig.port,
-	login   : rabbitConfig.login,
+	host: process.env.NODE_ENV === 'development' ? 'localhost' : rabbitConfig.host,
+	port: rabbitConfig.port,
+	login: rabbitConfig.login,
 	password: rabbitConfig.password,
-	retry   : false,
+	retry: false,
 });
 
 /**
@@ -28,15 +28,15 @@ const forceExit = (ms = 500, code = 1) => {
 	try {
 		const response = new AccountResponse({
 			logger,
-			queue   : config.get('accountTask.queue'),
+			queue: config.get('accountTask.queue'),
 			prefetch: config.get('accountTask.prefetch'),
 		});
-		
+
 		const rpcServer = new RpcServer(amqp, logger, response);
 		await rpcServer.start();
 		logger.info({
 			message: 'rpc server started',
-			queue  : response.queue,
+			queue: response.queue,
 		});
 	} catch (error) {
 		logger.error({ error });
@@ -50,12 +50,12 @@ process.on('SIGTERM', () => {
 	forceExit(500, 2);
 });
 
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', error => {
 	logger.error({ error });
 	forceExit();
 });
 
-process.on('unhandledRejection', (error) => {
+process.on('unhandledRejection', error => {
 	logger.error({ error });
 	forceExit();
 });

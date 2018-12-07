@@ -2,39 +2,39 @@ import mongoose from '../../../../lib/mongoose';
 
 const autolikesSchema = new mongoose.Schema({
 	group: {
-		type    : mongoose.Schema.Types.ObjectId,
+		type: mongoose.Schema.Types.ObjectId,
 		required: true,
-		ref     : 'Group',
+		ref: 'Group',
 	},
-	
+
 	// Ставить на все посты без ссылки тоже
 	contentPosts: {
-		type   : Boolean,
+		type: Boolean,
 		default: false,
 	},
-	
+
 	likesCount: {
-		type    : Number,
+		type: Number,
 		required: true,
 	},
-	
+
 	commentsCount: {
-		type    : Number,
+		type: Number,
 		required: true,
 	},
-	
+
 	repostsCount: {
-		type    : Number,
+		type: Number,
 		required: true,
 	},
-	
+
 	// Прошлый пост
 	lastPostLink: {
 		type: String,
 	},
-	
+
 	repeated: {
-		type   : Boolean,
+		type: Boolean,
 		default: true,
 	},
 });
@@ -59,14 +59,14 @@ export class AutoLikesTaskDocument {
 	 */
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
-		baseTask.contentPosts  = opts.contentPosts || false;
-		baseTask.likesCount    = opts.likesCount;
+		baseTask.contentPosts = opts.contentPosts || false;
+		baseTask.likesCount = opts.likesCount;
 		baseTask.commentsCount = opts.commentsCount;
-		baseTask.repostsCount  = opts.repostsCount;
-		baseTask.group         = opts.group;
+		baseTask.repostsCount = opts.repostsCount;
+		baseTask.group = opts.group;
 		return baseTask;
 	}
-	
+
 	/**
 	 * @param {Object} opts
 	 * @param {Number} opts.likesCount
@@ -79,15 +79,15 @@ export class AutoLikesTaskDocument {
 		if (likesCount) {
 			this.likesCount = likesCount;
 		}
-		
+
 		if (commentsCount) {
 			this.commentsCount = commentsCount;
 		}
-		
+
 		if (groupId) {
 			this.group = groupId;
 		}
-		
+
 		return this;
 	}
 }

@@ -1,7 +1,7 @@
-import config         from 'config';
-import VkApi          from '../../../../lib/VkApi';
-import logger         from '../../../../lib/logger';
-import AutoLikesApi   from '../../api/AutoLikesApi';
+import config from 'config';
+import VkApi from '../../../../lib/VkApi';
+import logger from '../../../../lib/logger';
+import AutoLikesApi from '../../api/AutoLikesApi';
 
 /**
  * @param {Router} router
@@ -13,41 +13,45 @@ export default (router, passport, billing, captcha) => {
 	const vkApi = new VkApi(captcha, logger, config.get('vkApi.token'), {
 		timeout: config.get('vkApi.timeout'),
 	});
-	
+
 	// Сам классс Api
 	const taskApi = new AutoLikesApi(vkApi, billing, config, logger);
-	
-	router.post('/autolikes', passport.authenticate('jwt', { session: false }), async (ctx) => {
+
+	router.post('/autolikes', passport.authenticate('jwt', { session: false }), async ctx => {
 		const { user } = ctx.state;
-		const account  = billing.createAccount(user);
-		
+		const account = billing.createAccount(user);
+
 		ctx.body = {
 			success: true,
-			data   : await taskApi.create(account, ctx.request.body),
+			data: await taskApi.create(account, ctx.request.body),
 		};
 	});
-	
-	router.get('/autolikes', passport.authenticate('jwt', { session: false }), async (ctx) => {
+
+	router.get('/autolikes', passport.authenticate('jwt', { session: false }), async ctx => {
 		ctx.body = {
 			success: true,
-			data   : await taskApi.list({
+			data: await taskApi.list({
 				...ctx.request.query,
 				user: ctx.state.user,
 			}),
 		};
 	});
-	
-	router.put('/autolikes/:id/resume', passport.authenticate('jwt', { session: false }), async (ctx) => {
-		const { id }    = ctx.params;
-		const { user }  = ctx.state;
-		const account   = billing.createAccount(user);
-		
-		ctx.body = {
-			success: true,
-			data   : await taskApi.resume(id, account),
-		};
-	});
-	
+
+	router.put(
+		'/autolikes/:id/resume',
+		passport.authenticate('jwt', { session: false }),
+		async ctx => {
+			const { id } = ctx.params;
+			const { user } = ctx.state;
+			const account = billing.createAccount(user);
+
+			ctx.body = {
+				success: true,
+				data: await taskApi.resume(id, account),
+			};
+		},
+	);
+
 	// router.put('/autolikes/:id', passport.authenticate('jwt', { session: false }), async (ctx) => {
 	// 	const { id } = ctx.params;
 	//
