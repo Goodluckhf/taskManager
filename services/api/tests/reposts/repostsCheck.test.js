@@ -42,7 +42,9 @@ describe('RepostsCheckTask', function() {
 
 		const rpcClient = {
 			call() {
-				throw new Error('fail');
+				return {
+					reposts: 9,
+				};
 			},
 		};
 
@@ -84,7 +86,9 @@ describe('RepostsCheckTask', function() {
 
 		const rpcClient = {
 			call() {
-				return true;
+				return {
+					reposts: 11,
+				};
 			},
 		};
 
@@ -130,7 +134,9 @@ describe('RepostsCheckTask', function() {
 		const rpcClient = {
 			call(request) {
 				if (request.method === 'checkReposts') {
-					throw new Error('fail');
+					return {
+						reposts: 9,
+					};
 				}
 
 				return true;
@@ -157,6 +163,51 @@ describe('RepostsCheckTask', function() {
 		expect(repostsTask.status).to.be.equals(mongoose.model('Task').status.finished);
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.finished);
 		expect(taskDocument.parentTask.status).to.be.equals(mongoose.model('Task').status.checking);
+		expect(taskDocument.parentTask._error).to.be.null;
+	});
+
+	it('should not finish task if error happens', async () => {
+		this.config.repostsTask = {
+			...this.config.repostsTask,
+			serviceOrder: ['likest'],
+		};
+
+		const user = mongoose.model('PremiumUser').createInstance({
+			email: 'test',
+			password: 'test',
+		});
+
+		const parentTask = mongoose.model('RepostsCommon').createInstance({
+			repostsCount: 100,
+			postLink: 'tetsLink',
+			status: mongoose.model('Task').status.pending,
+			user,
+		});
+
+		const taskDocument = mongoose.model('RepostsCheckTask').createInstance({
+			repostsCount: 10,
+			postLink: 'tetsLink',
+			serviceIndex: 0,
+			parentTask,
+			user,
+		});
+
+		const rpcClient = {
+			call() {
+				throw new Error('some error');
+			},
+		};
+
+		const task = new RepostsCheckTask({
+			rpcClient,
+			taskDocument,
+			logger: loggerMock,
+			config: this.config,
+		});
+		const promise = task.handle();
+		await expect(promise).to.eventually.fulfilled;
+		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.waiting);
+		expect(taskDocument.parentTask.status).to.be.equals(mongoose.model('Task').status.waiting);
 		expect(taskDocument.parentTask._error).to.be.null;
 	});
 
@@ -194,7 +245,9 @@ describe('RepostsCheckTask', function() {
 
 		const rpcClient = {
 			call() {
-				return true;
+				return {
+					reposts: 13,
+				};
 			},
 		};
 
@@ -265,7 +318,9 @@ describe('RepostsCheckTask', function() {
 
 		const rpcClient = {
 			call() {
-				throw new Error('failed');
+				return {
+					reposts: 9,
+				};
 			},
 		};
 
