@@ -1,0 +1,20 @@
+language: node_js
+
+cache:
+  directories:
+    - node_modules
+node_js:
+  - '10.12'
+
+notifications:
+  email:
+    recipients:
+      - goodluckhf@yandex.ru
+    on_success: never
+    on_failure: always
+
+before_script:
+  - npm prune
+script:
+  - cp ./.env.default ./.env
+  - NODE_ENV=development npm run test
