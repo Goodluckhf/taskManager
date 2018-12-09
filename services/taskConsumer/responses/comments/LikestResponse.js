@@ -18,6 +18,14 @@ class LikestResponse extends Response {
 		return 'setComments_likest';
 	}
 
+	async login(page, { login, password }) {
+		try {
+			await loginAction(page, this.captcha, { login, password });
+		} catch (error) {
+			await this.login(page, { login, password });
+		}
+	}
+
 	async process({ postLink, commentsCount, serviceCredentials: { login, password } }) {
 		const browser = await puppeteer.launch({
 			args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
@@ -28,14 +36,13 @@ class LikestResponse extends Response {
 		try {
 			const page = await browser.newPage();
 			// Авторизовываемся
-			const loginPageResponse = await page.goto('https://likest.ru/user', {
-				waitUntil: 'networkidle2',
+			await this.login(page, { login, password });
+			this.logger.info({
+				message: 'залогинились likest',
+				postLink,
+				commentsCount,
+				login,
 			});
-			if (loginPageResponse.status() !== 200) {
-				throw new Error('Сервис не доступен');
-			}
-
-			await loginAction(page, this.captcha, login, password);
 
 			await page.goto('https://likest.ru/comments/add', { waitUntil: 'networkidle2' });
 
