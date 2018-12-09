@@ -1,4 +1,4 @@
-const loginAction = async (page, captcha, login, password) => {
+const loginWithoutChangePage = async (page, captcha, { login, password }) => {
 	const captchaSrc = await page.evaluate(() => {
 		const img = document.querySelector('.captcha img');
 		return img.src;
@@ -28,7 +28,19 @@ const loginAction = async (page, captcha, login, password) => {
 		return;
 	}
 
-	await loginAction(page, captcha, login, password);
+	await loginWithoutChangePage(page, captcha, { login, password });
+};
+
+const loginAction = async (page, captcha, { login, password }) => {
+	const loginPageResponse = await page.goto('https://likest.ru/user', {
+		waitUntil: 'networkidle2',
+	});
+
+	if (loginPageResponse.status() !== 200) {
+		throw new Error('Сервис не доступен');
+	}
+
+	await loginWithoutChangePage(page, captcha, { login, password });
 };
 
 export default loginAction;
