@@ -9,10 +9,15 @@ import LikeProResponse from './responses/likes/LikeProResponse/LikeProResponse';
 import gracefulStop from '../../lib/GracefulStop/index';
 import Z1y1x1CommentsResponse from './responses/comments/Z1y1x1Response';
 import LikestCommentsResponse from './responses/comments/LikestResponse';
+import SmmBroCommentsResponse from './responses/comments/SmmBroResponse';
+
 import Z1y1x1RepostsResponse from './responses/reposts/Z1y1x1Response';
 import LikestRepostsResponse from './responses/reposts/LikestResponse';
+import SmmBroRepostsResponse from './responses/reposts/SmmBroResponse';
+
 import Z1y1x1Response from './responses/likes/Z1y1x1Response';
 import LikestResponse from './responses/likes/LikestResponse';
+import SmmBroResponse from './responses/likes/SmmBroResponse';
 import Captcha from '../../lib/Captcha';
 import VkApi from '../../lib/VkApi';
 import PostByLinkResponse from './responses/PostByLinkResponse';
@@ -41,6 +46,7 @@ const vkApi = new VkApi(captcha, logger, config.get('vkApi.token'), {
 rpcServer
 	.addResponse(new LikeProResponse({ logger, config }))
 	.addResponse(new Z1y1x1Response({ logger, config }))
+	.addResponse(new SmmBroResponse({ logger, config }))
 	.addResponse(
 		new LikestResponse({
 			captcha,
@@ -58,22 +64,28 @@ rpcServer.addResponse(
 );
 
 // Обработчики накрутки комментов
-rpcServer.addResponse(new Z1y1x1CommentsResponse({ logger, config })).addResponse(
-	new LikestCommentsResponse({
-		captcha,
-		logger,
-		config,
-	}),
-);
+rpcServer
+	.addResponse(new Z1y1x1CommentsResponse({ logger, config }))
+	.addResponse(
+		new LikestCommentsResponse({
+			captcha,
+			logger,
+			config,
+		}),
+	)
+	.addResponse(new SmmBroCommentsResponse({ logger, config }));
 
 // Обработчики накрутки репостов
-rpcServer.addResponse(new Z1y1x1RepostsResponse({ logger, config })).addResponse(
-	new LikestRepostsResponse({
-		captcha,
-		logger,
-		config,
-	}),
-);
+rpcServer
+	.addResponse(new Z1y1x1RepostsResponse({ logger, config }))
+	.addResponse(
+		new LikestRepostsResponse({
+			captcha,
+			logger,
+			config,
+		}),
+	)
+	.addResponse(new SmmBroRepostsResponse({ logger, config }));
 
 // Проверка на выход рекламного поста
 rpcServer.addResponse(new LastPostWithLinkResponse({ logger, config }));
