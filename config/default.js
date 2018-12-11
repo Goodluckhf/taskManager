@@ -84,6 +84,11 @@ module.exports = {
 		timeout: process.env.Z1Y1X1__TIMEOUT,
 	},
 
+	smmBro: {
+		login: process.env.SMM_BRO__LOGIN,
+		password: process.env.SMM_BRO__PASSWORD,
+	},
+
 	vkApi: {
 		token: process.env.VK_API__TOKEN,
 		id: process.env.VK_API__ID,
