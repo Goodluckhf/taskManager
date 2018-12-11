@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import propTypes            from 'prop-types';
-import { Link }             from 'react-router-dom';
+import propTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 import {
 	Card,
@@ -13,55 +13,58 @@ import {
 	InputGroupAddon,
 	InputGroupText,
 	Row,
-}                           from 'reactstrap';
+} from 'reactstrap';
 import LoadingButton, { S } from '../ui/LoadingButton';
-import ApiError             from '../ui/ApiError';
+import ApiError from '../ui/ApiError';
 
 class Register extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			email               : '',
-			password            : '',
+			email: '',
+			password: '',
 			passwordConfirmation: '',
-			passwordError       : null,
+			passwordError: null,
 		};
 	}
-	
+
 	static propTypes = {
-		register      : propTypes.func.isRequired,
-		error         : propTypes.object,
-		loading       : propTypes.bool,
+		register: propTypes.func.isRequired,
+		error: propTypes.object,
+		loading: propTypes.bool,
 		hasAccountLink: propTypes.string,
 	};
-	
-	onEmailChange = (e) => {
+
+	onEmailChange = e => {
 		this.setState({ email: e.target.value.trim() });
 	};
-	
-	onPasswordChange = (e) => {
+
+	onPasswordChange = e => {
 		this.setState({ password: e.target.value.trim() });
 	};
-	
-	onPasswordConfirmationChange = (e) => {
+
+	onPasswordConfirmationChange = e => {
 		this.setState({ passwordConfirmation: e.target.value.trim() });
 	};
-	
-	onRegister = (e) => {
+
+	onRegister = e => {
 		e.preventDefault();
-		if (!this.state.password.length || this.state.password !== this.state.passwordConfirmation) {
+		if (
+			!this.state.password.length ||
+			this.state.password !== this.state.passwordConfirmation
+		) {
 			this.setState({
 				passwordError: { message: 'Пароли не совпадают!' },
 			});
 			return;
 		}
-		
+
 		this.props.register({
-			email   : this.state.email,
+			email: this.state.email,
 			password: this.state.password,
 		});
 	};
-	
+
 	render() {
 		return (
 			<div className="app flex-row align-items-center">
@@ -77,20 +80,30 @@ class Register extends Component {
 											<InputGroupAddon addonType="prepend">
 												<InputGroupText>@</InputGroupText>
 											</InputGroupAddon>
-											<Input onChange={this.onEmailChange} type="text" placeholder="Email" autoComplete="email"/>
+											<Input
+												onChange={this.onEmailChange}
+												type="text"
+												placeholder="Email"
+												autoComplete="email"
+											/>
 										</InputGroup>
 										<InputGroup className="mb-3">
 											<InputGroupAddon addonType="prepend">
 												<InputGroupText>
-													<i className="icon-lock"></i>
+													<i className="icon-lock" />
 												</InputGroupText>
 											</InputGroupAddon>
-											<Input onChange={this.onPasswordChange} type="password" placeholder="Password" autoComplete="new-password"/>
+											<Input
+												onChange={this.onPasswordChange}
+												type="password"
+												placeholder="Password"
+												autoComplete="new-password"
+											/>
 										</InputGroup>
 										<InputGroup className="mb-4">
 											<InputGroupAddon addonType="prepend">
 												<InputGroupText>
-													<i className="icon-lock"></i>
+													<i className="icon-lock" />
 												</InputGroupText>
 											</InputGroupAddon>
 											<Input
@@ -104,18 +117,29 @@ class Register extends Component {
 											loading={this.props.loading}
 											data-color="green"
 											data-size={S}
-											onClick={this.onRegister}
-										>
+											onClick={this.onRegister}>
 											Создать
 										</LoadingButton>
-										<Link style={{ marginLeft: '15px' }} to={this.props.hasAccountLink}>Уже есть аккаунт</Link>
+										<Link
+											style={{ marginLeft: '15px' }}
+											to={this.props.hasAccountLink}>
+											Уже есть аккаунт
+										</Link>
 									</Form>
 								</CardBody>
 							</Card>
 						</Col>
 					</Row>
-					{this.props.error ? <ApiError style={{ marginTop: '24px' }} error={this.props.error}/> : ''}
-					{this.state.passwordError ? <ApiError style={{ marginTop: '24px' }} error={this.state.passwordError}/> : ''}
+					{this.props.error ? (
+						<ApiError style={{ marginTop: '24px' }} error={this.props.error} />
+					) : (
+						''
+					)}
+					{this.state.passwordError ? (
+						<ApiError style={{ marginTop: '24px' }} error={this.state.passwordError} />
+					) : (
+						''
+					)}
 				</Container>
 			</div>
 		);

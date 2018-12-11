@@ -5,59 +5,59 @@ import { Col, InputGroup, Input, CustomInput } from 'reactstrap';
 class FormFilter extends PureComponent {
 	constructor(props) {
 		super(props);
-		
+
 		this.state = {
-			search   : this.props.search,
-			_search  : this.props.search,
-			isTarget : this.props.isTarget,
+			search: this.props.search,
+			_search: this.props.search,
+			isTarget: this.props.isTarget,
 			_isTarget: this.props.isTarget,
 		};
-		
+
 		this.inputId = Math.random();
 	}
-	
+
 	static getDerivedStateFromProps(props, state) {
 		const newState = {};
 		if (props.search !== state._search) {
-			newState.search  = props.search;
+			newState.search = props.search;
 			newState._search = props.search;
 		}
-		
+
 		if (props.isTarget !== state._isTarget) {
-			newState.isTarget  = props.isTarget;
+			newState.isTarget = props.isTarget;
 			newState._isTarget = props.isTarget;
 		}
-		
+
 		if (!Object.keys(newState).length) {
 			return null;
 		}
-		
+
 		return newState;
 	}
-	
+
 	static propTypes = {
-		change  : propTypes.func,
-		search  : propTypes.string,
+		change: propTypes.func,
+		search: propTypes.string,
 		isTarget: propTypes.bool,
 	};
-	
+
 	formChange = () => {
 		const { isTarget, search } = this.state;
 		this.props.change({ isTarget, search });
 	};
-	
-	onSearchChange = (e) => {
+
+	onSearchChange = e => {
 		this.setState({ search: e.target.value.trim() }, () => {
 			this.formChange();
 		});
 	};
-	
-	onFilterChange = (e) => {
+
+	onFilterChange = e => {
 		this.setState({ isTarget: e.target.checked }, () => {
 			this.formChange();
 		});
 	};
-	
+
 	render() {
 		return (
 			<Fragment>
@@ -66,8 +66,8 @@ class FormFilter extends PureComponent {
 						<CustomInput
 							id={this.inputId}
 							onChange={this.onFilterChange}
-							type='checkbox'
-							label='Только для автонакрутки'
+							type="checkbox"
+							label="Только для автонакрутки"
 							checked={this.state.isTarget}
 						/>
 					</InputGroup>
@@ -75,9 +75,16 @@ class FormFilter extends PureComponent {
 				<Col>
 					<InputGroup>
 						<div className="input-group-prepend">
-							<span className="input-group-text"><i className='fa fa-search'/></span>
+							<span className="input-group-text">
+								<i className="fa fa-search" />
+							</span>
 						</div>
-						<Input value={this.state.search} onChange={this.onSearchChange} type='text' placeholder='...'/>
+						<Input
+							value={this.state.search}
+							onChange={this.onSearchChange}
+							type="text"
+							placeholder="..."
+						/>
 					</InputGroup>
 				</Col>
 			</Fragment>

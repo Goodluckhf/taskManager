@@ -1,36 +1,38 @@
 import React, { PureComponent } from 'react';
-import propTypes                from 'prop-types';
-import { connect }              from 'react-redux';
-import { Container }            from 'reactstrap';
-import Immutable                          from 'immutable';
-import Layout                             from '../layout/Layout';
-import Form                               from '../components/autoLikes/Form';
-import List                               from '../components/autoLikes/List';
-import ExternalLinksForm                  from '../components/auth/ExternalLinksForm';
+import propTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { Container } from 'reactstrap';
+import Immutable from 'immutable';
+import Layout from '../layout/Layout';
+import Form from '../components/autoLikes/Form';
+import List from '../components/autoLikes/List';
+import ExternalLinksForm from '../components/auth/ExternalLinksForm';
 import {
-	createRequest, filterChangeRequest,
-	removeRequest, resumeRequest, stopRequest,
-}                                         from '../../actions/autolikes';
+	createRequest,
+	filterChangeRequest,
+	removeRequest,
+	resumeRequest,
+	stopRequest,
+} from '../../actions/autolikes';
 import { loaderSelector, getLoaderState } from '../../lib/loader';
-import { setExternalLinksRequest }        from '../../actions/auth';
+import { setExternalLinksRequest } from '../../actions/auth';
 
 class AutoLikes extends PureComponent {
 	static propTypes = {
-		form          : propTypes.instanceOf(Immutable.Map),
-		auth          : propTypes.instanceOf(Immutable.Map),
-		list          : propTypes.instanceOf(Immutable.List),
+		form: propTypes.instanceOf(Immutable.Map),
+		auth: propTypes.instanceOf(Immutable.Map),
+		list: propTypes.instanceOf(Immutable.List),
 		createAutoLike: propTypes.func,
-		filterChange  : propTypes.func,
-		stop          : propTypes.func,
-		resume        : propTypes.func,
-		save          : propTypes.func,
-		remove        : propTypes.func,
-		loading       : propTypes.bool,
-		filter        : propTypes.string,
-		externalLinks : propTypes.arrayOf(propTypes.string),
+		filterChange: propTypes.func,
+		stop: propTypes.func,
+		resume: propTypes.func,
+		save: propTypes.func,
+		remove: propTypes.func,
+		loading: propTypes.bool,
+		filter: propTypes.string,
+		externalLinks: propTypes.arrayOf(propTypes.string),
 	};
-	
-	
+
 	//eslint-disable-next-line
 	render() {
 		return (
@@ -64,26 +66,31 @@ class AutoLikes extends PureComponent {
 
 const mapDispatchToProps = dispatch => ({
 	createAutoLike: data => dispatch(createRequest(data)),
-	filterChange  : filter => dispatch(filterChangeRequest(filter)),
-	stop          : id => dispatch(stopRequest(id)),
-	remove        : id => dispatch(removeRequest(id)),
-	resume        : id => dispatch(resumeRequest(id)),
-	save          : links => dispatch(setExternalLinksRequest(links)),
+	filterChange: filter => dispatch(filterChangeRequest(filter)),
+	stop: id => dispatch(stopRequest(id)),
+	remove: id => dispatch(removeRequest(id)),
+	resume: id => dispatch(resumeRequest(id)),
+	save: links => dispatch(setExternalLinksRequest(links)),
 });
 
 const mapStateToProps = state => ({
-	form  : loaderSelector({ AUTO_LIKES__CREATE: 'loading' }, 'autoLikesPage', state, ['form']),
+	form: loaderSelector({ AUTO_LIKES__CREATE: 'loading' }, 'autoLikesPage', state, ['form']),
 	filter: state.autoLikesPage.getIn(['list', 'filter']),
-	auth  : loaderSelector({ AUTH__SET_EXTERNAL_LINKS: 'external_loading' }, 'auth', state),
-	list  : loaderSelector(
+	auth: loaderSelector({ AUTH__SET_EXTERNAL_LINKS: 'external_loading' }, 'auth', state),
+	list: loaderSelector(
 		{
-			AUTO_LIKES__STOP  : 'stop_loading',
+			AUTO_LIKES__STOP: 'stop_loading',
 			AUTO_LIKES__REMOVE: 'remove_loading',
 			AUTO_LIKES__RESUME: 'resume_loading',
 		},
-		'autoLikesPage', state, ['list', 'items'],
+		'autoLikesPage',
+		state,
+		['list', 'items'],
 	),
 	loading: getLoaderState('AUTO_LIKES__LIST', state),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AutoLikes);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps,
+)(AutoLikes);
