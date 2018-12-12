@@ -11,6 +11,11 @@ const commentsCheckTaskSchema = new mongoose.Schema({
 		required: true,
 	},
 
+	count: {
+		type: Number,
+		required: true,
+	},
+
 	serviceIndex: {
 		type: Number,
 		required: true,

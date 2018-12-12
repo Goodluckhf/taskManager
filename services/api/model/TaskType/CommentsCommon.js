@@ -10,6 +10,11 @@ const commentsCommonTaskSchema = new mongoose.Schema({
 		type: Number,
 		required: true,
 	},
+
+	count: {
+		type: Number,
+		required: true,
+	},
 });
 
 /**

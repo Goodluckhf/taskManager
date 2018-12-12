@@ -11,6 +11,11 @@ const likesTaskSchema = new mongoose.Schema({
 		required: true,
 	},
 
+	count: {
+		type: Number,
+		required: true,
+	},
+
 	service: {
 		type: String,
 		required: true,
