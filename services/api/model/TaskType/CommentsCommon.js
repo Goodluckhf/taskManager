@@ -17,13 +17,13 @@ const commentsCommonTaskSchema = new mongoose.Schema({
  * @property {String} postLink
  * @property {Number} commentsCount
  */
-export class CommentsCommonTaskDocument {
+export class CommentsCommonDocument {
 	/**
 	 * @param {Object} opts
 	 * @param {Number} opts.commentsCount
 	 * @param {String} opts.postLink
 	 * @param {TaskDocument} opts.parentTask
-	 * @return {CommentsCommonTaskDocument}
+	 * @return {CommentsCommonDocument}
 	 */
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
@@ -37,7 +37,7 @@ export class CommentsCommonTaskDocument {
 	 * @param {Object} opts
 	 * @param {Number} opts.commentsCount
 	 * @param {String} opts.postLink
-	 * @return {CommentsCommonTaskDocument}
+	 * @return {CommentsCommonDocument}
 	 */
 	// eslint-disable-next-line object-curly-newline
 	fill({ commentsCount, postLink }) {
@@ -53,6 +53,6 @@ export class CommentsCommonTaskDocument {
 	}
 }
 
-commentsCommonTaskSchema.loadClass(CommentsCommonTaskDocument);
+commentsCommonTaskSchema.loadClass(CommentsCommonDocument);
 
 export default commentsCommonTaskSchema;
