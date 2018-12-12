@@ -48,7 +48,10 @@ describe('CommentsCommon', function() {
 	});
 
 	it('should not throw error if cant setComments with first service but can with second', async () => {
-		this.config.likesTask = { ...this.config.likesTask, serviceOrder: ['likest', 'z1y1x1'] };
+		this.config.commentsTask = {
+			...this.config.commentsTask,
+			serviceOrder: ['likest', 'z1y1x1'],
+		};
 		const user = mongoose.model('PremiumUser').createInstance({
 			email: 'test',
 			password: 'test',
@@ -81,15 +84,15 @@ describe('CommentsCommon', function() {
 		const promise = commonTask.handle();
 		await expect(promise).to.eventually.fulfilled;
 
-		const likesTaskDocument = await mongoose
+		const commentsTaskDocument = await mongoose
 			.model('CommentsTask')
 			.findOne({ parentTask: taskDocument._id, service: 'z1y1x1' })
 			.lean()
 			.exec();
 
 		expect(taskDocument._error).to.be.null;
-		expect(likesTaskDocument._error).to.be.null;
-		expect(likesTaskDocument.status).to.be.equals(mongoose.model('Task').status.finished);
+		expect(commentsTaskDocument._error).to.be.null;
+		expect(commentsTaskDocument.status).to.be.equals(mongoose.model('Task').status.finished);
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.checking);
 	});
 
