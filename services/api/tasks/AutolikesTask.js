@@ -254,7 +254,6 @@ class AutoLikesTask extends BaseTask {
 				return;
 			}
 
-			//eslint-disable-next-line no-unused-vars
 			const { postId, mentionId, link } = lastPostResult;
 			postLink = Group.getPostLinkById(postId);
 
