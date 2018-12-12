@@ -35,6 +35,19 @@ const likeProServiceSchema = new mongoose.Schema(
 	{ _id: false },
 );
 
+const smmBroServiceSchema = new mongoose.Schema(
+	{
+		login: {
+			type: String,
+		},
+
+		password: {
+			type: String,
+		},
+	},
+	{ _id: false },
+);
+
 const servicesSchema = new mongoose.Schema(
 	{
 		likest: {
@@ -47,6 +60,10 @@ const servicesSchema = new mongoose.Schema(
 
 		likePro: {
 			type: likeProServiceSchema,
+		},
+
+		smmBro: {
+			type: smmBroServiceSchema,
 		},
 	},
 	{ _id: false },
