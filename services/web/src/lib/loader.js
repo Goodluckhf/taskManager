@@ -1,6 +1,5 @@
-import { List, Map }       from 'immutable';
+import { List, Map } from 'immutable';
 import { LOCATION_CHANGE } from 'connected-react-router';
-
 
 export const loaderReducer = (state = {}, action) => {
 	const { type, payload: { id } = {} } = action;
@@ -8,14 +7,11 @@ export const loaderReducer = (state = {}, action) => {
 	if (!matches) {
 		return state;
 	}
-	
+
 	const [, requestName, requestState] = matches;
 	const value = requestState === 'REQUEST';
-	const result =
-		id ?
-			{ [id]: value } :
-			{ default: value };
-	
+	const result = id ? { [id]: value } : { default: value };
+
 	return {
 		...state,
 		[requestName]: { ...state[requestName], ...result },
@@ -29,17 +25,14 @@ export const errorReducer = (state = {}, action) => {
 		if (type === LOCATION_CHANGE) {
 			return {};
 		}
-		
+
 		return state;
 	}
-	
+
 	const [, requestName, requestState] = matches;
-	const value  = requestState === 'FAILURE' ? error : null;
-	const result =
-		id ?
-			{ [id]: value } :
-			{ default: value };
-	
+	const value = requestState === 'FAILURE' ? error : null;
+	const result = id ? { [id]: value } : { default: value };
+
 	return {
 		...state,
 		[requestName]: { ...state[requestName], ...result },
@@ -50,15 +43,15 @@ const loading = (item, key, action, list) => {
 	if (typeof action === 'undefined') {
 		return item.set(key, false);
 	}
-	
-	const value = list ?
-		action[item.get('_id')] || item.get(key) || false
+
+	const value = list
+		? action[item.get('_id')] || item.get(key) || false
 		: action.default || item.get(key) || false;
-	
+
 	if (value === item.get(key)) {
 		return item;
 	}
-	
+
 	return item.set(key, value);
 };
 
@@ -67,15 +60,15 @@ const error = (item, action, list) => {
 	if (typeof action === 'undefined') {
 		return item.set('error', lastError || null);
 	}
-	
-	const value = list ?
-		action[item.get('_id')] || lastError || null
+
+	const value = list
+		? action[item.get('_id')] || lastError || null
 		: action.default || lastError || null;
-	
+
 	if (value === lastError) {
 		return item;
 	}
-	
+
 	return item.set('error', value);
 };
 
@@ -90,31 +83,31 @@ const error = (item, action, list) => {
 export const loaderSelector = (actionMap, statePath, _state, path = []) => {
 	let state = _state[statePath].getIn(path);
 	if (state instanceof List) {
-		return state.map((_item) => {
+		return state.map(_item => {
 			let item = _item;
 			Object.entries(actionMap).forEach(([action, key]) => {
 				const loaderAction = _state.loader[action];
-				const errorAction  = _state.error[action];
-				
+				const errorAction = _state.error[action];
+
 				item = loading(item, key, loaderAction, true);
 				item = error(item, errorAction, true);
 			});
-			
+
 			return item;
 		});
 	}
-	
+
 	if (state instanceof Map) {
 		Object.entries(actionMap).forEach(([action, key]) => {
 			const loaderAction = _state.loader[action];
-			const errorAction  = _state.error[action];
+			const errorAction = _state.error[action];
 			state = loading(state, key, loaderAction, false);
 			state = error(state, errorAction, false);
 		});
-		
+
 		return state;
 	}
-	
+
 	return state;
 };
 
@@ -128,6 +121,6 @@ export const getLoaderState = (action, state) => {
 	if (!loaderState) {
 		return false;
 	}
-	
+
 	return loaderState.default;
 };

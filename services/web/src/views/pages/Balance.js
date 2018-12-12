@@ -1,32 +1,34 @@
 import React, { PureComponent } from 'react';
-import { Container }            from 'reactstrap';
-import { connect }              from 'react-redux';
-import Immutable                from 'immutable';
-import propTypes                from 'prop-types';
+import { Container } from 'reactstrap';
+import { connect } from 'react-redux';
+import Immutable from 'immutable';
+import propTypes from 'prop-types';
 
-import TopUpForm                          from '../components/balance/TopUpForm';
-import InvoiceList                        from '../components/balance/InvoiceList';
-import Layout                             from '../layout/Layout';
+import TopUpForm from '../components/balance/TopUpForm';
+import InvoiceList from '../components/balance/InvoiceList';
+import Layout from '../layout/Layout';
 import { getLoaderState, loaderSelector } from '../../lib/loader';
 import {
-	checkPaymentRequest, convertMoneyRequest,
-	createTopUpInvoiceRequest, filterChangeRequest,
-}                                         from '../../actions/billing';
+	checkPaymentRequest,
+	convertMoneyRequest,
+	createTopUpInvoiceRequest,
+	filterChangeRequest,
+} from '../../actions/billing';
 
 class Balance extends PureComponent {
 	static propTypes = {
-		form              : propTypes.instanceOf(Immutable.Map),
-		invoices          : propTypes.instanceOf(Immutable.Map),
-		loading           : propTypes.bool,
-		balance           : propTypes.number,
-		comment           : propTypes.string,
-		convertMoney      : propTypes.func,
+		form: propTypes.instanceOf(Immutable.Map),
+		invoices: propTypes.instanceOf(Immutable.Map),
+		loading: propTypes.bool,
+		balance: propTypes.number,
+		comment: propTypes.string,
+		convertMoney: propTypes.func,
 		createTopUpInvoice: propTypes.func,
-		checkPayment      : propTypes.func,
-		filterChange      : propTypes.func,
-		convert           : propTypes.instanceOf(Immutable.Map),
+		checkPayment: propTypes.func,
+		filterChange: propTypes.func,
+		convert: propTypes.instanceOf(Immutable.Map),
 	};
-	
+
 	render() {
 		return (
 			<Layout>
@@ -56,22 +58,30 @@ class Balance extends PureComponent {
 }
 
 const mapDispatchToProps = dispatch => ({
-	convertMoney      : data => dispatch(convertMoneyRequest(data)),
+	convertMoney: data => dispatch(convertMoneyRequest(data)),
 	createTopUpInvoice: data => dispatch(createTopUpInvoiceRequest(data)),
-	checkPayment      : () => dispatch(checkPaymentRequest()),
-	filterChange      : data => dispatch(filterChangeRequest(data)),
+	checkPayment: () => dispatch(checkPaymentRequest()),
+	filterChange: data => dispatch(filterChangeRequest(data)),
 });
 
 const mapStateToProps = state => ({
-	form: loaderSelector({
-		BILLING__CREATE_TOPUP_INVOICE: 'create_loading',
-		BILLING__CHECK_PAYMENT       : 'check_loading',
-	}, 'billingPage', state, ['form']),
-	convert : state.billingPage.get('convert'),
-	comment : state.billingPage.get('comment'),
-	balance : state.auth.get('balance'),
+	form: loaderSelector(
+		{
+			BILLING__CREATE_TOPUP_INVOICE: 'create_loading',
+			BILLING__CHECK_PAYMENT: 'check_loading',
+		},
+		'billingPage',
+		state,
+		['form'],
+	),
+	convert: state.billingPage.get('convert'),
+	comment: state.billingPage.get('comment'),
+	balance: state.auth.get('balance'),
 	invoices: state.billingPage.get('list'),
-	loading : getLoaderState('BILLING__LIST', state),
+	loading: getLoaderState('BILLING__LIST', state),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Balance);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps,
+)(Balance);

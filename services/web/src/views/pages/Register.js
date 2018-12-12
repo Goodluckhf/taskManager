@@ -1,18 +1,18 @@
 import React, { PureComponent } from 'react';
-import { connect }              from 'react-redux';
-import propTypes                from 'prop-types';
+import { connect } from 'react-redux';
+import propTypes from 'prop-types';
 
-import RegisterForm        from '../components/auth/RegisterForm';
-import { loaderSelector }  from '../../lib/loader';
+import RegisterForm from '../components/auth/RegisterForm';
+import { loaderSelector } from '../../lib/loader';
 import { registerRequest } from '../../actions/auth';
 
 class Register extends PureComponent {
 	static propTypes = {
-		register      : propTypes.func.isRequired,
-		registerForm  : propTypes.object.isRequired,
+		register: propTypes.func.isRequired,
+		registerForm: propTypes.object.isRequired,
 		hasAccountLink: propTypes.string.isRequired,
 	};
-	
+
 	render() {
 		return (
 			<RegisterForm
@@ -30,8 +30,11 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-	registerForm  : loaderSelector({ AUTH__REGISTER: 'loading' }, 'auth', state),
+	registerForm: loaderSelector({ AUTH__REGISTER: 'loading' }, 'auth', state),
 	hasAccountLink: '/login',
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Register);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps,
+)(Register);

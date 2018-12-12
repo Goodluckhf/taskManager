@@ -1,17 +1,17 @@
 import React, { PureComponent } from 'react';
-import { connect }              from 'react-redux';
-import propTypes                from 'prop-types';
+import { connect } from 'react-redux';
+import propTypes from 'prop-types';
 
-import LoginForm          from '../components/auth/LoginForm';
+import LoginForm from '../components/auth/LoginForm';
 import { loaderSelector } from '../../lib/loader';
-import { loginRequest }   from '../../actions/auth';
+import { loginRequest } from '../../actions/auth';
 
 class Login extends PureComponent {
 	static propTypes = {
-		login    : propTypes.func.isRequired,
+		login: propTypes.func.isRequired,
 		loginForm: propTypes.object.isRequired,
 	};
-	
+
 	render() {
 		return (
 			<LoginForm
@@ -31,4 +31,7 @@ const mapStateToProps = state => ({
 	loginForm: loaderSelector({ AUTH__LOGIN: 'loading' }, 'auth', state),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps,
+)(Login);

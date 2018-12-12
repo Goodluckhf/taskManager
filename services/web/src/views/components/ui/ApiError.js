@@ -1,24 +1,25 @@
 import React, { PureComponent } from 'react';
-import Immutable                from 'immutable';
-import propTypes                from 'prop-types';
-import { Alert }                from 'reactstrap';
+import Immutable from 'immutable';
+import propTypes from 'prop-types';
+import { Alert } from 'reactstrap';
 
 class ApiError extends PureComponent {
 	static propTypes = {
-		error: propTypes.oneOfType([
-			propTypes.object,
-			propTypes.instanceOf(Immutable.Map),
-		]).isRequired,
+		error: propTypes.oneOfType([propTypes.object, propTypes.instanceOf(Immutable.Map)])
+			.isRequired,
 		title: propTypes.string,
 	};
-	
+
 	render() {
 		let title;
 		let error;
 		if (this.props.error instanceof Immutable.Map) {
 			error = this.props.error.get('formattedMessage');
 			const _title = this.props.title;
-			const message = this.props.error.get('message') || this.props.error.getIn(['originalError', 'message']) || '';
+			const message =
+				this.props.error.get('message') ||
+				this.props.error.getIn(['originalError', 'message']) ||
+				'';
 			title = _title ? `${_title}: ${message}` : message;
 		} else {
 			error = this.props.error.description || '';

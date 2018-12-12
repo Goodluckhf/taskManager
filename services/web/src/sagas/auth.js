@@ -1,8 +1,5 @@
-import {
-	select, put,
-	takeEvery, fork, call,
-}               from 'redux-saga/effects';
-import axios    from 'axios';
+import { select, put, takeEvery, fork, call } from 'redux-saga/effects';
+import axios from 'axios';
 import { push } from 'connected-react-router';
 
 import {
@@ -32,28 +29,28 @@ import { callApi } from './api';
 
 const localstorageJwtKey = 'tasks_jwt';
 
-export const getDefaultRoute = function* () {
+export const getDefaultRoute = function*() {
 	const route = yield select(state => state.router.location.pathname);
 	if (route === '/login' || route === '/register') {
 		return '/groups';
 	}
-	
+
 	return route;
 };
 
-export const updateBalance = function* () {
+export const updateBalance = function*() {
 	const balance = yield select(state => state.auth.get('balance'));
 	if (typeof balance === 'undefined') {
 		return;
 	}
-	
+
 	yield put(getUserBalanceRequest());
 };
 
-export const checkLogin = function* () {
-	const jwt        = yield select(state => state.auth.get('jwt'));
+export const checkLogin = function*() {
+	const jwt = yield select(state => state.auth.get('jwt'));
 	let currentRoute = yield select(state => state.router.location.pathname);
-	
+
 	if (currentRoute === '/login' || currentRoute === '/register') {
 		currentRoute = '/groups';
 		if (jwt) {
@@ -61,33 +58,35 @@ export const checkLogin = function* () {
 			return jwt;
 		}
 	}
-	
+
 	if (!jwt) {
 		yield put(needLogin(currentRoute));
 		return false;
 	}
-	
+
 	return jwt;
 };
 
-export const getUserData = function* () {
+export const getUserData = function*() {
 	yield put(getUserDataRequest());
 };
 
-export default function* () {
+export default function*() {
 	yield fork(checkLogin);
-	
-	yield takeEvery(NEED_LOGIN, function* ({ payload: currentRoute }) {
+
+	yield takeEvery(NEED_LOGIN, function*({ payload: currentRoute }) {
 		if (currentRoute === '/login' || currentRoute === '/register') {
 			return;
 		}
-		
+
 		yield put(push('/login'));
 	});
-	
-	yield takeEvery(LOGIN_REQUEST, function* ({ payload: data }) {
+
+	yield takeEvery(LOGIN_REQUEST, function*({ payload: data }) {
 		try {
-			const { data: { data: response } } = yield call(axios.post, '/api/login', data);
+			const {
+				data: { data: response },
+			} = yield call(axios.post, '/api/login', data);
 			yield put(loginSuccess(response));
 			const lastRoute = yield select(state => state.auth.get('lastRoute'));
 			// eslint-disable-next-line no-undef
@@ -98,14 +97,16 @@ export default function* () {
 				yield put(loginFailure(error.response.data));
 				return;
 			}
-			
+
 			yield put(loginFailure(error));
 		}
 	});
-	
-	yield takeEvery(REGISTER_REQUEST, function* ({ payload: data }) {
+
+	yield takeEvery(REGISTER_REQUEST, function*({ payload: data }) {
 		try {
-			const { data: { data: response } } = yield call(axios.post, '/api/register', data);
+			const {
+				data: { data: response },
+			} = yield call(axios.post, '/api/register', data);
 			yield put(loginSuccess(response));
 			const route = yield getDefaultRoute();
 			window.localStorage.setItem(localstorageJwtKey, response.token);
@@ -115,15 +116,15 @@ export default function* () {
 				yield put(registerFailure(error.response.data));
 				return;
 			}
-			
+
 			yield put(registerFailure(error));
 		}
 	});
-	
-	yield takeEvery(CREATE_CHAT_REQUEST, function* ({ payload: data }) {
+
+	yield takeEvery(CREATE_CHAT_REQUEST, function*({ payload: data }) {
 		try {
 			const userData = yield callApi({
-				url   : 'user/chat',
+				url: 'user/chat',
 				method: 'post',
 				data,
 			});
@@ -133,12 +134,12 @@ export default function* () {
 				yield put(createChatFailure(error.response.data));
 				return;
 			}
-			
+
 			yield put(createChatFailure(error));
 		}
 	});
-	
-	yield takeEvery(GET_USER_DATA_REQUEST, function* () {
+
+	yield takeEvery(GET_USER_DATA_REQUEST, function*() {
 		try {
 			const userData = yield callApi({ url: 'user' });
 			yield put(getUserDataSuccess(userData.data));
@@ -147,31 +148,33 @@ export default function* () {
 				yield put(getUserDataFailure(error.response.data));
 				return;
 			}
-			
+
 			yield put(getUserDataFailure(error));
 		}
 	});
-	
-	yield takeEvery(GET_USER_BALANCE_REQUEST, function* () {
+
+	yield takeEvery(GET_USER_BALANCE_REQUEST, function*() {
 		try {
-			const { data: { balance } } = yield callApi({ url: 'user' });
+			const {
+				data: { balance },
+			} = yield callApi({ url: 'user' });
 			yield put(getUserBalanceSuccess(balance));
 		} catch (error) {
 			console.error(error);
 		}
 	});
-	
-	yield takeEvery(LOGOUT, function* () {
+
+	yield takeEvery(LOGOUT, function*() {
 		window.localStorage.removeItem(localstorageJwtKey);
 		yield put(push('/login'));
 	});
-	
-	yield takeEvery(SET_EXTERNAL_LINKS_REQUEST, function* ({ payload: links }) {
+
+	yield takeEvery(SET_EXTERNAL_LINKS_REQUEST, function*({ payload: links }) {
 		try {
 			yield callApi({
-				url   : 'user/links',
+				url: 'user/links',
 				method: 'put',
-				data  : links,
+				data: links,
 			});
 			yield put(setExternalLinksSuccess());
 		} catch (error) {
@@ -179,7 +182,7 @@ export default function* () {
 				yield put(setExternalLinksFailure(error.response.data));
 				return;
 			}
-			
+
 			yield put(setExternalLinksFailure(error));
 		}
 	});
