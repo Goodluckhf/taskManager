@@ -13,7 +13,7 @@ describe('likeTask', () => {
 		});
 
 		const taskDocument = mongoose.model('LikesTask').createInstance({
-			likesCount: 10,
+			count: 10,
 			postLink: 'testLink',
 			service: 'testService',
 			user,
@@ -22,7 +22,7 @@ describe('likeTask', () => {
 		const rpcClient = {
 			async call(request) {
 				expect(request.method).to.be.equals('setLikes_testService');
-				expect(request.args.likesCount).to.be.equals(10);
+				expect(request.args.count).to.be.equals(10);
 				expect(request.args.postLink).to.be.equals('testLink');
 			},
 		};
@@ -46,7 +46,7 @@ describe('likeTask', () => {
 		});
 
 		const taskDocument = mongoose.model('LikesTask').createInstance({
-			likesCount: 10,
+			count: 10,
 			postLink: 'testLink',
 			service: 'testService',
 			user,
@@ -78,7 +78,7 @@ describe('likeTask', () => {
 		});
 
 		const taskDocument = mongoose.model('LikesTask').createInstance({
-			likesCount: 10,
+			count: 10,
 			postLink: 'testLink',
 			service: 'testService',
 			user,
