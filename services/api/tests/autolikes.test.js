@@ -23,7 +23,7 @@ describe('AutolikesTask', function() {
 		});
 
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 100,
+			count: 100,
 			commentsCount: 50,
 			repostsCount: 30,
 			group,
@@ -63,7 +63,7 @@ describe('AutolikesTask', function() {
 			},
 		};
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 100,
+			count: 100,
 			commentsCount: 50,
 			repostsCount: 30,
 			group,
@@ -105,7 +105,7 @@ describe('AutolikesTask', function() {
 			},
 		};
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 100,
+			count: 100,
 			commentsCount: 50,
 			repostsCount: 30,
 			group,
@@ -148,7 +148,7 @@ describe('AutolikesTask', function() {
 			},
 		};
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 100,
+			count: 100,
 			commentsCount: 50,
 			repostsCount: 30,
 			group,
@@ -191,7 +191,7 @@ describe('AutolikesTask', function() {
 		};
 
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 100,
+			count: 100,
 			commentsCount: 50,
 			repostsCount: 30,
 			group,
@@ -238,7 +238,7 @@ describe('AutolikesTask', function() {
 		};
 
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 100,
+			count: 100,
 			commentsCount: 0,
 			repostsCount: 0,
 			contentPosts: true,
@@ -283,7 +283,7 @@ describe('AutolikesTask', function() {
 		};
 
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 100,
+			count: 100,
 			commentsCount: 0,
 			repostsCount: 0,
 			contentPosts: true,
@@ -332,7 +332,7 @@ describe('AutolikesTask', function() {
 		};
 
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 100,
+			count: 100,
 			commentsCount: 0,
 			repostsCount: 0,
 			contentPosts: true,
@@ -381,7 +381,7 @@ describe('AutolikesTask', function() {
 		};
 
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 100,
+			count: 100,
 			commentsCount: 0,
 			repostsCount: 0,
 			contentPosts: true,
@@ -430,7 +430,7 @@ describe('AutolikesTask', function() {
 		};
 
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 100,
+			count: 100,
 			commentsCount: 0,
 			repostsCount: 0,
 			group,
@@ -478,7 +478,7 @@ describe('AutolikesTask', function() {
 		};
 
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 0,
+			count: 0,
 			commentsCount: 100,
 			repostsCount: 0,
 			group,
@@ -526,7 +526,7 @@ describe('AutolikesTask', function() {
 		};
 
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 0,
+			count: 0,
 			commentsCount: 0,
 			repostsCount: 100,
 			group,
@@ -585,7 +585,7 @@ describe('AutolikesTask', function() {
 		};
 
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 100,
+			count: 100,
 			commentsCount: 100,
 			repostsCount: 100,
 			group,
@@ -646,7 +646,7 @@ describe('AutolikesTask', function() {
 		};
 
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 100,
+			count: 100,
 			commentsCount: 100,
 			repostsCount: 100,
 			group,
@@ -710,7 +710,7 @@ describe('AutolikesTask', function() {
 		};
 
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 90,
+			count: 90,
 			commentsCount: 100,
 			repostsCount: 0,
 			group,
@@ -791,7 +791,7 @@ describe('AutolikesTask', function() {
 		};
 
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 90,
+			count: 90,
 			commentsCount: 100,
 			repostsCount: 0,
 			group,
@@ -864,7 +864,7 @@ describe('AutolikesTask', function() {
 				rpcCalledTimes += 1;
 
 				if (/^setLikes_/.test(request.method)) {
-					expect(request.args.likesCount).to.be.equals(100);
+					expect(request.args.count).to.be.equals(100);
 					setLikesCalled = true;
 				}
 
@@ -873,7 +873,7 @@ describe('AutolikesTask', function() {
 		};
 
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 70,
+			count: 70,
 			commentsCount: 0,
 			repostsCount: 0,
 			group,
@@ -913,7 +913,7 @@ describe('AutolikesTask', function() {
 		expect(user.balance).to.be.equals(2000);
 		expect(user.freezeBalance).to.be.equals(1000);
 		expect(account.availableBalance).to.be.equals(1000);
-		expect(likesTask.likesCount).to.be.equals(100);
+		expect(likesTask.count).to.be.equals(100);
 
 		const subTasksHasNoErrors = subTasks.every(_task => !_task._error);
 
