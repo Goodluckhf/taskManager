@@ -15,7 +15,7 @@ class CommentsCheckTask extends BaseTask {
 
 		const request = new PostByLinkRequest(this.config, {
 			postLink: this.taskDocument.postLink,
-			commentsCount: this.taskDocument.commentsCount,
+			count: this.taskDocument.count,
 		});
 
 		let response = null;
@@ -25,7 +25,7 @@ class CommentsCheckTask extends BaseTask {
 			this.logger.error({
 				mark: 'comments',
 				postLink: this.taskDocument.postLink,
-				commentsCount: this.taskDocument.commentsCount,
+				count: this.taskDocument.count,
 				service: serviceOrder[this.taskDocument.serviceIndex],
 				userId: this.taskDocument.user.id,
 				taskId: this.taskDocument.id,
@@ -36,12 +36,12 @@ class CommentsCheckTask extends BaseTask {
 			return;
 		}
 
-		if (response.comments >= this.taskDocument.commentsCount) {
+		if (response.comments >= this.taskDocument.count) {
 			this.logger.info({
 				mark: 'comments',
 				message: 'Успешно накрутились',
 				postLink: this.taskDocument.parentTask.postLink,
-				commentsCount: this.taskDocument.parentTask.commentsCount,
+				count: this.taskDocument.parentTask.count,
 				userId: this.taskDocument.user.id,
 				taskId: this.taskDocument.parentTask.id,
 			});
@@ -63,7 +63,7 @@ class CommentsCheckTask extends BaseTask {
 		this.logger.warn({
 			mark: 'comments',
 			postLink: this.taskDocument.postLink,
-			commentsCount: this.taskDocument.commentsCount,
+			count: this.taskDocument.count,
 			service: serviceOrder[this.taskDocument.serviceIndex],
 			userId: this.taskDocument.user.id,
 			taskId: this.taskDocument.id,
@@ -79,7 +79,7 @@ class CommentsCheckTask extends BaseTask {
 				'comments',
 				new Error('Комменты не накрутились'),
 				this.taskDocument.postLink,
-				this.taskDocument.parentTask.commentsCount,
+				this.taskDocument.parentTask.count,
 			);
 
 			this.taskDocument.parentTask.status = Task.status.finished;
@@ -107,7 +107,7 @@ class CommentsCheckTask extends BaseTask {
 		this.logger.info({
 			mark: 'comments',
 			message: 'Запускаем задачу на следущий сервис',
-			commentsCount: this.taskDocument.commentsCount,
+			count: this.taskDocument.count,
 			service: serviceOrder[this.taskDocument.serviceIndex + 1],
 			userId: this.taskDocument.user.id,
 			taskId: this.taskDocument.id,
