@@ -305,7 +305,7 @@ class AutoLikesTask extends BaseTask {
 				const commentsCommonDocument = CommentsCommonModel.createInstance({
 					postLink,
 					user: this.taskDocument.user,
-					commentsCount: this.taskDocument.commentsCount,
+					count: this.taskDocument.commentsCount,
 					status: Task.status.pending,
 					parentTask: this.taskDocument,
 				});
@@ -339,7 +339,7 @@ class AutoLikesTask extends BaseTask {
 				const repostsCommonDocument = RepostsCommonModel.createInstance({
 					postLink,
 					user: this.taskDocument.user,
-					repostsCount: this.taskDocument.repostsCount,
+					count: this.taskDocument.repostsCount,
 					status: Task.status.pending,
 					parentTask: this.taskDocument,
 				});
