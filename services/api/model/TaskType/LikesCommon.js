@@ -8,7 +8,6 @@ const likesCommonSchema = new mongoose.Schema({
 
 	likesCount: {
 		type: Number,
-		required: true,
 	},
 
 	count: {
