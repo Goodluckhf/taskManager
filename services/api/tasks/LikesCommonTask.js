@@ -28,8 +28,8 @@ class LikesCommonTask extends BaseTask {
 		// Потому через сервис likePro можно ставить не меньше 100 лайков
 		// Пока так. Ибо дорого и не красиво на 1 сервис выставлять меньше
 		// Если будет потребность придумаю решение
-		if (service === 'likePro' && this.taskDocument.likesCount < 100) {
-			this.taskDocument.likesCount = 100;
+		if (service === 'likePro' && this.taskDocument.count < 100) {
+			this.taskDocument.count = 100;
 
 			if (this.account instanceof BillingAccount) {
 				await this.account.rollBack(this.taskDocument);
@@ -41,7 +41,7 @@ class LikesCommonTask extends BaseTask {
 							this.account.availableBalance,
 							this.billing.calculatePrice(this.taskDocument),
 							this.taskDocument.postLink,
-							this.taskDocument.likesCount,
+							this.taskDocument.count,
 							error,
 						);
 					}
@@ -52,7 +52,7 @@ class LikesCommonTask extends BaseTask {
 		}
 
 		const likesTaskDocument = LikesTaskModel.createInstance({
-			likesCount: this.taskDocument.likesCount,
+			count: this.taskDocument.count,
 			postLink: this.taskDocument.postLink,
 			parentTask: this.taskDocument,
 			user: this.taskDocument.user,
@@ -78,7 +78,7 @@ class LikesCommonTask extends BaseTask {
 			status: 'pending',
 			try: serviceIndex,
 			message: 'Запускаем задачу накрутки лайков',
-			likesCount: this.taskDocument.likesCount,
+			count: this.taskDocument.count,
 			postLink: this.taskDocument.postLink,
 			userId: this.taskDocument.user.id,
 			taskId: this.taskDocument.id,
@@ -91,7 +91,7 @@ class LikesCommonTask extends BaseTask {
 		this.taskDocument.status = TaskModel.status.checking;
 		const checkDelay = this.config.get('likesTask.checkingDelay');
 		const likesToCheck =
-			this.taskDocument.likesCount * parseFloat(this.config.get('likesTask.likesToCheck'));
+			this.taskDocument.count * parseFloat(this.config.get('likesTask.likesToCheck'));
 
 		this.logger.info({
 			service,
@@ -100,7 +100,7 @@ class LikesCommonTask extends BaseTask {
 			status: 'success',
 			try: serviceIndex,
 			message: 'Выполнилась без ошибки. Создаем задачу на проверку',
-			likesCount: this.taskDocument.likesCount,
+			count: this.taskDocument.count,
 			postLink: this.taskDocument.postLink,
 			userId: this.taskDocument.user.id,
 			taskId: this.taskDocument.id,
@@ -108,7 +108,7 @@ class LikesCommonTask extends BaseTask {
 
 		const checkTaskDocument = LikesCheckTaskModel.createInstance({
 			serviceIndex,
-			likesCount: likesToCheck,
+			count: likesToCheck,
 			postLink: this.taskDocument.postLink,
 			parentTask: this.taskDocument,
 			user: this.taskDocument.user,
@@ -134,7 +134,7 @@ class LikesCommonTask extends BaseTask {
 				mark: 'likes',
 				status: 'fail',
 				try: serviceIndex,
-				likesCount: this.taskDocument.likesCount,
+				count: this.taskDocument.count,
 				postLink: this.taskDocument.postLink,
 				userId: this.taskDocument.user.id,
 				taskId: this.taskDocument.id,
@@ -146,7 +146,7 @@ class LikesCommonTask extends BaseTask {
 				}
 			}
 
-			if (service !== 'likePro' || this.taskDocument.likesCount >= 100) {
+			if (service !== 'likePro' || this.taskDocument.count >= 100) {
 				//eslint-disable-next-line max-len
 				if (
 					this.account instanceof BillingAccount &&
@@ -163,7 +163,7 @@ class LikesCommonTask extends BaseTask {
 					'likes',
 					error,
 					this.taskDocument.postLink,
-					this.taskDocument.likesCount,
+					this.taskDocument.count,
 				);
 			}
 
