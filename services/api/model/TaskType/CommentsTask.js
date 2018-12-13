@@ -8,7 +8,6 @@ const commentsTaskSchema = new mongoose.Schema({
 
 	commentsCount: {
 		type: Number,
-		required: true,
 	},
 
 	count: {
