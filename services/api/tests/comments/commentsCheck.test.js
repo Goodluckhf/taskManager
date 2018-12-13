@@ -33,7 +33,7 @@ describe('CommentsCheckTask', function() {
 		});
 
 		const taskDocument = mongoose.model('CommentsCheckTask').createInstance({
-			commentsCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -69,14 +69,14 @@ describe('CommentsCheckTask', function() {
 		});
 
 		const parentTask = mongoose.model('CommentsCommon').createInstance({
-			commentsCount: 100,
+			count: 100,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
 		});
 
 		const taskDocument = mongoose.model('CommentsCheckTask').createInstance({
-			commentsCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -116,14 +116,14 @@ describe('CommentsCheckTask', function() {
 		});
 
 		const parentTask = mongoose.model('CommentsCommon').createInstance({
-			commentsCount: 100,
+			count: 100,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
 		});
 
 		const taskDocument = mongoose.model('CommentsCheckTask').createInstance({
-			commentsCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -160,13 +160,13 @@ describe('CommentsCheckTask', function() {
 		});
 		await user.save();
 		const parentTask = mongoose.model('CommentsCommon').createInstance({
-			commentsCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			user,
 		});
 
 		const taskDocument = mongoose.model('CommentsCheckTask').createInstance({
-			commentsCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -227,13 +227,13 @@ describe('CommentsCheckTask', function() {
 		});
 
 		const parentTask = mongoose.model('CommentsCommon').createInstance({
-			commentsCount: 20,
+			count: 20,
 			postLink: 'tetsLink',
 			user,
 		});
 
 		const taskDocument = mongoose.model('CommentsCheckTask').createInstance({
-			commentsCount: 6,
+			count: 6,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -261,10 +261,10 @@ describe('CommentsCheckTask', function() {
 			config: this.config,
 		});
 
-		const commentsCount = taskDocument.commentsCount / 0.3;
+		const count = taskDocument.count / 0.3;
 		await account.freezeMoney(parentTask);
 		// eslint-disable-next-line no-mixed-operators
-		const expectedBalance = 1100 - commentsCount * 10;
+		const expectedBalance = 1100 - count * 10;
 		expect(account.availableBalance).to.be.equals(expectedBalance);
 
 		const promise = task.handle();
@@ -301,13 +301,13 @@ describe('CommentsCheckTask', function() {
 		});
 
 		const parentTask = mongoose.model('CommentsCommon').createInstance({
-			commentsCount: 40,
+			count: 40,
 			postLink: 'tetsLink',
 			user,
 		});
 
 		const taskDocument = mongoose.model('CommentsCheckTask').createInstance({
-			commentsCount: 12,
+			count: 12,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -333,10 +333,10 @@ describe('CommentsCheckTask', function() {
 			config: this.config,
 		});
 
-		const commentsCount = taskDocument.commentsCount / 0.3;
+		const count = taskDocument.count / 0.3;
 		await account.freezeMoney(parentTask);
 		// eslint-disable-next-line no-mixed-operators
-		const expectedBalance = 1100 - commentsCount * 10;
+		const expectedBalance = 1100 - count * 10;
 		expect(account.availableBalance).to.be.equals(expectedBalance);
 
 		const promise = task.handle();
