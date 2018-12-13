@@ -13,7 +13,7 @@ class LikeProResponse extends Response {
 	}
 
 	//eslint-disable-next-line object-curly-newline
-	async process({ postLink, likesCount, serviceCredentials: { login, password } }) {
+	async process({ postLink, count, serviceCredentials: { login, password } }) {
 		const browser = await puppeteer.launch({
 			args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
 			handleSIGINT: false,
@@ -26,7 +26,7 @@ class LikeProResponse extends Response {
 				service: 'likePro',
 				message: 'Логинимся',
 				postLink,
-				likesCount,
+				count,
 				login,
 				password,
 			});
@@ -42,7 +42,7 @@ class LikeProResponse extends Response {
 			await urlInput.type(postLink);
 
 			const likesCountInput = await page.$('.widget__addtask form input[name="like_count"]');
-			await likesCountInput.type(`${likesCount}`);
+			await likesCountInput.type(`${count}`);
 
 			await page.click('button.ant-btn.ant-btn-primary.ant-btn-lg');
 			await page.waitForSelector('.ant-message .ant-message-notice-content');
@@ -72,7 +72,7 @@ class LikeProResponse extends Response {
 			service: 'likePro',
 			message: 'Выполнилась',
 			postLink,
-			likesCount,
+			count,
 			login,
 			password,
 			result,
