@@ -11,7 +11,7 @@ class RepostsTask extends BaseTask {
 
 			const request = new RepostRequest(this.taskDocument.service, this.config, {
 				postLink: this.taskDocument.postLink,
-				repostsCount: this.taskDocument.repostsCount,
+				count: this.taskDocument.count,
 				serviceCredentials,
 			});
 
@@ -29,7 +29,7 @@ class RepostsTask extends BaseTask {
 				'reposts',
 				error,
 				this.taskDocument.postLink,
-				this.taskDocument.repostsCount,
+				this.taskDocument.count,
 			);
 			this.taskDocument._error = wrappedError.toObject();
 			throw wrappedError;
