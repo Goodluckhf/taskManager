@@ -430,7 +430,7 @@ describe('AutolikesTask', function() {
 		};
 
 		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			count: 100,
+			likesCount: 100,
 			commentsCount: 0,
 			repostsCount: 0,
 			group,
