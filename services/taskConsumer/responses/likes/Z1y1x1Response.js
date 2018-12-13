@@ -10,13 +10,13 @@ class Z1y1x1Response extends Response {
 		return 'setLikes_z1y1x1';
 	}
 
-	async process({ postLink, likesCount, serviceCredentials: { token } }) {
+	async process({ postLink, count, serviceCredentials: { token } }) {
 		this.logger.info({
 			mark: 'likes',
 			service: 'z1y1x1',
 			message: 'Начало выполения',
 			postLink,
-			likesCount,
+			count,
 			token,
 		});
 		const { data } = await axios.get('http://api.z1y1x1.ru/tasks/create', {
@@ -24,7 +24,7 @@ class Z1y1x1Response extends Response {
 				token,
 				type: 1,
 				content: postLink,
-				count: likesCount,
+				count,
 			},
 			timeout: this.config.get('z1y1x1.timeout'),
 		});
@@ -34,7 +34,7 @@ class Z1y1x1Response extends Response {
 			service: 'z1y1x1',
 			message: 'ответ от сервиса',
 			postLink,
-			likesCount,
+			count,
 			token,
 			data,
 		});
