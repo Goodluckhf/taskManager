@@ -25,13 +25,13 @@ const likesCheckTaskSchema = new mongoose.Schema({
 /**
  * @extends TaskDocument
  * @property {String} postLink
- * @property {Number} likesCount
+ * @property {Number} count
  * @property {Number} serviceIndex
  */
 export class LikesCheckTaskDocument {
 	/**
 	 * @param {Object} opts
-	 * @param {Number} opts.likesCount
+	 * @param {Number} opts.count
 	 * @param {String} opts.postLink
 	 * @param {TaskDocument} opts.parentTask
 	 * @param {Date} opts.startAt
@@ -40,7 +40,7 @@ export class LikesCheckTaskDocument {
 	 */
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
-		baseTask.likesCount = opts.likesCount;
+		baseTask.count = opts.count;
 		baseTask.postLink = opts.postLink;
 		baseTask.parentTask = opts.parentTask;
 		baseTask.startAt = opts.startAt;
