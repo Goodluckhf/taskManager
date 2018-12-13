@@ -52,17 +52,12 @@ class AutoLikesTask extends BaseTask {
 					throw NotEnoughBalanceForReposts.fromNotEnoughBalance(
 						error,
 						task.postLink,
-						task.repostsCount,
+						task.count,
 					);
 				}
 
 				if (!(error instanceof BaseTaskError)) {
-					throw TaskErrorFactory.createError(
-						'reposts',
-						error,
-						task.postLink,
-						task.repostsCount,
-					);
+					throw TaskErrorFactory.createError('reposts', error, task.postLink, task.count);
 				}
 			}
 
@@ -71,7 +66,7 @@ class AutoLikesTask extends BaseTask {
 					throw NotEnoughBalanceForComments.fromNotEnoughBalance(
 						error,
 						task.postLink,
-						task.commentsCount,
+						task.count,
 					);
 				}
 
@@ -80,7 +75,7 @@ class AutoLikesTask extends BaseTask {
 						'comments',
 						error,
 						task.postLink,
-						task.commentsCount,
+						task.count,
 					);
 				}
 			}
