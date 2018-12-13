@@ -32,7 +32,7 @@ describe('Billing', function() {
 
 		const task = mongoose.model('CommentsTask').createInstance({
 			postLink: 'test',
-			commentsCount: 200,
+			count: 200,
 		});
 
 		expect(billing.calculatePrice(task)).to.be.equals(200 * 321);
@@ -90,7 +90,7 @@ describe('Billing', function() {
 			.createInstance({ email: 'test', password: '123' });
 		const repostTask = mongoose.model('RepostsTask').createInstance({ repostsCount: 123 });
 		const likesTask = mongoose.model('LikesTask').createInstance({ count: 223 });
-		const commentsTask = mongoose.model('CommentsTask').createInstance({ commentsCount: 321 });
+		const commentsTask = mongoose.model('CommentsTask').createInstance({ count: 321 });
 		const invoices = [
 			billing.createTaskInvoice(repostTask, user),
 			billing.createTaskInvoice(likesTask, user),
