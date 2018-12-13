@@ -27,7 +27,7 @@ class LikestResponse extends Response {
 		}
 	}
 
-	async process({ postLink, repostsCount, serviceCredentials: { login, password } }) {
+	async process({ postLink, count, serviceCredentials: { login, password } }) {
 		const browser = await puppeteer.launch({
 			args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
 			handleSIGINT: false,
@@ -41,7 +41,7 @@ class LikestResponse extends Response {
 			this.logger.info({
 				message: 'залогинились likest',
 				postLink,
-				repostsCount,
+				count,
 				login,
 			});
 
@@ -55,7 +55,7 @@ class LikestResponse extends Response {
 					document.querySelector('#amount').value = _repostsCount;
 				},
 				postLink,
-				repostsCount,
+				count,
 			);
 
 			// Нажимаем выполнить и ожидаем ошибки или успешное завершение
@@ -64,7 +64,7 @@ class LikestResponse extends Response {
 				service: 'likest',
 				message: 'кликаем накрутить',
 				postLink,
-				repostsCount,
+				count,
 				login,
 			});
 			await page.click('#edit-submit');
@@ -98,7 +98,7 @@ class LikestResponse extends Response {
 				service: 'likest',
 				message: 'Задача выполнилась',
 				postLink,
-				repostsCount,
+				count,
 				login,
 			});
 		} finally {

@@ -10,13 +10,13 @@ class Z1y1x1Response extends Response {
 		return 'setReposts_z1y1x1';
 	}
 
-	async process({ postLink, repostsCount, serviceCredentials: { token } }) {
+	async process({ postLink, count, serviceCredentials: { token } }) {
 		this.logger.info({
 			mark: 'reposts',
 			service: 'z1y1x1',
 			message: 'Начало выполения',
 			postLink,
-			repostsCount,
+			count,
 			token,
 		});
 
@@ -25,7 +25,7 @@ class Z1y1x1Response extends Response {
 				token,
 				type: 3,
 				content: postLink,
-				count: repostsCount,
+				count,
 			},
 			timeout: this.config.get('z1y1x1.timeout'),
 		});
@@ -35,7 +35,7 @@ class Z1y1x1Response extends Response {
 			service: 'z1y1x1',
 			message: 'ответ от сервиса',
 			postLink,
-			repostsCount,
+			count,
 			token,
 			data,
 		});
