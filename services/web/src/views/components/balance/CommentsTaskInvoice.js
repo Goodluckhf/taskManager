@@ -5,7 +5,7 @@ import { Card, CardHeader, CardBody } from 'reactstrap';
 class CommentsTaskInvoice extends PureComponent {
 	static propTypes = {
 		invoice: propTypes.node,
-		commentsCount: propTypes.number,
+		count: propTypes.number,
 		postLink: propTypes.string,
 	};
 
@@ -16,7 +16,7 @@ class CommentsTaskInvoice extends PureComponent {
 				<CardBody>
 					{this.props.invoice}
 					<hr />
-					Кол-во: {this.props.commentsCount}
+					Кол-во: {this.props.count}
 					<br />
 					Ссылка:{' '}
 					<a rel="noopener noreferrer" target="_blank" href={this.props.postLink}>
