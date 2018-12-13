@@ -26,7 +26,7 @@ describe('CommentsCheckTask', function() {
 		});
 
 		const parentTask = mongoose.model('CommentsCommon').createInstance({
-			commentsCount: 100,
+			count: 100,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
