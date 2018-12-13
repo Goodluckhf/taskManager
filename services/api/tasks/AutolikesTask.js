@@ -38,17 +38,12 @@ class AutoLikesTask extends BaseTask {
 					throw NotEnoughBalanceForLikes.fromNotEnoughBalance(
 						error,
 						task.postLink,
-						task.likesCount,
+						task.count,
 					);
 				}
 
 				if (!(error instanceof BaseTaskError)) {
-					throw TaskErrorFactory.createError(
-						'likes',
-						error,
-						task.postLink,
-						task.likesCount,
-					);
+					throw TaskErrorFactory.createError('likes', error, task.postLink, task.count);
 				}
 			}
 
@@ -280,7 +275,7 @@ class AutoLikesTask extends BaseTask {
 				const likesCommonDocument = LikesCommonModel.createInstance({
 					postLink,
 					user: this.taskDocument.user,
-					likesCount: this.taskDocument.likesCount,
+					count: this.taskDocument.likesCount,
 					status: Task.status.pending,
 					parentTask: this.taskDocument,
 				});
