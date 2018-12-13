@@ -26,14 +26,14 @@ describe('RepostsCheckTask', function() {
 		});
 
 		const parentTask = mongoose.model('RepostsCommon').createInstance({
-			repostsCount: 100,
+			count: 100,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
 		});
 
 		const taskDocument = mongoose.model('RepostsCheckTask').createInstance({
-			repostsCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -70,14 +70,14 @@ describe('RepostsCheckTask', function() {
 		});
 
 		const parentTask = mongoose.model('RepostsCommon').createInstance({
-			repostsCount: 100,
+			count: 100,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
 		});
 
 		const taskDocument = mongoose.model('RepostsCheckTask').createInstance({
-			repostsCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -118,13 +118,13 @@ describe('RepostsCheckTask', function() {
 		await user.save();
 
 		const parentTask = mongoose.model('RepostsCommon').createInstance({
-			repostsCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			user,
 		});
 
 		const taskDocument = mongoose.model('RepostsCheckTask').createInstance({
-			repostsCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -178,14 +178,14 @@ describe('RepostsCheckTask', function() {
 		});
 
 		const parentTask = mongoose.model('RepostsCommon').createInstance({
-			repostsCount: 100,
+			count: 100,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
 		});
 
 		const taskDocument = mongoose.model('RepostsCheckTask').createInstance({
-			repostsCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
