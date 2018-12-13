@@ -16,7 +16,7 @@ describe('TaskInvoice', () => {
 
 					const task = mongoose.model('LikesTask').createInstance({
 						postLink: 'test',
-						likesCount: 10,
+						count: 10,
 					});
 
 					const invoice = mongoose.model('TaskInvoice').createInstance({
@@ -39,7 +39,7 @@ describe('TaskInvoice', () => {
 
 					const task = mongoose.model('LikesTask').createInstance({
 						postLink: 'test',
-						likesCount: 10,
+						count: 10,
 					});
 
 					const invoice = mongoose.model('TaskInvoice').createInstance({
