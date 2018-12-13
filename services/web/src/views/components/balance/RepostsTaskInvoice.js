@@ -5,7 +5,7 @@ import { Card, CardHeader, CardBody } from 'reactstrap';
 class RepostsTaskInvoice extends PureComponent {
 	static propTypes = {
 		invoice: propTypes.node,
-		repostsCount: propTypes.number,
+		count: propTypes.number,
 		postLink: propTypes.string,
 	};
 
@@ -18,7 +18,7 @@ class RepostsTaskInvoice extends PureComponent {
 					<hr />
 					Задача накрутки репостов
 					<br />
-					Кол-во: {this.props.repostsCount}
+					Кол-во: {this.props.count}
 					<br />
 					Ссылка:{' '}
 					<a rel="noopener noreferrer" target="_blank" href={this.props.postLink}>
