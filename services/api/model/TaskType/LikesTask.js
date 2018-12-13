@@ -25,7 +25,6 @@ const likesTaskSchema = new mongoose.Schema({
 /**
  * @extends TaskDocument
  * @property {String} postLink
- * @property {Number} likesCount
  * @property {Number} count
  * @property {String} service
  * @property {TaskDocument} parentTask
@@ -33,7 +32,6 @@ const likesTaskSchema = new mongoose.Schema({
 export class LikesTaskDocument {
 	/**
 	 * @param {Object} opts
-	 * @param {Number} opts.likesCount
 	 * @param {Number} opts.count
 	 * @param {String} opts.postLink
 	 * @param {String} opts.service
