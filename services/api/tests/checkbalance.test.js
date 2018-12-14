@@ -182,6 +182,8 @@ describe('CheckBalanceTask', function() {
 		this.config.checkBalanceTask.interval = 5;
 		this.config.checkBalanceTask.ratio = 0.7;
 		this.config.prices.like = 3;
+		this.config.prices.comment = 3;
+		this.config.prices.repost = 3;
 
 		const user = mongoose.model('AccountUser').createInstance({
 			email: 'test',
@@ -233,6 +235,8 @@ describe('CheckBalanceTask', function() {
 		this.config.checkBalanceTask.interval = 5;
 		this.config.checkBalanceTask.ratio = 0.7;
 		this.config.prices.like = 3;
+		this.config.prices.repost = 3;
+		this.config.prices.comment = 3;
 
 		const user = mongoose.model('AccountUser').createInstance({
 			email: 'test',

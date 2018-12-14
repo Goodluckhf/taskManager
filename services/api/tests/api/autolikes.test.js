@@ -77,6 +77,7 @@ describe('AutolikesApi', function() {
 			...this.config.prices,
 			like: 10,
 			comment: 10,
+			repost: 10,
 		};
 
 		const billing = new Billing(this.config, loggerMock);
@@ -110,6 +111,7 @@ describe('AutolikesApi', function() {
 			...this.config.prices,
 			like: 10,
 			comment: 10,
+			repost: 10,
 		};
 
 		const billing = new Billing(this.config, loggerMock);
