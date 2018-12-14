@@ -230,13 +230,13 @@ describe('RepostsCheckTask', function() {
 		});
 
 		const parentTask = mongoose.model('RepostsCommon').createInstance({
-			repostsCount: 40,
+			count: 40,
 			postLink: 'tetsLink',
 			user,
 		});
 
 		const taskDocument = mongoose.model('RepostsCheckTask').createInstance({
-			repostsCount: 12,
+			count: 12,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -261,10 +261,10 @@ describe('RepostsCheckTask', function() {
 			logger: loggerMock,
 			config: this.config,
 		});
-		const repostsCount = taskDocument.repostsCount / 0.3;
+		const count = taskDocument.count / 0.3;
 		await account.freezeMoney(parentTask);
 		// eslint-disable-next-line no-mixed-operators
-		const expectedBalance = 1100 - repostsCount * 10;
+		const expectedBalance = 1100 - count * 10;
 		expect(account.availableBalance).to.be.equals(expectedBalance);
 
 		const promise = task.handle();
@@ -301,13 +301,13 @@ describe('RepostsCheckTask', function() {
 		});
 
 		const parentTask = mongoose.model('RepostsCommon').createInstance({
-			repostsCount: 40,
+			count: 40,
 			postLink: 'tetsLink',
 			user,
 		});
 
 		const taskDocument = mongoose.model('RepostsCheckTask').createInstance({
-			repostsCount: 12,
+			count: 12,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -335,10 +335,10 @@ describe('RepostsCheckTask', function() {
 			config: this.config,
 		});
 		// eslint-disable-next-line no-mixed-operators
-		const repostsCount = taskDocument.repostsCount / 0.3;
+		const count = taskDocument.count / 0.3;
 		await account.freezeMoney(parentTask);
 		// eslint-disable-next-line no-mixed-operators
-		const expectedBalance = 1100 - repostsCount * 10;
+		const expectedBalance = 1100 - count * 10;
 		expect(account.availableBalance).to.be.equals(expectedBalance);
 
 		const promise = task.handle();
