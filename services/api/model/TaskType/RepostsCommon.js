@@ -46,7 +46,7 @@ export class RepostsCommonTaskDocument {
 	// eslint-disable-next-line object-curly-newline
 	fill({ count, postLink }) {
 		if (count) {
-			this.repostsCount = count;
+			this.count = count;
 		}
 
 		if (postLink) {
