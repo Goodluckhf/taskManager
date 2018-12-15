@@ -6,10 +6,6 @@ const repostsCommonTaskSchema = new mongoose.Schema({
 		required: true,
 	},
 
-	repostsCount: {
-		type: Number,
-	},
-
 	count: {
 		type: Number,
 		required: true,

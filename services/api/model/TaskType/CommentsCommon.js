@@ -6,10 +6,6 @@ const commentsCommonTaskSchema = new mongoose.Schema({
 		required: true,
 	},
 
-	commentsCount: {
-		type: Number,
-	},
-
 	count: {
 		type: Number,
 		required: true,

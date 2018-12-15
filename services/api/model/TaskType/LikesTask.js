@@ -6,10 +6,6 @@ const likesTaskSchema = new mongoose.Schema({
 		required: true,
 	},
 
-	likesCount: {
-		type: Number,
-	},
-
 	count: {
 		type: Number,
 		required: true,
