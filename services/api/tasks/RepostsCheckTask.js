@@ -15,7 +15,7 @@ class RepostsCheckTask extends BaseTask {
 
 		const request = new PostByLinkRequest(this.config, {
 			postLink: this.taskDocument.postLink,
-			repostsCount: this.taskDocument.repostsCount,
+			count: this.taskDocument.count,
 		});
 
 		let response = null;
@@ -25,7 +25,7 @@ class RepostsCheckTask extends BaseTask {
 			this.logger.error({
 				mark: 'reposts',
 				postLink: this.taskDocument.postLink,
-				repostsCount: this.taskDocument.repostsCount,
+				count: this.taskDocument.count,
 				service: serviceOrder[this.taskDocument.serviceIndex],
 				userId: this.taskDocument.user.id,
 				taskId: this.taskDocument.id,
@@ -36,12 +36,12 @@ class RepostsCheckTask extends BaseTask {
 			return;
 		}
 
-		if (response.reposts >= this.taskDocument.repostsCount) {
+		if (response.reposts >= this.taskDocument.count) {
 			this.logger.info({
 				mark: 'reposts',
 				message: 'Успешно накрутились',
 				postLink: this.taskDocument.parentTask.postLink,
-				repostsCount: this.taskDocument.parentTask.repostsCount,
+				count: this.taskDocument.parentTask.count,
 				userId: this.taskDocument.user.id,
 				taskId: this.taskDocument.parentTask.id,
 			});
@@ -63,7 +63,7 @@ class RepostsCheckTask extends BaseTask {
 		this.logger.error({
 			mark: 'reposts',
 			postLink: this.taskDocument.postLink,
-			repostsCount: this.taskDocument.repostsCount,
+			count: this.taskDocument.count,
 			userId: this.taskDocument.user.id,
 			taskId: this.taskDocument.id,
 			message: 'репосты не накрутились',
@@ -78,7 +78,7 @@ class RepostsCheckTask extends BaseTask {
 				'reposts',
 				new Error('репосты не накрутились'),
 				this.taskDocument.postLink,
-				this.taskDocument.parentTask.repostsCount,
+				this.taskDocument.parentTask.count,
 			);
 
 			this.taskDocument.parentTask.lastHandleAt = new Date();
@@ -106,7 +106,7 @@ class RepostsCheckTask extends BaseTask {
 		this.logger.info({
 			mark: 'reposts',
 			message: 'Запускаем задачу на следущий сервис',
-			repostsCount: this.taskDocument.repostsCount,
+			count: this.taskDocument.count,
 			service: serviceOrder[this.taskDocument.serviceIndex + 1],
 			userId: this.taskDocument.user.id,
 			taskId: this.taskDocument.id,

@@ -15,7 +15,6 @@ class LikesCheckTask extends BaseTask {
 
 		const request = new PostByLinkRequest(this.config, {
 			postLink: this.taskDocument.postLink,
-			likesCount: this.taskDocument.likesCount,
 		});
 
 		let response = null;
@@ -25,7 +24,7 @@ class LikesCheckTask extends BaseTask {
 			this.logger.error({
 				mark: 'likes',
 				postLink: this.taskDocument.postLink,
-				likesCount: this.taskDocument.likesCount,
+				count: this.taskDocument.count,
 				service: serviceOrder[this.taskDocument.serviceIndex],
 				userId: this.taskDocument.user.id,
 				taskId: this.taskDocument.id,
@@ -36,12 +35,12 @@ class LikesCheckTask extends BaseTask {
 			return;
 		}
 
-		if (response.likes >= this.taskDocument.likesCount) {
+		if (response.likes >= this.taskDocument.count) {
 			this.logger.info({
 				mark: 'likes',
 				message: 'Успешно накрутились',
 				postLink: this.taskDocument.parentTask.postLink,
-				likesCount: this.taskDocument.parentTask.likesCount,
+				count: this.taskDocument.parentTask.count,
 				userId: this.taskDocument.user.id,
 				taskId: this.taskDocument.parentTask.id,
 			});
@@ -63,7 +62,7 @@ class LikesCheckTask extends BaseTask {
 		this.logger.warn({
 			mark: 'likes',
 			postLink: this.taskDocument.postLink,
-			likesCount: this.taskDocument.likesCount,
+			count: this.taskDocument.count,
 			userId: this.taskDocument.user.id,
 			taskId: this.taskDocument.id,
 			message: 'лайки не накрутились',
@@ -78,7 +77,7 @@ class LikesCheckTask extends BaseTask {
 				'likes',
 				new Error('лайки не накрутились'),
 				this.taskDocument.postLink,
-				this.taskDocument.parentTask.likesCount,
+				this.taskDocument.parentTask.count,
 			);
 
 			this.taskDocument.parentTask.lastHandleAt = new Date();
@@ -97,7 +96,7 @@ class LikesCheckTask extends BaseTask {
 		this.logger.info({
 			mark: 'likes',
 			message: 'Запускаем задачу на следущий сервис',
-			likesCount: this.taskDocument.likesCount,
+			count: this.taskDocument.count,
 			service: serviceOrder[this.taskDocument.serviceIndex + 1],
 			userId: this.taskDocument.user.id,
 			taskId: this.taskDocument.id,

@@ -5,7 +5,7 @@ import { Card, CardHeader, CardBody } from 'reactstrap';
 class LikesTaskInvoice extends PureComponent {
 	static propTypes = {
 		invoice: propTypes.node,
-		likesCount: propTypes.number,
+		count: propTypes.number,
 		postLink: propTypes.string,
 	};
 
@@ -16,7 +16,7 @@ class LikesTaskInvoice extends PureComponent {
 				<CardBody>
 					{this.props.invoice}
 					<hr />
-					Кол-во: {this.props.likesCount}
+					Кол-во: {this.props.count}
 					<br />
 					Ссылка:{' '}
 					<a rel="noopener noreferrer" target="_blank" href={this.props.postLink}>

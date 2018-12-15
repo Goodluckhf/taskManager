@@ -8,6 +8,10 @@ const commentsCommonTaskSchema = new mongoose.Schema({
 
 	commentsCount: {
 		type: Number,
+	},
+
+	count: {
+		type: Number,
 		required: true,
 	},
 });
@@ -15,19 +19,19 @@ const commentsCommonTaskSchema = new mongoose.Schema({
 /**
  * @extends TaskDocument
  * @property {String} postLink
- * @property {Number} commentsCount
+ * @property {Number} count
  */
-export class CommentsCommonTaskDocument {
+export class CommentsCommonDocument {
 	/**
 	 * @param {Object} opts
-	 * @param {Number} opts.commentsCount
+	 * @param {Number} opts.count
 	 * @param {String} opts.postLink
 	 * @param {TaskDocument} opts.parentTask
-	 * @return {CommentsCommonTaskDocument}
+	 * @return {CommentsCommonDocument}
 	 */
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
-		baseTask.commentsCount = opts.commentsCount;
+		baseTask.count = opts.count;
 		baseTask.postLink = opts.postLink;
 		baseTask.parentTask = opts.parentTask || null;
 		return baseTask;
@@ -35,14 +39,14 @@ export class CommentsCommonTaskDocument {
 
 	/**
 	 * @param {Object} opts
-	 * @param {Number} opts.commentsCount
+	 * @param {Number} opts.count
 	 * @param {String} opts.postLink
-	 * @return {CommentsCommonTaskDocument}
+	 * @return {CommentsCommonDocument}
 	 */
 	// eslint-disable-next-line object-curly-newline
-	fill({ commentsCount, postLink }) {
-		if (commentsCount) {
-			this.commentsCount = commentsCount;
+	fill({ count, postLink }) {
+		if (count) {
+			this.count = count;
 		}
 
 		if (postLink) {
@@ -53,6 +57,6 @@ export class CommentsCommonTaskDocument {
 	}
 }
 
-commentsCommonTaskSchema.loadClass(CommentsCommonTaskDocument);
+commentsCommonTaskSchema.loadClass(CommentsCommonDocument);
 
 export default commentsCommonTaskSchema;

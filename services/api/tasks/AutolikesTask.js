@@ -38,17 +38,12 @@ class AutoLikesTask extends BaseTask {
 					throw NotEnoughBalanceForLikes.fromNotEnoughBalance(
 						error,
 						task.postLink,
-						task.likesCount,
+						task.count,
 					);
 				}
 
 				if (!(error instanceof BaseTaskError)) {
-					throw TaskErrorFactory.createError(
-						'likes',
-						error,
-						task.postLink,
-						task.likesCount,
-					);
+					throw TaskErrorFactory.createError('likes', error, task.postLink, task.count);
 				}
 			}
 
@@ -57,17 +52,12 @@ class AutoLikesTask extends BaseTask {
 					throw NotEnoughBalanceForReposts.fromNotEnoughBalance(
 						error,
 						task.postLink,
-						task.repostsCount,
+						task.count,
 					);
 				}
 
 				if (!(error instanceof BaseTaskError)) {
-					throw TaskErrorFactory.createError(
-						'reposts',
-						error,
-						task.postLink,
-						task.repostsCount,
-					);
+					throw TaskErrorFactory.createError('reposts', error, task.postLink, task.count);
 				}
 			}
 
@@ -76,7 +66,7 @@ class AutoLikesTask extends BaseTask {
 					throw NotEnoughBalanceForComments.fromNotEnoughBalance(
 						error,
 						task.postLink,
-						task.commentsCount,
+						task.count,
 					);
 				}
 
@@ -85,7 +75,7 @@ class AutoLikesTask extends BaseTask {
 						'comments',
 						error,
 						task.postLink,
-						task.commentsCount,
+						task.count,
 					);
 				}
 			}
@@ -254,7 +244,6 @@ class AutoLikesTask extends BaseTask {
 				return;
 			}
 
-			//eslint-disable-next-line no-unused-vars
 			const { postId, mentionId, link } = lastPostResult;
 			postLink = Group.getPostLinkById(postId);
 
@@ -281,7 +270,7 @@ class AutoLikesTask extends BaseTask {
 				const likesCommonDocument = LikesCommonModel.createInstance({
 					postLink,
 					user: this.taskDocument.user,
-					likesCount: this.taskDocument.likesCount,
+					count: this.taskDocument.likesCount,
 					status: Task.status.pending,
 					parentTask: this.taskDocument,
 				});
@@ -316,7 +305,7 @@ class AutoLikesTask extends BaseTask {
 				const commentsCommonDocument = CommentsCommonModel.createInstance({
 					postLink,
 					user: this.taskDocument.user,
-					commentsCount: this.taskDocument.commentsCount,
+					count: this.taskDocument.commentsCount,
 					status: Task.status.pending,
 					parentTask: this.taskDocument,
 				});
@@ -350,7 +339,7 @@ class AutoLikesTask extends BaseTask {
 				const repostsCommonDocument = RepostsCommonModel.createInstance({
 					postLink,
 					user: this.taskDocument.user,
-					repostsCount: this.taskDocument.repostsCount,
+					count: this.taskDocument.repostsCount,
 					status: Task.status.pending,
 					parentTask: this.taskDocument,
 				});

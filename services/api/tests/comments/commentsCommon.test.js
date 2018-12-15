@@ -22,7 +22,7 @@ describe('CommentsCommon', function() {
 		});
 
 		const taskDocument = mongoose.model('CommentsCommon').createInstance({
-			commentsCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			user,
 		});
@@ -58,7 +58,7 @@ describe('CommentsCommon', function() {
 		});
 
 		const taskDocument = mongoose.model('CommentsCommon').createInstance({
-			commentsCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
@@ -114,7 +114,7 @@ describe('CommentsCommon', function() {
 		});
 
 		const taskDocument = mongoose.model('CommentsCommon').createInstance({
-			commentsCount: 100,
+			count: 100,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
@@ -165,7 +165,7 @@ describe('CommentsCommon', function() {
 		});
 
 		const taskDocument = mongoose.model('CommentsCommon').createInstance({
-			commentsCount: 100,
+			count: 100,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,

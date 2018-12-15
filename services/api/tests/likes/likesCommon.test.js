@@ -23,7 +23,7 @@ describe('LikesCommonTask', function() {
 		});
 
 		const taskDocument = mongoose.model('LikesCommon').createInstance({
-			likesCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			user,
 		});
@@ -55,7 +55,7 @@ describe('LikesCommonTask', function() {
 		});
 
 		const taskDocument = mongoose.model('LikesCommon').createInstance({
-			likesCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
@@ -111,7 +111,7 @@ describe('LikesCommonTask', function() {
 		});
 
 		const taskDocument = mongoose.model('LikesCommon').createInstance({
-			likesCount: 100,
+			count: 100,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
@@ -162,7 +162,7 @@ describe('LikesCommonTask', function() {
 		});
 
 		const taskDocument = mongoose.model('LikesCommon').createInstance({
-			likesCount: 100,
+			count: 100,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
@@ -213,7 +213,7 @@ describe('LikesCommonTask', function() {
 		});
 
 		const taskDocument = mongoose.model('LikesCommon').createInstance({
-			likesCount: 90,
+			count: 90,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
@@ -221,7 +221,7 @@ describe('LikesCommonTask', function() {
 
 		const rpcClient = {
 			async call(request) {
-				expect(request.args.likesCount).to.be.equals(100);
+				expect(request.args.count).to.be.equals(100);
 				return true;
 			},
 		};
@@ -241,7 +241,7 @@ describe('LikesCommonTask', function() {
 		await expect(promise).to.eventually.fulfilled;
 
 		expect(account.availableBalance).to.be.equals(100);
-		expect(taskDocument.likesCount).to.be.equals(100);
+		expect(taskDocument.count).to.be.equals(100);
 		expect(user.balance).to.be.equals(1100);
 		expect(user.freezeBalance).to.be.equals(1000);
 	});
@@ -264,7 +264,7 @@ describe('LikesCommonTask', function() {
 		});
 
 		const taskDocument = mongoose.model('LikesCommon').createInstance({
-			likesCount: 90,
+			count: 90,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
@@ -272,7 +272,7 @@ describe('LikesCommonTask', function() {
 
 		const rpcClient = {
 			async call(request) {
-				expect(request.args.likesCount).to.be.equals(100);
+				expect(request.args.count).to.be.equals(100);
 				return true;
 			},
 		};
@@ -292,7 +292,7 @@ describe('LikesCommonTask', function() {
 		await expect(promise).to.eventually.rejectedWith(NotEnoughBalanceForLikes);
 
 		expect(account.availableBalance).to.be.equals(901);
-		expect(taskDocument.likesCount).to.be.equals(100);
+		expect(taskDocument.count).to.be.equals(100);
 		expect(user.balance).to.be.equals(901);
 		expect(user.freezeBalance).to.be.equals(0);
 	});

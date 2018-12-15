@@ -8,6 +8,10 @@ const repostsTaskSchema = new mongoose.Schema({
 
 	repostsCount: {
 		type: Number,
+	},
+
+	count: {
+		type: Number,
 		required: true,
 	},
 
@@ -20,14 +24,14 @@ const repostsTaskSchema = new mongoose.Schema({
 /**
  * @extends TaskDocument
  * @property {String} postLink
- * @property {Number} repostsCount
+ * @property {Number} count
  * @property {String} service
  * @property {TaskDocument} parentTask
  */
 export class RepostsTaskDocument {
 	/**
 	 * @param {Object} opts
-	 * @param {Number} opts.repostsCount
+	 * @param {Number} opts.count
 	 * @param {String} opts.postLink
 	 * @param {String} opts.service
 	 * @param {TaskDocument} opts.parentTask
@@ -35,7 +39,7 @@ export class RepostsTaskDocument {
 	 */
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
-		baseTask.repostsCount = opts.repostsCount;
+		baseTask.count = opts.count;
 		baseTask.postLink = opts.postLink;
 		baseTask.service = opts.service;
 		baseTask.parentTask = opts.parentTask || null;

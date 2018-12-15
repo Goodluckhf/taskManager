@@ -22,14 +22,14 @@ describe('LikesCheckTask', function() {
 		});
 
 		const parentTask = mongoose.model('LikesCommon').createInstance({
-			likesCount: 100,
+			count: 100,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
 		});
 
 		const taskDocument = mongoose.model('LikesCheckTask').createInstance({
-			likesCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -65,14 +65,14 @@ describe('LikesCheckTask', function() {
 		});
 
 		const parentTask = mongoose.model('LikesCommon').createInstance({
-			likesCount: 100,
+			count: 100,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
 		});
 
 		const taskDocument = mongoose.model('LikesCheckTask').createInstance({
-			likesCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -108,14 +108,14 @@ describe('LikesCheckTask', function() {
 		});
 
 		const parentTask = mongoose.model('LikesCommon').createInstance({
-			likesCount: 100,
+			count: 100,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
 		});
 
 		const taskDocument = mongoose.model('LikesCheckTask').createInstance({
-			likesCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -150,13 +150,13 @@ describe('LikesCheckTask', function() {
 		await user.save();
 
 		const parentTask = mongoose.model('LikesCommon').createInstance({
-			likesCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			user,
 		});
 
 		const taskDocument = mongoose.model('LikesCheckTask').createInstance({
-			likesCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -217,13 +217,13 @@ describe('LikesCheckTask', function() {
 		});
 
 		const parentTask = mongoose.model('LikesCommon').createInstance({
-			likesCount: 40,
+			count: 40,
 			postLink: 'tetsLink',
 			user,
 		});
 
 		const taskDocument = mongoose.model('LikesCheckTask').createInstance({
-			likesCount: 12,
+			count: 12,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -249,10 +249,10 @@ describe('LikesCheckTask', function() {
 			config: this.config,
 		});
 
-		const likesCount = taskDocument.likesCount / 0.3;
+		const count = taskDocument.count / 0.3;
 		await account.freezeMoney(parentTask);
 		// eslint-disable-next-line no-mixed-operators
-		const expectedBalance = 1100 - likesCount * 10;
+		const expectedBalance = 1100 - count * 10;
 		expect(account.availableBalance).to.be.equals(expectedBalance);
 
 		const promise = task.handle();
@@ -289,13 +289,13 @@ describe('LikesCheckTask', function() {
 		});
 
 		const parentTask = mongoose.model('LikesCommon').createInstance({
-			likesCount: 40,
+			count: 40,
 			postLink: 'tetsLink',
 			user,
 		});
 
 		const taskDocument = mongoose.model('LikesCheckTask').createInstance({
-			likesCount: 12,
+			count: 12,
 			postLink: 'tetsLink',
 			serviceIndex: 0,
 			parentTask,
@@ -321,10 +321,10 @@ describe('LikesCheckTask', function() {
 			config: this.config,
 		});
 
-		const likesCount = taskDocument.likesCount / 0.3;
+		const count = taskDocument.count / 0.3;
 		await account.freezeMoney(parentTask);
 		// eslint-disable-next-line no-mixed-operators
-		const expectedBalance = 1100 - likesCount * 10;
+		const expectedBalance = 1100 - count * 10;
 		expect(account.availableBalance).to.be.equals(expectedBalance);
 
 		const promise = task.handle();

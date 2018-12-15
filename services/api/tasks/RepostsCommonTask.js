@@ -26,7 +26,7 @@ class RepostsCommonTask extends BaseTask {
 		const service = serviceOrder[serviceIndex];
 
 		const repostsTaskDocument = RepostsTaskModel.createInstance({
-			repostsCount: this.taskDocument.repostsCount,
+			count: this.taskDocument.count,
 			postLink: this.taskDocument.postLink,
 			parentTask: this.taskDocument,
 			user: this.taskDocument.user,
@@ -52,7 +52,7 @@ class RepostsCommonTask extends BaseTask {
 			status: 'pending',
 			try: serviceIndex,
 			message: 'Запускаем задачу накрутки репостов',
-			repostsCount: this.taskDocument.repostsCount,
+			count: this.taskDocument.count,
 			postLink: this.taskDocument.postLink,
 			userId: this.taskDocument.user.id,
 			taskId: this.taskDocument.id,
@@ -65,8 +65,7 @@ class RepostsCommonTask extends BaseTask {
 		this.taskDocument.status = TaskModel.status.checking;
 		const checkDelay = this.config.get('repostsTask.checkingDelay');
 		const repostsToCheck =
-			this.taskDocument.repostsCount *
-			parseFloat(this.config.get('repostsTask.repostsToCheck'));
+			this.taskDocument.count * parseFloat(this.config.get('repostsTask.repostsToCheck'));
 
 		this.logger.info({
 			service,
@@ -75,7 +74,7 @@ class RepostsCommonTask extends BaseTask {
 			status: 'success',
 			try: serviceIndex,
 			message: 'Выполнилась без ошибки. Создаем задачу на проверку',
-			repostsCount: this.taskDocument.repostsCount,
+			count: this.taskDocument.count,
 			postLink: this.taskDocument.postLink,
 			userId: this.taskDocument.user.id,
 			taskId: this.taskDocument.id,
@@ -83,7 +82,7 @@ class RepostsCommonTask extends BaseTask {
 
 		const checkTaskDocument = RepostsCheckTaskModel.createInstance({
 			serviceIndex,
-			repostsCount: repostsToCheck,
+			count: repostsToCheck,
 			postLink: this.taskDocument.postLink,
 			parentTask: this.taskDocument,
 			user: this.taskDocument.user,
@@ -109,7 +108,7 @@ class RepostsCommonTask extends BaseTask {
 				try: serviceIndex,
 				mark: 'reposts',
 				status: 'fail',
-				repostsCount: this.taskDocument.repostsCount,
+				count: this.taskDocument.count,
 				postLink: this.taskDocument.postLink,
 				userId: this.taskDocument.user.id,
 				taskId: this.taskDocument.id,
@@ -130,7 +129,7 @@ class RepostsCommonTask extends BaseTask {
 					'reposts',
 					error,
 					this.taskDocument.postLink,
-					this.taskDocument.repostsCount,
+					this.taskDocument.count,
 				);
 			}
 

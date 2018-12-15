@@ -12,7 +12,7 @@ class SmmBroResponse extends Response {
 		return 'setLikes_smmBro';
 	}
 
-	async process({ postLink, likesCount, serviceCredentials: { login, password } }) {
+	async process({ postLink, count, serviceCredentials: { login, password } }) {
 		const browser = await puppeteer.launch({
 			args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
 			handleSIGINT: false,
@@ -23,7 +23,7 @@ class SmmBroResponse extends Response {
 			const page = await browser.newPage();
 			await loginAction(page, { login, password });
 
-			const errors = await createTask(page, { postLink, count: likesCount, type: 'likes' });
+			const errors = await createTask(page, { postLink, count, type: 'likes' });
 
 			if (errors.length) {
 				const error = new Error('Ошибки валидации');
@@ -37,7 +37,7 @@ class SmmBroResponse extends Response {
 				service: 'smmBro',
 				message: 'Задача выполнилась',
 				postLink,
-				likesCount,
+				count,
 				login,
 			});
 		} finally {

@@ -26,7 +26,7 @@ class CommentsCommonTask extends BaseTask {
 		const service = serviceOrder[serviceIndex];
 
 		const commentsTaskDocument = CommentsTaskModel.createInstance({
-			commentsCount: this.taskDocument.commentsCount,
+			count: this.taskDocument.count,
 			postLink: this.taskDocument.postLink,
 			parentTask: this.taskDocument,
 			status: TaskModel.status.pending,
@@ -52,7 +52,7 @@ class CommentsCommonTask extends BaseTask {
 			status: 'pending',
 			try: serviceIndex,
 			message: 'Запускаем задачу накрутки комментов',
-			commentsCount: this.taskDocument.commentsCount,
+			count: this.taskDocument.count,
 			postLink: this.taskDocument.postLink,
 			userId: this.taskDocument.user.id,
 			taskId: this.taskDocument.id,
@@ -65,8 +65,7 @@ class CommentsCommonTask extends BaseTask {
 		this.taskDocument.status = TaskModel.status.checking;
 		const checkDelay = this.config.get('commentsTask.checkingDelay');
 		const commentsToCheck =
-			this.taskDocument.commentsCount *
-			parseFloat(this.config.get('commentsTask.commentsToCheck'));
+			this.taskDocument.count * parseFloat(this.config.get('commentsTask.commentsToCheck'));
 		this.logger.info({
 			service,
 			commentsToCheck,
@@ -74,7 +73,7 @@ class CommentsCommonTask extends BaseTask {
 			status: 'success',
 			try: serviceIndex,
 			message: 'Выполнилась без ошибки. Создаем задачу на проверку',
-			commentsCount: this.taskDocument.commentsCount,
+			count: this.taskDocument.count,
 			postLink: this.taskDocument.postLink,
 			userId: this.taskDocument.user.id,
 			taskId: this.taskDocument.id,
@@ -82,7 +81,7 @@ class CommentsCommonTask extends BaseTask {
 
 		const checkTaskDocument = CommentsCheckTaskModel.createInstance({
 			serviceIndex,
-			commentsCount: commentsToCheck,
+			count: commentsToCheck,
 			postLink: this.taskDocument.postLink,
 			parentTask: this.taskDocument,
 			user: this.taskDocument.user,
@@ -108,7 +107,7 @@ class CommentsCommonTask extends BaseTask {
 				mark: 'comments',
 				status: 'fail',
 				try: serviceIndex,
-				commentsCount: this.taskDocument.commentsCount,
+				count: this.taskDocument.count,
 				postLink: this.taskDocument.postLink,
 				userId: this.taskDocument.user.id,
 				taskId: this.taskDocument.id,
@@ -129,7 +128,7 @@ class CommentsCommonTask extends BaseTask {
 					'comments',
 					error,
 					this.taskDocument.postLink,
-					this.taskDocument.commentsCount,
+					this.taskDocument.count,
 				);
 			}
 

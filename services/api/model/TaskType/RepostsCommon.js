@@ -8,6 +8,10 @@ const repostsCommonTaskSchema = new mongoose.Schema({
 
 	repostsCount: {
 		type: Number,
+	},
+
+	count: {
+		type: Number,
 		required: true,
 	},
 });
@@ -15,19 +19,19 @@ const repostsCommonTaskSchema = new mongoose.Schema({
 /**
  * @extends TaskDocument
  * @property {String} postLink
- * @property {Number} repostsCount
+ * @property {Number} count
  */
 export class RepostsCommonTaskDocument {
 	/**
 	 * @param {Object} opts
-	 * @param {Number} opts.repostsCount
+	 * @param {Number} opts.count
 	 * @param {String} opts.postLink
 	 * @param {TaskDocument} opts.parentTask
 	 * @return {RepostsCommonTaskDocument}
 	 */
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
-		baseTask.repostsCount = opts.repostsCount;
+		baseTask.count = opts.count;
 		baseTask.postLink = opts.postLink;
 		baseTask.parentTask = opts.parentTask || null;
 		return baseTask;
@@ -35,14 +39,14 @@ export class RepostsCommonTaskDocument {
 
 	/**
 	 * @param {Object} opts
-	 * @param {Number} opts.repostsCount
+	 * @param {Number} opts.count
 	 * @param {String} opts.postLink
 	 * @return {RepostsCommonTaskDocument}
 	 */
 	// eslint-disable-next-line object-curly-newline
-	fill({ repostsCount, postLink }) {
-		if (repostsCount) {
-			this.repostsCount = repostsCount;
+	fill({ count, postLink }) {
+		if (count) {
+			this.count = count;
 		}
 
 		if (postLink) {

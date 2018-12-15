@@ -28,7 +28,7 @@ class LikestResponse extends Response {
 		}
 	}
 
-	async process({ postLink, likesCount, serviceCredentials: { login, password } }) {
+	async process({ postLink, count, serviceCredentials: { login, password } }) {
 		const browser = await puppeteer.launch({
 			args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
 			handleSIGINT: false,
@@ -42,19 +42,19 @@ class LikestResponse extends Response {
 			this.logger.info({
 				message: 'залогинились likest',
 				postLink,
-				likesCount,
+				count,
 				login,
 			});
 			//Заполняем поля для накрутки лайков
 			await page.goto('https://likest.ru/buy-likes', { waitUntil: 'networkidle2' });
 			await page.evaluate(
-				(link, count) => {
+				(link, _count) => {
 					document.querySelector('#edit-title').value = link;
 					document.querySelector('#edit-link').value = link;
-					document.querySelector('#amount').value = count;
+					document.querySelector('#amount').value = _count;
 				},
 				postLink,
-				likesCount,
+				count,
 			);
 
 			this.logger.info({
@@ -62,7 +62,7 @@ class LikestResponse extends Response {
 				service: 'likest',
 				message: 'кликаем накрутить',
 				postLink,
-				likesCount,
+				count,
 				login,
 			});
 			await page.click('#edit-submit');
@@ -94,7 +94,7 @@ class LikestResponse extends Response {
 				service: 'likest',
 				message: 'Задача выполнилась',
 				postLink,
-				likesCount,
+				count,
 				login,
 			});
 		} finally {

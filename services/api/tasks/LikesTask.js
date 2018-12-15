@@ -15,7 +15,7 @@ class LikesTask extends BaseTask {
 
 			const request = new LikeRequest(this.taskDocument.service, this.config, {
 				postLink: this.taskDocument.postLink,
-				likesCount: this.taskDocument.likesCount,
+				count: this.taskDocument.count,
 				serviceCredentials,
 			});
 
@@ -33,7 +33,7 @@ class LikesTask extends BaseTask {
 				'likes',
 				error,
 				this.taskDocument.postLink,
-				this.taskDocument.likesCount,
+				this.taskDocument.count,
 			);
 
 			this.taskDocument._error = wrappedError.toObject();

@@ -12,7 +12,7 @@ class SmmBroResponse extends Response {
 		return 'setComments_smmBro';
 	}
 
-	async process({ postLink, commentsCount, serviceCredentials: { login, password } }) {
+	async process({ postLink, count, serviceCredentials: { login, password } }) {
 		const browser = await puppeteer.launch({
 			args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
 			handleSIGINT: false,
@@ -25,7 +25,7 @@ class SmmBroResponse extends Response {
 
 			const errors = await createTask(page, {
 				postLink,
-				count: commentsCount,
+				count,
 				type: 'comments',
 			});
 
@@ -41,7 +41,7 @@ class SmmBroResponse extends Response {
 				service: 'smmBro',
 				message: 'Задача выполнилась',
 				postLink,
-				commentsCount,
+				count,
 				login,
 			});
 		} finally {

@@ -10,13 +10,13 @@ class Z1y1x1Response extends Response {
 		return 'setComments_z1y1x1';
 	}
 
-	async process({ postLink, commentsCount, serviceCredentials: { token } }) {
+	async process({ postLink, count, serviceCredentials: { token } }) {
 		this.logger.info({
 			mark: 'comments',
 			service: 'z1y1x1',
 			message: 'Начало выполения',
 			postLink,
-			commentsCount,
+			count,
 			token,
 		});
 
@@ -26,7 +26,7 @@ class Z1y1x1Response extends Response {
 				sub: 3,
 				type: 2,
 				content: postLink,
-				count: commentsCount,
+				count,
 			},
 			timeout: this.config.get('z1y1x1.timeout'),
 		});
@@ -36,7 +36,7 @@ class Z1y1x1Response extends Response {
 			service: 'z1y1x1',
 			message: 'ответ от сервиса',
 			postLink,
-			commentsCount,
+			count,
 			token,
 			data,
 		});

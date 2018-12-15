@@ -22,7 +22,7 @@ describe('RepostsCommon', function() {
 		});
 
 		const taskDocument = mongoose.model('RepostsCommon').createInstance({
-			repostsCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			user,
 		});
@@ -57,7 +57,7 @@ describe('RepostsCommon', function() {
 		});
 
 		const taskDocument = mongoose.model('RepostsCommon').createInstance({
-			repostsCount: 10,
+			count: 10,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
@@ -113,7 +113,7 @@ describe('RepostsCommon', function() {
 		});
 
 		const taskDocument = mongoose.model('RepostsCommon').createInstance({
-			repostsCount: 100,
+			count: 100,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,
@@ -164,7 +164,7 @@ describe('RepostsCommon', function() {
 		});
 
 		const taskDocument = mongoose.model('RepostsCommon').createInstance({
-			repostsCount: 100,
+			count: 100,
 			postLink: 'tetsLink',
 			status: mongoose.model('Task').status.pending,
 			user,

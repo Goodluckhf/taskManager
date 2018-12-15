@@ -20,7 +20,7 @@ describe('Billing', function() {
 
 		const task = mongoose.model('LikesTask').createInstance({
 			postLink: 'test',
-			likesCount: 200,
+			count: 200,
 		});
 
 		expect(billing.calculatePrice(task)).to.be.equals(200 * 123);
@@ -32,7 +32,7 @@ describe('Billing', function() {
 
 		const task = mongoose.model('CommentsTask').createInstance({
 			postLink: 'test',
-			commentsCount: 200,
+			count: 200,
 		});
 
 		expect(billing.calculatePrice(task)).to.be.equals(200 * 321);
@@ -44,7 +44,7 @@ describe('Billing', function() {
 
 		const task = mongoose.model('RepostsTask').createInstance({
 			postLink: 'test',
-			repostsCount: 200,
+			count: 200,
 		});
 
 		expect(billing.calculatePrice(task)).to.be.equals(200 * 223);
@@ -56,12 +56,12 @@ describe('Billing', function() {
 
 		const task = mongoose.model('RepostsTask').createInstance({
 			postLink: 'test',
-			repostsCount: 200,
+			count: 200,
 		});
 
 		const task1 = mongoose.model('LikesTask').createInstance({
 			postLink: 'test',
-			likesCount: 200,
+			count: 200,
 		});
 		const expectedPrice = billing.calculatePriceForTasks([task, task1]);
 		//eslint-disable-next-line no-mixed-operators
@@ -88,9 +88,9 @@ describe('Billing', function() {
 		const user = mongoose
 			.model('AccountUser')
 			.createInstance({ email: 'test', password: '123' });
-		const repostTask = mongoose.model('RepostsTask').createInstance({ repostsCount: 123 });
-		const likesTask = mongoose.model('LikesTask').createInstance({ likesCount: 223 });
-		const commentsTask = mongoose.model('CommentsTask').createInstance({ commentsCount: 321 });
+		const repostTask = mongoose.model('RepostsTask').createInstance({ count: 123 });
+		const likesTask = mongoose.model('LikesTask').createInstance({ count: 223 });
+		const commentsTask = mongoose.model('CommentsTask').createInstance({ count: 321 });
 		const invoices = [
 			billing.createTaskInvoice(repostTask, user),
 			billing.createTaskInvoice(likesTask, user),
@@ -117,7 +117,7 @@ describe('Billing', function() {
 				password: 'asdasd',
 				balance: 100,
 			});
-			const task = mongoose.model('LikesTask').createInstance({ likesCount: 100 });
+			const task = mongoose.model('LikesTask').createInstance({ count: 100 });
 
 			const billing = new Billing(this.config, loggerMock);
 			const account = new BillingAccount(user, this.config, billing, loggerMock);
@@ -132,7 +132,7 @@ describe('Billing', function() {
 				balance: 100,
 			});
 			const task = mongoose.model('LikesTask').createInstance({
-				likesCount: 100,
+				count: 100,
 				user,
 			});
 
@@ -152,7 +152,7 @@ describe('Billing', function() {
 			});
 
 			const task = mongoose.model('LikesTask').createInstance({
-				likesCount: 10,
+				count: 10,
 				user,
 			});
 
@@ -174,7 +174,7 @@ describe('Billing', function() {
 			});
 
 			const task = mongoose.model('LikesTask').createInstance({
-				likesCount: 10,
+				count: 10,
 				user,
 			});
 
@@ -195,7 +195,7 @@ describe('Billing', function() {
 				balance: 130,
 			});
 			const task = mongoose.model('LikesTask').createInstance({
-				likesCount: 10,
+				count: 10,
 				postLink: 'test',
 				service: 'likest',
 			});
@@ -224,7 +224,7 @@ describe('Billing', function() {
 			});
 			user.freezeBalance = 120;
 			const task = mongoose.model('LikesTask').createInstance({
-				likesCount: 10,
+				count: 10,
 				postLink: 'test',
 				service: 'likest',
 			});

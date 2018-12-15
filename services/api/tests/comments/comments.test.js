@@ -15,7 +15,7 @@ describe('commentsTask', () => {
 		});
 
 		const taskDocument = mongoose.model('CommentsTask').createInstance({
-			commentsCount: 10,
+			count: 10,
 			postLink: 'testLink',
 			service: 'testService',
 			user,
@@ -24,7 +24,7 @@ describe('commentsTask', () => {
 		const rpcClient = {
 			async call(request) {
 				expect(request.method).to.be.equals('setComments_testService');
-				expect(request.args.commentsCount).to.be.equals(10);
+				expect(request.args.count).to.be.equals(10);
 				expect(request.args.postLink).to.be.equals('testLink');
 			},
 		};
@@ -48,7 +48,7 @@ describe('commentsTask', () => {
 		});
 
 		const taskDocument = mongoose.model('CommentsTask').createInstance({
-			commentsCount: 10,
+			count: 10,
 			postLink: 'testLink',
 			service: 'testService',
 			user,
@@ -81,7 +81,7 @@ describe('commentsTask', () => {
 		});
 
 		const taskDocument = mongoose.model('CommentsTask').createInstance({
-			commentsCount: 10,
+			count: 10,
 			postLink: 'testLink',
 			service: 'testService',
 			user,

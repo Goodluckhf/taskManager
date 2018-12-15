@@ -11,7 +11,7 @@ class CommentsTask extends BaseTask {
 
 			const request = new CommentRequest(this.taskDocument.service, this.config, {
 				postLink: this.taskDocument.postLink,
-				commentsCount: this.taskDocument.commentsCount,
+				count: this.taskDocument.count,
 				serviceCredentials,
 			});
 
@@ -29,7 +29,7 @@ class CommentsTask extends BaseTask {
 				'comments',
 				error,
 				this.taskDocument.postLink,
-				this.taskDocument.commentsCount,
+				this.taskDocument.count,
 			);
 
 			this.taskDocument._error = wrappedError.toObject();

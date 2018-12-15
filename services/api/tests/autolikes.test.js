@@ -864,7 +864,7 @@ describe('AutolikesTask', function() {
 				rpcCalledTimes += 1;
 
 				if (/^setLikes_/.test(request.method)) {
-					expect(request.args.likesCount).to.be.equals(100);
+					expect(request.args.count).to.be.equals(100);
 					setLikesCalled = true;
 				}
 
@@ -913,7 +913,7 @@ describe('AutolikesTask', function() {
 		expect(user.balance).to.be.equals(2000);
 		expect(user.freezeBalance).to.be.equals(1000);
 		expect(account.availableBalance).to.be.equals(1000);
-		expect(likesTask.likesCount).to.be.equals(100);
+		expect(likesTask.count).to.be.equals(100);
 
 		const subTasksHasNoErrors = subTasks.every(_task => !_task._error);
 

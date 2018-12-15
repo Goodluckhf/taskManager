@@ -9,6 +9,20 @@ const userMapperToAccount = {
 	AdminUser: AdminAccount,
 };
 
+const discriminatorToConfigPrice = {
+	LikesCommon: 'like',
+	LikesTask: 'like',
+	LikesCheckTask: 'like',
+
+	CommentsCheckTask: 'comment',
+	CommentsCommon: 'comment',
+	CommentsTask: 'comment',
+
+	RepostsCheckTask: 'repost',
+	RepostsCommon: 'repost',
+	RepostsTask: 'repost',
+};
+
 /**
  * @property {Config} config
  */
@@ -86,20 +100,15 @@ class Billing {
 	 */
 	calculatePrice(task) {
 		const prices = this.config.get('prices');
-		let sum = 0;
-		if (task.likesCount) {
-			sum += task.likesCount * prices.like;
+		if (task.__t === 'AutoLikesTask') {
+			return (
+				task.likesCount * prices.like +
+				task.commentsCount * prices.comment +
+				task.repostsCount * prices.repost
+			);
 		}
 
-		if (task.commentsCount) {
-			sum += task.commentsCount * prices.comment;
-		}
-
-		if (task.repostsCount) {
-			sum += task.repostsCount * prices.repost;
-		}
-
-		return sum;
+		return task.count * prices[discriminatorToConfigPrice[task.__t]];
 	}
 
 	/**

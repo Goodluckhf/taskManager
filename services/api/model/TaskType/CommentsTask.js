@@ -8,6 +8,10 @@ const commentsTaskSchema = new mongoose.Schema({
 
 	commentsCount: {
 		type: Number,
+	},
+
+	count: {
+		type: Number,
 		required: true,
 	},
 
@@ -20,14 +24,14 @@ const commentsTaskSchema = new mongoose.Schema({
 /**
  * @extends TaskDocument
  * @property {String} postLink
- * @property {Number} commentsCount
+ * @property {Number} count
  * @property {String} service
  * @property {TaskDocument} parentTask
  */
 export class CommentsTaskDocument {
 	/**
 	 * @param {Object} opts
-	 * @param {Number} opts.commentsCount
+	 * @param {Number} opts.count
 	 * @param {String} opts.postLink
 	 * @param {String} opts.service
 	 * @param {TaskDocument} opts.parentTask
@@ -35,7 +39,7 @@ export class CommentsTaskDocument {
 	 */
 	static createInstance(opts) {
 		const baseTask = mongoose.model('Task').createInstance(this, opts);
-		baseTask.commentsCount = opts.commentsCount;
+		baseTask.count = opts.count;
 		baseTask.postLink = opts.postLink;
 		baseTask.service = opts.service;
 		baseTask.parentTask = opts.parentTask || null;
