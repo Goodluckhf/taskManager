@@ -10,9 +10,9 @@ import CommentsTaskInvoice from './CommentsTaskInvoice';
 import TopUpInvoice from './TopUpInvoice';
 
 const invoiceMapper = {
-	LikesCommon: LikesTaskInvoice,
-	RepostsCommon: RepostsTaskInvoice,
-	CommentsCommon: CommentsTaskInvoice,
+	LikesTask: LikesTaskInvoice,
+	RepostsTask: RepostsTaskInvoice,
+	CommentsTask: CommentsTaskInvoice,
 };
 
 class InvoiceList extends PureComponent {
