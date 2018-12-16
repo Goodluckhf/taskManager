@@ -609,67 +609,6 @@ describe('AutolikesTask', function() {
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.waiting);
 	});
 
-	it('should create repostsTask, likesTask, commentsTask if one of target groups is in post', async () => {
-		const group = mongoose.model('Group').createInstance({ id: 'testId' });
-		const targetGroup = mongoose.model('Group').createInstance({ id: 'testId2' });
-
-		await group.save();
-		await targetGroup.save();
-		const user = mongoose.model('PremiumUser').createInstance({
-			email: 'test',
-			password: 'test',
-		});
-
-		user.targetGroups.push(targetGroup);
-
-		let rpcCalledTimes = 0;
-		let setRepostsCalled = false;
-		let setCommentsCalled = false;
-		let setLikesCalled = false;
-		const rpcClient = {
-			call(request) {
-				rpcCalledTimes += 1;
-				if (/^setReposts_/.test(request.method)) {
-					setRepostsCalled = true;
-				}
-
-				if (/^setComments_/.test(request.method)) {
-					setCommentsCalled = true;
-				}
-
-				if (/^setLikes_/.test(request.method)) {
-					setLikesCalled = true;
-				}
-
-				return { postId: 123, mentionId: 'clubtestId2' };
-			},
-		};
-
-		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 100,
-			commentsCount: 100,
-			repostsCount: 100,
-			group,
-			user,
-		});
-
-		const task = new AutoLikesTask({
-			taskDocument,
-			logger: loggerMock,
-			config: this.config,
-			rpcClient,
-		});
-
-		const promise = task.handle();
-		await expect(promise).to.be.fulfilled;
-		await expect(rpcCalledTimes).to.be.equals(4);
-		await expect(setRepostsCalled).to.be.true;
-		await expect(setCommentsCalled).to.be.true;
-		await expect(setLikesCalled).to.be.true;
-		expect(taskDocument.subTasks.length).to.be.equals(3);
-		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.waiting);
-	});
-
 	it('should complete one task and throw error if user has money only for one', async () => {
 		this.config.prices = {
 			...this.config.prices,
