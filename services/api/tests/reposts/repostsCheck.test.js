@@ -131,7 +131,7 @@ describe('RepostsCheckTask', function() {
 
 		const rpcClient = {
 			call(request) {
-				if (request.method === 'checkReposts') {
+				if (request.method === 'postByLink') {
 					return {
 						reposts: 9,
 					};
@@ -159,6 +159,7 @@ describe('RepostsCheckTask', function() {
 			.exec();
 
 		expect(repostsTask.status).to.be.equals(mongoose.model('Task').status.finished);
+		expect(repostsTask.count).to.be.equals(1);
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.finished);
 		expect(taskDocument.parentTask.status).to.be.equals(mongoose.model('Task').status.checking);
 		expect(taskDocument.parentTask._error).to.be.null;
