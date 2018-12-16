@@ -85,12 +85,16 @@ class CommentsCheckTask extends BaseTask {
 		await this.taskDocument.parentTask.populate('user').execPopulate();
 
 		const commentsTask = new CommentsCommonTask({
+			billing: this.billing,
+			account: this.account,
 			serviceIndex: this.taskDocument.serviceIndex + 1,
 			logger: this.logger,
 			taskDocument: this.taskDocument.parentTask,
 			rpcClient: this.rpcClient,
 			config: this.config,
 			uMetrics: this.uMetrics,
+
+			count: this.taskDocument.parentTask.count - response.comments,
 		});
 
 		this.logger.info({

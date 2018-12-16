@@ -173,7 +173,7 @@ describe('CommentsCheckTask', function() {
 
 		const rpcClient = {
 			call(request) {
-				if (request.method === 'checkComments') {
+				if (request.method === 'postByLink') {
 					return {
 						comments: 9,
 					};
@@ -201,6 +201,7 @@ describe('CommentsCheckTask', function() {
 			.exec();
 
 		expect(commentsTask.status).to.be.equals(mongoose.model('Task').status.finished);
+		expect(commentsTask.count).to.be.equals(1);
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.finished);
 		expect(taskDocument.parentTask.status).to.be.equals(mongoose.model('Task').status.checking);
 		expect(taskDocument.parentTask._error).to.be.null;

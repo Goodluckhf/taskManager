@@ -9,13 +9,18 @@ import BillingAccount from '../billing/BillingAccount';
 import { NotEnoughBalanceForLikes } from '../api/errors/tasks';
 
 /**
+ * @property {Number} [count=0]
  * @property {Number} serviceIndex
  * @property {LikesCommonDocument} taskDocument
  */
 class LikesCommonTask extends BaseTask {
-	constructor({ serviceIndex = 0, ...args }) {
+	constructor({ count = 0, serviceIndex = 0, ...args }) {
 		super(args);
 		this.serviceIndex = serviceIndex;
+
+		// Более преоритетное значение
+		// Нужно что бы накруичвать после не удачной проверки уже меньшее кол-во
+		this.count = count;
 	}
 
 	async createTaskAndHandle(serviceIndex) {
@@ -26,7 +31,7 @@ class LikesCommonTask extends BaseTask {
 		const service = serviceOrder[serviceIndex];
 
 		const likesTaskDocument = LikesTaskModel.createInstance({
-			count: this.taskDocument.count,
+			count: this.count || this.taskDocument.count,
 			postLink: this.taskDocument.postLink,
 			parentTask: this.taskDocument,
 			user: this.taskDocument.user,
@@ -99,7 +104,7 @@ class LikesCommonTask extends BaseTask {
 		this.taskDocument.status = TaskModel.status.checking;
 		const checkDelay = this.config.get('likesTask.checkingDelay');
 		const likesToCheck =
-			likesTaskDocument.count * parseFloat(this.config.get('likesTask.likesToCheck'));
+			this.taskDocument.count * parseFloat(this.config.get('likesTask.likesToCheck'));
 
 		this.logger.info({
 			service,

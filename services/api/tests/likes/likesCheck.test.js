@@ -163,7 +163,7 @@ describe('LikesCheckTask', function() {
 
 		const rpcClient = {
 			call(request) {
-				if (request.method === 'checkLikes') {
+				if (request.method === 'postByLink') {
 					return {
 						likes: 9,
 					};
@@ -191,6 +191,7 @@ describe('LikesCheckTask', function() {
 			.exec();
 
 		expect(likesTask.status).to.be.equals(mongoose.model('Task').status.finished);
+		expect(likesTask.count).to.be.equals(1);
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.finished);
 		expect(taskDocument.parentTask.status).to.be.equals(mongoose.model('Task').status.checking);
 		expect(taskDocument.parentTask._error).to.be.null;

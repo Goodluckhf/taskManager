@@ -84,12 +84,16 @@ class RepostsCheckTask extends BaseTask {
 		await this.taskDocument.parentTask.populate('user').execPopulate();
 
 		const repostsTask = new RepostsCommonTask({
+			billing: this.billing,
+			account: this.account,
 			serviceIndex: this.taskDocument.serviceIndex + 1,
 			logger: this.logger,
 			taskDocument: this.taskDocument.parentTask,
 			rpcClient: this.rpcClient,
 			config: this.config,
 			uMetrics: this.uMetrics,
+
+			count: this.taskDocument.parentTask.count - response.reposts,
 		});
 
 		this.logger.info({
