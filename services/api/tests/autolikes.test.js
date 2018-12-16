@@ -689,7 +689,7 @@ describe('AutolikesTask', function() {
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.skipped);
 	});
 
-	it('should freeze balance and start tasks if user has enough money', async () => {
+	it('should commit invoices and complete tasks if user has enough money', async () => {
 		this.config.prices = {
 			...this.config.prices,
 			like: 10,
@@ -760,6 +760,17 @@ describe('AutolikesTask', function() {
 			.find({ _id: { $in: taskDocument.subTasks.map(t => t._id) } })
 			.lean()
 			.exec();
+
+		const likesCommonTask = subTasks.filter(sTask => sTask.__t === 'LikesCommon')[0];
+		const likesTask = await mongoose.model('LikesTask').findOne({
+			_id: { $in: likesCommonTask.subTasks },
+		});
+
+		const invoice = await mongoose.model('TaskInvoice').findOne({
+			task: likesTask._id,
+		});
+
+		expect(invoice.status).to.be.equals(mongoose.model('Invoice').status.paid);
 
 		const subTasksHasNoErrors = subTasks.every(_task => !_task._error);
 
