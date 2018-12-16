@@ -210,7 +210,6 @@ class AutoLikesTask extends BaseTask {
 			}
 
 			const tasksToHandle = [];
-			const errors = [];
 			if (this.taskDocument.likesCount > 0) {
 				const likesCommonDocument = LikesCommonModel.createInstance({
 					postLink,
@@ -232,18 +231,8 @@ class AutoLikesTask extends BaseTask {
 
 				this.taskDocument.subTasks.push(likesCommonDocument);
 
-				try {
-					await this.freezeMoney(likesCommonDocument);
-					tasksToHandle.push(likesCommonTask);
-				} catch (error) {
-					errors.push(error);
-					likesCommonDocument.status = Task.status.finished;
-					likesCommonDocument._error = error.toObject();
-					likesCommonDocument.lastHandleAt = new Date();
-				} finally {
-					await likesCommonDocument.save();
-					await this.taskDocument.user.save();
-				}
+				tasksToHandle.push(likesCommonTask);
+				await likesCommonDocument.save();
 			}
 
 			if (this.taskDocument.commentsCount > 0) {
@@ -266,18 +255,8 @@ class AutoLikesTask extends BaseTask {
 				});
 				this.taskDocument.subTasks.push(commentsCommonDocument);
 
-				try {
-					await this.freezeMoney(commentsCommonDocument);
-					tasksToHandle.push(commentsCommonTask);
-				} catch (error) {
-					errors.push(error);
-					commentsCommonDocument.status = Task.status.finished;
-					commentsCommonDocument._error = error.toObject();
-					commentsCommonDocument.lastHandleAt = new Date();
-				} finally {
-					await commentsCommonDocument.save();
-					await this.taskDocument.user.save();
-				}
+				tasksToHandle.push(commentsCommonTask);
+				await commentsCommonDocument.save();
 			}
 
 			if (this.taskDocument.repostsCount > 0) {
@@ -300,22 +279,14 @@ class AutoLikesTask extends BaseTask {
 				});
 
 				this.taskDocument.subTasks.push(repostsCommonDocument);
-				try {
-					await this.freezeMoney(repostsCommonDocument);
-					tasksToHandle.push(repostsCommonTask);
-				} catch (error) {
-					errors.push(error);
-					repostsCommonDocument.status = Task.status.finished;
-					repostsCommonDocument._error = error.toObject();
-					repostsCommonDocument.lastHandleAt = new Date();
-				} finally {
-					await repostsCommonDocument.save();
-					await this.taskDocument.user.save();
-				}
+
+				tasksToHandle.push(repostsCommonTask);
+				await repostsCommonDocument.save();
 			}
 
 			await this.taskDocument.save();
 
+			const errors = [];
 			await bluebird.map(tasksToHandle, async task => {
 				const startTime = new Date();
 				try {
