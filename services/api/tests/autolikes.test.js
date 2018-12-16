@@ -856,12 +856,12 @@ describe('AutolikesTask', function() {
 
 		const invoice = await mongoose.model('TaskInvoice').findOne({
 			user: user.id,
-			status: mongoose.model('Invoice').status.active,
+			status: mongoose.model('Invoice').status.paid,
 		});
-		const likesTask = await mongoose.model('LikesTask').findOne({ parentTask: invoice.task });
+		const likesTask = await mongoose.model('LikesTask').findOne({ _id: invoice.task });
 		expect(invoice.amount).to.be.equals(1000);
-		expect(user.balance).to.be.equals(2000);
-		expect(user.freezeBalance).to.be.equals(1000);
+		expect(user.balance).to.be.equals(1000);
+		expect(user.freezeBalance).to.be.equals(0);
 		expect(account.availableBalance).to.be.equals(1000);
 		expect(likesTask.count).to.be.equals(100);
 
