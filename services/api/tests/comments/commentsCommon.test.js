@@ -96,7 +96,7 @@ describe('CommentsCommon', function() {
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.checking);
 	});
 
-	it('should rollback transaction if final task complete with error', async () => {
+	it('should rollback transaction if task complete with error during handling', async () => {
 		this.config.commentsTask = {
 			...this.config.commentsTask,
 			serviceOrder: ['likest'],
@@ -128,8 +128,7 @@ describe('CommentsCommon', function() {
 
 		const billing = new Billing(this.config, loggerMock);
 		const account = new BillingAccount(user, this.config, billing, loggerMock);
-		await account.freezeMoney(taskDocument);
-		expect(account.availableBalance).to.be.equals(100);
+
 		const commonTask = new CommentsCommonTask({
 			billing,
 			account,
@@ -147,7 +146,7 @@ describe('CommentsCommon', function() {
 		expect(user.freezeBalance).to.be.equals(0);
 	});
 
-	it('should not rollback transaction if final task complete successful', async () => {
+	it('should commit transaction if final task complete successful', async () => {
 		this.config.commentsTask = {
 			...this.config.commentsTask,
 			serviceOrder: ['likest'],
@@ -179,8 +178,7 @@ describe('CommentsCommon', function() {
 
 		const billing = new Billing(this.config, loggerMock);
 		const account = new BillingAccount(user, this.config, billing, loggerMock);
-		await account.freezeMoney(taskDocument);
-		expect(account.availableBalance).to.be.equals(100);
+
 		const commonTask = new CommentsCommonTask({
 			billing,
 			account,
@@ -194,7 +192,7 @@ describe('CommentsCommon', function() {
 		await expect(promise).to.eventually.fulfilled;
 
 		expect(account.availableBalance).to.be.equals(100);
-		expect(user.balance).to.be.equals(1100);
-		expect(user.freezeBalance).to.be.equals(1000);
+		expect(user.balance).to.be.equals(100);
+		expect(user.freezeBalance).to.be.equals(0);
 	});
 });
