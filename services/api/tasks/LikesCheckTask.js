@@ -100,6 +100,8 @@ class LikesCheckTask extends BaseTask {
 			rpcClient: this.rpcClient,
 			config: this.config,
 			uMetrics: this.uMetrics,
+
+			count: this.taskDocument.parentTask.count - response.likes,
 		});
 
 		await likesTask.handle();
