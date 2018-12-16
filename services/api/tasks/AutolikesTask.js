@@ -6,84 +6,17 @@ import LikesCommonTask from './LikesCommonTask';
 import CommentsCommonTask from './CommentsCommonTask';
 import RepostsCommonTask from './RepostsCommonTask';
 import LastPostWithLinkRequest from '../api/amqpRequests/LastPostWithLinkRequest';
-import BillingAccount from '../billing/BillingAccount';
 import {
-	NotEnoughBalance,
 	NotEnoughBalanceForComments,
 	NotEnoughBalanceForLikes,
 	NotEnoughBalanceForReposts,
 } from '../api/errors/tasks';
-import BaseTaskError from '../api/errors/tasks/BaseTaskError';
-import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
 import { cleanLink } from '../../../lib/helper';
 
 /**
  * @property {AutoLikesTaskDocument} taskDocument
  */
 class AutoLikesTask extends BaseTask {
-	/**
-	 * @TODO: Зарефакторить сделать через фабрику
-	 * @param {TaskDocument} task
-	 */
-	async freezeMoney(task) {
-		if (!(this.account instanceof BillingAccount)) {
-			return;
-		}
-
-		try {
-			await this.account.freezeMoney(task);
-		} catch (error) {
-			if (task.__t === 'LikesCommon') {
-				if (error instanceof NotEnoughBalance) {
-					throw NotEnoughBalanceForLikes.fromNotEnoughBalance(
-						error,
-						task.postLink,
-						task.count,
-					);
-				}
-
-				if (!(error instanceof BaseTaskError)) {
-					throw TaskErrorFactory.createError('likes', error, task.postLink, task.count);
-				}
-			}
-
-			if (task.__t === 'RepostsCommon') {
-				if (error instanceof NotEnoughBalance) {
-					throw NotEnoughBalanceForReposts.fromNotEnoughBalance(
-						error,
-						task.postLink,
-						task.count,
-					);
-				}
-
-				if (!(error instanceof BaseTaskError)) {
-					throw TaskErrorFactory.createError('reposts', error, task.postLink, task.count);
-				}
-			}
-
-			if (task.__t === 'CommentsCommon') {
-				if (error instanceof NotEnoughBalance) {
-					throw NotEnoughBalanceForComments.fromNotEnoughBalance(
-						error,
-						task.postLink,
-						task.count,
-					);
-				}
-
-				if (!(error instanceof BaseTaskError)) {
-					throw TaskErrorFactory.createError(
-						'comments',
-						error,
-						task.postLink,
-						task.count,
-					);
-				}
-			}
-
-			throw error;
-		}
-	}
-
 	/**
 	 * @param {String} link
 	 * @param {Array.<String>} targetLinks
@@ -192,6 +125,31 @@ class AutoLikesTask extends BaseTask {
 		);
 	}
 
+	/**
+	 * Получить последний пост в группе
+	 * @param {String} groupLink
+	 * @return {Promise<{postId: String, mentionId: String, link: String} | null>}
+	 */
+	async getLastPost(groupLink) {
+		try {
+			const request = new LastPostWithLinkRequest(this.config, {
+				groupLink,
+			});
+
+			return await this.rpcClient.call(request);
+		} catch (error) {
+			this.taskDocument.status = mongoose.model('Task').status.waiting;
+			this.logger.warn({
+				message: 'LastPostWithLinkRequest error',
+				userId: this.taskDocument.user.id,
+				taskId: this.taskDocument.id,
+				groupLink,
+				error,
+			});
+			return null;
+		}
+	}
+
 	async handle() {
 		const Task = mongoose.model('Task');
 		const Group = mongoose.model('Group');
@@ -226,21 +184,8 @@ class AutoLikesTask extends BaseTask {
 			// Потому что она выполняется каждую минуту
 			// И если не выполнится или будет какая-то ошибка
 			// Ничего страшного, потому что через минуту еще раз запустится
-			let lastPostResult;
-			try {
-				const request = new LastPostWithLinkRequest(this.config, {
-					groupLink,
-				});
-				lastPostResult = await this.rpcClient.call(request);
-			} catch (error) {
-				this.taskDocument.status = Task.status.waiting;
-				this.logger.warn({
-					message: 'LastPostWithLinkRequest error',
-					userId: this.taskDocument.user.id,
-					taskId: this.taskDocument.id,
-					groupLink,
-					error,
-				});
+			const lastPostResult = await this.getLastPost(groupLink);
+			if (!lastPostResult) {
 				return;
 			}
 
