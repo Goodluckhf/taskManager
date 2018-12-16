@@ -85,6 +85,8 @@ class CommentsCheckTask extends BaseTask {
 		await this.taskDocument.parentTask.populate('user').execPopulate();
 
 		const commentsTask = new CommentsCommonTask({
+			billing: this.billing,
+			account: this.account,
 			serviceIndex: this.taskDocument.serviceIndex + 1,
 			logger: this.logger,
 			taskDocument: this.taskDocument.parentTask,
