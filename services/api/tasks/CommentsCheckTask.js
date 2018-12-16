@@ -91,6 +91,8 @@ class CommentsCheckTask extends BaseTask {
 			rpcClient: this.rpcClient,
 			config: this.config,
 			uMetrics: this.uMetrics,
+
+			count: this.taskDocument.parentTask.count - response.comments,
 		});
 
 		this.logger.info({
