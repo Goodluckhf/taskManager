@@ -609,67 +609,6 @@ describe('AutolikesTask', function() {
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.waiting);
 	});
 
-	it('should create repostsTask, likesTask, commentsTask if one of target groups is in post', async () => {
-		const group = mongoose.model('Group').createInstance({ id: 'testId' });
-		const targetGroup = mongoose.model('Group').createInstance({ id: 'testId2' });
-
-		await group.save();
-		await targetGroup.save();
-		const user = mongoose.model('PremiumUser').createInstance({
-			email: 'test',
-			password: 'test',
-		});
-
-		user.targetGroups.push(targetGroup);
-
-		let rpcCalledTimes = 0;
-		let setRepostsCalled = false;
-		let setCommentsCalled = false;
-		let setLikesCalled = false;
-		const rpcClient = {
-			call(request) {
-				rpcCalledTimes += 1;
-				if (/^setReposts_/.test(request.method)) {
-					setRepostsCalled = true;
-				}
-
-				if (/^setComments_/.test(request.method)) {
-					setCommentsCalled = true;
-				}
-
-				if (/^setLikes_/.test(request.method)) {
-					setLikesCalled = true;
-				}
-
-				return { postId: 123, mentionId: 'clubtestId2' };
-			},
-		};
-
-		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
-			likesCount: 100,
-			commentsCount: 100,
-			repostsCount: 100,
-			group,
-			user,
-		});
-
-		const task = new AutoLikesTask({
-			taskDocument,
-			logger: loggerMock,
-			config: this.config,
-			rpcClient,
-		});
-
-		const promise = task.handle();
-		await expect(promise).to.be.fulfilled;
-		await expect(rpcCalledTimes).to.be.equals(4);
-		await expect(setRepostsCalled).to.be.true;
-		await expect(setCommentsCalled).to.be.true;
-		await expect(setLikesCalled).to.be.true;
-		expect(taskDocument.subTasks.length).to.be.equals(3);
-		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.waiting);
-	});
-
 	it('should complete one task and throw error if user has money only for one', async () => {
 		this.config.prices = {
 			...this.config.prices,
@@ -750,7 +689,7 @@ describe('AutolikesTask', function() {
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.skipped);
 	});
 
-	it('should freeze balance and start tasks if user has enough money', async () => {
+	it('should commit invoices and complete tasks if user has enough money', async () => {
 		this.config.prices = {
 			...this.config.prices,
 			like: 10,
@@ -821,6 +760,17 @@ describe('AutolikesTask', function() {
 			.find({ _id: { $in: taskDocument.subTasks.map(t => t._id) } })
 			.lean()
 			.exec();
+
+		const likesCommonTask = subTasks.filter(sTask => sTask.__t === 'LikesCommon')[0];
+		const likesTask = await mongoose.model('LikesTask').findOne({
+			_id: { $in: likesCommonTask.subTasks },
+		});
+
+		const invoice = await mongoose.model('TaskInvoice').findOne({
+			task: likesTask._id,
+		});
+
+		expect(invoice.status).to.be.equals(mongoose.model('Invoice').status.paid);
 
 		const subTasksHasNoErrors = subTasks.every(_task => !_task._error);
 
@@ -906,12 +856,12 @@ describe('AutolikesTask', function() {
 
 		const invoice = await mongoose.model('TaskInvoice').findOne({
 			user: user.id,
-			status: mongoose.model('Invoice').status.active,
+			status: mongoose.model('Invoice').status.paid,
 		});
-		const likesTask = await mongoose.model('LikesTask').findOne({ parentTask: invoice.task });
+		const likesTask = await mongoose.model('LikesTask').findOne({ _id: invoice.task });
 		expect(invoice.amount).to.be.equals(1000);
-		expect(user.balance).to.be.equals(2000);
-		expect(user.freezeBalance).to.be.equals(1000);
+		expect(user.balance).to.be.equals(1000);
+		expect(user.freezeBalance).to.be.equals(0);
 		expect(account.availableBalance).to.be.equals(1000);
 		expect(likesTask.count).to.be.equals(100);
 

@@ -95,7 +95,7 @@ describe('RepostsCommon', function() {
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.checking);
 	});
 
-	it('should rollback transaction if final task complete with error', async () => {
+	it('should rollback transaction if task complete with error during handling', async () => {
 		this.config.repostsTask = {
 			...this.config.repostsTask,
 			serviceOrder: ['likest'],
@@ -127,8 +127,7 @@ describe('RepostsCommon', function() {
 
 		const billing = new Billing(this.config, loggerMock);
 		const account = new BillingAccount(user, this.config, billing, loggerMock);
-		await account.freezeMoney(taskDocument);
-		expect(account.availableBalance).to.be.equals(100);
+
 		const commonTask = new RepostsCommonTask({
 			billing,
 			account,
@@ -146,7 +145,7 @@ describe('RepostsCommon', function() {
 		expect(user.freezeBalance).to.be.equals(0);
 	});
 
-	it('should not rollback transaction if final task complete successful', async () => {
+	it('should commit transaction if final task complete successful', async () => {
 		this.config.repostsTask = {
 			...this.config.repostsTask,
 			serviceOrder: ['likest'],
@@ -178,8 +177,7 @@ describe('RepostsCommon', function() {
 
 		const billing = new Billing(this.config, loggerMock);
 		const account = new BillingAccount(user, this.config, billing, loggerMock);
-		await account.freezeMoney(taskDocument);
-		expect(account.availableBalance).to.be.equals(100);
+
 		const commonTask = new RepostsCommonTask({
 			billing,
 			account,
@@ -192,11 +190,8 @@ describe('RepostsCommon', function() {
 		const promise = commonTask.handle();
 		await expect(promise).to.eventually.fulfilled;
 
-		const invoice = await mongoose.model('TaskInvoice').findOne({ task: taskDocument.id });
-
-		expect(invoice.status).to.be.equals(mongoose.model('TaskInvoice').status.active);
 		expect(account.availableBalance).to.be.equals(100);
-		expect(user.balance).to.be.equals(1100);
-		expect(user.freezeBalance).to.be.equals(1000);
+		expect(user.balance).to.be.equals(100);
+		expect(user.freezeBalance).to.be.equals(0);
 	});
 });

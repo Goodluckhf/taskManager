@@ -6,10 +6,11 @@ import CommentsTask from './CommentsTask';
 import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
 import BaseTaskError from '../api/errors/tasks/BaseTaskError';
 import BillingAccount from '../billing/BillingAccount';
+import { NotEnoughBalanceForComments, NotEnoughBalanceForLikes } from '../api/errors/tasks';
 
 /**
  * @property {Number} serviceIndex
- * @property {CommentsCommonTaskDocument} taskDocument
+ * @property {CommentsCommonDocument} taskDocument
  */
 class CommentsCommonTask extends BaseTask {
 	constructor({ serviceIndex = 0, ...args }) {
@@ -34,6 +35,20 @@ class CommentsCommonTask extends BaseTask {
 			service,
 		});
 
+		if (this.account instanceof BillingAccount) {
+			try {
+				await this.account.freezeMoney(commentsTaskDocument);
+			} catch (error) {
+				throw new NotEnoughBalanceForComments(
+					this.account.availableBalance,
+					this.billing.calculatePrice(commentsTaskDocument),
+					this.taskDocument.postLink,
+					commentsTaskDocument.count,
+					error,
+				);
+			}
+		}
+
 		this.taskDocument.subTasks.push(commentsTaskDocument);
 		await Promise.all([this.taskDocument.save(), commentsTaskDocument.save()]);
 
@@ -52,20 +67,35 @@ class CommentsCommonTask extends BaseTask {
 			status: 'pending',
 			try: serviceIndex,
 			message: 'Запускаем задачу накрутки комментов',
-			count: this.taskDocument.count,
-			postLink: this.taskDocument.postLink,
+			count: commentsTaskDocument.count,
+			postLink: commentsTaskDocument.postLink,
 			userId: this.taskDocument.user.id,
-			taskId: this.taskDocument.id,
+			taskId: commentsTaskDocument.id,
 		});
 
-		await commentsTask.handle();
+		try {
+			await commentsTask.handle();
+		} catch (error) {
+			if (this.account instanceof BillingAccount) {
+				await this.account.rollBack(commentsTaskDocument);
+			}
+
+			throw error;
+		}
 
 		// Если задача выполнилась без ошибки
-		// То создаем задачу на проверку
+		// Коммитим транзакцию
+		// И создаем задачу на проверку
+		if (this.account instanceof BillingAccount) {
+			await this.account.commit(commentsTaskDocument);
+		}
+
 		this.taskDocument.status = TaskModel.status.checking;
 		const checkDelay = this.config.get('commentsTask.checkingDelay');
 		const commentsToCheck =
-			this.taskDocument.count * parseFloat(this.config.get('commentsTask.commentsToCheck'));
+			commentsTaskDocument.count *
+			parseFloat(this.config.get('commentsTask.commentsToCheck'));
+
 		this.logger.info({
 			service,
 			commentsToCheck,
@@ -73,10 +103,10 @@ class CommentsCommonTask extends BaseTask {
 			status: 'success',
 			try: serviceIndex,
 			message: 'Выполнилась без ошибки. Создаем задачу на проверку',
-			count: this.taskDocument.count,
-			postLink: this.taskDocument.postLink,
+			count: commentsTaskDocument.count,
+			postLink: commentsTaskDocument.postLink,
 			userId: this.taskDocument.user.id,
-			taskId: this.taskDocument.id,
+			taskId: commentsTaskDocument.id,
 		});
 
 		const checkTaskDocument = CommentsCheckTaskModel.createInstance({
@@ -113,12 +143,10 @@ class CommentsCommonTask extends BaseTask {
 				taskId: this.taskDocument.id,
 			});
 
-			if (serviceOrder.length !== serviceIndex + 1) {
-				return this.loopHandleTasks(serviceIndex + 1);
-			}
-
-			if (this.account instanceof BillingAccount) {
-				await this.account.rollBack(this.taskDocument);
+			if (!(error instanceof NotEnoughBalanceForLikes)) {
+				if (serviceOrder.length !== serviceIndex + 1) {
+					return this.loopHandleTasks(serviceIndex + 1);
+				}
 			}
 
 			// Это последний был, значит пора выкидывать ошибку

@@ -6,84 +6,17 @@ import LikesCommonTask from './LikesCommonTask';
 import CommentsCommonTask from './CommentsCommonTask';
 import RepostsCommonTask from './RepostsCommonTask';
 import LastPostWithLinkRequest from '../api/amqpRequests/LastPostWithLinkRequest';
-import BillingAccount from '../billing/BillingAccount';
 import {
-	NotEnoughBalance,
 	NotEnoughBalanceForComments,
 	NotEnoughBalanceForLikes,
 	NotEnoughBalanceForReposts,
 } from '../api/errors/tasks';
-import BaseTaskError from '../api/errors/tasks/BaseTaskError';
-import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
 import { cleanLink } from '../../../lib/helper';
 
 /**
  * @property {AutoLikesTaskDocument} taskDocument
  */
 class AutoLikesTask extends BaseTask {
-	/**
-	 * @TODO: Зарефакторить сделать через фабрику
-	 * @param {TaskDocument} task
-	 */
-	async freezeMoney(task) {
-		if (!(this.account instanceof BillingAccount)) {
-			return;
-		}
-
-		try {
-			await this.account.freezeMoney(task);
-		} catch (error) {
-			if (task.__t === 'LikesCommon') {
-				if (error instanceof NotEnoughBalance) {
-					throw NotEnoughBalanceForLikes.fromNotEnoughBalance(
-						error,
-						task.postLink,
-						task.count,
-					);
-				}
-
-				if (!(error instanceof BaseTaskError)) {
-					throw TaskErrorFactory.createError('likes', error, task.postLink, task.count);
-				}
-			}
-
-			if (task.__t === 'RepostsCommon') {
-				if (error instanceof NotEnoughBalance) {
-					throw NotEnoughBalanceForReposts.fromNotEnoughBalance(
-						error,
-						task.postLink,
-						task.count,
-					);
-				}
-
-				if (!(error instanceof BaseTaskError)) {
-					throw TaskErrorFactory.createError('reposts', error, task.postLink, task.count);
-				}
-			}
-
-			if (task.__t === 'CommentsCommon') {
-				if (error instanceof NotEnoughBalance) {
-					throw NotEnoughBalanceForComments.fromNotEnoughBalance(
-						error,
-						task.postLink,
-						task.count,
-					);
-				}
-
-				if (!(error instanceof BaseTaskError)) {
-					throw TaskErrorFactory.createError(
-						'comments',
-						error,
-						task.postLink,
-						task.count,
-					);
-				}
-			}
-
-			throw error;
-		}
-	}
-
 	/**
 	 * @param {String} link
 	 * @param {Array.<String>} targetLinks
@@ -192,6 +125,31 @@ class AutoLikesTask extends BaseTask {
 		);
 	}
 
+	/**
+	 * Получить последний пост в группе
+	 * @param {String} groupLink
+	 * @return {Promise<{postId: String, mentionId: String, link: String} | null>}
+	 */
+	async getLastPost(groupLink) {
+		try {
+			const request = new LastPostWithLinkRequest(this.config, {
+				groupLink,
+			});
+
+			return await this.rpcClient.call(request);
+		} catch (error) {
+			this.taskDocument.status = mongoose.model('Task').status.waiting;
+			this.logger.warn({
+				message: 'LastPostWithLinkRequest error',
+				userId: this.taskDocument.user.id,
+				taskId: this.taskDocument.id,
+				groupLink,
+				error,
+			});
+			return null;
+		}
+	}
+
 	async handle() {
 		const Task = mongoose.model('Task');
 		const Group = mongoose.model('Group');
@@ -226,21 +184,8 @@ class AutoLikesTask extends BaseTask {
 			// Потому что она выполняется каждую минуту
 			// И если не выполнится или будет какая-то ошибка
 			// Ничего страшного, потому что через минуту еще раз запустится
-			let lastPostResult;
-			try {
-				const request = new LastPostWithLinkRequest(this.config, {
-					groupLink,
-				});
-				lastPostResult = await this.rpcClient.call(request);
-			} catch (error) {
-				this.taskDocument.status = Task.status.waiting;
-				this.logger.warn({
-					message: 'LastPostWithLinkRequest error',
-					userId: this.taskDocument.user.id,
-					taskId: this.taskDocument.id,
-					groupLink,
-					error,
-				});
+			const lastPostResult = await this.getLastPost(groupLink);
+			if (!lastPostResult) {
 				return;
 			}
 
@@ -265,7 +210,6 @@ class AutoLikesTask extends BaseTask {
 			}
 
 			const tasksToHandle = [];
-			const errors = [];
 			if (this.taskDocument.likesCount > 0) {
 				const likesCommonDocument = LikesCommonModel.createInstance({
 					postLink,
@@ -287,18 +231,8 @@ class AutoLikesTask extends BaseTask {
 
 				this.taskDocument.subTasks.push(likesCommonDocument);
 
-				try {
-					await this.freezeMoney(likesCommonDocument);
-					tasksToHandle.push(likesCommonTask);
-				} catch (error) {
-					errors.push(error);
-					likesCommonDocument.status = Task.status.finished;
-					likesCommonDocument._error = error.toObject();
-					likesCommonDocument.lastHandleAt = new Date();
-				} finally {
-					await likesCommonDocument.save();
-					await this.taskDocument.user.save();
-				}
+				tasksToHandle.push(likesCommonTask);
+				await likesCommonDocument.save();
 			}
 
 			if (this.taskDocument.commentsCount > 0) {
@@ -321,18 +255,8 @@ class AutoLikesTask extends BaseTask {
 				});
 				this.taskDocument.subTasks.push(commentsCommonDocument);
 
-				try {
-					await this.freezeMoney(commentsCommonDocument);
-					tasksToHandle.push(commentsCommonTask);
-				} catch (error) {
-					errors.push(error);
-					commentsCommonDocument.status = Task.status.finished;
-					commentsCommonDocument._error = error.toObject();
-					commentsCommonDocument.lastHandleAt = new Date();
-				} finally {
-					await commentsCommonDocument.save();
-					await this.taskDocument.user.save();
-				}
+				tasksToHandle.push(commentsCommonTask);
+				await commentsCommonDocument.save();
 			}
 
 			if (this.taskDocument.repostsCount > 0) {
@@ -355,22 +279,14 @@ class AutoLikesTask extends BaseTask {
 				});
 
 				this.taskDocument.subTasks.push(repostsCommonDocument);
-				try {
-					await this.freezeMoney(repostsCommonDocument);
-					tasksToHandle.push(repostsCommonTask);
-				} catch (error) {
-					errors.push(error);
-					repostsCommonDocument.status = Task.status.finished;
-					repostsCommonDocument._error = error.toObject();
-					repostsCommonDocument.lastHandleAt = new Date();
-				} finally {
-					await repostsCommonDocument.save();
-					await this.taskDocument.user.save();
-				}
+
+				tasksToHandle.push(repostsCommonTask);
+				await repostsCommonDocument.save();
 			}
 
 			await this.taskDocument.save();
 
+			const errors = [];
 			await bluebird.map(tasksToHandle, async task => {
 				const startTime = new Date();
 				try {

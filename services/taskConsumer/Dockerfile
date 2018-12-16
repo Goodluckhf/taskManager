@@ -1,4 +1,4 @@
-FROM cheerlesscloud/node:8.7.0
+FROM cheerlesscloud/node:10.13.0
 
 WORKDIR /home/www
 ENV NODE_ENV=development

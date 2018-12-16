@@ -3,7 +3,6 @@ import BaseTask from './BaseTask';
 import PostByLinkRequest from '../api/amqpRequests/PostByLinkRequest';
 import CommentsCommonTask from './CommentsCommonTask';
 import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
-import BillingAccount from '../billing/BillingAccount';
 
 /**
  * @property {CommentsCheckTaskDocument} taskDocument
@@ -46,12 +45,6 @@ class CommentsCheckTask extends BaseTask {
 				taskId: this.taskDocument.parentTask.id,
 			});
 
-			// Успешное выполнение
-			// Снимаем баллы с баланса
-			if (this.account instanceof BillingAccount) {
-				await this.account.commit(this.taskDocument.parentTask);
-			}
-
 			this.taskDocument.parentTask.status = Task.status.finished;
 			this.taskDocument.parentTask.lastHandleAt = new Date();
 			this.taskDocument.lastHandleAt = new Date();
@@ -71,10 +64,6 @@ class CommentsCheckTask extends BaseTask {
 		});
 
 		if (serviceOrder.length === this.taskDocument.serviceIndex + 1) {
-			if (this.account instanceof BillingAccount) {
-				await this.account.rollBack(this.taskDocument.parentTask);
-			}
-
 			const wrappedError = TaskErrorFactory.createError(
 				'comments',
 				new Error('Комменты не накрутились'),

@@ -93,7 +93,7 @@ describe('LikesCommonTask', function() {
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.checking);
 	});
 
-	it('should rollback transaction if final task complete with error', async () => {
+	it('should rollback transaction if task complete with error during handling', async () => {
 		this.config.likesTask = {
 			...this.config.likesTask,
 			serviceOrder: ['likest'],
@@ -125,8 +125,6 @@ describe('LikesCommonTask', function() {
 
 		const billing = new Billing(this.config, loggerMock);
 		const account = new BillingAccount(user, this.config, billing, loggerMock);
-		await account.freezeMoney(taskDocument);
-		expect(account.availableBalance).to.be.equals(100);
 		const likesCommonTask = new LikesCommonTask({
 			billing,
 			account,
@@ -144,7 +142,7 @@ describe('LikesCommonTask', function() {
 		expect(user.freezeBalance).to.be.equals(0);
 	});
 
-	it('should not rollback transaction if final task complete successful', async () => {
+	it('should commit transaction if task complete successful', async () => {
 		this.config.likesTask = {
 			...this.config.likesTask,
 			serviceOrder: ['likest'],
@@ -176,8 +174,6 @@ describe('LikesCommonTask', function() {
 
 		const billing = new Billing(this.config, loggerMock);
 		const account = new BillingAccount(user, this.config, billing, loggerMock);
-		account.freezeMoney(taskDocument);
-		expect(account.availableBalance).to.be.equals(100);
 		const likesCommonTask = new LikesCommonTask({
 			billing,
 			account,
@@ -191,8 +187,8 @@ describe('LikesCommonTask', function() {
 		await expect(promise).to.eventually.fulfilled;
 
 		expect(account.availableBalance).to.be.equals(100);
-		expect(user.balance).to.be.equals(1100);
-		expect(user.freezeBalance).to.be.equals(1000);
+		expect(user.balance).to.be.equals(100);
+		expect(user.freezeBalance).to.be.equals(0);
 	});
 
 	it('should create likesTask for 100 likes if original is less for likePro service', async () => {
@@ -241,9 +237,9 @@ describe('LikesCommonTask', function() {
 		await expect(promise).to.eventually.fulfilled;
 
 		expect(account.availableBalance).to.be.equals(100);
-		expect(taskDocument.count).to.be.equals(100);
-		expect(user.balance).to.be.equals(1100);
-		expect(user.freezeBalance).to.be.equals(1000);
+		expect(taskDocument.count).to.be.equals(90);
+		expect(user.balance).to.be.equals(100);
+		expect(user.freezeBalance).to.be.equals(0);
 	});
 
 	it('should throw error if service is likePro and user has not enough money', async () => {
@@ -292,7 +288,7 @@ describe('LikesCommonTask', function() {
 		await expect(promise).to.eventually.rejectedWith(NotEnoughBalanceForLikes);
 
 		expect(account.availableBalance).to.be.equals(901);
-		expect(taskDocument.count).to.be.equals(100);
+		expect(taskDocument.count).to.be.equals(90);
 		expect(user.balance).to.be.equals(901);
 		expect(user.freezeBalance).to.be.equals(0);
 	});
