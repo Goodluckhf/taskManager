@@ -12,12 +12,10 @@ class RepostsTaskInvoice extends PureComponent {
 	render() {
 		return (
 			<Card style={{ border: '1px solid #ffc107' }}>
-				<CardHeader>Задача накрутки лайков</CardHeader>
+				<CardHeader>Задача накрутки репостов</CardHeader>
 				<CardBody>
 					{this.props.invoice}
 					<hr />
-					Задача накрутки репостов
-					<br />
 					Кол-во: {this.props.count}
 					<br />
 					Ссылка:{' '}
