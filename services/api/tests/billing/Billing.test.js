@@ -153,6 +153,7 @@ describe('Billing', function() {
 
 			const task = mongoose.model('LikesTask').createInstance({
 				count: 10,
+				postLink: 'testlink',
 				user,
 			});
 
@@ -175,6 +176,7 @@ describe('Billing', function() {
 
 			const task = mongoose.model('LikesTask').createInstance({
 				count: 10,
+				postLink: 'testlink',
 				user,
 			});
 

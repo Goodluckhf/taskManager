@@ -2,6 +2,11 @@ import mongoose from '../../../../lib/mongoose';
 
 // Предположим что пока задачи только по накрутки
 const taskInvoiceSchema = new mongoose.Schema({
+	task: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'Task',
+	},
+
 	taskType: {
 		type: String,
 		required: true,
@@ -26,16 +31,15 @@ const taskInvoiceSchema = new mongoose.Schema({
  */
 class TaskInvoiceDocument {
 	/**
-	 * @param {String} taskType
-	 * @param {String} postLink
-	 * @param {Number} count
+	 * @param {TaskDocument} task
 	 * @return {InvoiceDocument}
 	 */
-	static createInstance({ taskType, postLink, count, ...args }) {
+	static createInstance({ task, ...args }) {
 		const invoice = mongoose.model('Invoice').createInstance(this, args);
-		invoice.taskType = taskType;
-		invoice.postLink = postLink;
-		invoice.count = count;
+		invoice.task = task;
+		invoice.taskType = task.__t;
+		invoice.postLink = task.postLink;
+		invoice.count = task.count;
 		return invoice;
 	}
 }
