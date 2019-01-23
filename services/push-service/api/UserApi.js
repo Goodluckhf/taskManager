@@ -3,7 +3,7 @@ import BaseApi from './BaseApi';
 
 class UserApi extends BaseApi {
 	async addPush({ push }) {
-		const User = mongoose.model('User');
+		const User = mongoose.model('UserPush');
 		const count = await User.count({
 			push,
 		});
@@ -18,7 +18,7 @@ class UserApi extends BaseApi {
 	}
 
 	async count() {
-		return mongoose.model('User').count();
+		return mongoose.model('UserPush').count();
 	}
 }
 

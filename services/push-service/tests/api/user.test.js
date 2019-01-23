@@ -17,7 +17,7 @@ describe('UserApi', function() {
 			push: 'test',
 		});
 
-		const count = await mongoose.model('User').count({
+		const count = await mongoose.model('UserPush').count({
 			push: 'test',
 		});
 		expect(count).to.be.equals(1);
