@@ -11,14 +11,14 @@ export default router => {
 	router.post('/user', async ctx => {
 		ctx.body = {
 			success: true,
-			data: await userApi.login(ctx.request.body),
+			data: await userApi.addPush(ctx.request.body),
 		};
 	});
 
 	router.get('/user', async ctx => {
 		ctx.body = {
 			success: true,
-			data: await userApi.login(ctx.request.body),
+			data: await userApi.count(),
 		};
 	});
 };
