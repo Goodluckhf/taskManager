@@ -13,4 +13,4 @@ RUN npx babel --source-maps --out-dir ./dist/ --ignore node_modules,test.js,spec
 ENV NODE_ENV=production
 RUN npm prune
 
-CMD ["node", "./dist/services/api/app.js", "2>&1"]
+CMD ["node", "./dist/services/push-service/app.js", "2>&1"]
