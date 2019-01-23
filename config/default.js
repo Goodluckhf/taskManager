@@ -22,6 +22,11 @@ module.exports = {
 		host: 'api',
 	},
 
+	push: {
+		port: 3000,
+		host: 'push',
+	},
+
 	uMetrics: {
 		port: process.env.U_METRICS__PORT,
 		ttl: process.env.U_METRICS__TTL,
