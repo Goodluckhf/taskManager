@@ -5,7 +5,9 @@
   "main": "app.js",
   "scripts": {
     "start:dev": "node --require @babel/register app.js",
-    "test": "mocha --exit --ui bdd --reporter spec --require @babel/register ./services/api/tests/setup.js ./services/api/tests/**/*.test.js ./services/api/tests/*.test.js",
+    "test": "npm run test:api && npm run test:push",
+    "test:api": "mocha --exit --ui bdd --reporter spec --require @babel/register ./services/api/tests/setup.js ./services/api/tests/**/*.test.js ./services/api/tests/*.test.js",
+    "test:push": "mocha --exit --ui bdd --reporter spec --require @babel/register ./services/push-service/tests/setup.js ./services/push-service/tests/**/*.test.js ./services/push-service/tests/*.test.js",
     "test:coverage:dev": "nyc --reporter=text mocha --exit --ui bdd --reporter spec --require @babel/register ./services/api/tests/setup.js ./services/api/tests/**/*.test.js ./services/api/tests/*.test.js",
     "precommit": "lint-staged",
     "lint": "eslint ."
