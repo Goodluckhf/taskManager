@@ -1,0 +1,41 @@
+version: '2.2'
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - mongo-push-data:/data/db
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: 0.0.0.0:24224
+        tag: default.mongo-push
+    networks:
+      - app-net
+    ports:
+      - 127.0.0.1:27017:27018
+  push:
+    image: just1ce/taskmanager_push:${RELEASE_VERSION:-latest}
+    networks:
+      - app-net
+    build:
+      context: .
+      dockerfile: ./services/push-service/Dockerfile
+    restart: always
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: 0.0.0.0:24224
+        tag: json.push
+    stop_grace_period: 120s
+    env_file:
+      - .env
+      - .env.rabbit
+      - .env.mongodb
+volumes:
+  mongo-push-data:
+
+networks:
+  app-net:
+    external: true
