@@ -20,12 +20,24 @@ if (process.env.NODE_ENV === 'development') {
 app.use(bodyParser());
 
 app.use(errorHandler);
+
+app.use(async (ctx, next) => {
+	const allowedHosts = config.get('push.hostWildCard');
+	if (
+		ctx.request.headers.origin &&
+		allowedHosts.includes(ctx.request.headers.origin.replace(/https?:\/\//, ''))
+	) {
+		ctx.set({ 'Access-Control-Allow-Origin': ctx.headers.origin });
+	}
+
+	await next();
+});
 app.use(routes.routes());
 
-app.use((ctx, next) => {
+app.use(async (ctx, next) => {
 	ctx.response.status = 404;
 	ctx.response.body = 'Not found';
-	next();
+	await next();
 });
 
 app.on('error', (error, ctx) => {
