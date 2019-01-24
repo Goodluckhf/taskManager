@@ -25,6 +25,7 @@ module.exports = {
 	push: {
 		port: 3000,
 		host: 'push',
+		hostWildCard: process.env.PUSH__HOST_WILD_CARD.split(','),
 	},
 
 	uMetrics: {
