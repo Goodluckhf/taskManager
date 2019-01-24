@@ -22,14 +22,16 @@ app.use(bodyParser());
 app.use(errorHandler);
 
 app.use(async (ctx, next) => {
-	const allowedHosts = config.get('push.hostWildCard');
-	if (
-		ctx.request.headers.origin &&
-		allowedHosts.includes(ctx.request.headers.origin.replace(/https?:\/\//, ''))
-	) {
-		ctx.set({ 'Access-Control-Allow-Origin': ctx.headers.origin });
-	}
+	// const allowedHosts = config.get('push.hostWildCard');
+	// if (
+	// 	ctx.request.headers.origin &&
+	// 	allowedHosts.includes(ctx.request.headers.origin.replace(/https?:\/\//, ''))
+	// ) {
+	// 	ctx.set({ 'Access-Control-Allow-Origin': ctx.headers.origin });
+	// }
 
+	// Костыль разобраться почему код выше не работает на проде
+	ctx.set({ 'Access-Control-Allow-Origin': '*' });
 	await next();
 });
 app.use(routes.routes());
