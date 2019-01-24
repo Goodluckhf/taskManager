@@ -1,7 +1,7 @@
 version: '2.2'
 
 services:
-  mongo:
+  mongo-push:
     image: mongo
     restart: always
     volumes:
@@ -14,7 +14,7 @@ services:
     networks:
       - app-net
     ports:
-      - 127.0.0.1:27017:27018
+      - 127.0.0.1:27018:27017
   push:
     image: just1ce/taskmanager_push:${RELEASE_VERSION:-latest}
     networks:
@@ -33,6 +33,8 @@ services:
       - .env
       - .env.rabbit
       - .env.mongodb
+    environment:
+      - MONGODB_URL=mongodb://mongo-push/push
 volumes:
   mongo-push-data:
 
