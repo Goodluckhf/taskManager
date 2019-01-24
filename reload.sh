@@ -9,3 +9,5 @@ sleep 2
 RELEASE_VERSION=$1 docker-compose -f docker-compose.yml restart nginx
 sleep 4
 RELEASE_VERSION=$1 docker-compose -f docker-compose.yml restart cron
+
+RELEASE_VERSION=$1 docker-compose -f docker-compose.push.yml up -d
