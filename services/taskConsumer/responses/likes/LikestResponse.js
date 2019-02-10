@@ -20,11 +20,15 @@ class LikestResponse extends Response {
 		return 'setLikes_likest';
 	}
 
-	async login(page, { login, password }) {
+	async login(page, { login, password }, count = 1) {
+		if (count > 3) {
+			throw new Error('Сервисе не отвечат');
+		}
+
 		try {
 			await loginAction(page, this.captcha, { login, password });
 		} catch (error) {
-			await this.login(page, { login, password });
+			await this.login(page, { login, password }, count + 1);
 		}
 	}
 
