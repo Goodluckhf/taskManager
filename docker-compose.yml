@@ -39,6 +39,8 @@ services:
       context: .
       dockerfile: ./services/nginx/Dockerfile
     restart: always
+    volumes:
+      - ./ssl:/etc/nginx/ssl
     logging:
       driver: "fluentd"
       options:
@@ -48,6 +50,7 @@ services:
       - app-net
     ports:
       - 80:80
+      - 443:443
   web:
     image: just1ce/nginx_web:${RELEASE_VERSION:-latest}
     restart: always
