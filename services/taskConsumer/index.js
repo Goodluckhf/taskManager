@@ -34,6 +34,7 @@ const amqp = new Amqp(logger, {
 const rpcServer = new RpcServer(amqp, logger, gracefulStop, {
 	queue: config.get('tasksQueue.name'),
 	prefetch: config.get('tasksQueue.prefetch'),
+	timeout: config.get('tasksQueue.serverTimeout'),
 });
 
 const captcha = new Captcha(axios, config.get('rucaptcha.token'));
