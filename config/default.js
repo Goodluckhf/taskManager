@@ -44,6 +44,7 @@ module.exports = {
 	tasksQueue: {
 		name: 'tasks',
 		timeout: process.env.TASK_QUEUE__TIMEOUT,
+		serverTimeout: process.env.TASK_SERVER__TIMEOUT,
 		prefetch: 1,
 	},
 
