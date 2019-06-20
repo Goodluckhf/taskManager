@@ -1,7 +1,7 @@
 const taskTypetoInputIndexHash = {
-	likes: 1,
-	comments: 2,
-	reposts: 3,
+	likes: 2,
+	comments: 3,
+	reposts: 6,
 };
 
 /**
