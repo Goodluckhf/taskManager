@@ -23,7 +23,12 @@ class SmmBroResponse extends Response {
 			const page = await browser.newPage();
 			await loginAction(page, { login, password });
 
-			const errors = await createTask(page, { postLink, count, type: 'likes' });
+			const errors = await createTask(page, {
+				postLink,
+				count,
+				type: 'likes',
+				config: this.config.smmBro,
+			});
 
 			if (errors.length) {
 				const error = new Error('Ошибки валидации');
