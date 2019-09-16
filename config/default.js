@@ -94,6 +94,13 @@ module.exports = {
 	smmBro: {
 		login: process.env.SMM_BRO__LOGIN,
 		password: process.env.SMM_BRO__PASSWORD,
+		formInputsOrder: {
+			postLink: process.env.SMM_BRO__FORM_INPUTS_ORDER__LINK,
+			likes: process.env.SMM_BRO__FORM_INPUTS_ORDER__LIKES,
+			comments: process.env.SMM_BRO__FORM_INPUTS_ORDER__COMMENTS,
+			reposts: process.env.SMM_BRO__FORM_INPUTS_ORDER___REPOSTS,
+			addButton: process.env.SMM_BRO__FORM_INPUTS_ORDER___ADD_BUTTON,
+		},
 	},
 
 	vkApi: {

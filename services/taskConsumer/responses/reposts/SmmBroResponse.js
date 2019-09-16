@@ -27,6 +27,7 @@ class SmmBroResponse extends Response {
 				postLink,
 				count,
 				type: 'reposts',
+				config: this.config.smmBro,
 			});
 
 			if (errors.length) {

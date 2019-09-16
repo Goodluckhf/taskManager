@@ -1,9 +1,3 @@
-const taskTypetoInputIndexHash = {
-	likes: 2,
-	comments: 3,
-	reposts: 6,
-};
-
 /**
  * @param page
  * @param {Object} args
@@ -12,18 +6,20 @@ const taskTypetoInputIndexHash = {
  * @param {String} args.type
  * @return {Promise<Array.<String>>}
  */
-const createTask = async (page, { postLink, count, type }) => {
+const createTask = async (page, { postLink, count, type, config }) => {
+	const { formInputsOrder } = config;
 	const inputs = await page.$$('#app form input');
-	await inputs[0].type(postLink);
+	await inputs[formInputsOrder.postLink].type(postLink);
 
-	const inputIndex = taskTypetoInputIndexHash[type];
+	const inputIndex = formInputsOrder[type];
 	if (!inputIndex) {
 		throw new Error(`Нет такого типа (${type})`);
 	}
 
 	await inputs[inputIndex].type(`${count}`);
 
-	await page.click('#app form button');
+	const buttons = await page.$$('#app form button');
+	await buttons[formInputsOrder.addButton].click();
 
 	await page.waitForFunction(() => {
 		const errors = document.querySelectorAll('.alertify-logs .error.show');

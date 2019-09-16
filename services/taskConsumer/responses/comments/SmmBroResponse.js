@@ -27,6 +27,7 @@ class SmmBroResponse extends Response {
 				postLink,
 				count,
 				type: 'comments',
+				config: this.config.smmBro,
 			});
 
 			if (errors.length) {
@@ -45,7 +46,7 @@ class SmmBroResponse extends Response {
 				login,
 			});
 		} finally {
-			await browser.close();
+			// await browser.close();
 		}
 	}
 }
