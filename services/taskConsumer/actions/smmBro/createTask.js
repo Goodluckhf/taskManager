@@ -8,6 +8,7 @@
  */
 const createTask = async (page, { postLink, count, type, config }) => {
 	const { formInputsOrder } = config;
+	await page.click('#tabOldTitle');
 	const inputs = await page.$$('#app form input');
 	await inputs[formInputsOrder.postLink].type(postLink);
 
