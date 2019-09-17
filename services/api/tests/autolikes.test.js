@@ -306,6 +306,100 @@ describe('AutolikesTask', function() {
 		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.waiting);
 	});
 
+	it('should create likesTask if task has field contentPosts and it has no repost', async () => {
+		const group = mongoose.model('Group').createInstance({ id: 'testId' });
+
+		await group.save();
+		const user = mongoose.model('PremiumUser').createInstance({
+			email: 'test',
+			password: 'test',
+		});
+
+		let rpcCalledTimes = 0;
+		let setLikesCalled = false;
+		const rpcClient = {
+			call(request) {
+				rpcCalledTimes += 1;
+				if (/^setLikes_/.test(request.method)) {
+					setLikesCalled = true;
+				}
+				return { postId: 123, hasRepost: false };
+			},
+		};
+
+		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
+			likesCount: 100,
+			commentsCount: 0,
+			repostsCount: 0,
+			contentPosts: true,
+			group,
+			user,
+		});
+
+		const task = new AutoLikesTask({
+			taskDocument,
+			logger: loggerMock,
+			config: this.config,
+			rpcClient,
+		});
+
+		const promise = task.handle();
+		await expect(promise).to.be.fulfilled;
+		await expect(rpcCalledTimes).to.be.equals(2);
+		await expect(setLikesCalled).to.be.true;
+		expect(taskDocument.subTasks.length).to.be.equals(1);
+		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.waiting);
+	});
+
+	it('should not create likesTask if task has field contentPosts and post has repost', async () => {
+		const group = mongoose.model('Group').createInstance({ id: 'testId' });
+		const targetGroup = mongoose.model('Group').createInstance({ id: 'testId2' });
+
+		await group.save();
+		await targetGroup.save();
+		const user = mongoose.model('PremiumUser').createInstance({
+			email: 'test',
+			password: 'test',
+		});
+
+		user.targetGroups.push(targetGroup);
+
+		let rpcCalledTimes = 0;
+		let setLikesCalled = false;
+		const rpcClient = {
+			call(request) {
+				rpcCalledTimes += 1;
+				if (/^setLikes_/.test(request.method)) {
+					setLikesCalled = true;
+				}
+				return { postId: 123, hasRepost: true };
+			},
+		};
+
+		const taskDocument = mongoose.model('AutoLikesTask').createInstance({
+			likesCount: 100,
+			commentsCount: 0,
+			repostsCount: 0,
+			contentPosts: true,
+			group,
+			user,
+		});
+
+		const task = new AutoLikesTask({
+			taskDocument,
+			logger: loggerMock,
+			config: this.config,
+			rpcClient,
+		});
+
+		const promise = task.handle();
+		await expect(promise).to.be.fulfilled;
+		await expect(setLikesCalled).to.be.false;
+		await expect(rpcCalledTimes).to.be.equals(1);
+		expect(taskDocument.subTasks.length).to.be.equals(0);
+		expect(taskDocument.status).to.be.equals(mongoose.model('Task').status.waiting);
+	});
+
 	it('should not create likesTask if task has field contentPosts and there is any link in text', async () => {
 		const group = mongoose.model('Group').createInstance({ id: 'testId' });
 		const targetGroup = mongoose.model('Group').createInstance({ id: 'testId2' });
