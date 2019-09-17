@@ -94,7 +94,7 @@ class LastPostWithLinkResponse extends Response {
 		}
 
 		const hasRepost = await $lastPost.find('.copy_quote');
-		result.hasRepost = !!hasRepost;
+		result.hasRepost = !!hasRepost.length;
 
 		return result;
 	}
