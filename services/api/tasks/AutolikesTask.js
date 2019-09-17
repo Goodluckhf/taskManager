@@ -106,10 +106,11 @@ class AutoLikesTask extends BaseTask {
 	 * @param {String} postLink
 	 * @param {Array.<GroupDocument>} targetPublics
 	 * @param {Array.<String>} targetLinks
+	 * @param {Boolean} hasRepost
 	 * @return {Boolean}
 	 */
-	needToStartTask(mentionId, link, postLink, targetPublics, targetLinks) {
-		if (this.taskDocument.contentPosts && !link && !mentionId) {
+	needToStartTask(mentionId, link, postLink, targetPublics, targetLinks, hasRepost) {
+		if (this.taskDocument.contentPosts && !link && !mentionId && !hasRepost) {
 			this.logger.info({
 				message: 'Вышел следущий контентный пост',
 				userId: this.taskDocument.user.id,
@@ -189,7 +190,7 @@ class AutoLikesTask extends BaseTask {
 				return;
 			}
 
-			const { postId, mentionId, link } = lastPostResult;
+			const { postId, mentionId, link, hasRepost } = lastPostResult;
 			postLink = Group.getPostLinkById(postId);
 
 			if (postLink === this.taskDocument.lastPostLink) {
@@ -204,7 +205,16 @@ class AutoLikesTask extends BaseTask {
 			}
 
 			const { targetLinks } = this.taskDocument.user;
-			if (!this.needToStartTask(mentionId, link, postLink, targetPublics, targetLinks)) {
+			if (
+				!this.needToStartTask(
+					mentionId,
+					link,
+					postLink,
+					targetPublics,
+					targetLinks,
+					hasRepost,
+				)
+			) {
 				this.taskDocument.status = Task.status.waiting;
 				return;
 			}
