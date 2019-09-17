@@ -2,7 +2,7 @@ FROM cheerlesscloud/node:10.13.0
 
 WORKDIR /home/www
 ENV NODE_ENV=development
-RUN apt-get install -y mc
+RUN apt-get update && apt-get install -y mc
 USER 1001
 
 COPY package*.json ./
