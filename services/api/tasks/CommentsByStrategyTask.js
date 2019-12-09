@@ -13,7 +13,8 @@ class CommentsByStrategyTask {
 	 * @param {string} rawStrategy
 	 */
 	async handle({ postLink, strategy }) {
-		//@TODO: добавить валидацию
+		// @TODO: добавить валидацию
+		// @TODO: Добавить чекалку ссылки на блок
 		const accountsLength = uniqBy(strategy.items, item => item.userFakeId).length;
 		const users = await this.VkUser.findActive(accountsLength);
 		if (users.length < accountsLength) {
