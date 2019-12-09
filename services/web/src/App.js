@@ -15,7 +15,16 @@ import 'simple-line-icons/css/simple-line-icons.css';
 // Import Main styles for this application
 import './scss/style.css';
 
-import { Page404, Groups, AutoLikes, Login, Register, Settings, Balance } from './views/pages';
+import {
+	WallSeek,
+	Page404,
+	Groups,
+	AutoLikes,
+	Login,
+	Register,
+	Settings,
+	Balance,
+} from './views/pages';
 
 import { configureStore } from './store';
 
@@ -37,7 +46,12 @@ class App extends Component {
 							name="AutoLikes"
 							component={withRouter(AutoLikes)}
 						/>
-						{/*<Route path="/wallseek" exact name="WallSeek" component={withRouter(WallSeek)} />*/}
+						<Route
+							path="/wallseek"
+							exact
+							name="WallSeek"
+							component={withRouter(WallSeek)}
+						/>
 
 						<Route path="/login" exact name="Login" component={withRouter(Login)} />
 						<Route

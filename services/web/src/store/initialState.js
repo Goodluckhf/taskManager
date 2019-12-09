@@ -20,11 +20,11 @@ export const routes = Map({
 				text: 'NEW',
 			}),
 		}),
-		// Map({
-		// 	name: 'Слежка',
-		// 	url : '/wallseek',
-		// 	icon: 'fa fa-user-secret',
-		// }),
+		Map({
+			name: 'Слежка',
+			url: '/wallseek',
+			icon: 'fa fa-user-secret',
+		}),
 	]),
 });
 
