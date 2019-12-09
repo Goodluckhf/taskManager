@@ -22,12 +22,6 @@ module.exports = {
 		host: 'api',
 	},
 
-	push: {
-		port: 3000,
-		host: 'push',
-		hostWildCard: process.env.PUSH__HOST_WILD_CARD.split(','),
-	},
-
 	uMetrics: {
 		port: process.env.U_METRICS__PORT,
 		ttl: process.env.U_METRICS__TTL,
