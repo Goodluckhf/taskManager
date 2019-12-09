@@ -12,6 +12,7 @@ module.exports = {
 		node: true,
 	},
 	rules: {
+		'no-await-in-loop': 'off',
 		strict: 'error',
 		'no-param-reassign': 'off',
 		'no-underscore-dangle': 'off',
@@ -37,6 +38,7 @@ module.exports = {
 			},
 			rules: {
 				'no-console': 'off',
+				'no-plusplus': 'off',
 			},
 		},
 	],
