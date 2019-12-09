@@ -1,12 +1,10 @@
 version: '2.2'
 
-x-default-logging:
-  &default-logging
+x-default-logging: &default-logging
   driver: json-file
   options:
     max-size: '5m'
     max-file: '1'
-
 
 services:
   nginx:

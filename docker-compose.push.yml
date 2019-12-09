@@ -7,7 +7,7 @@ services:
     volumes:
       - mongo-push-data:/data/db
     logging:
-      driver: "fluentd"
+      driver: 'fluentd'
       options:
         fluentd-address: 0.0.0.0:24224
         tag: default.mongo-push
@@ -24,7 +24,7 @@ services:
       dockerfile: ./services/push-service/Dockerfile
     restart: always
     logging:
-      driver: "fluentd"
+      driver: 'fluentd'
       options:
         fluentd-address: 0.0.0.0:24224
         tag: json.push
