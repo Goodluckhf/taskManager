@@ -3,6 +3,9 @@ import VkApi from '../../../../lib/VkApi';
 import logger from '../../../../lib/logger';
 import TaskApi from '../../api/TaskApi';
 import Alert from '../../../../lib/Alert';
+import mongoose from '../../../../lib/mongoose';
+import CommentsService from '../../services/CommentsService';
+import LikeService from '../../services/LikeService';
 
 /**
  * @param {Router} router
@@ -17,9 +20,22 @@ export default (router, rpcClient, passport, billing, captcha, uMetrics) => {
 		timeout: config.get('vkApi.timeout'),
 	});
 	const alert = new Alert(vkApi, logger);
+	const vkUser = mongoose.model('VkUser');
+	const commentsService = new CommentsService(config, rpcClient, logger);
+	const likeService = new LikeService(config);
 
 	// Сам классс Api
-	const taskApi = new TaskApi(rpcClient, alert, billing, uMetrics, config, logger);
+	const taskApi = new TaskApi(
+		likeService,
+		commentsService,
+		vkUser,
+		rpcClient,
+		alert,
+		billing,
+		uMetrics,
+		config,
+		logger,
+	);
 
 	router.post('/task/stop/:id', passport.authenticate('jwt', { session: false }), async ctx => {
 		const { id } = ctx.params;

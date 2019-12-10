@@ -35,8 +35,20 @@ const mapperModelTypeToTask = {
  * @property {UMetrics} uMetrics
  */
 class TaskApi extends BaseApi {
-	constructor(rpcClient, alert, billing, uMetrics, ...args) {
+	constructor(
+		likeService,
+		commentsService,
+		vkUser,
+		rpcClient,
+		alert,
+		billing,
+		uMetrics,
+		...args
+	) {
 		super(...args);
+		this.likeService = likeService;
+		this.vkUser = vkUser;
+		this.commentsService = commentsService;
 		this.rpcClient = rpcClient;
 		this.alert = alert;
 		this.billing = billing;
@@ -166,6 +178,9 @@ class TaskApi extends BaseApi {
 					}
 
 					const task = new TaskClass({
+						likeService: this.likeService,
+						commentsService: this.commentsService,
+						vkUser: this.vkUser,
 						billing: this.billing,
 						account: this.billing.createAccount(_task.user),
 						logger: this.logger,

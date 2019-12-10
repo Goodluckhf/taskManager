@@ -1,7 +1,7 @@
 import { uniqBy } from 'lodash';
 
 class CommentsByStrategyTask {
-	constructor(VkUserModel, commentsService, likeService) {
+	constructor({ VkUserModel, commentsService, likeService }) {
 		this.VkUser = VkUserModel;
 		this.commentsService = commentsService;
 		this.likeService = likeService;
