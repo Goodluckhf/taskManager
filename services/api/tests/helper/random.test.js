@@ -11,7 +11,7 @@ describe('Random helper', () => {
 			});
 		});
 		it('2 call should return different numbers', () => {
-			expect(getRandom(0, 10)).to.be.not.equals(getRandom(0, 10));
+			expect(getRandom(0, 1000)).to.be.not.equals(getRandom(0, 1000));
 		});
 	});
 
