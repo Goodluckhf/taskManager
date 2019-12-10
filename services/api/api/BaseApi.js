@@ -18,7 +18,7 @@ class BaseApi {
 	 */
 	// eslint-disable-next-line class-methods-use-this
 	validate(rules, values) {
-		const ajv = new Ajv();
+		const ajv = new Ajv({ coerceTypes: true });
 		const validate = ajv.validate(rules, values);
 		if (!validate) {
 			throw new ValidationError(ajv.errors);
