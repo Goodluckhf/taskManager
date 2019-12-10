@@ -22,9 +22,12 @@ import topUpInvoiceSchema from './InvoiceType/Topup';
 import taskInvoiceSchema from './InvoiceType/Task';
 import adminSchema from './UserType/AdminUser';
 import commentsByStrategyTaskSchema from './TaskType/CommentsByStrategyTask';
+import vkUserSchema from './VkUser';
 
 // Initialise mongoose models
 export default connection => {
+	connection.model('VkUser', vkUserSchema);
+
 	connection.model('Group', groupSchema);
 	connection.model('Account', accountSchema);
 	connection.model('User', userSchema);
