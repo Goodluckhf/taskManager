@@ -15,6 +15,7 @@ import createGroupRoute from './group';
 import createWallSeekRoute from './wallSeek';
 import createUserRoute from './user';
 import createAdminRoute from './admin';
+import createCommentsByStrategyRoute from './commentsByStrategy';
 import Billing from '../../billing/Billing';
 import Captcha from '../../../../lib/Captcha';
 
@@ -60,8 +61,9 @@ createGroupRoute(router, passport, captcha);
 createAutoLikesTaskRoute(router, passport, billing, captcha);
 createUserRoute(router, passport, billing, axios, captcha);
 createAdminRoute(router, passport, billing);
+createCommentsByStrategyRoute(router, passport, billing);
+createWallSeekRoute(router, passport);
 
 // Пока не используются
-createWallSeekRoute(router, passport);
 createAccountRoute(router, rpcClient);
 export default router;
