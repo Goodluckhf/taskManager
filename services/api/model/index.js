@@ -21,6 +21,7 @@ import premiumUserSchema from './UserType/PremiumUser';
 import topUpInvoiceSchema from './InvoiceType/Topup';
 import taskInvoiceSchema from './InvoiceType/Task';
 import adminSchema from './UserType/AdminUser';
+import commentsByStrategyTaskSchema from './TaskType/CommentsByStrategyTask';
 
 // Initialise mongoose models
 export default connection => {
@@ -48,4 +49,6 @@ export default connection => {
 	connection.model('Task').discriminator('RepostsTask', repostsTaskSchema);
 	connection.model('Task').discriminator('CheckWallBanTask', checkWallBanTaskSchema);
 	connection.model('Task').discriminator('CheckBalanceTask', checkBalanceTaskSchema);
+
+	connection.model('Task').discriminator('CommentsByStrategyTask', commentsByStrategyTaskSchema);
 };
