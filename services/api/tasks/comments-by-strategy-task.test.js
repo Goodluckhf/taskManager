@@ -12,7 +12,22 @@ describe('comments by strategy', () => {
 			},
 		};
 
-		const task = new CommentsByStrategyTask(vkUserMock, {}, {});
+		const proxyMock = {
+			getRandom() {
+				return {
+					url: 'url',
+					login: 'login',
+					password: 'pass',
+				};
+			},
+		};
+
+		const task = new CommentsByStrategyTask({
+			ProxyModel: proxyMock,
+			VkUserModel: vkUserMock,
+			commentsService: {},
+			likeService: {},
+		});
 
 		const strategy = { items: [{ userFakeId: 0 }, { userFakeId: 1 }, { userFakeId: 2 }] };
 		await expect(task.handle({ postLink: 'testLink', strategy })).to.be.rejectedWith(
@@ -39,7 +54,22 @@ describe('comments by strategy', () => {
 			},
 		};
 
-		const task = new CommentsByStrategyTask(vkUserMock, commentsServiceMock, {});
+		const proxyMock = {
+			getRandom() {
+				return {
+					url: 'url',
+					login: 'login',
+					password: 'pass',
+				};
+			},
+		};
+
+		const task = new CommentsByStrategyTask({
+			ProxyModel: proxyMock,
+			VkUserModel: vkUserMock,
+			commentsService: commentsServiceMock,
+			likeService: {},
+		});
 		const strategy = { items: [{ userFakeId: 0 }, { userFakeId: 1 }] };
 		await task.handle({ postLink: 'testLink', strategy });
 
@@ -53,6 +83,16 @@ describe('comments by strategy', () => {
 					login: `login${i}`,
 					password: 'password',
 				}));
+			},
+		};
+
+		const proxyMock = {
+			getRandom() {
+				return {
+					url: 'url',
+					login: 'login',
+					password: 'pass',
+				};
 			},
 		};
 
@@ -72,7 +112,12 @@ describe('comments by strategy', () => {
 			},
 		};
 
-		const task = new CommentsByStrategyTask(vkUserMock, commentsServiceMock, likesServiceMock);
+		const task = new CommentsByStrategyTask({
+			ProxyModel: proxyMock,
+			VkUserModel: vkUserMock,
+			commentsService: commentsServiceMock,
+			likeService: likesServiceMock,
+		});
 		const strategy = { items: [{ userFakeId: 0, likesCount: 1 }, { userFakeId: 1 }] };
 		await task.handle({ postLink: 'testLink', strategy });
 
@@ -100,7 +145,22 @@ describe('comments by strategy', () => {
 			},
 		};
 
-		const task = new CommentsByStrategyTask(vkUserMock, commentsServiceMock, {});
+		const proxyMock = {
+			getRandom() {
+				return {
+					url: 'url',
+					login: 'login',
+					password: 'pass',
+				};
+			},
+		};
+
+		const task = new CommentsByStrategyTask({
+			ProxyModel: proxyMock,
+			VkUserModel: vkUserMock,
+			commentsService: commentsServiceMock,
+			likeService: {},
+		});
 		const strategy = {
 			items: [{ userFakeId: 0 }, { userFakeId: 1, replyToCommentNumber: 0 }],
 		};

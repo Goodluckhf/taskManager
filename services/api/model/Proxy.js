@@ -1,4 +1,4 @@
-import { shuffle } from 'lodash';
+import { random } from 'lodash';
 import mongoose from '../../../lib/mongoose';
 
 const proxySchema = new mongoose.Schema({
@@ -22,16 +22,14 @@ const proxySchema = new mongoose.Schema({
 
 class ProxyDocument {
 	/**
-	 * @param {Number} count
-	 * @returns {Promise<Array<ProxyDocument>>}
+	 * @returns {Promise<ProxyDocument>}
 	 */
-	static async findActive(count) {
-		const users = await this.find({ isActive: true })
-			.limit(count)
-			.exec()
-			.lean();
+	static async getRandom() {
+		const proxies = await this.find({ isActive: true })
+			.lean()
+			.exec();
 
-		return shuffle(users);
+		return proxies[random(0, proxies.length - 1)];
 	}
 }
 

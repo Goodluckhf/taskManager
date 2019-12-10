@@ -1,8 +1,9 @@
 import { uniqBy } from 'lodash';
 
 class CommentsByStrategyTask {
-	constructor({ VkUserModel, commentsService, likeService }) {
+	constructor({ ProxyModel, VkUserModel, commentsService, likeService }) {
 		this.VkUser = VkUserModel;
+		this.Proxy = ProxyModel;
 		this.commentsService = commentsService;
 		this.likeService = likeService;
 	}
@@ -18,7 +19,7 @@ class CommentsByStrategyTask {
 		const accountsLength = uniqBy(strategy.items, item => item.userFakeId).length;
 		const users = await this.VkUser.findActive(accountsLength);
 		if (users.length < accountsLength) {
-			throw new Error('There is not enough accounts');
+			throw new Error(`There is not enough accounts | need: ${accountsLength}`);
 		}
 
 		const commentResults = [];
@@ -32,6 +33,8 @@ class CommentsByStrategyTask {
 					? commentResults[task.replyToCommentNumber].commentId
 					: null;
 
+			const proxy = await this.Proxy.getRandom();
+
 			const { commentId } = await this.commentsService.create({
 				credentials: {
 					login: currentUser.login,
@@ -41,6 +44,11 @@ class CommentsByStrategyTask {
 				text: task.text,
 				imageURL: task.imageURL,
 				replyTo,
+				proxy: {
+					url: proxy.url,
+					login: proxy.login,
+					password: proxy.password,
+				},
 			});
 
 			if (task.likesCount > 0) {
