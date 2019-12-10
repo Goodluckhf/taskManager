@@ -39,8 +39,6 @@ services:
       context: .
       dockerfile: ./services/nginx/Dockerfile
     restart: always
-    volumes:
-      - ./ssl:/etc/nginx/ssl
     logging:
       driver: 'fluentd'
       options:
