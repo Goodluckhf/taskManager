@@ -76,15 +76,6 @@ class WallCheckBanResponse extends Response {
 			}, postId);
 		}
 
-		// await page.evaluate(
-		// 	(_text, _postId) => {
-		// 		// eslint-disable-next-line prefer-destructuring
-		// 		const value = document.querySelector(`#reply_field${_postId}`).innerText;
-		// 		document.querySelector(`#reply_field${_postId}`).innerText = `${value} ${_text}`;
-		// 	},
-		// 	text,
-		// 	postId,
-		// );
 		const input = await page.$(`#reply_field${postId}`);
 		await input.type(` ${text}`);
 
