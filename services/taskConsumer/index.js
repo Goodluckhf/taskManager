@@ -22,6 +22,7 @@ import Captcha from '../../lib/Captcha';
 import VkApi from '../../lib/VkApi';
 import PostByLinkResponse from './responses/PostByLinkResponse';
 import LastPostWithLinkResponse from './responses/LastPostWithLinkResponse';
+import PostCommentResponse from './responses/PostCommentResponse';
 
 const rabbitConfig = config.get('rabbit');
 const amqp = new Amqp(logger, {
@@ -63,6 +64,8 @@ rpcServer.addResponse(
 		config,
 	}),
 );
+
+rpcServer.addResponse(new PostCommentResponse({ logger, config }));
 
 // Обработчики накрутки комментов
 rpcServer
