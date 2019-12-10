@@ -1,3 +1,5 @@
+import config from 'config';
+import logger from '../../../../lib/logger';
 import CommentsByStrategyApi from '../../api/CommentsByStrategyApi';
 
 /**
@@ -6,7 +8,7 @@ import CommentsByStrategyApi from '../../api/CommentsByStrategyApi';
  * @param {Billing} billing
  **/
 export default (router, passport, billing) => {
-	const commentsByStrategyApi = new CommentsByStrategyApi();
+	const commentsByStrategyApi = new CommentsByStrategyApi(config, logger);
 
 	router.post(
 		'/comments-by-strategy',
@@ -16,9 +18,8 @@ export default (router, passport, billing) => {
 
 			ctx.body = {
 				success: true,
-				data: await commentsByStrategyApi.create({
+				data: await commentsByStrategyApi.create(account, {
 					...ctx.request.body,
-					account,
 				}),
 			};
 		},

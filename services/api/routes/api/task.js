@@ -20,8 +20,7 @@ export default (router, rpcClient, passport, billing, captcha, uMetrics) => {
 		timeout: config.get('vkApi.timeout'),
 	});
 	const alert = new Alert(vkApi, logger);
-	const VkUserModel = mongoose.model('VkUser');
-	const ProxyModel = mongoose.model('Proxy');
+
 	const commentsService = new CommentsService(config, rpcClient, logger);
 	const likeService = new LikeService(config);
 
@@ -29,8 +28,6 @@ export default (router, rpcClient, passport, billing, captcha, uMetrics) => {
 	const taskApi = new TaskApi(
 		likeService,
 		commentsService,
-		VkUserModel,
-		ProxyModel,
 		rpcClient,
 		alert,
 		billing,
@@ -58,6 +55,10 @@ export default (router, rpcClient, passport, billing, captcha, uMetrics) => {
 	});
 
 	router.get('/task/handleActive', async ctx => {
+		const VkUserModel = mongoose.model('VkUser');
+		const ProxyModel = mongoose.model('Proxy');
+		taskApi.VkUserModel = VkUserModel;
+		taskApi.ProxyModel = ProxyModel;
 		ctx.body = {
 			success: true,
 			data: await taskApi.handleActiveTasks(),
