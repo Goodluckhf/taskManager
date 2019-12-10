@@ -23,10 +23,12 @@ import taskInvoiceSchema from './InvoiceType/Task';
 import adminSchema from './UserType/AdminUser';
 import commentsByStrategyTaskSchema from './TaskType/CommentsByStrategyTask';
 import vkUserSchema from './VkUser';
+import proxySchema from './Proxy';
 
 // Initialise mongoose models
 export default connection => {
 	connection.model('VkUser', vkUserSchema);
+	connection.model('Proxy', proxySchema);
 
 	connection.model('Group', groupSchema);
 	connection.model('Account', accountSchema);
