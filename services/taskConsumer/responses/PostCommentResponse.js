@@ -23,7 +23,7 @@ class WallCheckBanResponse extends Response {
 			'--disable-dev-shm-usage',
 		];
 		if (proxy) {
-			puppeteerArgs.push(`--proxy-server=${proxy}`);
+			puppeteerArgs.push(`--proxy-server=${proxy.url}`);
 		}
 
 		const browser = await puppeteer.launch({
@@ -33,6 +33,10 @@ class WallCheckBanResponse extends Response {
 		});
 
 		const page = await browser.newPage();
+		if (proxy) {
+			await page.authenticate({ username: proxy.login, password: proxy.password });
+		}
+
 		await page.goto('https://vk.com/login', {
 			waitUntil: 'networkidle2',
 		});
