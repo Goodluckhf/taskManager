@@ -4,7 +4,7 @@ import CommentsByStrategyTask from './CommentsByStrategyTask';
 
 chai.use(chaiAsPromised);
 
-describe('comments by strategy', () => {
+describe.skip('comments by strategy', () => {
 	it('Should throw error if there is no enough active accounts', async () => {
 		const vkUserMock = {
 			findActive() {
