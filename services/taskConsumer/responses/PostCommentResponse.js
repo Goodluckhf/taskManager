@@ -70,24 +70,14 @@ class WallCheckBanResponse extends Response {
 				waitUntil: 'networkidle2',
 			});
 
-			await page.waitFor(() => {
-				const postBox = document.querySelector('.wl_post');
-				const pageWallPost = document.querySelector('#page_wall_posts');
+			await page.waitFor(500);
+			await page.evaluate(() => {
 				const notifyBox = document.querySelector('#box_layer #actualize_controls');
-				if (!postBox && !notifyBox && !pageWallPost) {
-					return false;
-				}
-
-				if (postBox || pageWallPost) {
-					return true;
+				if (!notifyBox) {
+					return;
 				}
 
 				notifyBox.querySelector('box_x_button').click();
-				return true;
-			});
-
-			await page.goto(postLink, {
-				waitUntil: 'networkidle2',
 			});
 
 			let postId = postLink
@@ -152,7 +142,7 @@ class WallCheckBanResponse extends Response {
 				postsCountBefore,
 			);
 
-			await page.waitFor(1000);
+			await page.waitFor(600);
 			const currentUserHref = await page.evaluate(
 				() => document.querySelector(`._post_field_author`).href,
 			);
