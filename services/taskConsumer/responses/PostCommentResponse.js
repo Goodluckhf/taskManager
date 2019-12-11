@@ -69,7 +69,14 @@ class WallCheckBanResponse extends Response {
 			const loginNavigationPromise = page.waitForNavigation();
 			await page.click('#login_button');
 			await loginNavigationPromise;
-			// @TODO: здесь нужно обработать баны
+
+			const blockedElement = await page.$('#login_blocked_wrap');
+			if (blockedElement) {
+				const error = new Error('Account is blocked');
+				error.login = login;
+				error.code = 'blocked';
+				throw error;
+			}
 
 			await page.goto(postLink, {
 				waitUntil: 'networkidle2',
