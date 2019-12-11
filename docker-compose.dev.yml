@@ -54,7 +54,7 @@ services:
       - 8081:15672
       - 5672:5672
   mongo:
-    image: mongo
+    image: mongo:4.0
     ports:
       - 27017:27017
     volumes:
