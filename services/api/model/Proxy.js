@@ -18,6 +18,9 @@ const proxySchema = new mongoose.Schema({
 		type: Boolean,
 		default: true,
 	},
+	errorComment: {
+		type: mongoose.Mixed,
+	},
 });
 
 class ProxyDocument {
@@ -30,6 +33,13 @@ class ProxyDocument {
 			.exec();
 
 		return proxies[random(0, proxies.length - 1)];
+	}
+
+	static async setInactive(url, reason) {
+		const proxy = await this.findOne({ url });
+		proxy.isActive = false;
+		proxy.errorComment = reason;
+		await proxy.save();
 	}
 }
 
