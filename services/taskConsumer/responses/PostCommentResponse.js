@@ -70,6 +70,14 @@ class WallCheckBanResponse extends Response {
 			await page.click('#login_button');
 			await loginNavigationPromise;
 
+			const loginFailedElement = await page.$('#login_message');
+			if (loginFailedElement) {
+				const error = new Error('Account credentials is invalid');
+				error.login = login;
+				error.code = 'login_failed';
+				throw error;
+			}
+
 			const blockedElement = await page.$('#login_blocked_wrap');
 			if (blockedElement) {
 				const error = new Error('Account is blocked');
