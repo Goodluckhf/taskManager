@@ -22,7 +22,7 @@ export default (router, rpcClient, passport, billing, captcha, uMetrics) => {
 	const alert = new Alert(vkApi, logger);
 
 	const commentsService = new CommentsService(config, rpcClient, logger);
-	const likeService = new LikeService(config);
+	const likeService = new LikeService(config, logger);
 
 	// Сам классс Api
 	const taskApi = new TaskApi(

@@ -1,11 +1,12 @@
 import { uniqBy } from 'lodash';
 import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
 import mongoose from '../../../lib/mongoose';
+import BaseTask from './BaseTask';
 
-class CommentsByStrategyTask {
-	constructor({ VkUser, Proxy, taskDocument, commentsService, likeService }) {
+class CommentsByStrategyTask extends BaseTask {
+	constructor({ VkUser, Proxy, commentsService, likeService, ...args }) {
+		super(args);
 		this.VkUser = VkUser;
-		this.taskDocument = taskDocument;
 		this.Proxy = Proxy;
 		this.commentsService = commentsService;
 		this.likeService = likeService;
@@ -55,10 +56,21 @@ class CommentsByStrategyTask {
 					},
 				});
 
+				const postId = postLink
+					.replace(/.*[?&]w=wall-/, '-')
+					.replace(/.*vk.com\/wall-/, '-')
+					.replace(/&.*$/, '');
+
+				this.logger.info({
+					message: 'Запостили коммент',
+					newCommentId: commentId,
+					postLink,
+					parsedPostId: postId,
+				});
 				if (task.likesCount > 0) {
 					await this.likeService.setLikesToComment({
 						count: task.likesCount,
-						url: `${postLink}?reply=${commentId}`,
+						url: `https://vk.com/wall${postId}?reply=${commentId.replace(/.*_/, '')}`,
 					});
 				}
 
