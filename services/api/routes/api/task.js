@@ -3,6 +3,9 @@ import VkApi from '../../../../lib/VkApi';
 import logger from '../../../../lib/logger';
 import TaskApi from '../../api/TaskApi';
 import Alert from '../../../../lib/Alert';
+import mongoose from '../../../../lib/mongoose';
+import CommentsService from '../../services/CommentsService';
+import LikeService from '../../services/LikeService';
 
 /**
  * @param {Router} router
@@ -18,8 +21,20 @@ export default (router, rpcClient, passport, billing, captcha, uMetrics) => {
 	});
 	const alert = new Alert(vkApi, logger);
 
+	const commentsService = new CommentsService(config, rpcClient, logger);
+	const likeService = new LikeService(config, logger);
+
 	// Сам классс Api
-	const taskApi = new TaskApi(rpcClient, alert, billing, uMetrics, config, logger);
+	const taskApi = new TaskApi(
+		likeService,
+		commentsService,
+		rpcClient,
+		alert,
+		billing,
+		uMetrics,
+		config,
+		logger,
+	);
 
 	router.post('/task/stop/:id', passport.authenticate('jwt', { session: false }), async ctx => {
 		const { id } = ctx.params;
@@ -40,6 +55,10 @@ export default (router, rpcClient, passport, billing, captcha, uMetrics) => {
 	});
 
 	router.get('/task/handleActive', async ctx => {
+		const VkUserModel = mongoose.model('VkUser');
+		const ProxyModel = mongoose.model('Proxy');
+		taskApi.VkUser = VkUserModel;
+		taskApi.Proxy = ProxyModel;
 		ctx.body = {
 			success: true,
 			data: await taskApi.handleActiveTasks(),

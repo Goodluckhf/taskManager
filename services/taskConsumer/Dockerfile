@@ -14,6 +14,6 @@ RUN npx babel --source-maps --out-dir ./dist/ --ignore node_modules,test.js,spec
 
 ENV NODE_ENV=production
 RUN npm prune
-RUN npm i puppeteer
+RUN npm i puppeteer@2.0.0 && npm i puppeteer-extra@3.1.7 && npm i puppeteer-extra-plugin-stealth@2.4.5
 
 CMD ["node", "./dist/services/taskConsumer/index.js"]

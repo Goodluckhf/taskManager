@@ -1,7 +1,6 @@
 version: '2.2'
 
-x-default-logging:
-  &default-logging
+x-default-logging: &default-logging
   driver: json-file
   options:
     max-size: '5m'
@@ -100,7 +99,7 @@ services:
     container_name: elasticsearch
     environment:
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
     ulimits:
       memlock:
         soft: -1

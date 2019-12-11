@@ -133,7 +133,7 @@ describe('AutolikesApi', function() {
 		await Promise.all([user.save(), group.save(), taskDocument.save()]);
 
 		const account = new BillingAccount(user, this.config, billing, loggerMock);
-		const api = new AutoLikesApi({}, billing, this.congif, loggerMock);
+		const api = new AutoLikesApi({}, billing, this.config, loggerMock);
 		const promise = api.resume(taskDocument._id, account);
 		await expect(promise).to.fulfilled;
 		const findedTask = await mongoose.model('AutoLikesTask').findById(taskDocument._id);

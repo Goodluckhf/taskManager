@@ -21,9 +21,15 @@ import premiumUserSchema from './UserType/PremiumUser';
 import topUpInvoiceSchema from './InvoiceType/Topup';
 import taskInvoiceSchema from './InvoiceType/Task';
 import adminSchema from './UserType/AdminUser';
+import commentsByStrategyTaskSchema from './TaskType/CommentsByStrategyTask';
+import vkUserSchema from './VkUser';
+import proxySchema from './Proxy';
 
 // Initialise mongoose models
 export default connection => {
+	connection.model('VkUser', vkUserSchema);
+	connection.model('Proxy', proxySchema);
+
 	connection.model('Group', groupSchema);
 	connection.model('Account', accountSchema);
 	connection.model('User', userSchema);
@@ -48,4 +54,6 @@ export default connection => {
 	connection.model('Task').discriminator('RepostsTask', repostsTaskSchema);
 	connection.model('Task').discriminator('CheckWallBanTask', checkWallBanTaskSchema);
 	connection.model('Task').discriminator('CheckBalanceTask', checkBalanceTaskSchema);
+
+	connection.model('Task').discriminator('CommentsByStrategyTask', commentsByStrategyTaskSchema);
 };

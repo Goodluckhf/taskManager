@@ -1,12 +1,10 @@
 version: '2.2'
 
-x-default-logging:
-  &default-logging
+x-default-logging: &default-logging
   driver: json-file
   options:
     max-size: '5m'
     max-file: '1'
-
 
 services:
   nginx:
@@ -56,7 +54,7 @@ services:
       - 8081:15672
       - 5672:5672
   mongo:
-    image: mongo
+    image: mongo:4.0
     ports:
       - 27017:27017
     volumes:

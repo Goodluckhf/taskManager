@@ -14,6 +14,7 @@ import CheckWallBanTask from '../tasks/CheckWallBanTask';
 import BaseTaskError from './errors/tasks/BaseTaskError';
 import TaskErrorFactory from './errors/tasks/TaskErrorFactory';
 import CheckBalanceTask from '../tasks/CheckBalanceTask';
+import CommentsByStrategyTask from '../tasks/CommentsByStrategyTask';
 
 gracefulStop.setWaitor('handleActiveTasks');
 
@@ -26,6 +27,7 @@ const mapperModelTypeToTask = {
 	RepostsCheckTask,
 	CheckWallBanTask,
 	CheckBalanceTask,
+	CommentsByStrategyTask,
 };
 
 /**
@@ -35,8 +37,10 @@ const mapperModelTypeToTask = {
  * @property {UMetrics} uMetrics
  */
 class TaskApi extends BaseApi {
-	constructor(rpcClient, alert, billing, uMetrics, ...args) {
+	constructor(likeService, commentsService, rpcClient, alert, billing, uMetrics, ...args) {
 		super(...args);
+		this.likeService = likeService;
+		this.commentsService = commentsService;
 		this.rpcClient = rpcClient;
 		this.alert = alert;
 		this.billing = billing;
@@ -166,6 +170,10 @@ class TaskApi extends BaseApi {
 					}
 
 					const task = new TaskClass({
+						likeService: this.likeService,
+						commentsService: this.commentsService,
+						VkUser: this.VkUser,
+						Proxy: this.Proxy,
 						billing: this.billing,
 						account: this.billing.createAccount(_task.user),
 						logger: this.logger,
@@ -176,7 +184,7 @@ class TaskApi extends BaseApi {
 						uMetrics: this.uMetrics,
 					});
 
-					await task.handle();
+					await task.handle(_task.toObject());
 					try {
 						this.uMetrics.taskSuccessCount.inc(1, { task_type: _task.__t });
 					} catch (error) {
@@ -221,8 +229,7 @@ class TaskApi extends BaseApi {
 									error,
 								});
 							}
-
-							await this.alert.sendError(error.toMessageString(), _task.user.chatId);
+							// await this.alert.sendError(error.toMessageString(), _task.user.chatId);
 						} catch (_error) {
 							this.logger.error({
 								message: 'fatal error',

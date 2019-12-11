@@ -1,131 +1,129 @@
 version: '2.2'
 
 services:
-    mongo:
-        image: mongo
-        restart: always
-        volumes:
-            - mongo-data:/data/db
-        logging:
-            driver: 'fluentd'
-            options:
-                fluentd-address: 0.0.0.0:24224
-                tag: default.mongo
-        networks:
-            - app-net
-        ports:
-            - 127.0.0.1:27017:27017
-    rabbit:
-        image: rabbitmq:3-management
-        restart: always
-        volumes:
-            - rabbit-data:/var/lib/rabbitmq:cached
-        logging:
-            driver: 'fluentd'
-            options:
-                fluentd-address: 0.0.0.0:24224
-                tag: default.rabbit
-        networks:
-            - app-net
-        env_file:
-            - .env.rabbit
-        ports:
-            - 15672:15672
+  mongo:
+    image: mongo:4.0
+    restart: always
+    volumes:
+      - mongo-data:/data/db
+    logging:
+      driver: 'fluentd'
+      options:
+        fluentd-address: 0.0.0.0:24224
+        tag: default.mongo
+    networks:
+      - app-net
+    ports:
+      - 127.0.0.1:27017:27017
+  rabbit:
+    image: rabbitmq:3-management
+    restart: always
+    volumes:
+      - rabbit-data:/var/lib/rabbitmq:cached
+    logging:
+      driver: 'fluentd'
+      options:
+        fluentd-address: 0.0.0.0:24224
+        tag: default.rabbit
+    networks:
+      - app-net
+    env_file:
+      - .env.rabbit
+    ports:
+      - 15672:15672
 
-    # Головной nginx - проксирует запросы на api и web
-    nginx:
-        image: just1ce/main_nginx:${RELEASE_VERSION:-latest}
-        build:
-            context: .
-            dockerfile: ./services/nginx/Dockerfile
-        restart: always
-        volumes:
-            - ./ssl:/etc/nginx/ssl
-        logging:
-            driver: 'fluentd'
-            options:
-                fluentd-address: 0.0.0.0:24224
-                tag: default.nginx
-        networks:
-            - app-net
-        ports:
-            - 80:80
-            - 443:443
-    web:
-        image: just1ce/nginx_web:${RELEASE_VERSION:-latest}
-        restart: always
-        networks:
-            - app-net
-        build:
-            context: .
-            dockerfile: ./services/web/Dockerfile
-        logging:
-            driver: 'fluentd'
-            options:
-                fluentd-address: 0.0.0.0:24224
-                tag: default.web
-    api:
-        image: just1ce/taskmanager_api:${RELEASE_VERSION:-latest}
-        networks:
-            - app-net
-        build:
-            context: .
-            dockerfile: ./services/api/Dockerfile
-        restart: always
-        logging:
-            driver: 'fluentd'
-            options:
-                fluentd-address: 0.0.0.0:24224
-                tag: json.api
-        stop_grace_period: 120s
-        env_file:
-            - .env
-            - .env.rabbit
-            - .env.mongodb
-    cron:
-        image: just1ce/taskmanager_cron:${RELEASE_VERSION:-latest}
-        restart: always
-        networks:
-            - app-net
-        build:
-            context: .
-            dockerfile: ./services/cron/Dockerfile
-        env_file:
-            - .env
-        logging:
-            driver: 'fluentd'
-            options:
-                fluentd-address: 0.0.0.0:24224
-                tag: json.cron
+  # Головной nginx - проксирует запросы на api и web
+  nginx:
+    image: just1ce/main_nginx:${RELEASE_VERSION:-latest}
+    build:
+      context: .
+      dockerfile: ./services/nginx/Dockerfile
+    restart: always
+    logging:
+      driver: 'fluentd'
+      options:
+        fluentd-address: 0.0.0.0:24224
+        tag: default.nginx
+    networks:
+      - app-net
+    ports:
+      - 80:80
+      - 443:443
+  web:
+    image: just1ce/nginx_web:${RELEASE_VERSION:-latest}
+    restart: always
+    networks:
+      - app-net
+    build:
+      context: .
+      dockerfile: ./services/web/Dockerfile
+    logging:
+      driver: 'fluentd'
+      options:
+        fluentd-address: 0.0.0.0:24224
+        tag: default.web
+  api:
+    image: just1ce/taskmanager_api:${RELEASE_VERSION:-latest}
+    networks:
+      - app-net
+    build:
+      context: .
+      dockerfile: ./services/api/Dockerfile
+    restart: always
+    logging:
+      driver: 'fluentd'
+      options:
+        fluentd-address: 0.0.0.0:24224
+        tag: json.api
+    stop_grace_period: 120s
+    env_file:
+      - .env
+      - .env.rabbit
+      - .env.mongodb
+  cron:
+    image: just1ce/taskmanager_cron:${RELEASE_VERSION:-latest}
+    restart: always
+    networks:
+      - app-net
+    build:
+      context: .
+      dockerfile: ./services/cron/Dockerfile
+    env_file:
+      - .env
+    logging:
+      driver: 'fluentd'
+      options:
+        fluentd-address: 0.0.0.0:24224
+        tag: json.cron
 
-    # Консумеры
-    task-consumer:
-        shm_size: 1Gb
-        mem_limit: 2Gb
-        networks:
-            - app-net
-        cap_add:
-            - SYS_ADMIN
-        image: just1ce/taskmanager_consumer:${RELEASE_VERSION:-latest}
-        build:
-            context: .
-            dockerfile: ./services/taskConsumer/Dockerfile
-        scale: 6
-        stop_grace_period: 120s
-        stop_signal: SIGINT
-        restart: always
-        logging:
-            driver: 'fluentd'
-            options:
-                fluentd-address: 0.0.0.0:24224
-                tag: json.task-consumer
-        env_file:
-            - .env
-            - .env.rabbit
+  # Консумеры
+  task-consumer:
+    shm_size: 1Gb
+    mem_limit: 2Gb
+    networks:
+      - app-net
+    cap_add:
+      - SYS_ADMIN
+    image: just1ce/taskmanager_consumer:${RELEASE_VERSION:-latest}
+    build:
+      context: .
+      dockerfile: ./services/taskConsumer/Dockerfile
+    scale: 6
+    stop_grace_period: 120s
+    stop_signal: SIGINT
+    restart: always
+    logging:
+      driver: 'fluentd'
+      options:
+        fluentd-address: 0.0.0.0:24224
+        tag: json.task-consumer
+    env_file:
+      - .env
+      - .env.rabbit
 volumes:
-    mongo-data:
-    rabbit-data:
+  mongo-data:
+  rabbit-data:
 
 networks:
-    app-net:
-        external: true
+  app-net:
+    external: true
