@@ -27,19 +27,16 @@ uMetrics.start();
 
 /** @property taskSuccessCount */
 uMetrics.register(uMetrics.Metrics.Gauge, 'taskSuccessCount', {
-	ttl: config.get('uMetrics.ttl'),
 	labels: ['task_type'],
 });
 
 /** @property taskErrorCount */
 uMetrics.register(uMetrics.Metrics.Gauge, 'taskErrorCount', {
-	ttl: config.get('uMetrics.ttl'),
 	labels: ['task_type'],
 });
 
 /** @property taskDuration */
 uMetrics.register(uMetrics.Metrics.Gauge, 'taskDuration', {
-	ttl: config.get('uMetrics.ttl'),
 	labels: ['task_type'],
 });
 

@@ -324,7 +324,7 @@ class AutoLikesTask extends BaseTask {
 				} finally {
 					try {
 						const taskDuration = Date.now() - startTime;
-						this.uMetrics.taskDuration.set(taskDuration, {
+						this.uMetrics.taskDuration.inc(taskDuration, {
 							task_type: task.taskDocument.__t,
 						});
 					} catch (error) {
