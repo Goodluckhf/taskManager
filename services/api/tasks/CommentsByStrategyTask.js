@@ -21,6 +21,51 @@ class CommentsByStrategyTask extends BaseTask {
 		return `https://vk.com/wall${postId}`;
 	}
 
+	async setCommentsWithRetry({ postLink, task, replyTo, proxy, users, tryNumber = 0 }) {
+		if (tryNumber > 2) {
+			throw new Error('retries exceed');
+		}
+		const currentUser = users[task.userFakeId];
+
+		try {
+			return await this.commentsService.create({
+				credentials: {
+					login: currentUser.login,
+					password: currentUser.password,
+				},
+				postLink: this.buildPostLink(postLink),
+				text: task.text,
+				imageURL: task.imageURL,
+				replyTo,
+				proxy: {
+					url: proxy.url,
+					login: proxy.login,
+					password: proxy.password,
+				},
+			});
+		} catch (error) {
+			if (error.code === 'blocked' || error.code === 'login_failed') {
+				this.logger.warn({
+					message: 'проблема с пользователем vk',
+					code: error.code,
+					login: currentUser.login,
+				});
+				await this.VkUser.setInactive(currentUser.login, error);
+				users[task.userFakeId] = await this.VkUser.getRandom();
+				return this.setCommentsWithRetry({
+					users,
+					task,
+					replyTo,
+					postLink,
+					proxy,
+					tryNumber: tryNumber + 1,
+				});
+			}
+
+			throw error;
+		}
+	}
+
 	/**
 	 *
 	 * @param {string} postLink
@@ -39,7 +84,6 @@ class CommentsByStrategyTask extends BaseTask {
 			const commentResults = [];
 
 			for (const task of strategy) {
-				const currentUser = users[task.userFakeId];
 				const replyTo =
 					typeof task.replyToCommentNumber !== 'undefined' &&
 					commentResults[task.replyToCommentNumber] &&
@@ -49,20 +93,12 @@ class CommentsByStrategyTask extends BaseTask {
 
 				const proxy = await this.Proxy.getRandom();
 
-				const { commentId } = await this.commentsService.create({
-					credentials: {
-						login: currentUser.login,
-						password: currentUser.password,
-					},
-					postLink: this.buildPostLink(postLink),
-					text: task.text,
-					imageURL: task.imageURL,
+				const { commentId } = await this.setCommentsWithRetry({
+					proxy,
+					postLink,
 					replyTo,
-					proxy: {
-						url: proxy.url,
-						login: proxy.login,
-						password: proxy.password,
-					},
+					task,
+					users,
 				});
 
 				this.logger.info({
