@@ -87,7 +87,7 @@ class WallCheckBanResponse extends Response {
 					return;
 				}
 
-				notifyBox.querySelector('box_x_button').click();
+				notifyBox.querySelector('.box_x_button').click();
 			});
 
 			let postId = postLink
