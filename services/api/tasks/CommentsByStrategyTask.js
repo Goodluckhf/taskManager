@@ -12,6 +12,15 @@ class CommentsByStrategyTask extends BaseTask {
 		this.likeService = likeService;
 	}
 
+	buildPostLink(commonPostLink) {
+		const postId = commonPostLink
+			.replace(/.*[?&]w=wall-/, '-')
+			.replace(/.*vk.com\/wall-/, '-')
+			.replace(/&.*$/, '');
+
+		return `https://vk.com/wall${postId}`;
+	}
+
 	/**
 	 *
 	 * @param {string} postLink
@@ -45,7 +54,7 @@ class CommentsByStrategyTask extends BaseTask {
 						login: currentUser.login,
 						password: currentUser.password,
 					},
-					postLink,
+					postLink: this.buildPostLink(postLink),
 					text: task.text,
 					imageURL: task.imageURL,
 					replyTo,
@@ -56,21 +65,19 @@ class CommentsByStrategyTask extends BaseTask {
 					},
 				});
 
-				const postId = postLink
-					.replace(/.*[?&]w=wall-/, '-')
-					.replace(/.*vk.com\/wall-/, '-')
-					.replace(/&.*$/, '');
-
 				this.logger.info({
 					message: 'Запостили коммент',
 					newCommentId: commentId,
 					postLink,
-					parsedPostId: postId,
 				});
+
 				if (task.likesCount > 0) {
 					await this.likeService.setLikesToComment({
 						count: task.likesCount,
-						url: `https://vk.com/wall${postId}?reply=${commentId.replace(/.*_/, '')}`,
+						url: `${this.buildPostLink(postLink)}?reply=${commentId.replace(
+							/.*_/,
+							'',
+						)}`,
 					});
 				}
 
