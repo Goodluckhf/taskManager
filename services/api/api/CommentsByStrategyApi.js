@@ -24,7 +24,6 @@ class CommentsByStrategyApi extends BaseApi {
 						items: {
 							properties: {
 								userFakeId: { type: 'number' },
-								replyToCommentNumber: { type: 'number' },
 								text: { type: 'string' },
 								imageURL: { type: 'string' },
 								likesCount: { type: 'number', default: 0 },
