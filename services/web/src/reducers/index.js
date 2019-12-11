@@ -3,6 +3,7 @@ import { routes } from '../store/initialState';
 import groupPage from './groups';
 import autoLikesPage from './autolikes';
 import wallSeekPage from './wallSeek';
+import commentsByStrategyPage from './commentsByStrategy';
 import fatalError from './fatalError';
 import auth from './auth';
 import billingPage from './billing';
@@ -14,6 +15,7 @@ export default combineReducers({
 	groupPage,
 	autoLikesPage,
 	wallSeekPage,
+	commentsByStrategyPage,
 	billingPage,
 	fatalError,
 	loader: loaderReducer,

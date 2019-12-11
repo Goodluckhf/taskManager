@@ -17,6 +17,7 @@ import './scss/style.css';
 
 import {
 	WallSeek,
+	CommentsByStrategy,
 	Page404,
 	Groups,
 	AutoLikes,
@@ -51,6 +52,12 @@ class App extends Component {
 							exact
 							name="WallSeek"
 							component={withRouter(WallSeek)}
+						/>
+						<Route
+							path="/comments-by-strategy"
+							exact
+							name="CommentsByStrategy"
+							component={withRouter(CommentsByStrategy)}
 						/>
 
 						<Route path="/login" exact name="Login" component={withRouter(Login)} />

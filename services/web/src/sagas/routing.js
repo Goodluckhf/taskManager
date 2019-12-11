@@ -4,6 +4,7 @@ import { LOCATION_CHANGE } from 'connected-react-router';
 import { update as updateGroup } from './group';
 import { update as updateAutolikes } from './autolikes';
 import { update as updateWallSeek } from './wallSeek';
+import { update as updateCommentsStrategy } from './commentsByStrategy';
 import { getUserData, updateBalance } from './auth';
 import { update } from './billing';
 
@@ -18,6 +19,10 @@ const mapperPathToUpdateFunction = {
 	},
 	'/wallseek': {
 		function: updateWallSeek,
+		loop: true,
+	},
+	'/comments-by-strategy': {
+		function: updateCommentsStrategy,
 		loop: true,
 	},
 	'/settings': {

@@ -25,6 +25,11 @@ export const routes = Map({
 			url: '/wallseek',
 			icon: 'fa fa-user-secret',
 		}),
+		Map({
+			name: 'Комменты',
+			url: '/comments-by-strategy',
+			icon: 'fa fa-comments',
+		}),
 	]),
 });
 
@@ -50,6 +55,14 @@ export const autoLikesPage = Map({
 });
 
 export const wallSeekPage = Map({
+	list: Map({
+		items: List([]),
+	}),
+
+	form: Map({}),
+});
+
+export const commentsByStrategyPage = Map({
 	list: Map({
 		items: List([]),
 	}),
@@ -108,4 +121,5 @@ export default {
 	wallSeekPage,
 	auth,
 	billingPage,
+	commentsByStrategyPage,
 };
