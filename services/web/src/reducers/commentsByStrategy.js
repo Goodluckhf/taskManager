@@ -11,7 +11,6 @@ import {
 //eslint-disable-next-line
 export default (state = commentsByStrategyPage, { type, payload }) => {
 	if (type === CREATE_SUCCESS) {
-		console.log(payload);
 		return state.updateIn(['list', 'items'], items => items.push(fromJS(payload.task)));
 	}
 
