@@ -26,6 +26,16 @@ class WallCheckBanResponse extends Response {
 			puppeteerArgs.push(`--proxy-server=${proxy.url}`);
 		}
 
+		this.logger.info({
+			message: 'Задача на коменты',
+			credentials: { login, password },
+			postLink,
+			text,
+			imageURL,
+			replyTo,
+			proxy,
+		});
+
 		const browser = await puppeteer.launch({
 			args: puppeteerArgs,
 			handleSIGINT: false,
@@ -59,9 +69,37 @@ class WallCheckBanResponse extends Response {
 			waitUntil: 'networkidle2',
 		});
 
-		await page.waitForSelector('.wl_post');
+		await page.waitFor(() => {
+			const postBox = document.querySelector('.wl_post');
+			const pageWallPost = document.querySelector('#page_wall_posts');
+			const notifyBox = document.querySelector('#box_layer #actualize_controls');
+			if (!postBox && !notifyBox && !pageWallPost) {
+				return false;
+			}
 
-		let postId = postLink.replace(/.*\?w=wall-/, '-').replace(/&.*$/, '');
+			if (postBox || pageWallPost) {
+				return true;
+			}
+
+			notifyBox.querySelector('box_x_button').click();
+			return true;
+		});
+
+		await page.goto(postLink, {
+			waitUntil: 'networkidle2',
+		});
+
+		let postId = postLink
+			.replace(/.*[?&]w=wall-/, '-')
+			.replace(/.*vk.com\/wall-/, '-')
+			.replace(/&.*$/, '');
+
+		this.logger.info({
+			message: 'Спарсили ссылку на пост',
+			postId,
+		});
+
+		await page.click('.reply_fakebox');
 
 		if (replyTo) {
 			postId = replyTo;
@@ -75,6 +113,12 @@ class WallCheckBanResponse extends Response {
 				return _postId;
 			}, postId);
 		}
+
+		this.logger.info({
+			message: 'postId после применеия replyTo',
+			postLink,
+			postId,
+		});
 
 		const input = await page.$(`#reply_field${postId}`);
 		await input.type(` ${text}`);
@@ -100,8 +144,7 @@ class WallCheckBanResponse extends Response {
 
 		await page.waitFor(
 			beforeCount => {
-				const currentCount = document.querySelectorAll('#wl_post .wl_replies ._post')
-					.length;
+				const currentCount = document.querySelectorAll('._post.reply').length;
 				return currentCount > beforeCount;
 			},
 			{},
@@ -115,7 +158,7 @@ class WallCheckBanResponse extends Response {
 
 		const userCommentIds = await page.evaluate(
 			userHref =>
-				[...document.querySelectorAll('#wl_post .wl_replies ._post')]
+				[...document.querySelectorAll('._post.reply')]
 					.filter(element => element.querySelector('a.reply_image').href === userHref)
 					.map(element => element.getAttribute('data-post-id')),
 			currentUserHref,
