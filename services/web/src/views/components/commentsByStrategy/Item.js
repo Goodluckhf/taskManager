@@ -40,7 +40,9 @@ class Item extends PureComponent {
 					<div>
 						<span className="h6">Ссылка на пост:</span>
 						<br />
-						<a href={this.props.postLink}>{this.props.postLink}</a>
+						<a rel="noopener noreferrer" target="_blank" href={this.props.postLink}>
+							{this.props.postLink}
+						</a>
 					</div>
 				</Col>
 				<Col xs={7}>
