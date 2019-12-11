@@ -48,9 +48,18 @@ class WallCheckBanResponse extends Response {
 				await page.authenticate({ username: proxy.login, password: proxy.password });
 			}
 
-			await page.goto('https://vk.com/login', {
-				waitUntil: 'networkidle2',
-			});
+			try {
+				await page.goto('https://vk.com/login', {
+					waitUntil: 'networkidle2',
+				});
+			} catch (error) {
+				if (/ERR_PROXY_CONNECTION_FAILED/.test(error.message)) {
+					error.code = 'proxy_failure';
+					error.proxy = proxy;
+				}
+
+				throw error;
+			}
 
 			this.logger.info({
 				message: 'Прокси жив (зашли на страницу авторизации)',
