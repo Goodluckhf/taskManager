@@ -29,8 +29,8 @@ describe('comments by strategy', () => {
 			likeService: {},
 		});
 
-		const strategy = { items: [{ userFakeId: 0 }, { userFakeId: 1 }, { userFakeId: 2 }] };
-		await expect(task.handle({ postLink: 'testLink', strategy })).to.be.rejectedWith(
+		const commentsStrategy = [{ userFakeId: 0 }, { userFakeId: 1 }, { userFakeId: 2 }];
+		await expect(task.handle({ postLink: 'testLink', commentsStrategy })).to.be.rejectedWith(
 			/not enough accounts/,
 		);
 	});
@@ -70,8 +70,8 @@ describe('comments by strategy', () => {
 			commentsService: commentsServiceMock,
 			likeService: {},
 		});
-		const strategy = { items: [{ userFakeId: 0 }, { userFakeId: 1 }] };
-		await task.handle({ postLink: 'testLink', strategy });
+		const commentsStrategy = [{ userFakeId: 0 }, { userFakeId: 1 }];
+		await task.handle({ postLink: 'testLink', commentsStrategy });
 
 		expect(commentsServiceMockInvoked).to.be.equals(2);
 	});
@@ -118,8 +118,8 @@ describe('comments by strategy', () => {
 			commentsService: commentsServiceMock,
 			likeService: likesServiceMock,
 		});
-		const strategy = { items: [{ userFakeId: 0, likesCount: 1 }, { userFakeId: 1 }] };
-		await task.handle({ postLink: 'testLink', strategy });
+		const commentsStrategy = [{ userFakeId: 0, likesCount: 1 }, { userFakeId: 1 }];
+		await task.handle({ postLink: 'testLink', commentsStrategy });
 
 		expect(likesServiceMockInvoked).to.be.equals(1);
 	});
@@ -161,10 +161,8 @@ describe('comments by strategy', () => {
 			commentsService: commentsServiceMock,
 			likeService: {},
 		});
-		const strategy = {
-			items: [{ userFakeId: 0 }, { userFakeId: 1, replyToCommentNumber: 0 }],
-		};
-		await task.handle({ postLink: 'testLink', strategy });
+		const commentsStrategy = [{ userFakeId: 0 }, { userFakeId: 1, replyToCommentNumber: 0 }];
+		await task.handle({ postLink: 'testLink', commentsStrategy });
 		expect(expectedReplyTo).to.be.equals('id_0');
 	});
 });

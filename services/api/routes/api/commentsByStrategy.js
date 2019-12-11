@@ -14,7 +14,7 @@ export default (router, passport, billing) => {
 		'/comments-by-strategy',
 		passport.authenticate('jwt', { session: false }),
 		async ctx => {
-			const account = billing.createAccount(ctx.user);
+			const account = billing.createAccount(ctx.state.user);
 
 			ctx.body = {
 				success: true,

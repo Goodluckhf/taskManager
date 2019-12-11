@@ -57,8 +57,8 @@ export default (router, rpcClient, passport, billing, captcha, uMetrics) => {
 	router.get('/task/handleActive', async ctx => {
 		const VkUserModel = mongoose.model('VkUser');
 		const ProxyModel = mongoose.model('Proxy');
-		taskApi.VkUserModel = VkUserModel;
-		taskApi.ProxyModel = ProxyModel;
+		taskApi.VkUser = VkUserModel;
+		taskApi.Proxy = ProxyModel;
 		ctx.body = {
 			success: true,
 			data: await taskApi.handleActiveTasks(),

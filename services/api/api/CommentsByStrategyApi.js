@@ -46,6 +46,7 @@ class CommentsByStrategyApi extends BaseApi {
 		});
 
 		await taskDocument.save();
+		return taskDocument.toObject();
 	}
 
 	/**
@@ -55,9 +56,9 @@ class CommentsByStrategyApi extends BaseApi {
 	 */
 	async list(user) {
 		const CommentsByStrategyTask = mongoose.model('CommentsByStrategyTask');
-
+		const query = { deletedAt: null, user };
 		const activeTasks = await CommentsByStrategyTask.find({
-			user,
+			...query,
 			$or: [
 				{ status: CommentsByStrategyTask.status.waiting },
 				{ status: CommentsByStrategyTask.status.pending },
@@ -68,7 +69,7 @@ class CommentsByStrategyApi extends BaseApi {
 			.exec();
 
 		const lastInactiveTasks = await CommentsByStrategyTask.find({
-			user,
+			...query,
 			$or: [
 				{ status: CommentsByStrategyTask.status.skipped },
 				{ status: CommentsByStrategyTask.status.finished },

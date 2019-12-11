@@ -37,19 +37,9 @@ const mapperModelTypeToTask = {
  * @property {UMetrics} uMetrics
  */
 class TaskApi extends BaseApi {
-	constructor(
-		likeService,
-		commentsService,
-		vkUser,
-		rpcClient,
-		alert,
-		billing,
-		uMetrics,
-		...args
-	) {
+	constructor(likeService, commentsService, rpcClient, alert, billing, uMetrics, ...args) {
 		super(...args);
 		this.likeService = likeService;
-		this.vkUser = vkUser;
 		this.commentsService = commentsService;
 		this.rpcClient = rpcClient;
 		this.alert = alert;
@@ -182,7 +172,8 @@ class TaskApi extends BaseApi {
 					const task = new TaskClass({
 						likeService: this.likeService,
 						commentsService: this.commentsService,
-						vkUser: this.vkUser,
+						VkUser: this.VkUser,
+						Proxy: this.Proxy,
 						billing: this.billing,
 						account: this.billing.createAccount(_task.user),
 						logger: this.logger,
@@ -193,7 +184,7 @@ class TaskApi extends BaseApi {
 						uMetrics: this.uMetrics,
 					});
 
-					await task.handle();
+					await task.handle(_task.toObject());
 					try {
 						this.uMetrics.taskSuccessCount.inc(1, { task_type: _task.__t });
 					} catch (error) {
@@ -238,8 +229,7 @@ class TaskApi extends BaseApi {
 									error,
 								});
 							}
-
-							await this.alert.sendError(error.toMessageString(), _task.user.chatId);
+							// await this.alert.sendError(error.toMessageString(), _task.user.chatId);
 						} catch (_error) {
 							this.logger.error({
 								message: 'fatal error',
