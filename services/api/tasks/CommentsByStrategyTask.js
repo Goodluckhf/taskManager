@@ -21,7 +21,15 @@ class CommentsByStrategyTask extends BaseTask {
 		return `https://vk.com/wall${postId}`;
 	}
 
-	async setCommentsWithRetry({ postLink, task, replyTo, proxy, users, tryNumber = 0 }) {
+	async setCommentsWithRetry({
+		postLink,
+		task,
+		replyTo,
+		proxy,
+		users,
+		commentResults,
+		tryNumber = 0,
+	}) {
 		if (tryNumber > 2) {
 			throw new Error('retries exceed');
 		}
@@ -51,7 +59,23 @@ class CommentsByStrategyTask extends BaseTask {
 					login: currentUser.login,
 				});
 				await this.VkUser.setInactive(currentUser.login, error);
-				users[task.userFakeId] = await this.VkUser.getRandom();
+				let exceptReplyToUser = null;
+				if (
+					typeof task.replyToCommentNumber !== 'undefined' &&
+					task.replyToCommentNumber !== null
+				) {
+					const { userFakeId: userFakeIdReplyTo } = commentResults[
+						task.replyToCommentNumber
+					];
+
+					exceptReplyToUser = users[userFakeIdReplyTo];
+				}
+				const newUser = await this.VkUser.getRandom(exceptReplyToUser);
+				if (!newUser) {
+					throw new Error('There is no actual users left');
+				}
+
+				users[task.userFakeId] = newUser;
 				return this.setCommentsWithRetry({
 					users,
 					task,
@@ -105,6 +129,7 @@ class CommentsByStrategyTask extends BaseTask {
 			for (const task of strategy) {
 				const replyTo =
 					typeof task.replyToCommentNumber !== 'undefined' &&
+					task.replyToCommentNumber !== null &&
 					commentResults[task.replyToCommentNumber] &&
 					commentResults[task.replyToCommentNumber].commentId
 						? commentResults[task.replyToCommentNumber].commentId
@@ -118,6 +143,7 @@ class CommentsByStrategyTask extends BaseTask {
 					replyTo,
 					task,
 					users,
+					commentResults,
 				});
 
 				this.logger.info({
@@ -138,6 +164,7 @@ class CommentsByStrategyTask extends BaseTask {
 
 				commentResults.push({
 					commentId,
+					userFakeId: task.userFakeId,
 				});
 			}
 

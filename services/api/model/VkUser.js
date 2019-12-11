@@ -37,8 +37,14 @@ class VkUserDocument {
 		return shuffle(shuffle(users));
 	}
 
-	static async getRandom() {
-		const users = await this.find({ isActive: true })
+	static async getRandom(exceptUser) {
+		const query = { isActive: true };
+
+		if (exceptUser) {
+			query.login = { $ne: exceptUser.login };
+		}
+
+		const users = await this.find(query)
 			.lean()
 			.exec();
 
