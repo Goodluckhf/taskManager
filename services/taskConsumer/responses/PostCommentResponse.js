@@ -42,130 +42,134 @@ class WallCheckBanResponse extends Response {
 			headless: process.env.NODE_ENV === 'production',
 		});
 
-		const page = await browser.newPage();
-		if (proxy) {
-			await page.authenticate({ username: proxy.login, password: proxy.password });
-		}
-
-		await page.goto('https://vk.com/login', {
-			waitUntil: 'networkidle2',
-		});
-
-		await page.evaluate(
-			(_login, _password) => {
-				document.querySelector('#email').value = _login;
-				document.querySelector('#pass').value = _password;
-			},
-			login,
-			password,
-		);
-
-		const loginNavigationPromise = page.waitForNavigation();
-		await page.click('#login_button');
-		await loginNavigationPromise;
-		// @TODO: здесь нужно обработать баны
-
-		await page.goto(postLink, {
-			waitUntil: 'networkidle2',
-		});
-
-		await page.waitFor(() => {
-			const postBox = document.querySelector('.wl_post');
-			const pageWallPost = document.querySelector('#page_wall_posts');
-			const notifyBox = document.querySelector('#box_layer #actualize_controls');
-			if (!postBox && !notifyBox && !pageWallPost) {
-				return false;
+		try {
+			const page = await browser.newPage();
+			if (proxy) {
+				await page.authenticate({ username: proxy.login, password: proxy.password });
 			}
 
-			if (postBox || pageWallPost) {
-				return true;
-			}
+			await page.goto('https://vk.com/login', {
+				waitUntil: 'networkidle2',
+			});
 
-			notifyBox.querySelector('box_x_button').click();
-			return true;
-		});
+			await page.evaluate(
+				(_login, _password) => {
+					document.querySelector('#email').value = _login;
+					document.querySelector('#pass').value = _password;
+				},
+				login,
+				password,
+			);
 
-		await page.goto(postLink, {
-			waitUntil: 'networkidle2',
-		});
+			const loginNavigationPromise = page.waitForNavigation();
+			await page.click('#login_button');
+			await loginNavigationPromise;
+			// @TODO: здесь нужно обработать баны
 
-		let postId = postLink
-			.replace(/.*[?&]w=wall-/, '-')
-			.replace(/.*vk.com\/wall-/, '-')
-			.replace(/&.*$/, '');
+			await page.goto(postLink, {
+				waitUntil: 'networkidle2',
+			});
 
-		this.logger.info({
-			message: 'Спарсили ссылку на пост',
-			postId,
-		});
-
-		await page.click('.reply_fakebox');
-
-		if (replyTo) {
-			postId = replyTo;
-			await page.click(`#post${postId}`);
-			postId = await page.evaluate(_postId => {
-				const parent = document.querySelector(`#post${_postId}`).parentNode;
-				if (parent.className === 'replies_list_deep') {
-					return parent.getAttribute('id').replace('replies', '');
+			await page.waitFor(() => {
+				const postBox = document.querySelector('.wl_post');
+				const pageWallPost = document.querySelector('#page_wall_posts');
+				const notifyBox = document.querySelector('#box_layer #actualize_controls');
+				if (!postBox && !notifyBox && !pageWallPost) {
+					return false;
 				}
 
-				return _postId;
-			}, postId);
-		}
+				if (postBox || pageWallPost) {
+					return true;
+				}
 
-		this.logger.info({
-			message: 'postId после применеия replyTo',
-			postLink,
-			postId,
-		});
+				notifyBox.querySelector('box_x_button').click();
+				return true;
+			});
 
-		const input = await page.$(`#reply_field${postId}`);
-		await input.type(` ${text}`);
+			await page.goto(postLink, {
+				waitUntil: 'networkidle2',
+			});
 
-		if (imageURL) {
-			await input.type(` ${imageURL} `);
-			await page.waitForSelector(`#submit_reply${postId} img.page_preview_photo`);
+			let postId = postLink
+				.replace(/.*[?&]w=wall-/, '-')
+				.replace(/.*vk.com\/wall-/, '-')
+				.replace(/&.*$/, '');
 
-			// Удаляем из текста ссылку
-			await page.evaluate(
-				(_text, _postId) => {
-					document.querySelector(`#reply_field${_postId}`).innerText = _text;
-				},
-				text,
+			this.logger.info({
+				message: 'Спарсили ссылку на пост',
 				postId,
+			});
+
+			await page.click('.reply_fakebox');
+
+			if (replyTo) {
+				postId = replyTo;
+				await page.click(`#post${postId}`);
+				postId = await page.evaluate(_postId => {
+					const parent = document.querySelector(`#post${_postId}`).parentNode;
+					if (parent.className === 'replies_list_deep') {
+						return parent.getAttribute('id').replace('replies', '');
+					}
+
+					return _postId;
+				}, postId);
+			}
+
+			this.logger.info({
+				message: 'postId после применеия replyTo',
+				postLink,
+				postId,
+			});
+
+			const input = await page.$(`#reply_field${postId}`);
+			await input.type(` ${text}`);
+
+			if (imageURL) {
+				await input.type(` ${imageURL} `);
+				await page.waitForSelector(`#submit_reply${postId} img.page_preview_photo`);
+
+				// Удаляем из текста ссылку
+				await page.evaluate(
+					(_text, _postId) => {
+						document.querySelector(`#reply_field${_postId}`).innerText = _text;
+					},
+					text,
+					postId,
+				);
+			}
+
+			const postsBefore = await page.$$('#wl_post .wl_replies ._post');
+			const postsCountBefore = postsBefore.length;
+
+			await page.click(`#reply_button${postId}`);
+
+			await page.waitFor(
+				beforeCount => {
+					const currentCount = document.querySelectorAll('._post.reply').length;
+					return currentCount > beforeCount;
+				},
+				{},
+				postsCountBefore,
 			);
+
+			await page.waitFor(1000);
+			const currentUserHref = await page.evaluate(
+				() => document.querySelector(`._post_field_author`).href,
+			);
+
+			const userCommentIds = await page.evaluate(
+				userHref =>
+					[...document.querySelectorAll('._post.reply')]
+						.filter(element => element.querySelector('a.reply_image').href === userHref)
+						.map(element => element.getAttribute('data-post-id')),
+				currentUserHref,
+			);
+
+			const newCommentId = maxBy(userCommentIds, id => parseInt(id.replace(/.*_/, ''), 10));
+			return { commentId: newCommentId };
+		} finally {
+			await browser.close();
 		}
-
-		const postsBefore = await page.$$('#wl_post .wl_replies ._post');
-		const postsCountBefore = postsBefore.length;
-
-		await page.click(`#reply_button${postId}`);
-
-		await page.waitFor(
-			beforeCount => {
-				const currentCount = document.querySelectorAll('._post.reply').length;
-				return currentCount > beforeCount;
-			},
-			{},
-			postsCountBefore,
-		);
-
-		await page.waitFor(1000);
-		const currentUserHref = await page.evaluate(
-			() => document.querySelector(`._post_field_author`).href,
-		);
-
-		const userCommentIds = await page.evaluate(
-			userHref =>
-				[...document.querySelectorAll('._post.reply')]
-					.filter(element => element.querySelector('a.reply_image').href === userHref)
-					.map(element => element.getAttribute('data-post-id')),
-			currentUserHref,
-		);
-
-		const newCommentId = maxBy(userCommentIds, id => parseInt(id.replace(/.*_/, ''), 10));
-		return { commentId: newCommentId };
 	}
 }
 
