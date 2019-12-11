@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import propTypes from 'prop-types';
-import { Row, Col } from 'reactstrap';
+import { Row, Col, Collapse, Button } from 'reactstrap';
 import * as moment from 'moment';
 import 'moment/locale/ru';
 import LoadingButton, { XS } from '../ui/LoadingButton';
@@ -15,6 +15,13 @@ const statusCodeToString = {
 };
 
 class Item extends PureComponent {
+	constructor(props) {
+		super(props);
+		this.state = {
+			isOpen: false,
+		};
+	}
+
 	static propTypes = {
 		strategy: propTypes.object,
 		createdAt: propTypes.string,
@@ -31,6 +38,10 @@ class Item extends PureComponent {
 
 	onRemove = () => {
 		this.props.remove(this.props._id);
+	};
+
+	toggle = () => {
+		this.setState({ isOpen: !this.state.isOpen });
 	};
 
 	render() {
@@ -55,10 +66,21 @@ class Item extends PureComponent {
 						<span className="h6">Статус:</span> {statusCodeToString[this.props.status]}
 					</div>
 					<div>
-						<span className="h6">Стратегия:</span>{' '}
-						<pre style={{ backgroundColor: '#f0f3f5', padding: '15px' }}>
-							{JSON.stringify(this.props.strategy, null, 2)}
-						</pre>
+						<span className="h6">Стратегия:</span>
+						<div>
+							<Button
+								color="primary"
+								size="sm"
+								onClick={this.toggle}
+								style={{ marginBottom: '1rem' }}>
+								свернуть/развернуть
+							</Button>
+						</div>
+						<Collapse isOpen={this.state.isOpen}>
+							<pre style={{ backgroundColor: '#f0f3f5', padding: '15px' }}>
+								{JSON.stringify(this.props.strategy, null, 2)}
+							</pre>
+						</Collapse>
 					</div>
 					{this.props._error && (
 						<ApiError title="Последняя ошибка" error={this.props._error} />

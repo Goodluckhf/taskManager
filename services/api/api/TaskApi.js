@@ -242,7 +242,7 @@ class TaskApi extends BaseApi {
 				} finally {
 					try {
 						const taskDuration = Date.now() - startTime;
-						this.uMetrics.taskDuration.set(taskDuration, { task_type: _task.__t });
+						this.uMetrics.taskDuration.inc(taskDuration, { task_type: _task.__t });
 					} catch (error) {
 						this.logger.error({
 							mark: 'uMetrics',

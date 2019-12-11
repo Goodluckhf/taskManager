@@ -45,7 +45,13 @@ class Form extends PureComponent {
 				text: 'string',
 				imageURL: item => (item.length > 0 ? item : null),
 				likesCount: item => parseInt(item, 10) || 0,
-				replyToCommentNumber: item => parseInt(item, 10) || null,
+				replyToCommentNumber: item => {
+					const numberItem = parseInt(item, 10);
+					if (Number.isFinite(numberItem)) {
+						return numberItem;
+					}
+					return null;
+				},
 			},
 			output: 'json',
 			noheader: false,

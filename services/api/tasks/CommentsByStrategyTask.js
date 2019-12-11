@@ -21,6 +21,94 @@ class CommentsByStrategyTask extends BaseTask {
 		return `https://vk.com/wall${postId}`;
 	}
 
+	async setCommentsWithRetry({
+		postLink,
+		task,
+		replyTo,
+		proxy,
+		users,
+		commentResults,
+		tryNumber = 0,
+	}) {
+		if (tryNumber > 2) {
+			throw new Error('retries exceed');
+		}
+		const currentUser = users[task.userFakeId];
+
+		try {
+			return await this.commentsService.create({
+				credentials: {
+					login: currentUser.login,
+					password: currentUser.password,
+				},
+				postLink: this.buildPostLink(postLink),
+				text: task.text,
+				imageURL: task.imageURL,
+				replyTo,
+				proxy: {
+					url: proxy.url,
+					login: proxy.login,
+					password: proxy.password,
+				},
+			});
+		} catch (error) {
+			if (error.code === 'blocked' || error.code === 'login_failed') {
+				this.logger.warn({
+					message: 'проблема с пользователем vk',
+					code: error.code,
+					login: currentUser.login,
+				});
+				await this.VkUser.setInactive(currentUser.login, error);
+				let exceptReplyToUser = null;
+				if (
+					typeof task.replyToCommentNumber !== 'undefined' &&
+					task.replyToCommentNumber !== null
+				) {
+					const { userFakeId: userFakeIdReplyTo } = commentResults[
+						task.replyToCommentNumber
+					];
+
+					exceptReplyToUser = users[userFakeIdReplyTo];
+				}
+				const newUser = await this.VkUser.getRandom(exceptReplyToUser);
+				if (!newUser) {
+					throw new Error('There is no actual users left');
+				}
+
+				users[task.userFakeId] = newUser;
+				return this.setCommentsWithRetry({
+					users,
+					task,
+					replyTo,
+					postLink,
+					proxy,
+					tryNumber: tryNumber + 1,
+				});
+			}
+
+			if (error.code === 'proxy_failure') {
+				this.logger.warn({
+					message: 'проблема с прокси',
+					code: error.code,
+					proxy,
+				});
+				await this.Proxy.setInactive(proxy.url, error);
+				const newProxy = await this.Proxy.getRandom();
+
+				return this.setCommentsWithRetry({
+					users,
+					task,
+					replyTo,
+					postLink,
+					proxy: newProxy,
+					tryNumber: tryNumber + 1,
+				});
+			}
+
+			throw error;
+		}
+	}
+
 	/**
 	 *
 	 * @param {string} postLink
@@ -39,9 +127,9 @@ class CommentsByStrategyTask extends BaseTask {
 			const commentResults = [];
 
 			for (const task of strategy) {
-				const currentUser = users[task.userFakeId];
 				const replyTo =
 					typeof task.replyToCommentNumber !== 'undefined' &&
+					task.replyToCommentNumber !== null &&
 					commentResults[task.replyToCommentNumber] &&
 					commentResults[task.replyToCommentNumber].commentId
 						? commentResults[task.replyToCommentNumber].commentId
@@ -49,20 +137,13 @@ class CommentsByStrategyTask extends BaseTask {
 
 				const proxy = await this.Proxy.getRandom();
 
-				const { commentId } = await this.commentsService.create({
-					credentials: {
-						login: currentUser.login,
-						password: currentUser.password,
-					},
-					postLink: this.buildPostLink(postLink),
-					text: task.text,
-					imageURL: task.imageURL,
+				const { commentId } = await this.setCommentsWithRetry({
+					proxy,
+					postLink,
 					replyTo,
-					proxy: {
-						url: proxy.url,
-						login: proxy.login,
-						password: proxy.password,
-					},
+					task,
+					users,
+					commentResults,
 				});
 
 				this.logger.info({
@@ -83,6 +164,7 @@ class CommentsByStrategyTask extends BaseTask {
 
 				commentResults.push({
 					commentId,
+					userFakeId: task.userFakeId,
 				});
 			}
 

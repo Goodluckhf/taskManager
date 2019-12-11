@@ -20,28 +20,29 @@ import Billing from '../../billing/Billing';
 import Captcha from '../../../../lib/Captcha';
 
 const transport = new PullTransport(logger, config.get('uMetrics.port'));
-const uMetrics = new UMetrics(transport, { prefix: 'umetrics' });
+export const uMetrics = new UMetrics(transport, { prefix: 'umetrics' });
 uMetrics.start();
 // @TODO: Переложить в отдельное место
 // Пока метрики регистриурются здесь
 
 /** @property taskSuccessCount */
 uMetrics.register(uMetrics.Metrics.Gauge, 'taskSuccessCount', {
-	ttl: config.get('uMetrics.ttl'),
 	labels: ['task_type'],
 });
 
 /** @property taskErrorCount */
 uMetrics.register(uMetrics.Metrics.Gauge, 'taskErrorCount', {
-	ttl: config.get('uMetrics.ttl'),
 	labels: ['task_type'],
 });
 
 /** @property taskDuration */
 uMetrics.register(uMetrics.Metrics.Gauge, 'taskDuration', {
-	ttl: config.get('uMetrics.ttl'),
 	labels: ['task_type'],
 });
+
+uMetrics.register(uMetrics.Metrics.Gauge, 'activeVkAccounts');
+
+uMetrics.register(uMetrics.Metrics.Gauge, 'activeProxies');
 
 // rabbit, RPC client
 const rabbitConfig = config.get('rabbit');

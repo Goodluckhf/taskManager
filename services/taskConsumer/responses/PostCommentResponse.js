@@ -48,9 +48,18 @@ class WallCheckBanResponse extends Response {
 				await page.authenticate({ username: proxy.login, password: proxy.password });
 			}
 
-			await page.goto('https://vk.com/login', {
-				waitUntil: 'networkidle2',
-			});
+			try {
+				await page.goto('https://vk.com/login', {
+					waitUntil: 'networkidle2',
+				});
+			} catch (error) {
+				if (/ERR_PROXY_CONNECTION_FAILED/.test(error.message)) {
+					error.code = 'proxy_failure';
+					error.proxy = proxy;
+				}
+
+				throw error;
+			}
 
 			this.logger.info({
 				message: 'Прокси жив (зашли на страницу авторизации)',
@@ -69,7 +78,22 @@ class WallCheckBanResponse extends Response {
 			const loginNavigationPromise = page.waitForNavigation();
 			await page.click('#login_button');
 			await loginNavigationPromise;
-			// @TODO: здесь нужно обработать баны
+
+			const loginFailedElement = await page.$('#login_message');
+			if (loginFailedElement) {
+				const error = new Error('Account credentials is invalid');
+				error.login = login;
+				error.code = 'login_failed';
+				throw error;
+			}
+
+			const blockedElement = await page.$('#login_blocked_wrap');
+			if (blockedElement) {
+				const error = new Error('Account is blocked');
+				error.login = login;
+				error.code = 'blocked';
+				throw error;
+			}
 
 			await page.goto(postLink, {
 				waitUntil: 'networkidle2',
@@ -87,7 +111,7 @@ class WallCheckBanResponse extends Response {
 					return;
 				}
 
-				notifyBox.querySelector('.box_x_button').click();
+				document.querySelector('.box_x_button').click();
 			});
 
 			let postId = postLink
@@ -150,23 +174,61 @@ class WallCheckBanResponse extends Response {
 				});
 			}
 
-			const postsBefore = await page.$$('#wl_post .wl_replies ._post');
-			const postsCountBefore = postsBefore.length;
+			const currentUserHref = await page.evaluate(
+				() => document.querySelector(`._post_field_author`).href,
+			);
 
-			await page.click(`#reply_button${postId}`);
+			const postsCountBefore = await page.evaluate(
+				userHref =>
+					[...document.querySelectorAll('._post.reply')].filter(
+						element => element.querySelector('a.reply_image').href === userHref,
+					).length,
+				currentUserHref,
+			);
+
+			const lastPostId = await page.evaluate(() => {
+				const posts = [...document.querySelectorAll('._post.reply')];
+				if (!posts.length) {
+					return null;
+				}
+				return posts[posts.length - 1].getAttribute('data-post-id');
+			});
+
+			// Кнопка может быть под кнопкой другой
+			// поэтому эмулирем через js
+			await page.evaluate(selector => {
+				document.querySelector(selector).click();
+			}, `#reply_button${postId}`);
 
 			await page.waitFor(
-				beforeCount => {
-					const currentCount = document.querySelectorAll('._post.reply').length;
-					return currentCount > beforeCount;
+				(beforeCount, userHref, _lastPostId) => {
+					const currentUserPosts = [...document.querySelectorAll('._post.reply')].filter(
+						element => element.querySelector('a.reply_image').href === userHref,
+					);
+
+					// в вк сначала ставится такой id "0_-1"
+					// А потом с сервера приходит корректный
+					const everyPostsHasId = currentUserPosts.every(
+						element => element.getAttribute('data-post-id') !== '0_-1',
+					);
+
+					const posts = [...document.querySelectorAll('._post.reply')];
+					if (!posts.length) {
+						return false;
+					}
+					const currentLastPostId = posts[posts.length - 1].getAttribute('data-post-id');
+					// Коментов может стать меньше
+					// Потому как ответы скрываются
+					return (
+						(currentUserPosts.length !== beforeCount ||
+							currentLastPostId !== _lastPostId) &&
+						everyPostsHasId
+					);
 				},
 				{},
 				postsCountBefore,
-			);
-
-			await page.waitFor(600);
-			const currentUserHref = await page.evaluate(
-				() => document.querySelector(`._post_field_author`).href,
+				currentUserHref,
+				lastPostId,
 			);
 
 			const userCommentIds = await page.evaluate(
@@ -178,6 +240,7 @@ class WallCheckBanResponse extends Response {
 			);
 
 			const newCommentId = maxBy(userCommentIds, id => parseInt(id.replace(/.*_/, ''), 10));
+			await browser.close();
 			return { commentId: newCommentId };
 		} finally {
 			await browser.close();
