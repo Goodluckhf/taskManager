@@ -62,6 +62,25 @@ class CommentsByStrategyTask extends BaseTask {
 				});
 			}
 
+			if (error.code === 'proxy_failure') {
+				this.logger.warn({
+					message: 'проблема с прокси',
+					code: error.code,
+					proxy,
+				});
+				await this.Proxy.setInactive(proxy.url, error);
+				const newProxy = await this.Proxy.getRandom();
+
+				return this.setCommentsWithRetry({
+					users,
+					task,
+					replyTo,
+					postLink,
+					proxy: newProxy,
+					tryNumber: tryNumber + 1,
+				});
+			}
+
 			throw error;
 		}
 	}
