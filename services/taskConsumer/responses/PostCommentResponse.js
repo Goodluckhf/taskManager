@@ -52,6 +52,11 @@ class WallCheckBanResponse extends Response {
 				waitUntil: 'networkidle2',
 			});
 
+			this.logger.info({
+				message: 'Прокси жив (зашли на страницу авторизации)',
+				proxy,
+			});
+
 			await page.evaluate(
 				(_login, _password) => {
 					document.querySelector('#email').value = _login;
@@ -68,6 +73,11 @@ class WallCheckBanResponse extends Response {
 
 			await page.goto(postLink, {
 				waitUntil: 'networkidle2',
+			});
+
+			this.logger.info({
+				message: 'аккаунт vk жив (Перешли на страницу поста)',
+				login,
 			});
 
 			await page.waitFor(500);
@@ -115,6 +125,12 @@ class WallCheckBanResponse extends Response {
 			await input.type(` ${text}`);
 
 			if (imageURL) {
+				this.logger.info({
+					message: 'Добавляем картинку',
+					imageURL,
+					postId,
+				});
+
 				await input.type(` ${imageURL} `);
 				await page.waitForSelector(`#submit_reply${postId} img.page_preview_photo`);
 
@@ -126,6 +142,12 @@ class WallCheckBanResponse extends Response {
 					text,
 					postId,
 				);
+
+				this.logger.info({
+					message: 'Дождались загрузки картинки',
+					imageURL,
+					postId,
+				});
 			}
 
 			const postsBefore = await page.$$('#wl_post .wl_replies ._post');

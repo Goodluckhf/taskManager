@@ -85,6 +85,11 @@ class CommentsByStrategyTask extends BaseTask {
 					commentId,
 				});
 			}
+
+			this.logger.info({
+				message: 'Задача выполенена',
+				taskId: this.taskDocument.id,
+			});
 		} catch (error) {
 			const wrappedError = TaskErrorFactory.createError('default', error);
 
