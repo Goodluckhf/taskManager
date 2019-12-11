@@ -7,7 +7,7 @@ import config from 'config';
 
 import logger from '../../lib/logger';
 import mongoose from '../../lib/mongoose';
-import routes from './routes';
+import routes, { uMetrics } from './routes';
 import errorHandler from './routes/api/errorHandler';
 import initModels from './model';
 import gracefulStop from '../../lib/GracefulStop';
@@ -81,6 +81,20 @@ process.on('SIGTERM', () => {
 		{ $set: { status: mongoose.model('Task').status.waiting } },
 		{ multi: true },
 	);
+
+	setInterval(async () => {
+		try {
+			const countAccounts = await mongoose.model('VkUser').countActive();
+			const countProxies = await mongoose.model('Proxy').countActive();
+			uMetrics.activeVkAccounts.inc(countAccounts);
+			uMetrics.activeProxies.inc(countProxies);
+		} catch (error) {
+			logger.warn({
+				message: 'proxy/vk metrics get',
+				error,
+			});
+		}
+	}, 15000);
 
 	app.listen(config.get('api.port'));
 	logger.info(`server listening on port: ${config.get('api.port')}`);

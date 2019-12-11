@@ -20,7 +20,7 @@ import Billing from '../../billing/Billing';
 import Captcha from '../../../../lib/Captcha';
 
 const transport = new PullTransport(logger, config.get('uMetrics.port'));
-const uMetrics = new UMetrics(transport, { prefix: 'umetrics' });
+export const uMetrics = new UMetrics(transport, { prefix: 'umetrics' });
 uMetrics.start();
 // @TODO: Переложить в отдельное место
 // Пока метрики регистриурются здесь
@@ -39,6 +39,10 @@ uMetrics.register(uMetrics.Metrics.Gauge, 'taskErrorCount', {
 uMetrics.register(uMetrics.Metrics.Gauge, 'taskDuration', {
 	labels: ['task_type'],
 });
+
+uMetrics.register(uMetrics.Metrics.Gauge, 'activeVkAccounts');
+
+uMetrics.register(uMetrics.Metrics.Gauge, 'activeProxies');
 
 // rabbit, RPC client
 const rabbitConfig = config.get('rabbit');

@@ -24,6 +24,10 @@ const proxySchema = new mongoose.Schema({
 });
 
 class ProxyDocument {
+	static async countActive() {
+		return this.count({ isActive: true });
+	}
+
 	/**
 	 * @returns {Promise<ProxyDocument>}
 	 */

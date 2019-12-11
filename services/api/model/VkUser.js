@@ -20,6 +20,10 @@ const vkUserSchema = new mongoose.Schema({
 });
 
 class VkUserDocument {
+	static async countActive() {
+		return this.count({ isActive: true });
+	}
+
 	/**
 	 * @param {Number} count
 	 * @returns {Promise<Array<VkUserDocument>>}
