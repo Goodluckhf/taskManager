@@ -79,7 +79,7 @@ class Form extends PureComponent {
 									<Input
 										onChange={this.handleLink}
 										type="text"
-										placeholder="https://vk.com/feed?w=wall-28261334_1264247"
+										placeholder="https://vk.com/wall-107952301_459"
 									/>
 								</Col>
 								<Col>
