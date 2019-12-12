@@ -21,6 +21,8 @@ class WallCheckBanResponse extends Response {
 			'--no-sandbox',
 			'--disable-setuid-sandbox',
 			'--disable-dev-shm-usage',
+			'--disable-accelerated-2d-canvas',
+			'--disable-gpu',
 		];
 		if (proxy) {
 			puppeteerArgs.push(`--proxy-server=${proxy.url}`);
