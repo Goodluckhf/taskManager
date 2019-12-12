@@ -36,13 +36,15 @@ class WallCheckBanResponse extends Response {
 			proxy,
 		});
 
-		const browser = await puppeteer.launch({
-			args: puppeteerArgs,
-			handleSIGINT: false,
-			headless: process.env.NODE_ENV === 'production',
-		});
 		let canRetry = true;
+		let browser = null;
 		try {
+			browser = await puppeteer.launch({
+				args: puppeteerArgs,
+				handleSIGINT: false,
+				headless: process.env.NODE_ENV === 'production',
+			});
+
 			const page = await browser.newPage();
 			if (proxy) {
 				await page.authenticate({ username: proxy.login, password: proxy.password });
@@ -249,13 +251,14 @@ class WallCheckBanResponse extends Response {
 			);
 
 			const newCommentId = maxBy(userCommentIds, id => parseInt(id.replace(/.*_/, ''), 10));
-			await browser.close();
 			return { commentId: newCommentId };
 		} catch (error) {
 			error.canRetry = canRetry;
 			throw error;
 		} finally {
-			await browser.close();
+			if (browser) {
+				await browser.close();
+			}
 		}
 	}
 }
