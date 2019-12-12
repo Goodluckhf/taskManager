@@ -41,7 +41,7 @@ class WallCheckBanResponse extends Response {
 			handleSIGINT: false,
 			headless: process.env.NODE_ENV === 'production',
 		});
-
+		let canRetry = true;
 		try {
 			const page = await browser.newPage();
 			if (proxy) {
@@ -81,6 +81,8 @@ class WallCheckBanResponse extends Response {
 
 			const loginFailedElement = await page.$('#login_message');
 			if (loginFailedElement) {
+				canRetry = false;
+
 				const error = new Error('Account credentials is invalid');
 				error.login = login;
 				error.code = 'login_failed';
@@ -89,6 +91,8 @@ class WallCheckBanResponse extends Response {
 
 			const blockedElement = await page.$('#login_blocked_wrap');
 			if (blockedElement) {
+				canRetry = false;
+
 				const error = new Error('Account is blocked');
 				error.login = login;
 				error.code = 'blocked';
@@ -128,7 +132,9 @@ class WallCheckBanResponse extends Response {
 
 			if (replyTo) {
 				postId = replyTo;
-				await page.click(`#post${postId}`);
+				await page.evaluate(selector => {
+					document.querySelector(selector).click();
+				}, `#post${postId}`);
 				postId = await page.evaluate(_postId => {
 					const parent = document.querySelector(`#post${_postId}`).parentNode;
 					if (parent.className === 'replies_list_deep') {
@@ -200,6 +206,9 @@ class WallCheckBanResponse extends Response {
 				document.querySelector(selector).click();
 			}, `#reply_button${postId}`);
 
+			// После нажатия на опубликовать коммент
+			// Нельзя заново запускать задачу
+			canRetry = false;
 			await page.waitFor(
 				(beforeCount, userHref, _lastPostId) => {
 					const currentUserPosts = [...document.querySelectorAll('._post.reply')].filter(
@@ -242,6 +251,9 @@ class WallCheckBanResponse extends Response {
 			const newCommentId = maxBy(userCommentIds, id => parseInt(id.replace(/.*_/, ''), 10));
 			await browser.close();
 			return { commentId: newCommentId };
+		} catch (error) {
+			error.canRetry = canRetry;
+			throw error;
 		} finally {
 			await browser.close();
 		}
