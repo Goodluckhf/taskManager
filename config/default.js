@@ -42,6 +42,10 @@ module.exports = {
 		prefetch: 1,
 	},
 
+	postCommentsTask: {
+		retriesLimit: process.env.POST_COMMENTS_TASK__RETRY_LIMIT,
+	},
+
 	likesTask: {
 		checkingDelay: process.env.LIKES_TASK__CHECKING_DELAY, // В минутах
 		likesToCheck: process.env.LIKES_TASK__LIKES_TO_CHECK,
