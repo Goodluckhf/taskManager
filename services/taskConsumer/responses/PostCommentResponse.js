@@ -37,6 +37,9 @@ class WallCheckBanResponse extends Response {
 		});
 
 		let canRetry = true;
+		/**
+		 * @type {Browser}
+		 */
 		let browser = null;
 		try {
 			browser = await puppeteer.launch({
@@ -46,9 +49,23 @@ class WallCheckBanResponse extends Response {
 			});
 
 			const page = await browser.newPage();
+
 			if (proxy) {
 				await page.authenticate({ username: proxy.login, password: proxy.password });
 			}
+
+			await page.setRequestInterception(true);
+			page.on('request', req => {
+				if (
+					req.resourceType() === 'stylesheet' ||
+					req.resourceType() === 'font' ||
+					req.resourceType() === 'image'
+				) {
+					req.abort();
+				} else {
+					req.continue();
+				}
+			});
 
 			try {
 				await page.goto('https://vk.com/login', {
