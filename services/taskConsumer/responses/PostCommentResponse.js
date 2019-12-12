@@ -155,7 +155,7 @@ class WallCheckBanResponse extends Response {
 				postId = replyTo;
 				await page.evaluate(selector => {
 					document.querySelector(selector).click();
-				}, `#post${postId}`);
+				}, `#post${postId} a.reply_link`);
 				postId = await page.evaluate(_postId => {
 					const parent = document.querySelector(`#post${_postId}`).parentNode;
 					if (parent.className === 'replies_list_deep') {
