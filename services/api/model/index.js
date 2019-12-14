@@ -24,6 +24,7 @@ import adminSchema from './UserType/AdminUser';
 import commentsByStrategyTaskSchema from './TaskType/CommentsByStrategyTask';
 import vkUserSchema from './VkUser';
 import proxySchema from './Proxy';
+import checkAndAddUsersTaskSchema from './TaskType/checkAndAddUsersTask';
 
 // Initialise mongoose models
 export default connection => {
@@ -56,4 +57,5 @@ export default connection => {
 	connection.model('Task').discriminator('CheckBalanceTask', checkBalanceTaskSchema);
 
 	connection.model('Task').discriminator('CommentsByStrategyTask', commentsByStrategyTaskSchema);
+	connection.model('Task').discriminator('CheckAndAddUsersTask', checkAndAddUsersTaskSchema);
 };
