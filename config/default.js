@@ -46,6 +46,10 @@ module.exports = {
 		retriesLimit: process.env.POST_COMMENTS_TASK__RETRY_LIMIT,
 	},
 
+	checkVkUserTask: {
+		retriesLimit: process.env.CHECK_VK_USER_TASK__RETRY_LIMIT,
+	},
+
 	likesTask: {
 		checkingDelay: process.env.LIKES_TASK__CHECKING_DELAY, // В минутах
 		likesToCheck: process.env.LIKES_TASK__LIKES_TO_CHECK,
