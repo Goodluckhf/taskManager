@@ -9,6 +9,8 @@ import {
 	listSuccess,
 	removeSuccess,
 	removeFailure,
+	ACTIVE_USERS_REQUEST,
+	activeUsersSuccess,
 } from '../actions/vkUsers';
 import { fatalError } from '../actions/fatalError';
 import { callApi } from './api';
@@ -46,6 +48,20 @@ export default function*() {
 			}
 
 			yield put(listSuccess(result.data));
+		} catch (error) {
+			yield put(fatalError(error));
+		}
+	});
+
+	yield takeEvery(ACTIVE_USERS_REQUEST, function*() {
+		try {
+			const result = yield call(callApi, { url: 'vk-users/active' });
+			if (!result.success) {
+				yield put(fatalError(result.data));
+				return;
+			}
+
+			yield put(activeUsersSuccess(result.data));
 		} catch (error) {
 			yield put(fatalError(error));
 		}

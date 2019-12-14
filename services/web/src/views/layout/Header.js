@@ -11,6 +11,7 @@ const propTypes = {
 	email: PropTypes.string.isRequired,
 	logout: PropTypes.func.isRequired,
 	balance: PropTypes.number,
+	activeUsersCount: PropTypes.number,
 };
 
 const defaultProps = {};
@@ -42,6 +43,13 @@ class Header extends PureComponent {
 				<AppSidebarToggler className="d-md-down-none" display="lg" />
 
 				<Nav className="d-md-down-none ml-auto" navbar>
+					{typeof this.props.activeUsersCount !== 'undefined' && (
+						<NavItem className="px-3">
+							<Link to="/activeUsersCount">
+								Активных пользователй: {this.props.activeUsersCount}
+							</Link>
+						</NavItem>
+					)}
 					{typeof this.props.balance !== 'undefined' && (
 						<NavItem className="px-3">
 							<Link to="/balance">Баланс: {this.props.balance}</Link>

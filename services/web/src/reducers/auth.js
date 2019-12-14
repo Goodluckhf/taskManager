@@ -7,6 +7,7 @@ import {
 	LOGOUT,
 	NEED_LOGIN,
 } from '../actions/auth';
+import { ACTIVE_USERS_SUCCESS } from '../actions/vkUsers';
 
 export default (authState = auth, { type, payload }) => {
 	if (type === NEED_LOGIN) {
@@ -29,6 +30,10 @@ export default (authState = auth, { type, payload }) => {
 			.update('chatId', () => payload.chatId)
 			.update('systemVkLink', () => payload.systemVkLink)
 			.update('externalLinks', () => payload.externalLinks);
+	}
+
+	if (type === ACTIVE_USERS_SUCCESS) {
+		return authState.update('activeUsersCount', () => payload.count);
 	}
 
 	if (type === GET_USER_BALANCE_SUCCESS) {

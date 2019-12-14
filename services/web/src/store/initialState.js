@@ -110,6 +110,7 @@ const _auth = {
 	systemVkLink: '',
 	lastRoute: '',
 	balance: null,
+	activeUsersCount: 0,
 	externalLinks: [],
 };
 

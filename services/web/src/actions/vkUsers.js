@@ -60,6 +60,18 @@ export const listRequest = () => ({
 	payload: {},
 });
 
+export const ACTIVE_USERS_REQUEST = 'VK_USERS__ACTIVE_USERS_REQUEST';
+export const activeUsersRequest = () => ({
+	type: ACTIVE_USERS_REQUEST,
+	payload: {},
+});
+
+export const ACTIVE_USERS_SUCCESS = 'VK_USERS__ACTIVE_USERS_SUCCESS';
+export const activeUsersSuccess = count => ({
+	type: ACTIVE_USERS_SUCCESS,
+	payload: { count },
+});
+
 export const LIST_SUCCESS = 'VK_USERS__LIST_SUCCESS';
 export const listSuccess = tasks => ({
 	type: LIST_SUCCESS,
