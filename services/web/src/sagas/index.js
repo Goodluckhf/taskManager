@@ -6,6 +6,7 @@ import commentsByStrategy from './commentsByStrategy';
 import routing from './routing';
 import auth from './auth';
 import billing from './billing';
+import vkUsers from './vkUsers';
 
 export default function* rootSage() {
 	yield fork(auth);
@@ -14,5 +15,6 @@ export default function* rootSage() {
 	yield fork(routing);
 	yield fork(wallSeek);
 	yield fork(commentsByStrategy);
+	yield fork(vkUsers);
 	yield fork(billing);
 }

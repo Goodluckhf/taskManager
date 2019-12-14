@@ -18,6 +18,7 @@ import './scss/style.css';
 import {
 	WallSeek,
 	CommentsByStrategy,
+	VkUsers,
 	Page404,
 	Groups,
 	AutoLikes,
@@ -58,6 +59,13 @@ class App extends Component {
 							exact
 							name="CommentsByStrategy"
 							component={withRouter(CommentsByStrategy)}
+						/>
+
+						<Route
+							path="/vk-users"
+							exact
+							name="VkUsers"
+							component={withRouter(VkUsers)}
 						/>
 
 						<Route path="/login" exact name="Login" component={withRouter(Login)} />

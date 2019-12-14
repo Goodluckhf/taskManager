@@ -5,6 +5,7 @@ import { update as updateGroup } from './group';
 import { update as updateAutolikes } from './autolikes';
 import { update as updateWallSeek } from './wallSeek';
 import { update as updateCommentsStrategy } from './commentsByStrategy';
+import { update as updateVkUsers } from './vkUsers';
 import { getUserData, updateBalance } from './auth';
 import { update } from './billing';
 
@@ -23,6 +24,10 @@ const mapperPathToUpdateFunction = {
 	},
 	'/comments-by-strategy': {
 		function: updateCommentsStrategy,
+		loop: true,
+	},
+	'/vk-users': {
+		function: updateVkUsers,
 		loop: true,
 	},
 	'/settings': {

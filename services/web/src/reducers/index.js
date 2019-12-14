@@ -4,6 +4,7 @@ import groupPage from './groups';
 import autoLikesPage from './autolikes';
 import wallSeekPage from './wallSeek';
 import commentsByStrategyPage from './commentsByStrategy';
+import vkUsersPage from './vkUsers';
 import fatalError from './fatalError';
 import auth from './auth';
 import billingPage from './billing';
@@ -16,6 +17,7 @@ export default combineReducers({
 	autoLikesPage,
 	wallSeekPage,
 	commentsByStrategyPage,
+	vkUsersPage,
 	billingPage,
 	fatalError,
 	loader: loaderReducer,

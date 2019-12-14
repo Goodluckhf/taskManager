@@ -30,6 +30,11 @@ export const routes = Map({
 			url: '/comments-by-strategy',
 			icon: 'fa fa-comments',
 		}),
+		Map({
+			name: 'Пользователи vk.com',
+			url: '/vk-users',
+			icon: 'fa fa-vk',
+		}),
 	]),
 });
 
@@ -63,6 +68,14 @@ export const wallSeekPage = Map({
 });
 
 export const commentsByStrategyPage = Map({
+	list: Map({
+		items: List([]),
+	}),
+
+	form: Map({}),
+});
+
+export const vkUsersPage = Map({
 	list: Map({
 		items: List([]),
 	}),
@@ -122,4 +135,5 @@ export default {
 	auth,
 	billingPage,
 	commentsByStrategyPage,
+	vkUsersPage,
 };

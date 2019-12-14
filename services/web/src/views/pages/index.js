@@ -3,6 +3,7 @@ import Groups from './Groups';
 import AutoLikes from './AutoLikes';
 import WallSeek from './WallSeek';
 import CommentsByStrategy from './CommentsByStrategy';
+import VkUsers from './VkUsers';
 import Login from './Login';
 import Register from './Register';
 import Settings from './Settings';
@@ -19,4 +20,5 @@ export {
 	Register,
 	Settings,
 	Balance,
+	VkUsers,
 };
