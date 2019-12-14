@@ -20,6 +20,13 @@ const vkUserSchema = new mongoose.Schema({
 });
 
 class VkUserDocument {
+	static createInstance({ login, password }) {
+		const newUser = new this();
+		newUser.login = login;
+		newUser.password = password;
+		return newUser;
+	}
+
 	static async countActive() {
 		return this.count({ isActive: true });
 	}
