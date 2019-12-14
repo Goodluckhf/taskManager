@@ -1,9 +1,7 @@
-import puppeteer from 'puppeteer-extra';
 import { maxBy } from 'lodash';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import Response from '../../../lib/amqp/Response';
+import { createBrowserPage } from '../actions/createPage';
 
-puppeteer.use(StealthPlugin());
 /**
  * @property {VkApi} vkApi
  */
@@ -17,17 +15,6 @@ class WallCheckBanResponse extends Response {
 	}
 
 	async process({ credentials: { login, password }, postLink, text, imageURL, replyTo, proxy }) {
-		const puppeteerArgs = [
-			'--no-sandbox',
-			'--disable-setuid-sandbox',
-			'--disable-dev-shm-usage',
-			'--disable-accelerated-2d-canvas',
-			'--disable-gpu',
-		];
-		if (proxy) {
-			puppeteerArgs.push(`--proxy-server=${proxy.url}`);
-		}
-
 		this.logger.info({
 			message: 'Задача на коменты',
 			credentials: { login, password },
@@ -44,30 +31,8 @@ class WallCheckBanResponse extends Response {
 		 */
 		let browser = null;
 		try {
-			browser = await puppeteer.launch({
-				args: puppeteerArgs,
-				handleSIGINT: false,
-				headless: process.env.NODE_ENV === 'production',
-			});
-
-			const page = await browser.newPage();
-
-			if (proxy) {
-				await page.authenticate({ username: proxy.login, password: proxy.password });
-			}
-
-			await page.setRequestInterception(true);
-			page.on('request', req => {
-				if (
-					req.resourceType() === 'stylesheet' ||
-					req.resourceType() === 'font' ||
-					req.resourceType() === 'image'
-				) {
-					req.abort();
-				} else {
-					req.continue();
-				}
-			});
+			const { page, browser: _browser } = await createBrowserPage(proxy);
+			browser = _browser;
 
 			try {
 				await page.goto('https://vk.com/login', {
