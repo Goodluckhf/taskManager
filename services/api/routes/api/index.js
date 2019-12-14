@@ -16,6 +16,7 @@ import createWallSeekRoute from './wallSeek';
 import createUserRoute from './user';
 import createAdminRoute from './admin';
 import createCommentsByStrategyRoute from './commentsByStrategy';
+import createVkUsersRoute from './vkUsers';
 import Billing from '../../billing/Billing';
 import Captcha from '../../../../lib/Captcha';
 
@@ -63,6 +64,7 @@ createAutoLikesTaskRoute(router, passport, billing, captcha);
 createUserRoute(router, passport, billing, axios, captcha);
 createAdminRoute(router, passport, billing);
 createCommentsByStrategyRoute(router, passport, billing);
+createVkUsersRoute(router, passport, billing);
 createWallSeekRoute(router, passport);
 
 // Пока не используются
