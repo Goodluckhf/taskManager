@@ -6,7 +6,7 @@ import { authorize } from '../actions/vk/authorize';
 /**
  * @property {VkApi} vkApi
  */
-class WallCheckBanResponse extends Response {
+class PostCommentResponse extends Response {
 	/**
 	 * @return {String}
 	 */
@@ -203,4 +203,4 @@ class WallCheckBanResponse extends Response {
 	}
 }
 
-export default WallCheckBanResponse;
+export default PostCommentResponse;
