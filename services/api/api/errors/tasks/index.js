@@ -81,6 +81,27 @@ export class CommonCommentsError extends BaseTaskError {
 	}
 }
 
+export class CheckVkUserError extends BaseTaskError {
+	constructor(errors, ...args) {
+		super(...args);
+		this.errors = errors;
+	}
+
+	/**
+	 * @return {string}
+	 * @protected
+	 */
+	_toMessage() {
+		const message = super._toMessage();
+		const errorsMessages = this.errors.reduce(
+			(string, error) =>
+				`${string}\n---------\nОшбика: ${error.message}\nЛогин: ${error.login}`,
+			'',
+		);
+		return `Ошибка при проверке аккаунтов: ${message}\n${errorsMessages}`;
+	}
+}
+
 export class SetCommentsValidation extends CommonCommentsError {
 	/**
 	 * @return {string}

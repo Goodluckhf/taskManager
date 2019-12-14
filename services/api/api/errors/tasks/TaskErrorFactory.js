@@ -5,10 +5,14 @@ import {
 	CommonCommentsError,
 	SetRepostsValidation,
 	CommonRepostsError,
+	CheckVkUserError,
 } from './index';
 import BaseTaskError from './BaseTaskError';
 
 const statusToErrorMapper = {
+	checkVkUser: {
+		Default: CheckVkUserError,
+	},
 	likes: {
 		1: SetLikesValidation,
 		Default: CommonLikesError,
