@@ -1,12 +1,14 @@
-import { takeEvery, call, fork, cancel } from 'redux-saga/effects';
+import { takeEvery, call, fork, cancel, put } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import { LOCATION_CHANGE } from 'connected-react-router';
 import { update as updateGroup } from './group';
 import { update as updateAutolikes } from './autolikes';
 import { update as updateWallSeek } from './wallSeek';
 import { update as updateCommentsStrategy } from './commentsByStrategy';
+import { update as updateVkUsers } from './vkUsers';
 import { getUserData, updateBalance } from './auth';
 import { update } from './billing';
+import { activeUsersRequest } from '../actions/vkUsers';
 
 const mapperPathToUpdateFunction = {
 	'/groups': {
@@ -23,6 +25,10 @@ const mapperPathToUpdateFunction = {
 	},
 	'/comments-by-strategy': {
 		function: updateCommentsStrategy,
+		loop: true,
+	},
+	'/vk-users': {
+		function: updateVkUsers,
 		loop: true,
 	},
 	'/settings': {
@@ -49,10 +55,18 @@ const loopUpdateBalance = function*() {
 	}
 };
 
+const loopUpdateVkUsersCount = function*() {
+	while (true) {
+		yield put(activeUsersRequest());
+		yield call(delay, 5000);
+	}
+};
+
 export default function*() {
 	const interval = 5 * 1000;
 	let currentLoopTask = null;
 	let currentBalanceTask = null;
+	let currentVkUserCountTask = null;
 
 	// @TODO: пока идет 2 запроса
 	// Но сейчас это вообще не узкое место
@@ -69,12 +83,18 @@ export default function*() {
 			currentBalanceTask = null;
 		}
 
+		if (currentVkUserCountTask) {
+			yield cancel(currentVkUserCountTask);
+			currentVkUserCountTask = null;
+		}
+
 		const updateOption = mapperPathToUpdateFunction[location.pathname];
 		if (!updateOption) {
 			return;
 		}
 
 		currentBalanceTask = yield fork(loopUpdateBalance);
+		currentVkUserCountTask = yield fork(loopUpdateVkUsersCount);
 
 		if (!updateOption.loop) {
 			yield updateOption.function();

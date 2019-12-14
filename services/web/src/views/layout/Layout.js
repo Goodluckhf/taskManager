@@ -27,6 +27,7 @@ class Layout extends PureComponent {
 						balance={this.props.balance}
 						logout={this.props.logout}
 						email={this.props.email}
+						activeUsersCount={this.props.activeUsersCount}
 					/>
 				</AppHeader>
 				<div className="app-body">
@@ -62,6 +63,7 @@ Layout.propTypes = {
 	email: PropTypes.string.isRequired,
 	logout: PropTypes.func.isRequired,
 	balance: PropTypes.number,
+	activeUsersCount: PropTypes.number,
 };
 
 const mapStateToProps = state => ({
@@ -69,6 +71,7 @@ const mapStateToProps = state => ({
 	fatalError: state.fatalError,
 	email: state.auth.get('email'),
 	balance: state.auth.get('balance'),
+	activeUsersCount: state.auth.get('activeUsersCount'),
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -1,13 +1,12 @@
-import puppeteer from 'puppeteer-extra';
 import { maxBy } from 'lodash';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import Response from '../../../lib/amqp/Response';
+import { createBrowserPage } from '../actions/createPage';
+import { authorize } from '../actions/vk/authorize';
 
-puppeteer.use(StealthPlugin());
 /**
  * @property {VkApi} vkApi
  */
-class WallCheckBanResponse extends Response {
+class PostCommentResponse extends Response {
 	/**
 	 * @return {String}
 	 */
@@ -17,17 +16,6 @@ class WallCheckBanResponse extends Response {
 	}
 
 	async process({ credentials: { login, password }, postLink, text, imageURL, replyTo, proxy }) {
-		const puppeteerArgs = [
-			'--no-sandbox',
-			'--disable-setuid-sandbox',
-			'--disable-dev-shm-usage',
-			'--disable-accelerated-2d-canvas',
-			'--disable-gpu',
-		];
-		if (proxy) {
-			puppeteerArgs.push(`--proxy-server=${proxy.url}`);
-		}
-
 		this.logger.info({
 			message: 'Задача на коменты',
 			credentials: { login, password },
@@ -44,81 +32,14 @@ class WallCheckBanResponse extends Response {
 		 */
 		let browser = null;
 		try {
-			browser = await puppeteer.launch({
-				args: puppeteerArgs,
-				handleSIGINT: false,
-				headless: process.env.NODE_ENV === 'production',
-			});
+			const { page, browser: _browser } = await createBrowserPage(proxy);
+			browser = _browser;
 
-			const page = await browser.newPage();
-
-			if (proxy) {
-				await page.authenticate({ username: proxy.login, password: proxy.password });
-			}
-
-			await page.setRequestInterception(true);
-			page.on('request', req => {
-				if (
-					req.resourceType() === 'stylesheet' ||
-					req.resourceType() === 'font' ||
-					req.resourceType() === 'image'
-				) {
-					req.abort();
-				} else {
-					req.continue();
-				}
-			});
-
-			try {
-				await page.goto('https://vk.com/login', {
-					waitUntil: 'networkidle2',
-				});
-			} catch (error) {
-				if (/ERR_PROXY_CONNECTION_FAILED/.test(error.message)) {
-					error.code = 'proxy_failure';
-					error.proxy = proxy;
-				}
-
-				throw error;
-			}
-
-			this.logger.info({
-				message: 'Прокси жив (зашли на страницу авторизации)',
-				proxy,
-			});
-
-			await page.evaluate(
-				(_login, _password) => {
-					document.querySelector('#email').value = _login;
-					document.querySelector('#pass').value = _password;
-				},
+			await authorize(page, this.logger, {
 				login,
 				password,
-			);
-
-			const loginNavigationPromise = page.waitForNavigation();
-			await page.click('#login_button');
-			await loginNavigationPromise;
-
-			const loginFailedElement = await page.$('#login_message');
-			if (loginFailedElement) {
-				canRetry = false;
-
-				const error = new Error('Account credentials is invalid');
-				error.login = login;
-				error.code = 'login_failed';
-				throw error;
-			}
-
-			const blockedElement = await page.$('#login_blocked_wrap');
-			if (blockedElement) {
-				canRetry = false;
-
-				const error = new Error('Account is blocked');
-				error.login = login;
-				error.code = 'blocked';
-				throw error;
-			}
+				proxy,
+			});
 
 			await page.goto(postLink, {
 				waitUntil: 'networkidle2',
@@ -272,7 +193,7 @@ class WallCheckBanResponse extends Response {
 			const newCommentId = maxBy(userCommentIds, id => parseInt(id.replace(/.*_/, ''), 10));
 			return { commentId: newCommentId };
 		} catch (error) {
-			error.canRetry = canRetry;
+			error.canRetry = typeof error.canRetry !== 'undefined' ? error.canRetry : canRetry;
 			throw error;
 		} finally {
 			if (browser) {
@@ -282,4 +203,4 @@ class WallCheckBanResponse extends Response {
 	}
 }
 
-export default WallCheckBanResponse;
+export default PostCommentResponse;
