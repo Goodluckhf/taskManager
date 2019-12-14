@@ -3,15 +3,22 @@ import TaskErrorFactory from '../api/errors/tasks/TaskErrorFactory';
 import mongoose from '../../../lib/mongoose';
 import BaseTask from './BaseTask';
 import CheckVkUserRequest from '../api/amqpRequests/CheckVkUserRequest';
+import { CheckVkUserError } from '../api/errors/tasks';
+import BaseTaskError from '../api/errors/tasks/BaseTaskError';
 
 class CheckAndAddUsersTask extends BaseTask {
-	constructor({ VkUser, ...args }) {
+	constructor({ VkUser, Proxy, ...args }) {
 		super(args);
 		this.VkUser = VkUser;
+		this.Proxy = Proxy;
 	}
 
-	async checkAccount(login, password) {
-		const rpcRequest = new CheckVkUserRequest(this.config, { login, password });
+	async checkAccount(login, password, proxy) {
+		const rpcRequest = new CheckVkUserRequest(this.config, {
+			login,
+			password,
+			proxy: { url: proxy.url, login: proxy.login, password: proxy.password },
+		});
 		return this.rpcClient.call(rpcRequest);
 	}
 
@@ -34,7 +41,9 @@ class CheckAndAddUsersTask extends BaseTask {
 							return;
 						}
 
-						const { isActive, code } = await this.checkAccount(login, password);
+						const proxy = await this.Proxy.getRandom();
+
+						const { isActive, code } = await this.checkAccount(login, password, proxy);
 						if (!isActive) {
 							const error = new Error('user auth failed');
 							error.login = login;
@@ -53,15 +62,20 @@ class CheckAndAddUsersTask extends BaseTask {
 				{ concurrency: 10 },
 			);
 			if (errors.length) {
-				const taskError = new Error('errors with some checks');
-				taskError.errors = errors;
-				throw taskError;
+				throw new CheckVkUserError(errors, new Error('errors with some checks'));
 			}
 		} catch (error) {
-			const wrappedError = TaskErrorFactory.createError('default', error);
+			let displayError = error;
+			if (!(displayError instanceof BaseTaskError)) {
+				displayError = TaskErrorFactory.createError(
+					'default',
+					new Error('errors with some checks'),
+					usersCredentials,
+				);
+			}
 
-			this.taskDocument._error = wrappedError.toObject();
-			throw wrappedError;
+			this.taskDocument._error = displayError.toObject();
+			throw displayError;
 		} finally {
 			const Task = mongoose.model('Task');
 			this.taskDocument.lastHandleAt = new Date();
