@@ -15,6 +15,7 @@ import BaseTaskError from './errors/tasks/BaseTaskError';
 import TaskErrorFactory from './errors/tasks/TaskErrorFactory';
 import CheckBalanceTask from '../tasks/CheckBalanceTask';
 import CommentsByStrategyTask from '../tasks/CommentsByStrategyTask';
+import CheckAndAddUsersTask from '../tasks/CheckAndAddUsersTask';
 
 gracefulStop.setWaitor('handleActiveTasks');
 
@@ -28,6 +29,7 @@ const mapperModelTypeToTask = {
 	CheckWallBanTask,
 	CheckBalanceTask,
 	CommentsByStrategyTask,
+	CheckAndAddUsersTask,
 };
 
 /**
