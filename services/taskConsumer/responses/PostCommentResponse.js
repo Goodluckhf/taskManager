@@ -1,6 +1,7 @@
 import { maxBy } from 'lodash';
 import Response from '../../../lib/amqp/Response';
 import { createBrowserPage } from '../actions/createPage';
+import { authorize } from '../actions/vk/authorize';
 
 /**
  * @property {VkApi} vkApi
@@ -34,56 +35,11 @@ class WallCheckBanResponse extends Response {
 			const { page, browser: _browser } = await createBrowserPage(proxy);
 			browser = _browser;
 
-			try {
-				await page.goto('https://vk.com/login', {
-					waitUntil: 'networkidle2',
-				});
-			} catch (error) {
-				if (/ERR_PROXY_CONNECTION_FAILED/.test(error.message)) {
-					error.code = 'proxy_failure';
-					error.proxy = proxy;
-				}
-
-				throw error;
-			}
-
-			this.logger.info({
-				message: 'Прокси жив (зашли на страницу авторизации)',
-				proxy,
-			});
-
-			await page.evaluate(
-				(_login, _password) => {
-					document.querySelector('#email').value = _login;
-					document.querySelector('#pass').value = _password;
-				},
+			await authorize(page, this.logger, {
 				login,
 				password,
-			);
-
-			const loginNavigationPromise = page.waitForNavigation();
-			await page.click('#login_button');
-			await loginNavigationPromise;
-
-			const loginFailedElement = await page.$('#login_message');
-			if (loginFailedElement) {
-				canRetry = false;
-
-				const error = new Error('Account credentials is invalid');
-				error.login = login;
-				error.code = 'login_failed';
-				throw error;
-			}
-
-			const blockedElement = await page.$('#login_blocked_wrap');
-			if (blockedElement) {
-				canRetry = false;
-
-				const error = new Error('Account is blocked');
-				error.login = login;
-				error.code = 'blocked';
-				throw error;
-			}
+				proxy,
+			});
 
 			await page.goto(postLink, {
 				waitUntil: 'networkidle2',
@@ -237,7 +193,7 @@ class WallCheckBanResponse extends Response {
 			const newCommentId = maxBy(userCommentIds, id => parseInt(id.replace(/.*_/, ''), 10));
 			return { commentId: newCommentId };
 		} catch (error) {
-			error.canRetry = canRetry;
+			error.canRetry = typeof error.canRetry !== 'undefined' ? error.canRetry : canRetry;
 			throw error;
 		} finally {
 			if (browser) {
