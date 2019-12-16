@@ -31,7 +31,7 @@ export const authorize = async (page, logger, { login, password, proxy }) => {
 	await page.click('#login_button');
 	await loginNavigationPromise;
 
-	const loginFailedElement = await page.$('#login_message');
+	const loginFailedElement = await page.$('#login_message .error');
 	if (loginFailedElement) {
 		const error = new Error('Account credentials is invalid');
 		error.login = login;
