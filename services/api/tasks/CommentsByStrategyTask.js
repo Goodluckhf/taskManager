@@ -52,7 +52,11 @@ class CommentsByStrategyTask extends BaseTask {
 				},
 			});
 		} catch (error) {
-			if (error.code === 'blocked' || error.code === 'login_failed') {
+			if (
+				error.code === 'blocked' ||
+				error.code === 'login_failed' ||
+				error.code === 'phone_required'
+			) {
 				this.logger.warn({
 					message: 'проблема с пользователем vk',
 					code: error.code,
