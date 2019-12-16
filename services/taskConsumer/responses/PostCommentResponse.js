@@ -153,6 +153,12 @@ class PostCommentResponse extends Response {
 			canRetry = false;
 			await page.waitFor(
 				(beforeCount, userHref, _lastPostId) => {
+					const phoneConfirmationForm = document.querySelector('#validation_phone_row');
+
+					if (phoneConfirmationForm) {
+						return true;
+					}
+
 					const currentUserPosts = [...document.querySelectorAll('._post.reply')].filter(
 						element => element.querySelector('a.reply_image').href === userHref,
 					);
@@ -181,6 +187,19 @@ class PostCommentResponse extends Response {
 				currentUserHref,
 				lastPostId,
 			);
+
+			const needPhoneConfirmation = await page.evaluate(() => {
+				const form = document.querySelector('#validation_phone_row');
+				return !!form;
+			});
+
+			if (needPhoneConfirmation) {
+				const error = new Error('Account requires phone confirmation');
+				error.login = login;
+				error.code = 'phone_required';
+				error.canRetry = false;
+				throw error;
+			}
 
 			const userCommentIds = await page.evaluate(
 				userHref =>
