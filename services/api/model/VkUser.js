@@ -37,11 +37,10 @@ class VkUserDocument {
 	 */
 	static async findActive(count) {
 		const users = await this.find({ isActive: true })
-			.limit(count)
 			.lean()
 			.exec();
 
-		return shuffle(shuffle(users));
+		return shuffle(shuffle(users)).slice(0, count);
 	}
 
 	static async getRandom(exceptUser) {
