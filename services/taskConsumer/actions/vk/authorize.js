@@ -59,6 +59,7 @@ export const authorize = async (page, logger, captcha, { login, password, proxy 
 			await captchaNavigationPromise;
 		} catch (error) {
 			error.code = 'captcha_failed';
+			error.login = login;
 			error.canRetry = true;
 			throw error;
 		}
