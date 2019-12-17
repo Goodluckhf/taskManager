@@ -66,8 +66,8 @@ rpcServer.addResponse(
 	}),
 );
 
-rpcServer.addResponse(new PostCommentResponse({ logger, config }));
-rpcServer.addResponse(new CheckVkUserResponse({ logger, config }));
+rpcServer.addResponse(new PostCommentResponse({ captcha, logger, config }));
+rpcServer.addResponse(new CheckVkUserResponse({ captcha, logger, config }));
 
 // Обработчики накрутки комментов
 rpcServer

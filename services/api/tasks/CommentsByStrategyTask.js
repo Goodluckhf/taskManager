@@ -55,7 +55,8 @@ class CommentsByStrategyTask extends BaseTask {
 			if (
 				error.code === 'blocked' ||
 				error.code === 'login_failed' ||
-				error.code === 'phone_required'
+				error.code === 'phone_required' ||
+				error.code === 'captcha_failed'
 			) {
 				this.logger.warn({
 					message: 'проблема с пользователем vk',

@@ -1,5 +1,7 @@
+import bluebird from 'bluebird';
+
 // eslint-disable-next-line import/prefer-default-export
-export const authorize = async (page, logger, { login, password, proxy }) => {
+export const authorize = async (page, logger, captcha, { login, password, proxy }) => {
 	try {
 		await page.goto('https://vk.com/login', {
 			waitUntil: 'networkidle2',
@@ -28,10 +30,42 @@ export const authorize = async (page, logger, { login, password, proxy }) => {
 	);
 
 	const loginNavigationPromise = page.waitForNavigation();
+	const waitForCaptchaPromise = page.waitFor(() => !!document.querySelector('.recaptcha iframe'));
 	await page.click('#login_button');
-	await loginNavigationPromise;
+	await bluebird.any([loginNavigationPromise, waitForCaptchaPromise]);
 
-	const loginFailedElement = await page.$('#login_message');
+	const hasCaptcha = await page.evaluate(() => !!document.querySelector('.recaptcha iframe'));
+	if (hasCaptcha) {
+		try {
+			const captchaUrl = await page.evaluate(() =>
+				document.querySelector('.recaptcha iframe').getAttribute('src'),
+			);
+			const urlObject = new URL(captchaUrl);
+			const siteKey = urlObject.searchParams.get('k');
+			const result = await captcha.solveRecaptchaV2({
+				pageUrl: 'https://vk.com/login',
+				siteKey,
+			});
+			const captchaNavigationPromise = page.waitForNavigation();
+			await page.evaluate(
+				token => {
+					document.querySelector('.recaptcha .g-recaptcha-response').value = token;
+					document.querySelector('#quick_recaptcha').value = token;
+					document.querySelector('#quick_login_form').submit();
+				},
+				result,
+				siteKey,
+			);
+			await captchaNavigationPromise;
+		} catch (error) {
+			error.code = 'captcha_failed';
+			error.login = login;
+			error.canRetry = true;
+			throw error;
+		}
+	}
+
+	const loginFailedElement = await page.$('#login_message .error');
 	if (loginFailedElement) {
 		const error = new Error('Account credentials is invalid');
 		error.login = login;

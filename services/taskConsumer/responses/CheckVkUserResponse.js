@@ -3,6 +3,11 @@ import { createBrowserPage } from '../actions/createPage';
 import { authorize } from '../actions/vk/authorize';
 
 class CheckVkUserResponse extends Response {
+	constructor({ captcha, ...args }) {
+		super(args);
+		this.captcha = captcha;
+	}
+
 	/**
 	 * @return {String}
 	 */
@@ -27,7 +32,7 @@ class CheckVkUserResponse extends Response {
 			const { page, browser: _browser } = await createBrowserPage(proxy);
 			browser = _browser;
 			try {
-				await authorize(page, this.logger, {
+				await authorize(page, this.logger, this.captcha, {
 					login,
 					password,
 					proxy,
