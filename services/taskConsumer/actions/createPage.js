@@ -1,15 +1,17 @@
-import puppeteer from 'puppeteer-extra';
+import vanilaPuppeteer from 'puppeteer';
+import { addExtra } from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-
-puppeteer.use(StealthPlugin());
 
 /**
  *
- * @param proxy
+ * @param {Object} proxy
  * @returns {Promise<{browser: Browser, page: Page}>}
  */
 // eslint-disable-next-line import/prefer-default-export
 export const createBrowserPage = async proxy => {
+	const puppeteer = addExtra(vanilaPuppeteer);
+	puppeteer.use(StealthPlugin());
+
 	const puppeteerArgs = [
 		'--no-sandbox',
 		'--disable-setuid-sandbox',
