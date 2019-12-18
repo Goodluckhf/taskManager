@@ -12,7 +12,7 @@
 		"strict": false,
 		// Disallow features that require cross-file information for emit.
 		"isolatedModules": true,
-		// Import non-ES modules as default imports.
-		"esModuleInterop": true
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true
 	}
 }
