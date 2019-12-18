@@ -1,4 +1,4 @@
-import bunyan from 'bunyan';
+import * as bunyan from 'bunyan';
 import StdoutStream from 'bunyan-stdout-stream';
 
 let stream = {
@@ -9,6 +9,8 @@ let stream = {
 if (process.env.NODE_ENV === 'development') {
 	stream = {
 		level: 'trace',
+		// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+		// @ts-ignore
 		type: 'raw',
 		stream: new StdoutStream({ maxDepth: 10 }),
 	};
@@ -16,6 +18,8 @@ if (process.env.NODE_ENV === 'development') {
 
 const logger = bunyan.createLogger({
 	name: 'devLogger',
+	// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+	// @ts-ignore
 	streams: [stream],
 	serializers: {
 		error: err => {
