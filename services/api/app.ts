@@ -47,7 +47,7 @@ process.on('uncaughtException', error => {
 });
 
 process.on('unhandledRejection', (_error, reason) => {
-	const error = _error;
+	const error: any = _error;
 	if (error.request) {
 		delete error.request;
 	}

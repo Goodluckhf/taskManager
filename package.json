@@ -40,7 +40,8 @@
     "passport-local": "1.0.0",
     "source-map-support": "^0.5.9",
     "umetrics": "^1.0.4",
-    "uuid": "3.3.2"
+    "uuid": "3.3.2",
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.0",
@@ -52,18 +53,30 @@
     "babel-plugin-syntax-object-rest-spread": "^6.13.0",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^5.7.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-config-prettier": "^3.1.0",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-prettier": "^3.0.0",
+    "eslint": "^6.7.2",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.11.1",
     "husky": "^0.14.3",
     "lint-staged": "^7.2.2",
     "mocha": "^5.2.0",
     "mockgoose": "^8.0.4",
     "nyc": "^14.1.1",
-    "prettier": "^1.15.3"
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/plugin-proposal-decorators": "^7.7.4",
+    "@babel/plugin-proposal-numeric-separator": "^7.7.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.7.4",
+    "@babel/preset-typescript": "^7.6.0",
+    "@types/bluebird": "^3.5.27",
+    "@types/node": "^12.7.7",
+    "@typescript-eslint/eslint-plugin": "^2.12.0",
+    "@typescript-eslint/parser": "^2.12.0",
+    "babel-plugin-transform-typescript-metadata": "^0.2.2",
+    "prettier": "^1.19.1",
+    "ts-node": "^8.5.4",
+    "typescript": "^3.7.3"
   },
   "lint-staged": {
     "*.js": [

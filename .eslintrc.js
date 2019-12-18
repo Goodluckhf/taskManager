@@ -1,8 +1,14 @@
 module.exports = {
 	root: true,
-	extends: ['eslint-config-airbnb-base', 'plugin:prettier/recommended'],
-	plugins: ['prettier'],
-	parser: 'babel-eslint',
+	extends: [
+		'eslint-config-airbnb-base',
+		'plugin:@typescript-eslint/recommended',
+		'prettier/@typescript-eslint',
+		'plugin:prettier/recommended',
+		'plugin:import/typescript',
+	],
+	plugins: ['prettier', '@typescript-eslint'],
+	parser: '@typescript-eslint/parser',
 	parserOptions: {
 		sourceType: 'module',
 		allowImportExportEverywhere: false,
@@ -14,6 +20,7 @@ module.exports = {
 	rules: {
 		'no-await-in-loop': 'off',
 		strict: 'error',
+		'import/no-named-as-default': 0,
 		'no-param-reassign': 'off',
 		'no-underscore-dangle': 'off',
 		'no-restricted-syntax': 'off',
