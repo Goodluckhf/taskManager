@@ -3,16 +3,21 @@ import Koa from 'koa';
 import morgan from 'koa-morgan';
 import bodyParser from 'koa-bodyparser';
 import passport from 'koa-passport';
-import config from 'config';
 
-import logger from '../../lib/logger';
+import diContainer from './di.container';
 import mongoose from '../../lib/mongoose';
 import routes, { uMetrics } from './routes';
 import errorHandler from './routes/api/errorHandler';
 import initModels from './model';
-import gracefulStop from '../../lib/GracefulStop';
 import db from '../../lib/db';
 import passportStrategies from './passport';
+import { ConfigInterface } from '../../config/config.interface';
+import { LoggerInterface } from '../../lib/logger.interface';
+import GracefulStop from '../../lib/graceful-stop';
+
+const config = diContainer.get<ConfigInterface>('Config');
+const logger = diContainer.get<LoggerInterface>('Logger');
+const gracefulStop = diContainer.get<GracefulStop>(GracefulStop);
 
 const app = new Koa();
 
