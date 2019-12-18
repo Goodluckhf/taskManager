@@ -1,11 +1,13 @@
-/**
- * @property {Logger} logger
- * @property {Map} waitings
- * @property {Boolean} stopping
- */
+import { inject, injectable } from 'inversify';
+import { LoggerInterface } from './logger.interface';
+
+@injectable()
 class GracefulStop {
-	constructor(logger) {
-		this.logger = logger;
+	private readonly waitings: Map<string, boolean>;
+
+	private stopping: boolean;
+
+	constructor(@inject('Logger') private readonly logger: LoggerInterface) {
 		this.waitings = new Map();
 		this.stopping = false;
 	}
@@ -13,7 +15,7 @@ class GracefulStop {
 	/**
 	 * @return {boolean}
 	 */
-	get isStopping() {
+	get isStopping(): boolean {
 		return this.stopping;
 	}
 
@@ -21,29 +23,24 @@ class GracefulStop {
 	 * Регистрирует ожидателя
 	 * @param {String} key
 	 */
-	setWaitor(key) {
+	setWaitor(key: string): void {
 		this.waitings.set(key, false);
 	}
 
 	/**
 	 * Устанваливает ожидателя готовым к остановке
-	 * @param {String} key
 	 */
-	setReady(key) {
+	setReady(key: string): void {
 		this.waitings.set(key, true);
 	}
 
 	/**
 	 * Не готов к выходу
-	 * @param {String} key
 	 */
-	setProcessing(key) {
+	setProcessing(key: string): void {
 		this.waitings.set(key, false);
 	}
 
-	/**
-	 * @param {Number} status
-	 */
 	stop(status = 0) {
 		this.logger.info('Start graceful stop');
 		this.stopping = true;
@@ -59,10 +56,6 @@ class GracefulStop {
 		}, 1000);
 	}
 
-	/**
-	 * @param {Number} ms
-	 * @param {Number} status
-	 */
 	forceStop(ms = 1000, status = 1) {
 		this.stopping = true;
 		this.logger.info('Force stopping');
