@@ -1,5 +1,5 @@
-const path = require('path');
-const dotEnv = require('dotenv');
+import dotEnv from 'dotenv';
+import path from 'path';
 
 if (process.env.NODE_ENV === 'development') {
 	dotEnv.config({ path: path.resolve(process.cwd(), '.env.mongodb') });
