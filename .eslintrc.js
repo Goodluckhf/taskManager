@@ -20,6 +20,7 @@ module.exports = {
 	rules: {
 		'no-await-in-loop': 'off',
 		strict: 'error',
+		'import/extensions': 'off',
 		'import/no-named-as-default': 0,
 		'no-param-reassign': 'off',
 		'no-underscore-dangle': 'off',
