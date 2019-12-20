@@ -18,6 +18,9 @@ module.exports = {
 		node: true,
 	},
 	rules: {
+		'import/prefer-default-export': 'off',
+		'no-useless-constructor': 'off',
+		'import/no-duplicates': 'off',
 		'no-await-in-loop': 'off',
 		strict: 'error',
 		'import/extensions': 'off',
@@ -40,13 +43,14 @@ module.exports = {
 	},
 	overrides: [
 		{
-			files: ['*.test.js', '*.spec.js', 'test/**/*.js'],
+			files: ['*.test.js', '*.spec.js', 'test/**/*.js', '*.spec.ts'],
 			env: {
 				jest: true,
 			},
 			rules: {
 				'no-console': 'off',
 				'no-plusplus': 'off',
+				'import/no-extraneous-dependencies': 'off',
 			},
 		},
 	],

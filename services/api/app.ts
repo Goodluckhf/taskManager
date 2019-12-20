@@ -1,8 +1,6 @@
 import 'source-map-support/register';
-import Koa from 'koa';
-import morgan from 'koa-morgan';
+
 import bodyParser from 'koa-bodyparser';
-import passport from 'koa-passport';
 
 import diContainer from './di.container';
 import mongoose from '../../lib/mongoose';
@@ -14,31 +12,29 @@ import passportStrategies from './passport';
 import { ConfigInterface } from '../../config/config.interface';
 import { LoggerInterface } from '../../lib/logger.interface';
 import GracefulStop from '../../lib/graceful-stop';
+import { ApplicationInterface } from '../../lib/framework/application.interface';
+import { KoaApplication } from '../../lib/framework/koa-application';
 
 const config = diContainer.get<ConfigInterface>('Config');
 const logger = diContainer.get<LoggerInterface>('Logger');
 const gracefulStop = diContainer.get<GracefulStop>(GracefulStop);
+const application = diContainer.get<ApplicationInterface>(KoaApplication);
+const application = diContainer.get<>(KoaApplication);
 
-const app = new Koa();
-
-app.silent = false;
-if (process.env.NODE_ENV === 'development') {
-	app.use(morgan('dev'));
-}
-app.use(bodyParser());
-app.use(passport.initialize());
+application.use(bodyParser());
+application.use();
 passportStrategies(passport, config.get('jwt.secret'));
 
-app.use(errorHandler);
-app.use(routes.routes());
+application.use(errorHandler);
+application.use(routes.routes());
 
-app.use((ctx, next) => {
+application.use(async (ctx, next) => {
 	ctx.response.status = 404;
 	ctx.response.body = 'Not found';
-	next();
+	await next();
 });
 
-app.on('error', (error, ctx) => {
+application.on('error', (error, ctx) => {
 	logger.error({
 		error,
 		req: ctx.req,
@@ -101,7 +97,7 @@ process.on('SIGTERM', () => {
 		}
 	}, 15000);
 
-	app.listen(config.get('api.port'));
+	application.listen(config.get('api.port'));
 	logger.info(`server listening on port: ${config.get('api.port')}`);
 })().catch(error => {
 	logger.error({

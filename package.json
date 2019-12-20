@@ -17,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "@babel/polyfill": "^7.0.0-beta.42",
+    "@types/koa": "^2.11.0",
     "ajv": "6.5.3",
     "amqplib": "0.5.2",
     "axios": "^0.19.0",
@@ -56,7 +57,12 @@
     "@babel/register": "^7.0.0",
     "@types/bluebird": "^3.5.27",
     "@types/bunyan": "^1.8.6",
-    "@types/node": "^12.7.7",
+    "@types/jest": "^24.0.24",
+    "@types/koa-passport": "^4.0.2",
+    "@types/koa-router": "^7.0.42",
+    "@types/node": "^12.12.21",
+    "@types/passport": "^1.0.2",
+    "@types/supertest": "^2.0.8",
     "@typescript-eslint/eslint-plugin": "^2.12.0",
     "@typescript-eslint/parser": "^2.12.0",
     "babel-core": "^7.0.0-bridge.0",
@@ -72,13 +78,59 @@
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.11.1",
     "husky": "^0.14.3",
+    "jest": "^24.9.0",
+    "jest-junit": "^10.0.0",
     "lint-staged": "^7.2.2",
     "mocha": "^5.2.0",
     "mockgoose": "^8.0.4",
     "nyc": "^14.1.1",
     "prettier": "^1.19.1",
+    "supertest": "^4.0.2",
+    "ts-jest": "^24.2.0",
     "ts-node": "^8.5.4",
     "typescript": "^3.7.3"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "./",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "../coverage",
+    "collectCoverageFrom": [
+      "**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "testEnvironment": "node",
+    "reporters": [
+      "default",
+      [
+        "jest-junit",
+        {
+          "suiteName": "Unit tests",
+          "outputDirectory": "./coverage",
+          "classNameTemplate": "{classname}-{title}",
+          "titleTemplate": "{classname}-{title}",
+          "ancestorSeparator": " › ",
+          "usePathForSuiteName": true,
+          "includeConsoleOutput": true
+        }
+      ]
+    ],
+    "globals": {
+      "ts-jest": {
+        "diagnostics": {
+          "warnOnly": true
+        }
+      }
+    }
   },
   "lint-staged": {
     "*.js": [

@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { Container } from 'inversify';
 import config from 'config';
+import * as passport from 'koa-passport';
 import { ConfigInterface } from '../../config/config.interface';
 import logger from '../../lib/logger';
 import { LoggerInterface } from '../../lib/logger.interface';
@@ -12,5 +13,6 @@ const container = new Container({
 
 container.bind<ConfigInterface>('Config').toConstantValue(config);
 container.bind<LoggerInterface>('Logger').toConstantValue(logger);
+container.bind('Passport').toConstantValue(passport.initialize());
 
 export default container;
