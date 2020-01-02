@@ -12,6 +12,7 @@ import { TaskHandlerInterface } from './task/task-handler.interface';
 import { CommentsByStrategyTaskHandler } from './comments-by-strategy/comments-by-strategy-task.handler';
 
 import './comments-by-strategy/comments-by-strategy.controller';
+import './auth/auth.controller';
 import { AuthMiddleware } from './auth/auth.middleware';
 
 export function createContainer() {
