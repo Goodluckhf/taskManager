@@ -38,25 +38,25 @@ describe('Comment by strategy API', () => {
 	});
 
 	it('should return 401', async () => {
-		await ctx.app.get('/comments-by-strategy').expect(401);
+		await ctx.app.get('/api/comments-by-strategy').expect(401);
 	});
 
 	it('should return empty list if there is no tasks', async () => {
 		ctx.container.rebind(TYPE.AuthProvider).toConstantValue(new AuthProviderMock(ctx.user));
-		await ctx.app.get('/comments-by-strategy').expect(200, { success: true, data: [] });
+		await ctx.app.get('/api/comments-by-strategy').expect(200, { success: true, data: [] });
 	});
 
 	it('Should create new task', async () => {
 		ctx.container.rebind(TYPE.AuthProvider).toConstantValue(new AuthProviderMock(ctx.user));
 		await ctx.app
-			.post('/comments-by-strategy')
+			.post('/api/comments-by-strategy')
 			.send({
 				postLink: 'testLink',
 				commentsStrategy: [{ userFakeId: 0, text: 'text' }],
 			})
 			.expect(200);
 
-		const { body } = await ctx.app.get('/comments-by-strategy').expect(200);
+		const { body } = await ctx.app.get('/api/comments-by-strategy').expect(200);
 		expect(body.data.length).toBe(1);
 	});
 });

@@ -17,7 +17,7 @@ import { CommentByStrategyApi } from './comment-by-strategy-api';
 import { ValidationException } from './errors/validation.exception';
 import { User } from '../users/user';
 
-@controller('')
+@controller('/api')
 export class CommentsByStrategyController extends BaseHttpController {
 	@inject(CommentByStrategyApi) private readonly commentByStrategyApi: CommentByStrategyApi;
 
