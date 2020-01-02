@@ -1,46 +1,22 @@
 import 'source-map-support/register';
 
-import bodyParser from 'koa-bodyparser';
-
-import diContainer from './di.container';
-import mongoose from '../../lib/mongoose';
-import routes, { uMetrics } from './routes';
-import errorHandler from './routes/api/errorHandler';
-import initModels from './model';
-import db from '../../lib/db';
-import passportStrategies from './passport';
+import { createContainer } from './di.container';
 import { ConfigInterface } from '../../config/config.interface';
 import { LoggerInterface } from '../../lib/logger.interface';
 import GracefulStop from '../../lib/graceful-stop';
-import { ApplicationInterface } from '../../lib/framework/application.interface';
-import { KoaApplication } from '../../lib/framework/koa-application';
+import { Database } from '../../lib/inversify-typegoose/database';
+import { VkUsersMetricsService } from './metrics/vk-users-metrics.service';
+import { ProxyMetricsService } from './metrics/proxy-metrics.service';
+import { createApplication } from './create-application';
+
+const diContainer = createContainer();
 
 const config = diContainer.get<ConfigInterface>('Config');
 const logger = diContainer.get<LoggerInterface>('Logger');
 const gracefulStop = diContainer.get<GracefulStop>(GracefulStop);
-const application = diContainer.get<ApplicationInterface>(KoaApplication);
-const application = diContainer.get<>(KoaApplication);
-
-application.use(bodyParser());
-application.use();
-passportStrategies(passport, config.get('jwt.secret'));
-
-application.use(errorHandler);
-application.use(routes.routes());
-
-application.use(async (ctx, next) => {
-	ctx.response.status = 404;
-	ctx.response.body = 'Not found';
-	await next();
-});
-
-application.on('error', (error, ctx) => {
-	logger.error({
-		error,
-		req: ctx.req,
-		res: ctx.res,
-	});
-});
+const database = diContainer.get(Database);
+const vkUsersMetricsService = diContainer.get(VkUsersMetricsService);
+const proxyMetricsService = diContainer.get(ProxyMetricsService);
 
 process.on('uncaughtException', error => {
 	logger.error({ error });
@@ -67,28 +43,24 @@ process.on('SIGTERM', () => {
 });
 
 (async () => {
-	// Подключаемся к бд
-	const dbConnection = db.connect();
-	// Инициализируем модели
-	initModels(dbConnection);
+	await database.connect();
 
 	// При рестарте api нужно убрать статус pending
 	// Т.к рестарт не всегда бывает graceful
-	await mongoose.model('AutoLikesTask').update(
-		{
-			deletedAt: null,
-			status: mongoose.model('Task').status.pending,
-		},
-		{ $set: { status: mongoose.model('Task').status.waiting } },
-		{ multi: true },
-	);
+	// @TODO: пока убрал (не реализовано на новой архитектуре)
+	// await mongoose.model('AutoLikesTask').update(
+	// 	{
+	// 		deletedAt: null,
+	// 		status: mongoose.model('Task').status.pending,
+	// 	},
+	// 	{ $set: { status: mongoose.model('Task').status.waiting } },
+	// 	{ multi: true },
+	// );
 
 	setInterval(async () => {
 		try {
-			const countAccounts = await mongoose.model('VkUser').countActive();
-			const countProxies = await mongoose.model('Proxy').countActive();
-			uMetrics.activeVkAccounts.inc(countAccounts);
-			uMetrics.activeProxies.inc(countProxies);
+			await vkUsersMetricsService.storeCurrentValue();
+			await proxyMetricsService.storeCurrentValue();
 		} catch (error) {
 			logger.warn({
 				message: 'proxy/vk metrics get',
@@ -97,7 +69,8 @@ process.on('SIGTERM', () => {
 		}
 	}, 15000);
 
-	application.listen(config.get('api.port'));
+	createApplication(diContainer).listen(config.get('api.port'));
+
 	logger.info(`server listening on port: ${config.get('api.port')}`);
 })().catch(error => {
 	logger.error({
