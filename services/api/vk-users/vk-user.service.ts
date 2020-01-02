@@ -12,7 +12,7 @@ export class VkUserService {
 		return this.VkUsersModel.count({ isActive: true });
 	}
 
-	async findActive(count: number): Promise<[VkUser]> {
+	async findActive(count: number): Promise<VkUser[]> {
 		const users = await this.VkUsersModel.find({ isActive: true })
 			.lean()
 			.exec();
