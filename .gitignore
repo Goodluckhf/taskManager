@@ -8,3 +8,5 @@ tmp
 .env.mongodb
 config/*
 !config/default.js
+!config/config.interface.ts
+
