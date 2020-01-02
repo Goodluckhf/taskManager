@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"esModuleInterop": true,
 		// Target latest version of ECMAScript.
-		"target": "esnext",
+		"target": "es2018",
 		// Search under node_modules for non-relative imports.
 		"moduleResolution": "node",
 		// Process & infer types from .js files.
