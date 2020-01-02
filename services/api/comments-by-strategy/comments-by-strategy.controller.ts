@@ -14,7 +14,7 @@ import { AuthMiddleware } from '../auth/auth.middleware';
 import { TaskCreationDto } from './dto/task-creation.dto';
 import { CommentByStrategyTaskInterface } from './comment-by-strategy-task.interface';
 import { CommentByStrategyApi } from './comment-by-strategy-api';
-import { ValidationException } from './errors/validation.exception';
+import { ValidationException } from '../exceptions/validation.exception';
 import { User } from '../users/user';
 
 @controller('/api')

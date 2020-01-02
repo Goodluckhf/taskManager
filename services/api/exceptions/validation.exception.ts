@@ -3,7 +3,7 @@ import {
 	FormattableInterface,
 	HttpStatusableInterface,
 	ObjectableInterface,
-} from '../../../../lib/internal.types';
+} from '../../../lib/internal.types';
 
 export class ValidationException extends Error
 	implements ObjectableInterface, FormattableInterface, HttpStatusableInterface {
