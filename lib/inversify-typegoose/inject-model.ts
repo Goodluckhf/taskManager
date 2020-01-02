@@ -1,13 +1,14 @@
 import 'reflect-metadata';
 import { inject } from 'inversify';
 import { getModelToken } from './get-model-token';
+import { ClassType } from '../internal.types';
 
-type classType = {
-	new (...args: any[]): any;
-};
-
-export const injectModel = (modelClass: classType): ParameterDecorator => {
+export const injectModel = (modelClass: ClassType<any>): ParameterDecorator => {
 	return (target, propertyKey, parameterIndex): void => {
-		inject(getModelToken(modelClass))(target, propertyKey.toString(), parameterIndex);
+		inject(getModelToken(modelClass))(
+			target,
+			propertyKey && propertyKey.toString(),
+			parameterIndex,
+		);
 	};
 };
