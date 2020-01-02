@@ -1,14 +1,11 @@
 import 'reflect-metadata';
+import { ClassType } from '../internal.types';
 
 export const modelMetadataSymbol = Symbol('modelMetadataSymbol');
 
 export type ModelDecoratorConfig<T> = {
 	discriminatorClass?: ClassType<T>;
 };
-
-export interface ClassType<T> extends Function {
-	new (...args: any[]): T;
-}
 
 export type ModelMetadata<T> = {
 	modelClass: ClassType<T>;
