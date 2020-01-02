@@ -19,6 +19,6 @@ export const modelAutoBind = (container: interfaces.Container): void => {
 			);
 		}
 
-		container.bind(getModelToken(modelMetadata.modelClass)).to(modelClass);
+		container.bind(getModelToken(modelMetadata.modelClass)).toConstantValue(modelClass);
 	});
 };
