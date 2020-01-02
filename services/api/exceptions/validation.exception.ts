@@ -10,7 +10,7 @@ export class ValidationException extends Error
 	private readonly errors: OriginalValidationError[];
 
 	constructor(errors: OriginalValidationError[]) {
-		super('Validation error');
+		super('Ошибка валидации');
 		this.errors = errors;
 	}
 
@@ -24,7 +24,7 @@ export class ValidationException extends Error
 
 	toFormattedString(): string {
 		return this.errors.reduce((str, error) => {
-			return `${str}\n[${error.property}] should be "${error.constraints}"`;
+			return `${str}\n[${error.property}] должно быть "${error.constraints}"`;
 		}, '');
 	}
 
