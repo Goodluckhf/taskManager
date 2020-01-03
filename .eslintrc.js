@@ -48,6 +48,7 @@ module.exports = {
 				jest: true,
 			},
 			rules: {
+				'@typescript-eslint/no-empty-function': 'off',
 				'no-console': 'off',
 				'no-plusplus': 'off',
 				'import/no-extraneous-dependencies': 'off',
