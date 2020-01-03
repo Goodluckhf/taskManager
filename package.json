@@ -7,7 +7,7 @@
     "start:dev": "node --require @babel/register app.js",
     "test": "npm run test:api:e2e && npm run test:api:unit",
     "test:api:e2e": "NODE_ENV=development jest --config ./services/api/tests/ts/jest-e2e.json --detectOpenHandles",
-    "test:api:unit": "mocha --exit --ui bdd --reporter spec --require @babel/register ./services/api/{api,billing,model,routes,tasks}/**/*.test.js",
+    "test:api:unit": "NODE_ENV=development jest --detectOpenHandles",
     "test:coverage:dev": "nyc --reporter=text mocha --exit --ui bdd --reporter spec --require @babel/register ./services/api/tests/setup.js ./services/api/tests/**/*.test.js ./services/api/tests/*.test.js",
     "precommit": "lint-staged",
     "lint": "eslint ."
@@ -104,7 +104,7 @@
       "ts"
     ],
     "rootDir": "./",
-    "testRegex": ".spec.ts$",
+    "testRegex": "\\.spec.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
