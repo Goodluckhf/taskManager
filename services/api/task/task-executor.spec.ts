@@ -5,6 +5,7 @@ import { loggerMock } from '../tests/ts/fixtures/logger.mock';
 import { TaskServiceInterface } from './task-service.interface';
 import { createTask } from '../tests/ts/fixtures/task-factory';
 import { Mocked } from '../tests/ts/types';
+import { taskMetricsServiceMock } from '../tests/ts/mocks/task-metrics-service.mock';
 
 describe('TaskExecutor', () => {
 	let ctx: {
@@ -13,11 +14,13 @@ describe('TaskExecutor', () => {
 		taskServiceMock: Mocked<TaskServiceInterface>;
 	};
 	beforeEach(() => {
-		const taskAbstractionFactoryMock = {
+		const taskAbstractionFactoryMock: Mocked<TaskAbstractFactoryInterface> = {
 			createTaskHandler: jest.fn(),
 		};
 
-		const taskServiceMock = {
+		const taskServiceMock: Mocked<TaskServiceInterface> = {
+			deleteOwnedByUser: jest.fn(),
+			getActive: jest.fn(),
 			finish: jest.fn(),
 			finishWithError: jest.fn(),
 			setPending: jest.fn(),
@@ -27,6 +30,7 @@ describe('TaskExecutor', () => {
 			taskAbstractionFactoryMock,
 			taskServiceMock,
 			loggerMock,
+			taskMetricsServiceMock,
 		);
 
 		ctx = {

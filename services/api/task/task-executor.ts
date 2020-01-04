@@ -9,6 +9,7 @@ import { LoggerInterface } from '../../../lib/logger.interface';
 import { User } from '../users/user';
 import { TaskServiceInterface } from './task-service.interface';
 import { TaskMetricsService } from '../metrics/task-metrics.service';
+import { TaskMetricsServiceInterface } from '../metrics/task-metrics-service.interface';
 
 @injectable()
 export class TaskExecutor {
@@ -17,7 +18,8 @@ export class TaskExecutor {
 		private readonly taskHandlerFactory: TaskAbstractFactoryInterface,
 		@inject(TaskService) private readonly taskService: TaskServiceInterface,
 		@inject('Logger') private readonly logger: LoggerInterface,
-		@inject(TaskMetricsService) private readonly taskMetricsService: TaskMetricsService,
+		@inject(TaskMetricsService)
+		private readonly taskMetricsService: TaskMetricsServiceInterface,
 	) {}
 
 	async execute(task: CommonTask) {

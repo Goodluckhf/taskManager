@@ -1,4 +1,4 @@
-import { multiInject } from 'inversify';
+import { injectable, multiInject } from 'inversify';
 import { TaskAbstractFactoryInterface } from './task-abstract-factory.interface';
 import { TaskHandlerInterface } from './task-handler.interface';
 import { CommentsByStrategyTaskHandler } from '../comments-by-strategy/comments-by-strategy-task.handler';
@@ -12,6 +12,7 @@ export type MapperTypeToClass = {
 	[key: string]: ClassType<TaskHandlerInterface>;
 };
 
+@injectable()
 export class TaskAbstractFactory implements TaskAbstractFactoryInterface {
 	private mapper: MapperToInstance;
 
