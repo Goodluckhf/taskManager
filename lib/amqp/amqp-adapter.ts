@@ -1,27 +1,35 @@
 import amqp from 'amqplib';
 import bluebird from 'bluebird';
+import { inject, injectable } from 'inversify';
+import { LoggerInterface } from '../logger.interface';
+import { ConfigInterface } from '../../config/config.interface';
+import { AmqpAdapterInterface } from './amqp-adapter.interface';
 
-/**
- * @property {Logger} logger
- * @property {String} host
- * @property {Number} port
- * @property {String} login
- * @property {String} password
- * @property {Number} reconnectInterval
- * @property {Connection} connection
- */
-class Amqp {
-	/**
-	 * @param {Logger} logger
-	 * @param {Object} config
-	 * @param {String} config.host
-	 * @param {Number} config.port
-	 * @param {Number?} config.reconnectInterval
-	 * @param {Boolean} config.retry
-	 */
-	// eslint-disable-next-line object-curly-newline
-	constructor(logger, { host, port, login, password, reconnectInterval, retry = true } = {}) {
+@injectable()
+export class AmqpAdapter implements AmqpAdapterInterface {
+	private readonly host: string;
+
+	private readonly port: number;
+
+	private readonly login: string;
+
+	private readonly password: string;
+
+	private readonly retry: boolean;
+
+	private readonly reconnectInterval: number;
+
+	private connection: amqp.Connection;
+
+	constructor(
+		@inject('Logger') private readonly logger: LoggerInterface,
+		@inject('Config') private readonly config: ConfigInterface,
+	) {
 		this.logger = logger;
+		const { host, port, login, password, reconnectInterval, retry = true } = this.config.get(
+			'rabbit',
+		);
+
 		this.host = host;
 		this.port = port;
 		this.login = login;
@@ -32,10 +40,7 @@ class Amqp {
 		this.connection = null;
 	}
 
-	/**
-	 * @return {Promise<Connection>}
-	 */
-	async connect() {
+	async connect(): Promise<amqp.Connection> {
 		const connectionURI = `amqp://${this.login}:${this.password}@${this.host}:${this.port}`;
 		try {
 			this.connection = await amqp.connect(connectionURI);
@@ -76,5 +81,3 @@ class Amqp {
 		}
 	}
 }
-
-export default Amqp;
