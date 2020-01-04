@@ -2,17 +2,16 @@ import { maxBy } from 'lodash';
 import { inject, injectable } from 'inversify';
 import { Browser } from 'puppeteer';
 import { createBrowserPage } from '../actions/create-page';
-import { authorize } from '../actions/vk/authorize';
 import { AbstractRpcHandler } from '../../../lib/amqp/abstract-rpc-handler';
-import Captcha from '../../../lib/Captcha';
 import { LoggerInterface } from '../../../lib/logger.interface';
 import { AccountException } from './account.exception';
+import { VkAuthorizer } from '../actions/vk/vk-authorizer';
 
 @injectable()
 export class PostCommentRpcHandler extends AbstractRpcHandler {
-	@inject(Captcha) private readonly captcha: Captcha;
-
 	@inject('Logger') private readonly logger: LoggerInterface;
+
+	@inject(VkAuthorizer) private readonly vkAuthorizer: VkAuthorizer;
 
 	protected readonly method = 'postComment';
 
@@ -33,7 +32,7 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 			const { page, browser: _browser } = await createBrowserPage(proxy);
 			browser = _browser;
 
-			await authorize(page, this.logger, this.captcha, {
+			await this.vkAuthorizer.authorize(page, {
 				login,
 				password,
 				proxy,
