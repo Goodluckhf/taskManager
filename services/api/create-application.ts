@@ -3,7 +3,7 @@ import { interfaces } from 'inversify';
 import bodyParser from 'body-parser';
 import { Application } from 'express';
 import { AuthProvider } from './auth/auth.provider';
-import { errorHandlerMiddleware } from './errorHandler';
+import { errorHandlerMiddleware } from './error-handler-middleware';
 
 export function createApplication(diContainer: interfaces.Container): Application {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-ignore

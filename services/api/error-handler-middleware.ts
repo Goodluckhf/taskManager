@@ -1,9 +1,7 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import mongoose from '../../lib/mongoose';
-import BaseApiError from './api/errors/BaseApiError';
 import logger from '../../lib/logger';
 import { ValidationError } from './api/errors/index';
-import BaseError from './api/errors/BaseError';
 import { User } from './users/user';
 
 export const errorHandlerMiddleware: ErrorRequestHandler = async (
@@ -21,13 +19,14 @@ export const errorHandlerMiddleware: ErrorRequestHandler = async (
 	}
 
 	const user = req.user as User;
+	const errorDataObject = typeof error.toObject === 'function' ? error.toObject() : {};
 	logger.warn({
 		error,
-		errorData: typeof error.toObject === 'function' ? error.toObject() : {},
 		message: 'API error',
 		userId: user ? user._id.toString() : null,
 		url: req.url,
 		method: req.method,
+		...errorDataObject,
 	});
 
 	const errorMessage = error.toFormattedString ? error.toFormattedString() : error.message;
