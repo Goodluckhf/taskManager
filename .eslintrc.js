@@ -18,6 +18,7 @@ module.exports = {
 		node: true,
 	},
 	rules: {
+		'@typescript-eslint/camelcase': 'off',
 		'import/prefer-default-export': 'off',
 		'no-useless-constructor': 'off',
 		'import/no-duplicates': 'off',
