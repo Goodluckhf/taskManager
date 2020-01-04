@@ -49,6 +49,7 @@ module.exports = {
 			},
 			rules: {
 				'@typescript-eslint/no-empty-function': 'off',
+				'max-classes-per-file': 'off',
 				'no-console': 'off',
 				'no-plusplus': 'off',
 				'import/no-extraneous-dependencies': 'off',
