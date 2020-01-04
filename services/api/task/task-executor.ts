@@ -8,6 +8,7 @@ import { UnhandledTaskException } from './unhandled-task.exception';
 import { LoggerInterface } from '../../../lib/logger.interface';
 import { User } from '../users/user';
 import { TaskServiceInterface } from './task-service.interface';
+import { TaskMetricsService } from '../metrics/task-metrics.service';
 
 @injectable()
 export class TaskExecutor {
@@ -16,14 +17,17 @@ export class TaskExecutor {
 		private readonly taskHandlerFactory: TaskAbstractFactoryInterface,
 		@inject(TaskService) private readonly taskService: TaskServiceInterface,
 		@inject('Logger') private readonly logger: LoggerInterface,
+		@inject(TaskMetricsService) private readonly taskMetricsService: TaskMetricsService,
 	) {}
 
 	async execute(task: CommonTask) {
+		const startTime = Date.now();
 		const taskHandler = this.taskHandlerFactory.createTaskHandler(task.__t as string);
 		await this.taskService.setPending(task._id.toString());
 		try {
 			await taskHandler.handle(task);
 			await this.taskService.finish(task._id.toString());
+			this.taskMetricsService.increaseSuccess(task.__t.toString());
 		} catch (_error) {
 			let error: ObjectableInterface;
 			if (typeof _error.toObject !== 'function') {
@@ -41,6 +45,9 @@ export class TaskExecutor {
 				userId,
 			});
 			await this.taskService.finishWithError(task._id.toString(), error);
+			this.taskMetricsService.increaseError(task.__t.toString());
+		} finally {
+			this.taskMetricsService.addDuration(task.__t.toString(), Date.now() - startTime);
 		}
 	}
 }
