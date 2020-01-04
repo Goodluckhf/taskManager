@@ -1,30 +1,33 @@
 import uuid from 'uuid';
+import { Connection, Channel } from 'amqplib';
+import { inject, injectable } from 'inversify';
+import { AmqpAdapterInterface } from './amqp-adapter.interface';
+import { AmqpAdapter } from './amqp-adapter';
+import { LoggerInterface } from '../logger.interface';
+import { CallbackInterface } from './callback.interface';
+import { TimeoutException } from './timeout.exception';
+import { AbstractRpcRequest } from './abstract-rpc-request';
 
-/**
- * @property {Amqp} amqp
- * @property {Logger} logger
- * @property {Connection} connection
- * @property {*} answerQueue
- * @property {*} channel
- * @property {Map.<String, Object>} callbacks
- */
+@injectable()
 class RpcClient {
-	constructor(amqp, logger) {
-		this.amqp = amqp;
-		this.logger = logger;
+	private readonly answerQueue = 'amq.rabbitmq.reply-to';
 
-		//@private
-		this.connection = null;
-		this.answerQueue = 'amq.rabbitmq.reply-to';
-		this.channel = null;
-		this.callbacks = new Map();
-	}
+	private connection: Connection = null;
+
+	private channel: Channel = null;
+
+	private readonly callbacks: Map<string, CallbackInterface> = new Map();
+
+	constructor(
+		@inject(AmqpAdapter) private readonly amqpAdapter: AmqpAdapterInterface,
+		@inject('Logger') private readonly logger: LoggerInterface,
+	) {}
 
 	async start() {
-		this.connection = await this.amqp.connect();
+		this.connection = await this.amqpAdapter.connect();
 		this.channel = await this.connection.createChannel();
 
-		this.channel.consume(
+		await this.channel.consume(
 			this.answerQueue,
 			message => {
 				let result;
@@ -43,7 +46,6 @@ class RpcClient {
 		);
 	}
 
-	//eslint-disable-next-line class-methods-use-this
 	createError(parseError, result) {
 		if (parseError) {
 			return parseError;
@@ -61,14 +63,7 @@ class RpcClient {
 		};
 	}
 
-	/**
-	 * @param {String} id
-	 * @param {Error?} error
-	 * @param {*} result
-	 * @return {void}
-	 * @private
-	 */
-	applyCallback(id, error, result) {
+	private applyCallback(id: string, error, result) {
 		const callback = this.callbacks.get(id);
 		if (!callback) {
 			this.logger.error({
@@ -88,59 +83,42 @@ class RpcClient {
 		callback.callback(error, result);
 	}
 
-	/**
-	 * @param {String} id
-	 * @param {Function} callback
-	 * @param {Number} timeout
-	 * @param {Object} opts
-	 * @return void
-	 * @private
-	 */
-	registerCallback(id, callback, timeout, opts) {
+	private registerCallback(id: string, callback: Function, timeout: number, opts) {
 		this.callbacks.set(id, {
 			id,
 			callback,
 			timeout: setTimeout(() => {
-				const error = new Error('task Timeout');
-				error.id = id;
-				error.opts = opts;
-
 				this.callbacks.delete(id);
-				callback(error);
+				callback(new TimeoutException(id, opts));
 			}, timeout),
 		});
 	}
 
 	/**
 	 * @description Выполняет rpc вызов (Отправляет сообщение в очередь и ждет ответа)
-	 * @param {Request} request
-	 * @return {Promise<*>}
 	 */
-	async call(request) {
+	async call<T>(request: AbstractRpcRequest): Promise<T> {
+		// eslint-disable-next-line no-async-promise-executor
 		return new Promise(async (resolve, reject) => {
 			try {
-				const message = request.toJson();
+				const message = request.getMessageJSON();
 				const id = uuid();
 
 				this.registerCallback(
 					id,
 					(error, result) => (error ? reject(error) : resolve(result)),
-					request.timeout,
+					request.getTimeout(),
 					{ message: JSON.parse(message) },
 				);
 
 				try {
-					await this.channel.assertQueue(request.queue);
-					await this.channel.sendToQueue(
-						request.queue,
-						Buffer.from(message),
-						{
-							headers: { 'X-Retry-Limit': request.retriesLimit },
-							correlationId: id,
-							replyTo: this.answerQueue,
-						},
-						{ persistent: true },
-					);
+					await this.channel.assertQueue(request.getQueue());
+					this.channel.sendToQueue(request.getQueue(), Buffer.from(message), {
+						headers: { 'X-Retry-Limit': request.getRetriesLimit() },
+						correlationId: id,
+						replyTo: this.answerQueue,
+						persistent: true,
+					});
 				} catch (error) {
 					this.logger.error({ error });
 					throw error;
