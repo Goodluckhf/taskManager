@@ -1,52 +1,47 @@
-import Response from './Response';
+import { inject, injectable, multiInject } from 'inversify';
+import { Channel, Connection } from 'amqplib';
+import { AmqpAdapter } from './amqp-adapter';
+import { LoggerInterface } from '../logger.interface';
+import GracefulStop from '../graceful-stop';
+import { ConfigInterface } from '../../config/config.interface';
+import { AbstractRpcHandler } from './abstract-rpc-handler';
+import { HandlerNotRegisterException } from './handler-not-register.exception';
 
-/**
- * @property {Amqp} amqp
- * @property {Logger} logger
- * @property {Map.<string, Response>} responses
- * @property {String} queue
- * @property {Number} prefetch
- * @property {Number} timeout
- * @property {Channel} channel
- * @property {GracefulStop} gracefulStop
- */
-class RpcServer {
-	constructor(amqp, logger, gracefulStop, { queue, prefetch, timeout = 10000 }) {
-		this.amqp = amqp;
-		this.logger = logger;
-		this.gracefulStop = gracefulStop;
-		this.prefetch = prefetch;
-		this.timeout = timeout;
-		this.queue = queue;
+@injectable()
+export class RpcServer {
+	private readonly prefetch: number;
 
-		this.responses = new Map();
-		this.connection = null;
-		this.channel = null;
-	}
+	private readonly timeout: number;
 
-	/**
-	 * @param {Response} response
-	 * @return RpcServer
-	 */
-	addResponse(response) {
-		if (!(response instanceof Response)) {
-			throw new Error('response must be instance of Response');
-		}
+	private readonly queue: string;
 
-		if (this.responses.has(response.method)) {
-			throw new Error('response has already exists');
-		}
+	private rpcHandlerMap: Map<string, AbstractRpcHandler>;
 
-		this.responses.set(response.method, response);
-		return this;
+	private connection: Connection = null;
+
+	private channel: Channel = null;
+
+	constructor(
+		@inject(AmqpAdapter) private readonly amqpAdapter: AmqpAdapter,
+		@inject('Logger') private readonly logger: LoggerInterface,
+		@inject(GracefulStop) private readonly gracefulStop: GracefulStop,
+		@inject('Config') private readonly config: ConfigInterface,
+		@multiInject(AbstractRpcHandler) private readonly rpcHandlers: AbstractRpcHandler[],
+	) {
+		this.prefetch = this.config.get('tasksQueue.prefetch');
+		this.timeout = this.config.get('tasksQueue.timeout') || 10000;
+		this.queue = this.config.get('tasksQueue.name');
+		rpcHandlers.forEach((rpcHandler: AbstractRpcHandler) => {
+			this.rpcHandlerMap.set(rpcHandler.getMethod(), rpcHandler);
+		});
 	}
 
 	async start() {
-		this.connection = await this.amqp.connect();
+		this.connection = await this.amqpAdapter.connect();
 		this.channel = await this.connection.createChannel();
 
 		await this.channel.assertQueue(this.queue);
-		this.channel.prefetch(this.prefetch);
+		await this.channel.prefetch(this.prefetch);
 
 		return this.channel.consume(this.queue, async msg => {
 			// Не начинаем делать следущую задачу
@@ -56,15 +51,12 @@ class RpcServer {
 			}
 
 			this.gracefulStop.setProcessing(this.queue);
-			const result = {};
+			const result: { data?: object; error?: Error } = {};
 			try {
 				const { method, args } = JSON.parse(msg.content.toString());
-				const response = this.responses.get(method);
-				if (!response) {
-					const error = new Error('There is no response for this method');
-					error.method = method;
-					error.args = args;
-					throw error;
+				const handler = this.rpcHandlerMap.get(method);
+				if (!handler) {
+					throw new HandlerNotRegisterException(method, args);
 				}
 				const timeout = setTimeout(() => {
 					this.logger.warn({
@@ -75,7 +67,7 @@ class RpcServer {
 					this.gracefulStop.forceStop();
 				}, this.timeout);
 				try {
-					result.data = await response.process(args);
+					result.data = await handler.handle(args);
 				} catch (error) {
 					const shouldRetry = await this.shouldRetry(error, msg, { method, args });
 					if (shouldRetry) {
@@ -140,7 +132,7 @@ class RpcServer {
 			...data,
 		});
 
-		await this.channel.sendToQueue(this.queue, msg.content, {
+		this.channel.sendToQueue(this.queue, msg.content, {
 			...msg.properties,
 			headers: { ...msg.properties.headers, 'X-Retry-Limit': String(retries - 1) },
 		});
@@ -149,5 +141,3 @@ class RpcServer {
 		return true;
 	}
 }
-
-export default RpcServer;
