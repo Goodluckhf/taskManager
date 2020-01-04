@@ -1,8 +1,9 @@
 import vanilaPuppeteer from 'puppeteer';
 import { addExtra } from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import { ProxyInterface } from '../proxy.interface';
 
-export async function createBrowserPage(proxy: { url: string; login: string; password: string }) {
+export async function createBrowserPage(proxy: ProxyInterface) {
 	const puppeteer = addExtra(vanilaPuppeteer);
 	puppeteer.use(StealthPlugin());
 
