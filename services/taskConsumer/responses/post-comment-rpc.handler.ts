@@ -1,23 +1,22 @@
 import { maxBy } from 'lodash';
-import Response from '../../../lib/amqp/Response';
-import { createBrowserPage } from '../actions/createPage';
+import { inject, injectable } from 'inversify';
+import { Browser } from 'puppeteer';
+import { createBrowserPage } from '../actions/create-page';
 import { authorize } from '../actions/vk/authorize';
+import { AbstractRpcHandler } from '../../../lib/amqp/abstract-rpc-handler';
+import Captcha from '../../../lib/Captcha';
+import { LoggerInterface } from '../../../lib/logger.interface';
+import { AccountException } from './account.exception';
 
-class PostCommentResponse extends Response {
-	constructor({ captcha, ...args }) {
-		super(args);
-		this.captcha = captcha;
-	}
+@injectable()
+export class PostCommentRpcHandler extends AbstractRpcHandler {
+	@inject(Captcha) private readonly captcha: Captcha;
 
-	/**
-	 * @return {String}
-	 */
-	// eslint-disable-next-line class-methods-use-this,
-	get method() {
-		return 'postComment';
-	}
+	@inject('Logger') private readonly logger: LoggerInterface;
 
-	async process({ credentials: { login, password }, postLink, text, imageURL, replyTo, proxy }) {
+	protected readonly method = 'postComment';
+
+	async handle({ credentials: { login, password }, postLink, text, imageURL, replyTo, proxy }) {
 		this.logger.info({
 			message: 'Задача на коменты',
 			credentials: { login, password },
@@ -29,10 +28,7 @@ class PostCommentResponse extends Response {
 		});
 
 		let canRetry = true;
-		/**
-		 * @type {Browser}
-		 */
-		let browser = null;
+		let browser: Browser = null;
 		try {
 			const { page, browser: _browser } = await createBrowserPage(proxy);
 			browser = _browser;
@@ -59,7 +55,7 @@ class PostCommentResponse extends Response {
 					return;
 				}
 
-				document.querySelector('.box_x_button').click();
+				document.querySelector<HTMLElement>('.box_x_button').click();
 			});
 
 			let postId = postLink
@@ -80,7 +76,7 @@ class PostCommentResponse extends Response {
 					document.querySelector(selector).click();
 				}, `#post${postId} a.reply_link`);
 				postId = await page.evaluate(_postId => {
-					const parent = document.querySelector(`#post${_postId}`).parentNode;
+					const parent = document.querySelector(`#post${_postId}`).parentElement;
 					if (parent.className === 'replies_list_deep') {
 						return parent.getAttribute('id').replace('replies', '');
 					}
@@ -111,7 +107,9 @@ class PostCommentResponse extends Response {
 				// Удаляем из текста ссылку
 				await page.evaluate(
 					(_text, _postId) => {
-						document.querySelector(`#reply_field${_postId}`).innerText = _text;
+						document.querySelector<HTMLElement>(
+							`#reply_field${_postId}`,
+						).innerText = _text;
 					},
 					text,
 					postId,
@@ -125,19 +123,23 @@ class PostCommentResponse extends Response {
 			}
 
 			const currentUserHref = await page.evaluate(
-				() => document.querySelector(`._post_field_author`).href,
+				() => document.querySelector<HTMLAnchorElement>(`._post_field_author`).href,
 			);
 
 			const postsCountBefore = await page.evaluate(
 				userHref =>
-					[...document.querySelectorAll('._post.reply')].filter(
+					// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+					// @ts-ignore
+					[...document.querySelectorAll<HTMLElement>('._post.reply')].filter(
 						element => element.querySelector('a.reply_image').href === userHref,
 					).length,
 				currentUserHref,
 			);
 
 			const lastPostId = await page.evaluate(() => {
-				const posts = [...document.querySelectorAll('._post.reply')];
+				// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+				// @ts-ignore
+				const posts = [...document.querySelectorAll<HTMLElement>('._post.reply')];
 				if (!posts.length) {
 					return null;
 				}
@@ -161,6 +163,8 @@ class PostCommentResponse extends Response {
 						return true;
 					}
 
+					// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+					// @ts-ignore
 					const currentUserPosts = [...document.querySelectorAll('._post.reply')].filter(
 						element => element.querySelector('a.reply_image').href === userHref,
 					);
@@ -171,7 +175,9 @@ class PostCommentResponse extends Response {
 						element => element.getAttribute('data-post-id') !== '0_-1',
 					);
 
-					const posts = [...document.querySelectorAll('._post.reply')];
+					// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+					// @ts-ignore
+					const posts = [...document.querySelectorAll<HTMLElement>('._post.reply')];
 					if (!posts.length) {
 						return false;
 					}
@@ -196,16 +202,19 @@ class PostCommentResponse extends Response {
 			});
 
 			if (needPhoneConfirmation) {
-				const error = new Error('Account requires phone confirmation');
-				error.login = login;
-				error.code = 'phone_required';
-				error.canRetry = false;
-				throw error;
+				throw new AccountException(
+					'Account requires phone confirmation',
+					'phone_required',
+					login,
+					false,
+				);
 			}
 
 			const userCommentIds = await page.evaluate(
 				userHref =>
-					[...document.querySelectorAll('._post.reply')]
+					// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+					// @ts-ignore
+					[...document.querySelectorAll<HTMLElement>('._post.reply')]
 						.filter(element => element.querySelector('a.reply_image').href === userHref)
 						.map(element => element.getAttribute('data-post-id')),
 				currentUserHref,
@@ -223,5 +232,3 @@ class PostCommentResponse extends Response {
 		}
 	}
 }
-
-export default PostCommentResponse;
