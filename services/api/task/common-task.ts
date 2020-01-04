@@ -4,7 +4,9 @@ import { Schema } from 'mongoose';
 import { Base } from '@typegoose/typegoose/lib/defaultClasses';
 import { statuses } from './status.constant';
 import { User } from '../users/user';
+import { model } from '../../../lib/inversify-typegoose/model.decorator';
 
+@model()
 export class CommonTask extends Base {
 	@prop({ default: moment.now })
 	createdAt: Date | moment.Moment;

@@ -13,6 +13,8 @@ import { CommentsByStrategyTaskHandler } from './comments-by-strategy/comments-b
 
 import './comments-by-strategy/comments-by-strategy.controller';
 import './auth/auth.controller';
+import './task/task.controller';
+
 import { AuthMiddleware } from './auth/auth.middleware';
 
 export function createContainer() {
