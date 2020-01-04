@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { Container } from 'inversify';
 import config from 'config';
+import axios from 'axios';
 import mongoose from 'mongoose';
 import { ConfigInterface } from '../../config/config.interface';
 import logger from '../../lib/logger';
@@ -24,6 +25,7 @@ export function createContainer() {
 	});
 
 	container.bind<ConfigInterface>('Config').toConstantValue(config);
+	container.bind('Axios').toConstantValue(axios);
 	container.bind<LoggerInterface>('Logger').toConstantValue(logger);
 	container.bind<mongoose.Mongoose>('Mongoose').toConstantValue(mongoose);
 	container.bind<TaskAbstractFactoryInterface>(TaskAbstractFactory).toSelf();
