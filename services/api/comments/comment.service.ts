@@ -1,8 +1,11 @@
 import { inject, injectable } from 'inversify';
-import PostCommentRequest from '../api/amqpRequests/PostCommentRequest';
 import { ConfigInterface } from '../../../config/config.interface';
-import RpcClient from '../../../lib/amqp/RpcClient';
+import RpcClient from '../../../lib/amqp/rpc-client';
 import { LoggerInterface } from '../../../lib/logger.interface';
+import { PostCommentRpcRequest } from './post-comment-rpc.request';
+import { RpcRequestFactory } from '../../../lib/amqp/rpc-request.factory';
+import { PostCommentArgInterface } from './post-comment-arg.interface';
+import { PostCommentResponse } from './post-comment.response';
 
 @injectable()
 export class CommentService {
@@ -10,14 +13,14 @@ export class CommentService {
 		@inject('Config') private readonly config: ConfigInterface,
 		@inject(RpcClient) private readonly rpcClient: RpcClient,
 		@inject('Logger') private readonly logger: LoggerInterface,
+		@inject(RpcRequestFactory) private readonly rpcRequestFactory: RpcRequestFactory,
 	) {}
 
-	async create(args) {
-		const request = new PostCommentRequest(this.config, args);
+	async postComment(args: PostCommentArgInterface): Promise<PostCommentResponse> {
+		const rpcRequest = this.rpcRequestFactory.create(PostCommentRpcRequest);
+		rpcRequest.setArguments(args);
 		try {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-			// @ts-ignore
-			return await this.rpcClient.call(request);
+			return await this.rpcClient.call<PostCommentResponse>(rpcRequest);
 		} catch (error) {
 			this.logger.error({
 				mark: 'setComments',
