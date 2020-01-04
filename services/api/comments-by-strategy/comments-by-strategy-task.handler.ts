@@ -7,6 +7,7 @@ import { VkUserService } from '../vk-users/vk-user.service';
 import { ProxyService } from '../proxies/proxy.service';
 import { LikeService } from '../likes/like.service';
 import { CommentsByStrategyTask } from './comments-by-strategy-task';
+import { PostCommentResponse } from '../comments/post-comment.response';
 
 @injectable()
 export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
@@ -35,14 +36,14 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 		users,
 		commentResults,
 		tryNumber = 0,
-	}) {
+	}): Promise<PostCommentResponse> {
 		if (tryNumber > 2) {
 			throw new Error('retries exceed');
 		}
 		const currentUser = users[task.userFakeId];
 
 		try {
-			return await this.commentsService.create({
+			return await this.commentsService.postComment({
 				credentials: {
 					login: currentUser.login,
 					password: currentUser.password,
