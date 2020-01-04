@@ -2,13 +2,7 @@ import vanilaPuppeteer from 'puppeteer';
 import { addExtra } from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
-/**
- *
- * @param {Object} proxy
- * @returns {Promise<{browser: Browser, page: Page}>}
- */
-// eslint-disable-next-line import/prefer-default-export
-export const createBrowserPage = async proxy => {
+export async function createBrowserPage(proxy: { url: string; login: string; password: string }) {
 	const puppeteer = addExtra(vanilaPuppeteer);
 	puppeteer.use(StealthPlugin());
 
@@ -50,4 +44,4 @@ export const createBrowserPage = async proxy => {
 	});
 
 	return { page, browser };
-};
+}
