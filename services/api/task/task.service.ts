@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import moment from 'moment';
+import { plainToClass } from 'class-transformer';
 import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 import { CommonTask } from './common-task';
 import { statuses } from './status.constant';
@@ -34,6 +35,19 @@ export class TaskService implements TaskServiceInterface {
 		}
 
 		await this.CommonTaskModel.update({ _id: id }, { $set: { deletedAt: moment.now() } });
+	}
+
+	async getActive(): Promise<CommonTask[]> {
+		const tasks = await this.CommonTaskModel.find({
+			status: statuses.waiting,
+			deletedAt: null,
+			$or: [{ repeated: true }, { startAt: { $lte: new Date() } }],
+		})
+			.populate('user')
+			.lean()
+			.exec();
+
+		return plainToClass(CommonTask, tasks);
 	}
 
 	async setPending(id: string) {
