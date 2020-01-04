@@ -8,12 +8,14 @@ import { Database } from '../../lib/inversify-typegoose/database';
 import { VkUsersMetricsService } from './metrics/vk-users-metrics.service';
 import { ProxyMetricsService } from './metrics/proxy-metrics.service';
 import { createApplication } from './create-application';
+import { UmetricsWrapper } from './metrics/umetrics-wrapper';
 
 const diContainer = createContainer();
 
 const config = diContainer.get<ConfigInterface>('Config');
 const logger = diContainer.get<LoggerInterface>('Logger');
 const gracefulStop = diContainer.get<GracefulStop>(GracefulStop);
+const uMetricsWrapper = diContainer.get<UmetricsWrapper>(UmetricsWrapper);
 const database = diContainer.get(Database);
 const vkUsersMetricsService = diContainer.get(VkUsersMetricsService);
 const proxyMetricsService = diContainer.get(ProxyMetricsService);
@@ -44,7 +46,7 @@ process.on('SIGTERM', () => {
 
 (async () => {
 	await database.connect();
-
+	uMetricsWrapper.start();
 	// При рестарте api нужно убрать статус pending
 	// Т.к рестарт не всегда бывает graceful
 	// @TODO: пока убрал (не реализовано на новой архитектуре)
