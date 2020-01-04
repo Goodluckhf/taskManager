@@ -1,17 +1,22 @@
 import bluebird from 'bluebird';
-import ReCaptcha from './ReCaptcha';
+import { inject, injectable } from 'inversify';
+import { AxiosInstance } from 'axios';
+import { ConfigInterface } from '../config/config.interface';
+import { ReCaptchaService } from './re-captcha.service';
 
 const baseUrl = 'http://rucaptcha.com';
 
-/**
- * @property {AxiosInstance} axios
- * @property {String} token
- */
-class Captcha {
-	constructor(axios, token) {
+@injectable()
+export class CaptchaService {
+	private readonly token: string;
+
+	constructor(
+		@inject('Axios') private readonly axios: AxiosInstance,
+		@inject('Config') private readonly config: ConfigInterface,
+		@inject(ReCaptchaService) private readonly reCaptchaService: ReCaptchaService,
+	) {
 		this.axios = axios;
-		this.token = token;
-		this.reCaptchaService = new ReCaptcha(axios, token);
+		this.token = this.config.get('rucaptcha.token');
 	}
 
 	/**
@@ -33,6 +38,8 @@ class Captcha {
 
 		if (response.status !== 1) {
 			const error = new Error(response.request);
+			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// @ts-ignore
 			error.status = response.status;
 			throw error;
 		}
@@ -40,29 +47,16 @@ class Captcha {
 		return response;
 	}
 
-	/**
-	 * @param {String} imageUrl
-	 * @private
-	 * @return {String}
-	 */
-	async loadImageBase64(imageUrl) {
-		const { data: image } = await this.axios.get(
-			imageUrl,
-			{
-				responseType: 'arraybuffer',
-			},
-			{ timeout: 10000 },
-		);
+	private async loadImageBase64(imageUrl: string): Promise<string> {
+		const { data: image } = await this.axios.get(imageUrl, {
+			responseType: 'arraybuffer',
+			timeout: 10000,
+		});
 
 		return Buffer.from(image, 'binary').toString('base64');
 	}
 
-	/**
-	 * @param {String} imageBase64
-	 * @private
-	 * @return {Promise.<String>}
-	 */
-	async sendCaptcha(imageBase64) {
+	private async sendCaptcha(imageBase64: string): Promise<string> {
 		const { request } = await this.sendRequest({
 			url: `${baseUrl}/in.php`,
 			method: 'post',
@@ -75,12 +69,7 @@ class Captcha {
 		return request;
 	}
 
-	/**
-	 * @param {String} id
-	 * @private
-	 * @return {Promise.<{status, response}>}
-	 */
-	getResponse(id) {
+	private getResponse(id: string) {
 		return this.sendRequest({
 			url: `${baseUrl}/res.php`,
 			method: 'get',
@@ -91,12 +80,7 @@ class Captcha {
 		});
 	}
 
-	/**
-	 * @param {String} id
-	 * @private
-	 * @return {Promise.<String>}
-	 */
-	async getResponseWithLoop(id) {
+	private async getResponseWithLoop(id: string): Promise<string> {
 		try {
 			const { request } = await this.getResponse(id);
 			return request;
@@ -110,12 +94,7 @@ class Captcha {
 		}
 	}
 
-	/**
-	 * @param {String} captchaImageBase64
-	 * @private
-	 * @return {Promise<String>}
-	 */
-	async loopSolve(captchaImageBase64) {
+	private async loopSolve(captchaImageBase64: string): Promise<string> {
 		const id = await this.sendCaptcha(captchaImageBase64);
 		await bluebird.delay(3000);
 		try {
@@ -129,18 +108,18 @@ class Captcha {
 		}
 	}
 
-	/**
-	 * @param {String} captchaUrl
-	 * @return {Promise<String>}
-	 */
-	async solve(captchaUrl) {
+	async solve(captchaUrl: string): Promise<string> {
 		const imageBase64 = await this.loadImageBase64(captchaUrl);
 		return this.loopSolve(imageBase64);
 	}
 
-	async solveRecaptchaV2({ pageUrl, siteKey }) {
+	async solveRecaptchaV2({
+		pageUrl,
+		siteKey,
+	}: {
+		pageUrl: string;
+		siteKey: string;
+	}): Promise<string> {
 		return this.reCaptchaService.solve({ pageUrl, siteKey });
 	}
 }
-
-export default Captcha;
