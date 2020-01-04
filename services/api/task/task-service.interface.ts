@@ -1,7 +1,8 @@
 import { ObjectableInterface } from '../../../lib/internal.types';
+import { User } from '../users/user';
 
 export interface TaskServiceInterface {
-	delete(id: string);
+	deleteOwnedByUser(user: User, id: string);
 
 	setPending(id: string);
 

@@ -1,4 +1,4 @@
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import moment from 'moment';
 import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
@@ -7,13 +7,28 @@ import { statuses } from './status.constant';
 import { ObjectableInterface } from '../../../lib/internal.types';
 import { TaskServiceInterface } from './task-service.interface';
 import { PendingTaskException } from './pending-task.exception';
+import { User } from '../users/user';
+import { LoggerInterface } from '../../../lib/logger.interface';
 
 @injectable()
 export class TaskService implements TaskServiceInterface {
-	constructor(@injectModel(CommonTask) private readonly CommonTaskModel: ModelType<CommonTask>) {}
+	constructor(
+		@injectModel(CommonTask) private readonly CommonTaskModel: ModelType<CommonTask>,
+		@inject('Logger') private readonly logger: LoggerInterface,
+	) {}
 
-	async delete(id: string) {
-		const task = await this.CommonTaskModel.findOne({ _id: id });
+	async deleteOwnedByUser(user: User, id: string) {
+		const task = await this.CommonTaskModel.findOne({ _id: id, user: user._id });
+
+		if (!task) {
+			this.logger.warn({
+				message: 'Пытаются удалить чужой пост',
+				taskId: id,
+				userId: user._id.toString(),
+			});
+			return;
+		}
+
 		if (task.status === statuses.pending) {
 			throw new PendingTaskException(id);
 		}
