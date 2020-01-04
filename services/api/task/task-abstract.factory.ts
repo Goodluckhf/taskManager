@@ -8,24 +8,25 @@ type MapperToInstance = {
 	[key: string]: TaskHandlerInterface;
 };
 
-type MapperTypeToClass = {
+export type MapperTypeToClass = {
 	[key: string]: ClassType<TaskHandlerInterface>;
 };
 
-const mapperModelTypeToTaskHandler: MapperTypeToClass = {
-	CommentsByStrategyTask: CommentsByStrategyTaskHandler,
-};
-
 export class TaskAbstractFactory implements TaskAbstractFactoryInterface {
-	private readonly mapper: MapperToInstance;
+	private mapper: MapperToInstance;
+
+	private readonly mapperModelTypeToTaskHandler: MapperTypeToClass = {
+		CommentsByStrategyTask: CommentsByStrategyTaskHandler,
+	};
 
 	constructor(
 		@multiInject('TaskHandlerInterface') private readonly taskHandlers: TaskHandlerInterface[],
-	) {
-		this.mapper = this.transformClassMapperToInstance(taskHandlers);
-	}
+	) {}
 
 	createTaskHandler(type: string): TaskHandlerInterface {
+		if (!this.mapper) {
+			this.mapper = this.transformClassMapperToInstance(this.taskHandlers);
+		}
 		const taskHandler = this.mapper[type];
 		if (!taskHandler) {
 			throw new Error('There is no registered taskHandler for this type');
@@ -34,9 +35,9 @@ export class TaskAbstractFactory implements TaskAbstractFactoryInterface {
 		return taskHandler;
 	}
 
-	transformClassMapperToInstance(taskHandlers: TaskHandlerInterface[]): MapperToInstance {
+	private transformClassMapperToInstance(taskHandlers: TaskHandlerInterface[]): MapperToInstance {
 		return taskHandlers.reduce((mapper: MapperToInstance, taskHandler) => {
-			const mappedTaskEntry = Object.entries(mapperModelTypeToTaskHandler).find(
+			const mappedTaskEntry = Object.entries(this.mapperModelTypeToTaskHandler).find(
 				([, HandlerClass]) => taskHandler instanceof HandlerClass,
 			);
 
