@@ -1,6 +1,0 @@
-{
-	"globals": {
-		"window": false,
-		"document": false
-	}
-}
