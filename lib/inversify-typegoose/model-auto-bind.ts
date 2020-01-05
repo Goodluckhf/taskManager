@@ -11,12 +11,14 @@ export const modelAutoBind = (container: interfaces.Container): void => {
 		Reflect,
 	);
 	modelsMetadataClass.forEach(modelMetadata => {
-		let modelClass = getModelForClass(modelMetadata.modelClass as AnyParamConstructor<any>);
+		let modelClass;
 		if (modelMetadata.discriminatorBaseClass) {
 			modelClass = getDiscriminatorModelForClass(
 				getModelForClass(modelMetadata.discriminatorBaseClass as AnyParamConstructor<any>),
 				modelMetadata.modelClass,
 			);
+		} else {
+			modelClass = getModelForClass(modelMetadata.modelClass as AnyParamConstructor<any>);
 		}
 
 		container.bind(getModelToken(modelMetadata.modelClass)).toConstantValue(modelClass);
