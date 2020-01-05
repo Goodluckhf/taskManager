@@ -19,7 +19,7 @@ export class VkUserTaskService {
 		const newTask = new this.CheckAndAddUserTaskModel();
 		newTask.usersCredentials = dto.usersCredentials;
 		newTask.user = user;
-		newTask.createdAt = moment();
+		newTask.startAt = moment();
 		await newTask.save();
 		return plainToClass(CheckAndAddUserTask, newTask.toObject());
 	}
