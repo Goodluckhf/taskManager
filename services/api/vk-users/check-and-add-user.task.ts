@@ -11,6 +11,6 @@ export class CheckAndAddUserTask extends CommonTask implements DelayableTaskInte
 	@arrayProp({ items: VkUserCredentialDto })
 	usersCredentials: VkUserCredentialsInterface[];
 
-	@prop({ required: true })
+	@prop({ required: true, type: Date })
 	startAt: Date | moment.Moment;
 }
