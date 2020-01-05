@@ -1,6 +1,7 @@
 import { injectable } from 'inversify';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import { random } from 'lodash';
+import moment from 'moment';
 import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 import { Proxy } from './proxy';
 
@@ -24,6 +25,7 @@ export class ProxyService {
 		const proxy = await this.ProxyModel.findOne({ url });
 		proxy.isActive = false;
 		proxy.errorComment = reason;
+		proxy.inactiveAt = moment();
 		await proxy.save();
 	}
 }
