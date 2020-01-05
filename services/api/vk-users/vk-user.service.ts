@@ -1,6 +1,7 @@
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import { random, shuffle } from 'lodash';
 import { injectable } from 'inversify';
+import moment from 'moment';
 import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 import { VkUser } from './vk-user';
 import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
@@ -51,6 +52,7 @@ export class VkUserService {
 		const user = await this.VkUsersModel.findOne({ login });
 		user.isActive = false;
 		user.errorComment = reason;
+		user.inactiveAt = moment();
 		await user.save();
 	}
 }
