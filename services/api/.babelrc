@@ -11,6 +11,12 @@
 	],
 	"presets": [
 		[
+			"@babel/preset-typescript",
+			{
+				"allowNamespaces": false
+			}
+		],
+		[
 			"@babel/env",
 			{
 				"targets": {
@@ -20,11 +26,11 @@
 				"shippedProposals": true,
 				"loose": false
 			}
-		],
-		"@babel/typescript"
+		]
 	],
 	"plugins": [
 		"babel-plugin-transform-typescript-metadata",
+		["@babel/plugin-transform-typescript", { "allowNamespaces": false }],
 		["@babel/plugin-proposal-decorators", { "legacy": true }],
 		["@babel/proposal-class-properties", { "loose": true }],
 		"@babel/proposal-object-rest-spread"

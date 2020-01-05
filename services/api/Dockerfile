@@ -8,7 +8,7 @@ RUN npm i
 
 COPY . .
 
-RUN npx babel --extensions .ts,.js --config-file ./services/api/.babelrc --ignore node_modules,test.js,spec.js,coverage,dist,.nyc_output,services/web --out-dir ./dist/ .
+RUN npx tsc --skipLibCheck -p ./services/api/tsconfig.build.json
 
 ENV NODE_ENV=production
 RUN npm prune

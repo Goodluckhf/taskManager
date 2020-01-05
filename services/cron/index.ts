@@ -14,11 +14,18 @@ process.on('uncaughtException', error => {
 
 process.on('unhandledRejection', _error => {
 	const error = _error;
+	// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+	// @ts-ignore
 	if (error.request) {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+		// @ts-ignore
 		delete error.request;
 	}
-
+	// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+	// @ts-ignore
 	if (error.response && error.response.request) {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+		// @ts-ignore
 		delete error.response.request;
 	}
 
