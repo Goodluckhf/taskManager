@@ -10,7 +10,7 @@ export class CommentStrategyDto implements CommentStrategyInterface {
 	@IsInt()
 	likesCount: number;
 
-	@Transform(value => parseInt(value, 10))
+	@Transform(value => (value ? parseInt(value, 10) : null))
 	@IsInt()
 	replyToCommentNumber: number;
 
