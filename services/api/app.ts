@@ -9,10 +9,12 @@ import { VkUsersMetricsService } from './metrics/vk-users-metrics.service';
 import { ProxyMetricsService } from './metrics/proxy-metrics.service';
 import { createApplication } from './create-application';
 import { UmetricsWrapper } from './metrics/umetrics-wrapper';
+import RpcClient from '../../lib/amqp/rpc-client';
 
 const diContainer = createContainer();
 
 const config = diContainer.get<ConfigInterface>('Config');
+const rpcClient = diContainer.get<RpcClient>(RpcClient);
 const logger = diContainer.get<LoggerInterface>('Logger');
 const gracefulStop = diContainer.get<GracefulStop>(GracefulStop);
 const uMetricsWrapper = diContainer.get<UmetricsWrapper>(UmetricsWrapper);
@@ -46,6 +48,7 @@ process.on('SIGTERM', () => {
 
 (async () => {
 	await database.connect();
+	await rpcClient.start();
 	uMetricsWrapper.start();
 	// При рестарте api нужно убрать статус pending
 	// Т.к рестарт не всегда бывает graceful
