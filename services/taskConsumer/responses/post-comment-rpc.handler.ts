@@ -101,7 +101,7 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 				});
 
 				await input.type(` ${imageURL} `);
-				await page.waitForSelector(`#submit_reply${postId} img.page_preview_photo`);
+				await page.waitForSelector(`.reply_form img.page_preview_photo`);
 
 				// Удаляем из текста ссылку
 				await page.evaluate(
