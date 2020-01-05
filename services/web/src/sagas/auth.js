@@ -86,7 +86,7 @@ export default function*() {
 		try {
 			const {
 				data: { data: response },
-			} = yield call(axios.post, '/api/login', data);
+			} = yield call(axios.post, '/api/auth/login', data);
 			yield put(loginSuccess(response));
 			const lastRoute = yield select(state => state.auth.get('lastRoute'));
 			// eslint-disable-next-line no-undef
@@ -106,7 +106,7 @@ export default function*() {
 		try {
 			const {
 				data: { data: response },
-			} = yield call(axios.post, '/api/register', data);
+			} = yield call(axios.post, '/api/auth/register', data);
 			yield put(loginSuccess(response));
 			const route = yield getDefaultRoute();
 			window.localStorage.setItem(localstorageJwtKey, response.token);

@@ -108,7 +108,7 @@ const _auth = {
 	chatId: null,
 	vkLink: '',
 	systemVkLink: '',
-	lastRoute: '',
+	lastRoute: '/',
 	balance: null,
 	activeUsersCount: 0,
 	externalLinks: [],

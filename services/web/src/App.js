@@ -40,7 +40,7 @@ class App extends Component {
 				<ConnectedRouter history={history}>
 					<Switch>
 						<Route exact path="/404" name="Page 404" component={withRouter(Page404)} />
-						<Redirect exact from="/" to="/groups" />
+						<Redirect exact from="/" to="/comments-by-strategy" />
 						<Route path="/groups" exact name="Groups" component={withRouter(Groups)} />
 						<Route
 							path="/autolikes"
