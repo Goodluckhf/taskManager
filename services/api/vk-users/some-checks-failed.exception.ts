@@ -11,13 +11,14 @@ export class SomeChecksFailedException extends Error
 
 	toFormattedString(): string {
 		return this.errors.reduce((str, error) => {
-			return `${str}\n---------\nОшибка${error.toFormattedString()}`;
+			return `${str}\n---------\nОшибка: ${error.toFormattedString()}`;
 		}, '');
 	}
 
 	toObject(): object {
 		return {
 			arrayErrorData: this.errors.map(error => error.toObject()),
+			formattedMessage: this.toFormattedString(),
 		};
 	}
 }

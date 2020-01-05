@@ -38,7 +38,7 @@ export class TaskExecutor {
 				error = _error;
 			}
 
-			const userId = task.user instanceof User ? task.user._id.toString() : task.user;
+			const userId = (task.user as User)._id.toString();
 
 			this.logger.error({
 				message: 'Ошибка при выполнении задачи',
