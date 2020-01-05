@@ -3,6 +3,7 @@ import { TaskAbstractFactoryInterface } from './task-abstract-factory.interface'
 import { TaskHandlerInterface } from './task-handler.interface';
 import { CommentsByStrategyTaskHandler } from '../comments-by-strategy/comments-by-strategy-task.handler';
 import { ClassType } from '../../../lib/internal.types';
+import { CheckAndAddUserTaskHandler } from '../vk-users/check-and-add-user-task.handler';
 
 type MapperToInstance = {
 	[key: string]: TaskHandlerInterface;
@@ -18,6 +19,7 @@ export class TaskAbstractFactory implements TaskAbstractFactoryInterface {
 
 	private readonly mapperModelTypeToTaskHandler: MapperTypeToClass = {
 		CommentsByStrategyTask: CommentsByStrategyTaskHandler,
+		CheckAndAddUserTask: CheckAndAddUserTaskHandler,
 	};
 
 	constructor(
