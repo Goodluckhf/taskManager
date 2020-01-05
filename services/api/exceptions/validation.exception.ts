@@ -24,7 +24,7 @@ export class ValidationException extends Error
 
 	toFormattedString(): string {
 		return this.errors.reduce((str, error) => {
-			return `${str}\n[${error.property}] должно быть "${error.constraints}"`;
+			return `${str}\n[${error.property}] должно быть "${JSON.stringify(error.constraints)}"`;
 		}, '');
 	}
 
