@@ -7,10 +7,6 @@ import { LoggerInterface } from '../../lib/logger.interface';
 import GracefulStop from '../../lib/graceful-stop';
 
 const container = createContainer();
-const config = container.get<ConfigInterface>('Config');
-const rabbitConfig = config.get('rabbit');
-rabbitConfig.host = process.env.NODE_ENV === 'development' ? 'localhost' : rabbitConfig.host;
-rabbitConfig.retry = false;
 const rpcServer = container.get<RpcServer>(RpcServer);
 const logger = container.get<LoggerInterface>('Logger');
 const gracefulStop = container.get<GracefulStop>(GracefulStop);

@@ -15,7 +15,7 @@ export class RpcServer {
 
 	private readonly queue: string;
 
-	private rpcHandlerMap: Map<string, AbstractRpcHandler>;
+	private rpcHandlerMap: Map<string, AbstractRpcHandler> = new Map();
 
 	private connection: Connection = null;
 
