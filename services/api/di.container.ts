@@ -20,6 +20,8 @@ import './vk-users/vk-user.controller';
 import { AuthMiddleware } from './auth/auth.middleware';
 import { PostCommentRpcHandler } from '../taskConsumer/responses/post-comment-rpc.handler';
 import { AbstractRpcHandler } from '../../lib/amqp/abstract-rpc-handler';
+import { CheckAndAddUserTaskHandler } from './vk-users/check-and-add-user-task.handler';
+import { CheckVkUserRpcHandler } from '../taskConsumer/responses/check-vk-user-rpc.handler';
 
 export function createContainer() {
 	const container = new Container({
@@ -34,8 +36,10 @@ export function createContainer() {
 	container.bind<TaskAbstractFactoryInterface>(TaskAbstractFactory).toSelf();
 	container.bind(AuthMiddleware).toSelf();
 	container.bind<TaskHandlerInterface>('TaskHandlerInterface').to(CommentsByStrategyTaskHandler);
+	container.bind<TaskHandlerInterface>('TaskHandlerInterface').to(CheckAndAddUserTaskHandler);
 
 	container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(PostCommentRpcHandler);
+	container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(CheckVkUserRpcHandler);
 
 	modelAutoBind(container);
 	return container;

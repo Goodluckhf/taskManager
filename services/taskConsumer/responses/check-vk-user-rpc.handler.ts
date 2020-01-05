@@ -1,22 +1,17 @@
-import Response from '../../../lib/amqp/Response';
-import { createBrowserPage } from '../actions/createPage';
-import { authorize } from '../actions/vk/authorize';
+import { inject } from 'inversify';
+import { AbstractRpcHandler } from '../../../lib/amqp/abstract-rpc-handler';
+import { LoggerInterface } from '../../../lib/logger.interface';
+import { VkAuthorizer } from '../actions/vk/vk-authorizer';
+import { createBrowserPage } from '../actions/create-page';
 
-class CheckVkUserResponse extends Response {
-	constructor({ captcha, ...args }) {
-		super(args);
-		this.captcha = captcha;
-	}
+export class CheckVkUserRpcHandler extends AbstractRpcHandler {
+	@inject('Logger') private readonly logger: LoggerInterface;
 
-	/**
-	 * @return {String}
-	 */
-	// eslint-disable-next-line class-methods-use-this,
-	get method() {
-		return 'checkVkUser';
-	}
+	@inject(VkAuthorizer) private readonly vkAuthorizer: VkAuthorizer;
 
-	async process({ login, password, proxy }) {
+	protected method = 'checkVkUser';
+
+	async handle({ userCredentials: { login, password }, proxy }) {
 		this.logger.info({
 			message: 'Задача на проверку пользователя vk',
 			credentials: { login, password },
@@ -32,7 +27,7 @@ class CheckVkUserResponse extends Response {
 			const { page, browser: _browser } = await createBrowserPage(proxy);
 			browser = _browser;
 			try {
-				await authorize(page, this.logger, this.captcha, {
+				await this.vkAuthorizer.authorize(page, {
 					login,
 					password,
 					proxy,
@@ -55,5 +50,3 @@ class CheckVkUserResponse extends Response {
 		}
 	}
 }
-
-export default CheckVkUserResponse;
