@@ -28,7 +28,7 @@ class Item extends PureComponent {
 		createdAt: propTypes.string,
 		postLink: propTypes.string,
 		_id: propTypes.string,
-		status: propTypes.number,
+		status: propTypes.string,
 		error: propTypes.object,
 		_error: propTypes.object,
 		remove_loading: propTypes.bool,
