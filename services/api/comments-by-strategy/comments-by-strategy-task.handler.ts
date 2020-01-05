@@ -37,7 +37,7 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 		commentResults,
 		tryNumber = 0,
 	}): Promise<PostCommentResponse> {
-		if (tryNumber > 2) {
+		if (tryNumber > 4) {
 			throw new Error('retries exceed');
 		}
 		const currentUser = users[task.userFakeId];
