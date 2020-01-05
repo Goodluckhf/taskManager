@@ -34,7 +34,4 @@ const mapStateToProps = state => ({
 	hasAccountLink: '/login',
 });
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(Register);
+export default connect(mapStateToProps, mapDispatchToProps)(Register);

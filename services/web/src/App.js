@@ -41,19 +41,19 @@ class App extends Component {
 					<Switch>
 						<Route exact path="/404" name="Page 404" component={withRouter(Page404)} />
 						<Redirect exact from="/" to="/comments-by-strategy" />
-						<Route path="/groups" exact name="Groups" component={withRouter(Groups)} />
-						<Route
-							path="/autolikes"
-							exact
-							name="AutoLikes"
-							component={withRouter(AutoLikes)}
-						/>
-						<Route
-							path="/wallseek"
-							exact
-							name="WallSeek"
-							component={withRouter(WallSeek)}
-						/>
+						{/*<Route path="/groups" exact name="Groups" component={withRouter(Groups)} />*/}
+						{/*<Route*/}
+						{/*	path="/autolikes"*/}
+						{/*	exact*/}
+						{/*	name="AutoLikes"*/}
+						{/*	component={withRouter(AutoLikes)}*/}
+						{/*/>*/}
+						{/*<Route*/}
+						{/*	path="/wallseek"*/}
+						{/*	exact*/}
+						{/*	name="WallSeek"*/}
+						{/*	component={withRouter(WallSeek)}*/}
+						{/*/>*/}
 						<Route
 							path="/comments-by-strategy"
 							exact

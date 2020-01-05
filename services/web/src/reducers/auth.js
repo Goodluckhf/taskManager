@@ -10,7 +10,7 @@ import {
 import { ACTIVE_USERS_SUCCESS } from '../actions/vkUsers';
 
 export default (authState = auth, { type, payload }) => {
-	if (type === NEED_LOGIN) {
+	if (type === NEED_LOGIN && payload.lastRoute !== '/login') {
 		return authState.update('lastRoute', () => payload.lastRoute);
 	}
 
