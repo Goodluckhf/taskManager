@@ -22,7 +22,8 @@ export class AuthProvider implements interfaces.AuthProvider {
 		res: express.Response,
 		next: express.NextFunction,
 	): Promise<interfaces.Principal> {
-		const token = (req.body && req.body.jwt) || (req.query && req.query.jwt) || null;
+		const token = req.headers.authorization || null;
+
 		if (!token) {
 			return new UnauthorizedPrincipal();
 		}

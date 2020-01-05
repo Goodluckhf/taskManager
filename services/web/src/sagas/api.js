@@ -22,9 +22,15 @@ export const callApi = function*({ url, data: _data = {}, method = 'get' }) {
 			..._data,
 			jwt,
 		};
-		const data = ['get', 'delete'].includes(method) ? { params } : params;
+		const data = ['get', 'delete'].includes(method) ? { params } : { data: params };
 
-		const { data: result } = yield call(axios[method], `${baseUrl}/${url}`, data);
+		const requestConfig = {
+			method,
+			url: `${baseUrl}/${url}`,
+			headers: { Authorization: jwt },
+			...data,
+		};
+		const { data: result } = yield call(axios, requestConfig);
 		return result;
 	} catch (error) {
 		//eslint-disable-next-line no-mixed-operators
