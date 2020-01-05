@@ -1,4 +1,4 @@
-import { IsDefined, IsString } from 'class-validator';
+import { IsDefined, IsString, MinLength } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CommentByStrategyTaskInterface } from '../comment-by-strategy-task.interface';
 import { CommentStrategyInterface } from '../comment-strategy.interface';
@@ -10,5 +10,6 @@ export class TaskCreationDto implements CommentByStrategyTaskInterface {
 	commentsStrategy: CommentStrategyInterface[];
 
 	@IsString()
+	@MinLength(1)
 	postLink: string;
 }
