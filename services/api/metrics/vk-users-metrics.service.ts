@@ -16,7 +16,7 @@ export class VkUsersMetricsService {
 	}
 
 	async storeCurrentValue() {
-		const count = this.vkUserService.countActive();
+		const count = await this.vkUserService.countActive();
 		this.uMetrics.activeVkAccounts.inc(count);
 	}
 }
