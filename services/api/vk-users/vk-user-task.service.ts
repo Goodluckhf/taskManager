@@ -1,17 +1,16 @@
-import { inject, injectable } from 'inversify';
+import { injectable } from 'inversify';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import moment from 'moment';
 import { plainToClass } from 'class-transformer';
-import { VkUserService } from './vk-user.service';
 import { TaskCreationDto } from './task-creation.dto';
 import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 import { CheckAndAddUserTask } from './check-and-add-user.task';
 import { User } from '../users/user';
+import { statuses } from '../task/status.constant';
 
 @injectable()
 export class VkUserTaskService {
 	constructor(
-		@inject(VkUserService) private readonly vkUserService: VkUserService,
 		@injectModel(CheckAndAddUserTask)
 		private readonly CheckAndAddUserTaskModel: ModelType<CheckAndAddUserTask>,
 	) {}
@@ -23,5 +22,27 @@ export class VkUserTaskService {
 		newTask.createdAt = moment();
 		await newTask.save();
 		return plainToClass(CheckAndAddUserTask, newTask.toObject());
+	}
+
+	async getTasksForUser(user: User): Promise<CheckAndAddUserTask[]> {
+		const query = { deletedAt: null, user };
+		const activeTasks = await this.CheckAndAddUserTaskModel.find({
+			...query,
+			$or: [{ status: statuses.waiting }, { status: statuses.pending }],
+		})
+			.sort({ createdAt: -1 })
+			.lean()
+			.exec();
+
+		const lastInactiveTasks = await this.CheckAndAddUserTaskModel.find({
+			...query,
+			$or: [{ status: statuses.skipped }, { status: statuses.finished }],
+		})
+			.sort({ createdAt: -1 })
+			.limit(10)
+			.lean()
+			.exec();
+
+		return plainToClass(CheckAndAddUserTask, [...activeTasks, ...lastInactiveTasks]);
 	}
 }
