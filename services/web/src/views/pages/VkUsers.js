@@ -60,7 +60,4 @@ const mapStateToProps = state => ({
 	loading: getLoaderState('VK_USERS__LIST', state),
 });
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(VkUsers);
+export default connect(mapStateToProps, mapDispatchToProps)(VkUsers);

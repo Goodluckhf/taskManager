@@ -56,7 +56,4 @@ const mapStateToProps = state => ({
 	systemVkLink: state.auth.get('systemVkLink'),
 });
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(Settings);
+export default connect(mapStateToProps, mapDispatchToProps)(Settings);

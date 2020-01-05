@@ -90,7 +90,4 @@ const mapStateToProps = state => ({
 	loading: getLoaderState('AUTO_LIKES__LIST', state),
 });
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(AutoLikes);
+export default connect(mapStateToProps, mapDispatchToProps)(AutoLikes);

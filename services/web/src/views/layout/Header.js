@@ -50,11 +50,6 @@ class Header extends PureComponent {
 							</Link>
 						</NavItem>
 					)}
-					{typeof this.props.balance !== 'undefined' && (
-						<NavItem className="px-3">
-							<Link to="/balance">Баланс: {this.props.balance}</Link>
-						</NavItem>
-					)}
 					<NavItem className="px-3">
 						<Link to="/settings">{this.props.email}</Link>
 					</NavItem>
