@@ -2,29 +2,29 @@ import { List, Map } from 'immutable';
 
 export const routes = Map({
 	items: List([
-		Map({
-			name: 'Паблики',
-			url: '/groups',
-			icon: 'icon-speedometer',
-			badge: Map({
-				variant: 'info',
-				text: 'NEW',
-			}),
-		}),
-		Map({
-			name: 'Автонакрутка',
-			url: '/autolikes',
-			icon: 'icon-heart',
-			badge: Map({
-				variant: 'info',
-				text: 'NEW',
-			}),
-		}),
-		Map({
-			name: 'Слежка',
-			url: '/wallseek',
-			icon: 'fa fa-user-secret',
-		}),
+		// Map({
+		// 	name: 'Паблики',
+		// 	url: '/groups',
+		// 	icon: 'icon-speedometer',
+		// 	badge: Map({
+		// 		variant: 'info',
+		// 		text: 'NEW',
+		// 	}),
+		// }),
+		// Map({
+		// 	name: 'Автонакрутка',
+		// 	url: '/autolikes',
+		// 	icon: 'icon-heart',
+		// 	badge: Map({
+		// 		variant: 'info',
+		// 		text: 'NEW',
+		// 	}),
+		// }),
+		// Map({
+		// 	name: 'Слежка',
+		// 	url: '/wallseek',
+		// 	icon: 'fa fa-user-secret',
+		// }),
 		Map({
 			name: 'Комменты',
 			url: '/comments-by-strategy',
