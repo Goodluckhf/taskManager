@@ -8,11 +8,11 @@ import LoadingButton, { XS } from '../ui/LoadingButton';
 import ApiError from '../ui/ApiError';
 
 const statusCodeToString = {
-	0: <span className="text-primary">Ожидает</span>,
-	1: <span className="text-warning">Выполняется</span>,
-	2: <span className="text-success">Выполнена</span>,
-	3: <span className="text-muted">Остановлена</span>,
-	4: <span className="text-info">Проверяется</span>,
+	waiting: <span className="text-primary">Ожидает</span>,
+	pending: <span className="text-warning">Выполняется</span>,
+	finished: <span className="text-success">Выполнена</span>,
+	skipped: <span className="text-muted">Остановлена</span>,
+	checking: <span className="text-info">Проверяется</span>,
 };
 
 class Item extends PureComponent {
