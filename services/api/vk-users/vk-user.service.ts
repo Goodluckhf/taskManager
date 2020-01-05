@@ -3,6 +3,7 @@ import { random, shuffle } from 'lodash';
 import { injectable } from 'inversify';
 import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 import { VkUser } from './vk-user';
+import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
 
 @injectable()
 export class VkUserService {
@@ -10,6 +11,18 @@ export class VkUserService {
 
 	async countActive(): Promise<number> {
 		return this.VkUsersModel.count({ isActive: true });
+	}
+
+	async exists(login: string): Promise<boolean> {
+		const count = await this.VkUsersModel.count({ login });
+		return count > 0;
+	}
+
+	async addUser(credentials: VkUserCredentialsInterface) {
+		const newUser = new this.VkUsersModel();
+		newUser.login = credentials.login;
+		newUser.password = credentials.password;
+		await newUser.save();
 	}
 
 	async findActive(count: number): Promise<VkUser[]> {
