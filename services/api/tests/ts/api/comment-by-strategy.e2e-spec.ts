@@ -12,6 +12,9 @@ import { getModelToken } from '../../../../../lib/inversify-typegoose/get-model-
 import { User } from '../../../users/user';
 import { createUser } from '../fixtures/user-factory';
 import { AuthProviderMock } from '../fixtures/auth-provider.mock';
+import { TaskMetricsServiceInterface } from '../../../metrics/task-metrics-service.interface';
+import { TaskMetricsService } from '../../../metrics/task-metrics.service';
+import { taskMetricsServiceMock } from '../mocks/task-metrics-service.mock';
 
 describe('Comment by strategy API', () => {
 	let ctx = null;
@@ -19,6 +22,9 @@ describe('Comment by strategy API', () => {
 	beforeEach(async () => {
 		const container = createContainer();
 		container.rebind('Config').toConstantValue(generateConfig());
+		container
+			.bind<TaskMetricsServiceInterface>(TaskMetricsService)
+			.toConstantValue(taskMetricsServiceMock);
 		const database = container.get(Database);
 
 		await database.connect();

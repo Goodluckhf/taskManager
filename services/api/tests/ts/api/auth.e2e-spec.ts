@@ -5,6 +5,9 @@ import { createContainer } from '../../../di.container';
 import { generateConfig } from '../fixtures/config';
 import { Database } from '../../../../../lib/inversify-typegoose/database';
 import { createApplication } from '../../../create-application';
+import { TaskMetricsServiceInterface } from '../../../metrics/task-metrics-service.interface';
+import { TaskMetricsService } from '../../../metrics/task-metrics.service';
+import { taskMetricsServiceMock } from '../mocks/task-metrics-service.mock';
 
 describe('Auth API', () => {
 	let ctx;
@@ -12,6 +15,9 @@ describe('Auth API', () => {
 	beforeEach(async () => {
 		const container = createContainer();
 		container.rebind('Config').toConstantValue(generateConfig());
+		container
+			.bind<TaskMetricsServiceInterface>(TaskMetricsService)
+			.toConstantValue(taskMetricsServiceMock);
 		const database = container.get(Database);
 
 		await database.connect();
