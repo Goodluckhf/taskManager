@@ -20,6 +20,10 @@ export const errorHandlerMiddleware: ErrorRequestHandler = async (
 
 	const user = req.user as User;
 	const errorDataObject = typeof error.toObject === 'function' ? error.toObject() : {};
+	if (error.request) {
+		delete error.request;
+	}
+
 	logger.warn({
 		error,
 		message: 'API error',

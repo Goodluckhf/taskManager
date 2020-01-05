@@ -12,7 +12,7 @@ export class AuthorizedPrincipal implements interfaces.Principal {
 	}
 
 	async isInRole(role: string): Promise<boolean> {
-		return this.details.role === Roles[role];
+		return this.details.role === Roles[role] || this.details.role === Roles.admin;
 	}
 
 	async isResourceOwner(resourceId: any): Promise<boolean> {

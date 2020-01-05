@@ -15,7 +15,8 @@ export class AuthMiddleware extends BaseMiddleware {
 		}
 
 		if (!(await principal.isInRole('premium'))) {
-			throw new AccessDeniedException(user._id.toString(), req);
+			next(new AccessDeniedException(user._id.toString(), req));
+			return;
 		}
 
 		next();
