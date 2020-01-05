@@ -14,8 +14,8 @@ export const modelAutoBind = (container: interfaces.Container): void => {
 		let modelClass = getModelForClass(modelMetadata.modelClass as AnyParamConstructor<any>);
 		if (modelMetadata.discriminatorBaseClass) {
 			modelClass = getDiscriminatorModelForClass(
-				modelClass,
-				modelMetadata.discriminatorBaseClass as AnyParamConstructor<any>,
+				getModelForClass(modelMetadata.discriminatorBaseClass as AnyParamConstructor<any>),
+				modelMetadata.modelClass,
 			);
 		}
 
