@@ -27,10 +27,7 @@ export class TaskController extends BaseHttpController {
 	@inject('Logger') private readonly logger: LoggerInterface;
 
 	@httpDelete('/task/:id', AuthMiddleware)
-	async createTask(
-		@principal() principalUser: interfaces.Principal,
-		@requestParam('id') id: string,
-	) {
+	async delete(@principal() principalUser: interfaces.Principal, @requestParam('id') id: string) {
 		return this.json(
 			{
 				success: true,
