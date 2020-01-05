@@ -11,7 +11,13 @@ export function createApplication(diContainer: interfaces.Container): Applicatio
 	let application = new InversifyExpressServer(diContainer, null, null, null, AuthProvider);
 	application = application
 		.setConfig(app => {
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(
+				bodyParser.urlencoded({
+					extended: true,
+					limit: '5mb',
+				}),
+			);
 		})
 		.setErrorConfig(app => {
 			app.use(errorHandlerMiddleware);
