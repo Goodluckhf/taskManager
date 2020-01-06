@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
-import mongoose from '../../lib/mongoose';
+import mongoose from 'mongoose';
 import logger from '../../lib/logger';
-import { ValidationError } from './api/errors/index';
 import { User } from './users/user';
+import { MongooseValidationException } from './exceptions/mongoose-validation.exception';
+import { MongooseCastException } from './exceptions/mongoose-cast.exception';
 
 export const errorHandlerMiddleware: ErrorRequestHandler = async (
 	error,
@@ -11,11 +12,11 @@ export const errorHandlerMiddleware: ErrorRequestHandler = async (
 	next: NextFunction,
 ) => {
 	if (error instanceof mongoose.Error.ValidationError) {
-		error = ValidationError.createFromMongooseValidationError(error);
+		error = new MongooseValidationException(error);
 	}
 
 	if (error instanceof mongoose.Error.CastError) {
-		error = ValidationError.createFromMongooseCastError(error);
+		error = new MongooseCastException(error);
 	}
 
 	const user = req.user as User;
