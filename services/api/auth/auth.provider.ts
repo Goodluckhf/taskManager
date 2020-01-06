@@ -41,6 +41,12 @@ export class AuthProvider implements interfaces.AuthProvider {
 			return new UnauthorizedPrincipal();
 		}
 
+		/**
+		 * для обработки ошибок нужен пользователь
+		 * пока в inversify решения лучше нет :(
+		 */
+		req.user = user;
+
 		return new AuthorizedPrincipal(plainToClass(User, user.toObject()));
 	}
 }
