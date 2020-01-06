@@ -19,6 +19,8 @@ export const errorHandlerMiddleware: ErrorRequestHandler = async (
 		error = new MongooseCastException(error);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+	// @ts-ignore
 	const user = req.user as User;
 	const errorDataObject = typeof error.toObject === 'function' ? error.toObject() : {};
 	if (error.request) {

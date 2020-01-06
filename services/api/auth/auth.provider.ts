@@ -45,6 +45,8 @@ export class AuthProvider implements interfaces.AuthProvider {
 		 * для обработки ошибок нужен пользователь
 		 * пока в inversify решения лучше нет :(
 		 */
+		// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+		// @ts-ignore
 		req.user = user;
 
 		return new AuthorizedPrincipal(plainToClass(User, user.toObject()));
