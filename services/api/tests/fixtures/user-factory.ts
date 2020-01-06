@@ -1,7 +1,7 @@
 import { DocumentType, ModelType } from '@typegoose/typegoose/lib/types';
-import { User } from '../../../users/user';
+import { User } from '../../users/user';
 import { generateRandomString } from '../helpers';
-import { Roles } from '../../../users/roles.constant';
+import { Roles } from '../../users/roles.constant';
 
 export async function createUser(
 	UserModel: ModelType<User>,

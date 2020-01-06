@@ -1,5 +1,5 @@
 import { Mocked } from '../types';
-import { TaskMetricsServiceInterface } from '../../../metrics/task-metrics-service.interface';
+import { TaskMetricsServiceInterface } from '../../metrics/task-metrics-service.interface';
 
 export const taskMetricsServiceMock: Mocked<TaskMetricsServiceInterface> = {
 	addDuration: jest.fn(),

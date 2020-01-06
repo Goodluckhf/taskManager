@@ -1,4 +1,4 @@
-import { LoggerInterface } from '../../../../../lib/logger.interface';
+import { LoggerInterface } from '../../../../lib/logger.interface';
 
 export const loggerMock: LoggerInterface = {
 	// eslint-disable-next-line @typescript-eslint/no-empty-function

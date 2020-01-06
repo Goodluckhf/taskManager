@@ -1,11 +1,11 @@
 import 'reflect-metadata';
 import { TaskExecutor } from './task-executor';
 import { TaskAbstractFactoryInterface } from './task-abstract-factory.interface';
-import { loggerMock } from '../tests/ts/fixtures/logger.mock';
+import { loggerMock } from '../tests/fixtures/logger.mock';
 import { TaskServiceInterface } from './task-service.interface';
-import { createTask } from '../tests/ts/fixtures/task-factory';
-import { Mocked } from '../tests/ts/types';
-import { taskMetricsServiceMock } from '../tests/ts/mocks/task-metrics-service.mock';
+import { createTask } from '../tests/fixtures/task-factory';
+import { Mocked } from '../tests/types';
+import { taskMetricsServiceMock } from '../tests/mocks/task-metrics-service.mock';
 
 describe('TaskExecutor', () => {
 	let ctx: {

@@ -7,7 +7,7 @@
     "start:consumer": "NODE_CONFIG='{\"rabbit\": {\"host\": \"localhost\"}}' NODE_ENV=development ts-node -r tsconfig-paths/register ./services/taskConsumer/index.ts",
     "start:dev": "node --require @babel/register app.js",
     "test": "npm run test:api:e2e && npm run test:api:unit",
-    "test:api:e2e": "NODE_ENV=development jest --config ./services/api/tests/ts/jest-e2e.json --detectOpenHandles",
+    "test:api:e2e": "NODE_ENV=development jest --config services/api/tests/jest-e2e.json --detectOpenHandles",
     "test:api:unit": "NODE_ENV=development jest --detectOpenHandles",
     "test:coverage:dev": "nyc --reporter=text mocha --exit --ui bdd --reporter spec --require @babel/register ./services/api/tests/setup.js ./services/api/tests/**/*.test.js ./services/api/tests/*.test.js",
     "precommit": "lint-staged",

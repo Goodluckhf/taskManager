@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 import { plainToClass } from 'class-transformer';
-import { CommonTask } from '../../../task/common-task';
-import { statuses } from '../../../task/status.constant';
+import { CommonTask } from '../../task/common-task';
+import { statuses } from '../../task/status.constant';
 
 export function createTask(opts: Partial<CommonTask> = {}): CommonTask {
 	const taskPlain: CommonTask = {

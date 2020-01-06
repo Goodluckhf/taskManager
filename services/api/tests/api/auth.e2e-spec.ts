@@ -1,12 +1,12 @@
 import supertest from 'supertest';
 import { models } from '@typegoose/typegoose/lib/internal/data';
 import { deleteModel } from '@typegoose/typegoose';
-import { createContainer } from '../../../di.container';
+import { createContainer } from '../../di.container';
 import { generateConfig } from '../fixtures/config';
-import { Database } from '../../../../../lib/inversify-typegoose/database';
-import { createApplication } from '../../../create-application';
-import { TaskMetricsServiceInterface } from '../../../metrics/task-metrics-service.interface';
-import { TaskMetricsService } from '../../../metrics/task-metrics.service';
+import { Database } from '../../../../lib/inversify-typegoose/database';
+import { createApplication } from '../../create-application';
+import { TaskMetricsServiceInterface } from '../../metrics/task-metrics-service.interface';
+import { TaskMetricsService } from '../../metrics/task-metrics.service';
 import { taskMetricsServiceMock } from '../mocks/task-metrics-service.mock';
 
 describe('Auth API', () => {
