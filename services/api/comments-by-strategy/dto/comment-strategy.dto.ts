@@ -10,7 +10,15 @@ export class CommentStrategyDto implements CommentStrategyInterface {
 	@IsInt()
 	likesCount: number;
 
-	@Transform(value => (value ? parseInt(value, 10) : null))
+	@Transform(value => {
+		const intVal = parseInt(value, 10);
+		// eslint-disable-next-line no-restricted-globals
+		if (isFinite(intVal)) {
+			return intVal;
+		}
+
+		return null;
+	})
 	@IsInt()
 	replyToCommentNumber: number;
 
