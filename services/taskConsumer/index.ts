@@ -1,12 +1,17 @@
 import 'source-map-support/register';
 
 import { createContainer } from '../api/di.container';
-import { ConfigInterface } from '../../config/config.interface';
 import { RpcServer } from '../../lib/amqp/rpc-server';
 import { LoggerInterface } from '../../lib/logger.interface';
 import GracefulStop from '../../lib/graceful-stop';
+import { AbstractRpcHandler } from '../../lib/amqp/abstract-rpc-handler';
+import { PostCommentRpcHandler } from './responses/post-comment-rpc.handler';
+import { CheckVkUserRpcHandler } from './responses/check-vk-user-rpc.handler';
 
 const container = createContainer();
+container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(PostCommentRpcHandler);
+container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(CheckVkUserRpcHandler);
+
 const rpcServer = container.get<RpcServer>(RpcServer);
 const logger = container.get<LoggerInterface>('Logger');
 const gracefulStop = container.get<GracefulStop>(GracefulStop);
