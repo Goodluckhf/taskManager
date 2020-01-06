@@ -4,10 +4,11 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "start:consumer": "NODE_CONFIG='{\"rabbit\": {\"host\": \"localhost\"}}' NODE_ENV=development ts-node -r tsconfig-paths/register ./services/taskConsumer/index.ts",
     "start:dev": "node --require @babel/register app.js",
     "test": "npm run test:api:e2e && npm run test:api:unit",
-    "test:api:e2e": "mocha --exit --ui bdd --reporter spec --require @babel/register ./services/api/tests/setup.js ./services/api/tests/**/*.test.js ./services/api/tests/*.test.js",
-    "test:api:unit": "mocha --exit --ui bdd --reporter spec --require @babel/register ./services/api/{api,billing,model,routes,tasks}/**/*.test.js",
+    "test:api:e2e": "NODE_ENV=development jest --config services/api/tests/jest-e2e.json --detectOpenHandles",
+    "test:api:unit": "NODE_ENV=development jest --detectOpenHandles",
     "test:coverage:dev": "nyc --reporter=text mocha --exit --ui bdd --reporter spec --require @babel/register ./services/api/tests/setup.js ./services/api/tests/**/*.test.js ./services/api/tests/*.test.js",
     "precommit": "lint-staged",
     "lint": "eslint ."
@@ -16,28 +17,26 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@babel/polyfill": "^7.0.0-beta.42",
-    "ajv": "6.5.3",
+    "@typegoose/typegoose": "^6.1.8",
     "amqplib": "0.5.2",
     "axios": "^0.19.0",
     "bluebird": "3.5.1",
+    "body-parser": "^1.19.0",
     "bunyan": "1.8.12",
     "bunyan-stdout-stream": "^1.5.2",
     "cheerio": "0.22.0",
+    "class-transformer": "^0.2.3",
+    "class-validator": "^0.11.0",
     "config": "1.31.0",
     "dotenv": "6.0.0",
-    "jsonwebtoken": "8.3.0",
-    "koa": "2.5.2",
-    "koa-bodyparser": "4.2.1",
-    "koa-morgan": "1.0.1",
-    "koa-passport": "4.1.1",
-    "koa-router": "7.4.0",
+    "express": "^4.17.1",
+    "inversify": "^5.0.1",
+    "inversify-express-utils": "^6.3.2",
+    "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.15",
     "moment": "2.22.2",
     "mongoose": "^5.8.0",
-    "passport": "0.4.0",
-    "passport-jwt": "4.0.0",
-    "passport-local": "1.0.0",
+    "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.9",
     "umetrics": "^1.0.4",
     "uuid": "3.3.2"
@@ -45,25 +44,91 @@
   "devDependencies": {
     "@babel/cli": "^7.2.0",
     "@babel/core": "^7.2.0",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/plugin-proposal-decorators": "^7.7.4",
+    "@babel/plugin-proposal-numeric-separator": "^7.7.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.7.4",
     "@babel/preset-env": "^7.2.0",
+    "@babel/preset-typescript": "^7.7.7",
     "@babel/register": "^7.0.0",
+    "@types/amqplib": "^0.5.13",
+    "@types/axios": "^0.14.0",
+    "@types/bluebird": "^3.5.29",
+    "@types/bunyan": "^1.8.6",
+    "@types/express": "^4.17.2",
+    "@types/inversify-express-utils": "^2.0.0",
+    "@types/jest": "^24.0.25",
+    "@types/jsonwebtoken": "^8.3.5",
+    "@types/lodash": "^4.14.149",
+    "@types/mongoose": "^5.5.35",
+    "@types/node": "^12.12.21",
+    "@types/supertest": "^2.0.8",
+    "@typescript-eslint/eslint-plugin": "^2.12.0",
+    "@typescript-eslint/parser": "^2.12.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-plugin-syntax-object-rest-spread": "^6.13.0",
-    "chai": "^4.1.2",
-    "chai-as-promised": "^7.1.1",
-    "eslint": "^5.7.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-config-prettier": "^3.1.0",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-prettier": "^3.0.0",
+    "babel-plugin-transform-typescript-metadata": "^0.2.2",
+    "eslint": "^6.7.2",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.11.1",
     "husky": "^0.14.3",
+    "jest": "^24.9.0",
+    "jest-junit": "^10.0.0",
     "lint-staged": "^7.2.2",
-    "mocha": "^5.2.0",
     "mockgoose": "^8.0.4",
-    "nyc": "^14.1.1",
-    "prettier": "^1.15.3"
+    "prettier": "^1.19.1",
+    "supertest": "^4.0.2",
+    "ts-jest": "^24.2.0",
+    "ts-loader": "^6.2.1",
+    "ts-node": "^8.5.4",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^3.7.3"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "./",
+    "testRegex": "\\.spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "../coverage",
+    "collectCoverageFrom": [
+      "**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "testEnvironment": "node",
+    "reporters": [
+      "default",
+      [
+        "jest-junit",
+        {
+          "suiteName": "Unit tests",
+          "outputDirectory": "./coverage",
+          "classNameTemplate": "{classname}-{title}",
+          "titleTemplate": "{classname}-{title}",
+          "ancestorSeparator": " › ",
+          "usePathForSuiteName": true,
+          "includeConsoleOutput": true
+        }
+      ]
+    ],
+    "globals": {
+      "ts-jest": {
+        "diagnostics": {
+          "warnOnly": true
+        }
+      }
+    }
   },
   "lint-staged": {
     "*.js": [
@@ -71,18 +136,5 @@
       "prettier --write",
       "git add"
     ]
-  },
-  "nyc": {
-    "include": [
-      "services/api/**/*.js"
-    ],
-    "exclude": [
-      "**/*.test.js",
-      "services/api/tests/setup.js",
-      "services/api/routes",
-      "services/api/app.js",
-      "services/api/passport.js"
-    ],
-    "all": true
   }
 }

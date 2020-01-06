@@ -65,7 +65,4 @@ const mapStateToProps = state => ({
 	loading: getLoaderState('COMMENTS_BY_STRATEGY__LIST', state),
 });
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(CommentsByStrategy);
+export default connect(mapStateToProps, mapDispatchToProps)(CommentsByStrategy);

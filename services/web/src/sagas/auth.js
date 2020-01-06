@@ -32,7 +32,7 @@ const localstorageJwtKey = 'tasks_jwt';
 export const getDefaultRoute = function*() {
 	const route = yield select(state => state.router.location.pathname);
 	if (route === '/login' || route === '/register') {
-		return '/groups';
+		return '/comments-by-strategy';
 	}
 
 	return route;
@@ -52,7 +52,7 @@ export const checkLogin = function*() {
 	let currentRoute = yield select(state => state.router.location.pathname);
 
 	if (currentRoute === '/login' || currentRoute === '/register') {
-		currentRoute = '/groups';
+		currentRoute = '/';
 		if (jwt) {
 			yield put(push(currentRoute));
 			return jwt;
@@ -75,6 +75,7 @@ export default function*() {
 	yield fork(checkLogin);
 
 	yield takeEvery(NEED_LOGIN, function*({ payload: currentRoute }) {
+		console.log(currentRoute);
 		if (currentRoute === '/login' || currentRoute === '/register') {
 			return;
 		}
@@ -86,7 +87,7 @@ export default function*() {
 		try {
 			const {
 				data: { data: response },
-			} = yield call(axios.post, '/api/login', data);
+			} = yield call(axios.post, '/api/auth/login', data);
 			yield put(loginSuccess(response));
 			const lastRoute = yield select(state => state.auth.get('lastRoute'));
 			// eslint-disable-next-line no-undef
@@ -106,7 +107,7 @@ export default function*() {
 		try {
 			const {
 				data: { data: response },
-			} = yield call(axios.post, '/api/register', data);
+			} = yield call(axios.post, '/api/auth/register', data);
 			yield put(loginSuccess(response));
 			const route = yield getDefaultRoute();
 			window.localStorage.setItem(localstorageJwtKey, response.token);

@@ -61,7 +61,4 @@ const mapStateToProps = state => ({
 	loading: getLoaderState('WALLSEEK__LIST', state),
 });
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(WallSeek);
+export default connect(mapStateToProps, mapDispatchToProps)(WallSeek);

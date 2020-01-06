@@ -2,5 +2,6 @@ FROM node:10.13.0
 
 WORKDIR /home/www
 ENV NODE_ENV=development
+ENV NODE_OPTIONS=--inspect=0.0.0.0:9229
 
-CMD ["node", "--require", "@babel/register", "./services/api/app.js"]
+CMD ["npx", "ts-node", "-r", "tsconfig-paths/register", "./services/api/app.ts"]

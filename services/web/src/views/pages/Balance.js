@@ -81,7 +81,4 @@ const mapStateToProps = state => ({
 	loading: getLoaderState('BILLING__LIST', state),
 });
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(Balance);
+export default connect(mapStateToProps, mapDispatchToProps)(Balance);

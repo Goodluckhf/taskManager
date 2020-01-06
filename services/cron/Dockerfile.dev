@@ -5,4 +5,4 @@ WORKDIR /home/www
 ENV NODE_ENV=development \
 	NODE_PATH=.
 
-CMD ["node", "--require", "@babel/register", "./services/cron/index.js"]
+CMD ["npx", "ts-node", "-r", "tsconfig-paths/register", "./services/cron/index.ts"]

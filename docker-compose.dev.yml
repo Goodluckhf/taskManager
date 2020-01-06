@@ -22,6 +22,8 @@ services:
       - ./services/web/public:/home/www:cached
     logging: *default-logging
   api:
+    ports:
+      - 9229:9229
     build:
       context: ./services/api
       dockerfile: Dockerfile.dev

@@ -1,5 +1,7 @@
-const path = require('path');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const dotEnv = require('dotenv');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const path = require('path');
 
 if (process.env.NODE_ENV === 'development') {
 	dotEnv.config({ path: path.resolve(process.cwd(), '.env.mongodb') });

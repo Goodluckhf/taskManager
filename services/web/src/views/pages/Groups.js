@@ -54,7 +54,4 @@ const mapStateToProps = state => ({
 	form: loaderSelector({ GROUPS__CREATE: 'loading' }, 'groupPage', state, ['form']),
 });
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(Groups);
+export default connect(mapStateToProps, mapDispatchToProps)(Groups);

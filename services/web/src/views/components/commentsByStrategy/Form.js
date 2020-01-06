@@ -66,7 +66,7 @@ class Form extends PureComponent {
 	onClick = () => {
 		this.props.addCommentsStrategy({
 			postLink: this.state.postLink,
-			comments: this.state.json,
+			commentsStrategy: this.state.json,
 		});
 	};
 

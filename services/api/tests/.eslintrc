@@ -1,11 +1,6 @@
 {
-	"globals": {
-		"describe": false,
-		"it": false,
-		"beforeEach": false,
-		"afterEach": false,
-		"before": false,
-		"after": false
+	"env": {
+		"jest": true
 	},
 	"rules": {
 		"no-underscore-dangle": "warn",

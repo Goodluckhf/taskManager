@@ -6,6 +6,8 @@ cache:
 node_js:
   - '10.12'
 
+services: mongodb
+
 notifications:
   email:
     recipients:

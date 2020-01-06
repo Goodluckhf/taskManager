@@ -6,7 +6,7 @@ import { update as updateAutolikes } from './autolikes';
 import { update as updateWallSeek } from './wallSeek';
 import { update as updateCommentsStrategy } from './commentsByStrategy';
 import { update as updateVkUsers } from './vkUsers';
-import { getUserData, updateBalance } from './auth';
+import { getUserData } from './auth';
 import { update } from './billing';
 import { activeUsersRequest } from '../actions/vkUsers';
 
@@ -48,13 +48,6 @@ const loopUpdate = function*(updateFunction, interval) {
 	}
 };
 
-const loopUpdateBalance = function*() {
-	while (true) {
-		yield updateBalance();
-		yield call(delay, 5000);
-	}
-};
-
 const loopUpdateVkUsersCount = function*() {
 	while (true) {
 		yield put(activeUsersRequest());
@@ -65,7 +58,6 @@ const loopUpdateVkUsersCount = function*() {
 export default function*() {
 	const interval = 5 * 1000;
 	let currentLoopTask = null;
-	let currentBalanceTask = null;
 	let currentVkUserCountTask = null;
 
 	// @TODO: пока идет 2 запроса
@@ -78,11 +70,6 @@ export default function*() {
 			currentLoopTask = null;
 		}
 
-		if (currentBalanceTask) {
-			yield cancel(currentBalanceTask);
-			currentBalanceTask = null;
-		}
-
 		if (currentVkUserCountTask) {
 			yield cancel(currentVkUserCountTask);
 			currentVkUserCountTask = null;
@@ -93,7 +80,6 @@ export default function*() {
 			return;
 		}
 
-		currentBalanceTask = yield fork(loopUpdateBalance);
 		currentVkUserCountTask = yield fork(loopUpdateVkUsersCount);
 
 		if (!updateOption.loop) {
