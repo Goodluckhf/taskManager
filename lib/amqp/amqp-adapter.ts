@@ -15,8 +15,6 @@ export class AmqpAdapter implements AmqpAdapterInterface {
 
 	private readonly password: string;
 
-	private readonly retry: boolean;
-
 	private readonly reconnectInterval: number;
 
 	private connection: amqp.Connection;
@@ -26,15 +24,12 @@ export class AmqpAdapter implements AmqpAdapterInterface {
 		@inject('Config') private readonly config: ConfigInterface,
 	) {
 		this.logger = logger;
-		const { host, port, login, password, reconnectInterval, retry = true } = this.config.get(
-			'rabbit',
-		);
+		const { host, port, login, password, reconnectInterval } = this.config.get('rabbit');
 
 		this.host = host;
 		this.port = port;
 		this.login = login;
 		this.password = password;
-		this.retry = retry;
 
 		this.reconnectInterval = reconnectInterval;
 		this.connection = null;
@@ -67,10 +62,6 @@ export class AmqpAdapter implements AmqpAdapterInterface {
 			this.logger.info(`successfully connected to rabbit via: ${connectionURI}`);
 			return this.connection;
 		} catch (error) {
-			if (!this.retry) {
-				throw error;
-			}
-
 			this.logger.error({
 				message: `reconnecting to rabbit in: ${this.reconnectInterval}ms`,
 				error,
