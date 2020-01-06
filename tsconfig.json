@@ -1,8 +1,12 @@
 {
 	"compilerOptions": {
 		"esModuleInterop": true,
+
+		"module": "commonjs",
+
+		"sourceMap": true,
 		// Target latest version of ECMAScript.
-		"target": "esnext",
+		"target": "es2017",
 		// Search under node_modules for non-relative imports.
 		"moduleResolution": "node",
 		// Process & infer types from .js files.
@@ -15,7 +19,6 @@
 		"isolatedModules": true,
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
-		"outDir": "./dist",
-		"baseUrl": "./"
+		"outDir": "./dist"
 	}
 }
