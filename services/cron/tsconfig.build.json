@@ -1,5 +1,5 @@
 {
 	"extends": "../../tsconfig.json",
-	"include": ["../../services/api", "../../config", "../../lib"],
+	"include": ["../../services/cron", "../../config", "../../lib"],
 	"exclude": ["node_modules"]
 }

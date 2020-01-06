@@ -1,0 +1,5 @@
+{
+	"extends": "../../tsconfig.json",
+	"include": ["../../services/taskConsumer", "../../config", "../../lib"],
+	"exclude": ["node_modules"]
+}

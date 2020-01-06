@@ -8,7 +8,7 @@ RUN npm i --development
 
 COPY . .
 
-RUN npx tsc --skipLibCheck -p ./services/api/tsconfig.build.json
+RUN npx tsc --skipLibCheck -p ./services/cron/tsconfig.build.json
 
 ENV NODE_ENV=production
 RUN npm prune
