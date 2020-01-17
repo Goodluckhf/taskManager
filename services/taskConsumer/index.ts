@@ -5,8 +5,8 @@ import { RpcServer } from '../../lib/amqp/rpc-server';
 import { LoggerInterface } from '../../lib/logger.interface';
 import GracefulStop from '../../lib/graceful-stop';
 import { AbstractRpcHandler } from '../../lib/amqp/abstract-rpc-handler';
-import { PostCommentRpcHandler } from './responses/post-comment-rpc.handler';
-import { CheckVkUserRpcHandler } from './responses/check-vk-user-rpc.handler';
+import { PostCommentRpcHandler } from './rpc-handlers/post-comment-rpc.handler';
+import { CheckVkUserRpcHandler } from './rpc-handlers/check-vk-user-rpc.handler';
 
 const container = createContainer();
 container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(PostCommentRpcHandler);
