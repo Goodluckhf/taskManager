@@ -38,14 +38,14 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 		task,
 		replyTo,
 		proxy,
-		users,
+		vkUsers,
 		commentResults,
 		tryNumber = 0,
 	}): Promise<PostCommentResponse> {
 		if (tryNumber > 4) {
 			throw new Error('retries exceed');
 		}
-		const currentUser = users[task.userFakeId];
+		const currentUser = vkUsers[task.userFakeId];
 
 		try {
 			return await this.commentsService.postComment({
@@ -85,16 +85,16 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 						task.replyToCommentNumber
 					];
 
-					exceptReplyToUser = users[userFakeIdReplyTo];
+					exceptReplyToUser = vkUsers[userFakeIdReplyTo];
 				}
 				const newUser = await this.vkUserService.getRandom(exceptReplyToUser);
 				if (!newUser) {
 					throw new Error('There is no actual users left');
 				}
 
-				users[task.userFakeId] = newUser;
+				vkUsers[task.userFakeId] = newUser;
 				return this.setCommentsWithRetry({
-					users,
+					vkUsers,
 					task,
 					replyTo,
 					postLink,
@@ -114,7 +114,7 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 				const newProxy = await this.proxyService.getRandom();
 
 				return this.setCommentsWithRetry({
-					users,
+					vkUsers,
 					task,
 					replyTo,
 					postLink,
@@ -165,7 +165,7 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 				postLink,
 				replyTo,
 				task,
-				users: vkUsers,
+				vkUsers,
 				commentResults,
 			});
 
