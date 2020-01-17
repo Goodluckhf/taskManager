@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { uniqBy } from 'lodash';
+import bluebird from 'bluebird';
 import { TaskHandlerInterface } from '../task/task-handler.interface';
 import { CommentService } from '../comments/comment.service';
 import { LoggerInterface } from '../../../lib/logger.interface';
@@ -8,6 +9,9 @@ import { ProxyService } from '../proxies/proxy.service';
 import { LikeService } from '../likes/like.service';
 import { CommentsByStrategyTask } from './comments-by-strategy-task';
 import { PostCommentResponse } from '../comments/post-comment.response';
+import { GroupJoinTaskService } from '../vk-users/group-join-task.service';
+import { User } from '../users/user';
+import { groupIdByPostLink } from '../../../lib/helper';
 
 @injectable()
 export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
@@ -17,6 +21,7 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 		@inject('Logger') private readonly logger: LoggerInterface,
 		@inject(VkUserService) private readonly vkUserService: VkUserService,
 		@inject(ProxyService) private readonly proxyService: ProxyService,
+		@inject(GroupJoinTaskService) private readonly groupJoinTaskService: GroupJoinTaskService,
 	) {}
 
 	buildPostLink(commonPostLink) {
@@ -128,12 +133,19 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 	 * @param {string} postLink
 	 * @param {string} rawStrategy
 	 */
-	async handle({ postLink, commentsStrategy: strategy }: CommentsByStrategyTask) {
+	async handle({ postLink, commentsStrategy: strategy, user }: CommentsByStrategyTask) {
 		const accountsLength = uniqBy(strategy, item => item.userFakeId).length;
-		const users = await this.vkUserService.findActive(accountsLength);
-		if (users.length < accountsLength) {
+		const vkUsers = await this.vkUserService.findActive(accountsLength);
+		if (vkUsers.length < accountsLength) {
 			throw new Error(`There is not enough accounts | need: ${accountsLength}`);
 		}
+
+		await bluebird.map(vkUsers, vkUser =>
+			this.groupJoinTaskService.createTask(user as User, {
+				vkUserCredentials: vkUser,
+				groupId: groupIdByPostLink(postLink),
+			}),
+		);
 
 		const commentResults = [];
 
@@ -153,7 +165,7 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 				postLink,
 				replyTo,
 				task,
-				users,
+				users: vkUsers,
 				commentResults,
 			});
 
