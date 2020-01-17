@@ -93,6 +93,11 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 					throw new Error('There is no actual users left');
 				}
 
+				await this.groupJoinTaskService.createTask(taskOwnerUser, {
+					groupId: groupIdByPostLink(postLink),
+					vkUserCredentials: newUser,
+				});
+
 				vkUsers[task.userFakeId] = newUser;
 				return this.setCommentsWithRetry({
 					taskOwnerUser,
