@@ -211,7 +211,7 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 				);
 			}
 
-			const userCommentIds = await page.evaluate(
+			const userCommentIds: string[] = await page.evaluate(
 				userHref =>
 					// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 					// @ts-ignore
