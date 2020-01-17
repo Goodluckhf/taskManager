@@ -19,6 +19,18 @@ export class VkUserService {
 		return count > 0;
 	}
 
+	async hasUserJoinedGroup(
+		credentials: VkUserCredentialsInterface,
+		groupId: string,
+	): Promise<boolean> {
+		const count = await this.VkUsersModel.count({
+			login: credentials.login,
+			groupIds: groupId,
+		});
+
+		return count > 0;
+	}
+
 	async addUser(credentials: VkUserCredentialsInterface) {
 		const newUser = new this.VkUsersModel();
 		newUser.login = credentials.login;
