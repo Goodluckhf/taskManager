@@ -2,7 +2,7 @@ import { injectable } from 'inversify';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import moment from 'moment';
 import { plainToClass } from 'class-transformer';
-import { TaskCreationDto } from './task-creation.dto';
+import { TaskCreationDto } from './dto/task-creation.dto';
 import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 import { CheckAndAddUserTask } from './check-and-add-user.task';
 import { User } from '../users/user';

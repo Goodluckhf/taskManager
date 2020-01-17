@@ -12,7 +12,7 @@ import { plainToClass } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import { AuthMiddleware } from '../auth/auth.middleware';
 import { VkUserService } from './vk-user.service';
-import { TaskCreationDto } from './task-creation.dto';
+import { TaskCreationDto } from './dto/task-creation.dto';
 import { ValidationException } from '../exceptions/validation.exception';
 import { VkUserTaskService } from './vk-user-task.service';
 import { User } from '../users/user';

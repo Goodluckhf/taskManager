@@ -4,7 +4,7 @@ import { model } from '../../../lib/inversify-typegoose/model.decorator';
 import { CommonTask } from '../task/common-task';
 import { DelayableTaskInterface } from '../task/delayable-task.interface';
 import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
-import { VkUserCredentialDto } from './vk-user.credential.dto';
+import { VkUserCredentialDto } from './dto/vk-user.credential.dto';
 
 @model({ discriminatorClass: CommonTask })
 export class CheckAndAddUserTask extends CommonTask implements DelayableTaskInterface {
