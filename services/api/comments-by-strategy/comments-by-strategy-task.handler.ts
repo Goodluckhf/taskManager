@@ -34,6 +34,7 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 	}
 
 	async setCommentsWithRetry({
+		taskOwnerUser,
 		postLink,
 		task,
 		replyTo,
@@ -94,6 +95,7 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 
 				vkUsers[task.userFakeId] = newUser;
 				return this.setCommentsWithRetry({
+					taskOwnerUser,
 					vkUsers,
 					task,
 					replyTo,
@@ -114,6 +116,7 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 				const newProxy = await this.proxyService.getRandom();
 
 				return this.setCommentsWithRetry({
+					taskOwnerUser,
 					vkUsers,
 					task,
 					replyTo,
@@ -161,6 +164,7 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 			const proxy = await this.proxyService.getRandom();
 
 			const { commentId } = await this.setCommentsWithRetry({
+				taskOwnerUser: user,
 				proxy,
 				postLink,
 				replyTo,
