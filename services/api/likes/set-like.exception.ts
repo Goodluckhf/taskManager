@@ -19,6 +19,7 @@ export class SetLikeException extends Error implements FormattableInterface, Obj
 		return {
 			code: this.code,
 			description: this.description,
+			formattedString: this.toFormattedString(),
 		};
 	}
 }

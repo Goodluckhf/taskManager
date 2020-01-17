@@ -164,15 +164,31 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 			});
 
 			if (task.likesCount > 0) {
-				await this.likeService.setLikesToComment({
-					count: task.likesCount,
-					url: `${this.buildPostLink(postLink)}?reply=${commentId.replace(/.*_/, '')}`,
-				});
+				await this.setLikesToComment(
+					task.likesCount,
+					`${this.buildPostLink(postLink)}?reply=${commentId.replace(/.*_/, '')}`,
+				);
 			}
 
 			commentResults.push({
 				commentId,
 				userFakeId: task.userFakeId,
+			});
+		}
+	}
+
+	private async setLikesToComment(count: number, url: string) {
+		try {
+			await this.likeService.setLikesToComment({
+				count,
+				url,
+			});
+		} catch (error) {
+			const errorData = typeof error.toObject === 'function' ? error.toObject() : {};
+			this.logger.warn({
+				message: 'Ошибка при накрутке лайков на комменты',
+				error,
+				errorData,
 			});
 		}
 	}
