@@ -3,7 +3,7 @@ import { Page } from 'puppeteer';
 import bluebird from 'bluebird';
 import { LoggerInterface } from '../../../../lib/logger.interface';
 import { ProxyInterface } from '../../proxy.interface';
-import { AccountException } from '../../responses/account.exception';
+import { AccountException } from '../../rpc-handlers/account.exception';
 import { CaptchaService } from '../../../../lib/captcha.service';
 
 @injectable()

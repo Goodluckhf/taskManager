@@ -1,5 +1,5 @@
 import { ModelType } from '@typegoose/typegoose/lib/types';
-import { random, shuffle } from 'lodash';
+import { random, shuffle, uniq } from 'lodash';
 import { injectable } from 'inversify';
 import moment from 'moment';
 import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
@@ -19,6 +19,27 @@ export class VkUserService {
 		return count > 0;
 	}
 
+	async hasUserJoinedGroup(
+		credentials: VkUserCredentialsInterface,
+		groupId: string,
+	): Promise<boolean> {
+		const count = await this.VkUsersModel.count({
+			login: credentials.login,
+			groupIds: groupId,
+		});
+
+		return count > 0;
+	}
+
+	async addGroup(credentials: VkUserCredentialsInterface, groupId: string) {
+		const user = await this.VkUsersModel.findOne({
+			login: credentials.login,
+		});
+
+		user.groupIds = uniq([...user.groupIds, groupId]);
+		await user.save();
+	}
+
 	async addUser(credentials: VkUserCredentialsInterface) {
 		const newUser = new this.VkUsersModel();
 		newUser.login = credentials.login;
@@ -32,6 +53,14 @@ export class VkUserService {
 			.exec();
 
 		return shuffle(shuffle(users)).slice(0, count);
+	}
+
+	async getAllActive(): Promise<VkUser[]> {
+		return this.VkUsersModel.find({
+			isActive: true,
+		})
+			.lean()
+			.exec();
 	}
 
 	async getRandom(exceptUser: VkUser): Promise<VkUser> {

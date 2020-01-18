@@ -1,8 +1,8 @@
-import { prop } from '@typegoose/typegoose';
+import { arrayProp, prop } from '@typegoose/typegoose';
 import { Schema } from 'mongoose';
+import moment from 'moment';
 import { model } from '../../../lib/inversify-typegoose/model.decorator';
 import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
-import moment from 'moment';
 
 @model()
 export class VkUser implements VkUserCredentialsInterface {
@@ -20,4 +20,7 @@ export class VkUser implements VkUserCredentialsInterface {
 
 	@prop({ type: Date })
 	inactiveAt: Date | moment.Moment;
+
+	@arrayProp({ items: String, default: [] })
+	groupIds: string[];
 }

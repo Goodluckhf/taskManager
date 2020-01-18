@@ -1,20 +1,39 @@
 // Создание задачи - приходит от саги
-export const CREATE_SUCCESS = 'VK_USERS__CREATE_SUCCESS';
+export const CREATE_SUCCESS = 'VK_USERS__CREATE_ADD_TASK_SUCCESS';
 export const createSuccess = task => ({
 	type: CREATE_SUCCESS,
 	payload: { task },
 });
 
-export const CREATE_FAILURE = 'VK_USERS__CREATE_FAILURE';
+export const CREATE_FAILURE = 'VK_USERS__CREATE_ADD_TASK_FAILURE';
 export const createFailure = error => ({
 	type: CREATE_FAILURE,
 	payload: { error },
 });
 
 // Для редьюсера
-export const CREATE_REQUEST = 'VK_USERS__CREATE_REQUEST';
+export const CREATE_REQUEST = 'VK_USERS__CREATE_ADD_TASK_REQUEST';
 export const createRequest = data => ({
 	type: CREATE_REQUEST,
+	payload: data,
+});
+
+export const CREATE_CHECK_ALL_USERS_SUCCESS = 'VK_USERS__CREATE_CHECK_ALL_USERS_SUCCESS';
+export const createCheckAllUsersSuccess = task => ({
+	type: CREATE_CHECK_ALL_USERS_SUCCESS,
+	payload: { task },
+});
+
+export const CREATE_CHECK_ALL_USERS_FAILURE = 'VK_USERS__CREATE_CHECK_ALL_USERS_FAILURE';
+export const createCheckAllUsersFailure = error => ({
+	type: CREATE_CHECK_ALL_USERS_FAILURE,
+	payload: { error },
+});
+
+// Для редьюсера
+export const CREATE_CHECK_ALL_USERS_REQUEST = 'VK_USERS__CREATE_CHECK_ALL_USERS_REQUEST';
+export const createCheckAllUsersRequest = data => ({
+	type: CREATE_CHECK_ALL_USERS_REQUEST,
 	payload: data,
 });
 

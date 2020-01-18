@@ -53,7 +53,7 @@ export const groupIdForApi = _id => {
  * @return {{owner_id?: string, domain?: string}}
  */
 export const groupForVkApiByHref = (href, withMinus = true) => {
-	const data = {};
+	const data: any = {};
 	const matchResult = href.match(urlRegExp);
 	let group = '';
 
@@ -93,15 +93,10 @@ export const hrefByGroupObjVk = group => {
 	return `${href}${group.domain}`;
 };
 
-/**
- * @param {String|Number} _id
- * @return {string}
- */
-export const hrefByGroupId = _id => {
-	const href = 'https://vk.com/club';
+export const hrefByGroupId = (_id: string): string => {
 	const id = this.groupIdForLink(_id);
 
-	return `${href}${id}`;
+	return `https://vk.com/club${id}`;
 };
 
 /**
@@ -117,6 +112,13 @@ export const postLinkByGroup = group => `https://vk.com/wall${group.owner_id}_${
  * @return {String}
  */
 export const postIdByLink = link => link.replace('https://vk.com/wall', '');
+
+/**
+ * По ссылке на пост
+ * Возвращает id группы
+ */
+export const groupIdByPostLink = (postLink: string): string =>
+	postLink.replace('https://vk.com/wall', '').split('_')[0];
 
 /**
  * Проверяет есть ли ссылка на группу в посте

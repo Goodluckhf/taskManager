@@ -6,6 +6,7 @@ import { AbstractRpcHandler } from '../../../lib/amqp/abstract-rpc-handler';
 import { LoggerInterface } from '../../../lib/logger.interface';
 import { AccountException } from './account.exception';
 import { VkAuthorizer } from '../actions/vk/vk-authorizer';
+import { CommentsClosedException } from './comments-closed.exception';
 
 @injectable()
 export class PostCommentRpcHandler extends AbstractRpcHandler {
@@ -67,13 +68,26 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 				postId,
 			});
 
-			await page.click('.reply_fakebox');
+			await this.withCatchingClosedComments(
+				async () => {
+					await page.click('.reply_fakebox');
+				},
+				login,
+				postLink,
+			);
 
 			if (replyTo) {
 				postId = replyTo;
-				await page.evaluate(selector => {
-					document.querySelector(selector).click();
-				}, `#post${postId} a.reply_link`);
+				await this.withCatchingClosedComments(
+					async () => {
+						await page.evaluate(selector => {
+							document.querySelector(selector).click();
+						}, `#post${postId} a.reply_link`);
+					},
+					login,
+					postLink,
+				);
+
 				postId = await page.evaluate(_postId => {
 					const parent = document.querySelector(`#post${_postId}`).parentElement;
 					if (parent.className === 'replies_list_deep') {
@@ -211,7 +225,7 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 				);
 			}
 
-			const userCommentIds = await page.evaluate(
+			const userCommentIds: string[] = await page.evaluate(
 				userHref =>
 					// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 					// @ts-ignore
@@ -234,6 +248,20 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 			if (browser) {
 				await browser.close();
 			}
+		}
+	}
+
+	private async withCatchingClosedComments(func: Function, login: string, postLink: string) {
+		try {
+			await func();
+		} catch (error) {
+			this.logger.warn({
+				message: 'ошибка при клике на "ответить"',
+				postLink,
+				login,
+				originalError: error,
+			});
+			throw new CommentsClosedException(login, postLink);
 		}
 	}
 }

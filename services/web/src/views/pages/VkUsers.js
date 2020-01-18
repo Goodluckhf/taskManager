@@ -7,12 +7,18 @@ import { connect } from 'react-redux';
 import Layout from '../layout/Layout';
 import Form from '../components/vkUsers/Form';
 import List from '../components/vkUsers/List';
-import { removeRequest, createRequest, resumeRequest } from '../../actions/vkUsers';
+import {
+	removeRequest,
+	createRequest,
+	resumeRequest,
+	createCheckAllUsersRequest,
+} from '../../actions/vkUsers';
 import { getLoaderState, loaderSelector } from '../../lib/loader';
 
 class VkUsers extends PureComponent {
 	static propTypes = {
 		addVkUsers: propTypes.func,
+		checkAllUsers: propTypes.func,
 		remove: propTypes.func,
 		resume: propTypes.func,
 		form: propTypes.instanceOf(Immutable.Map),
@@ -28,6 +34,8 @@ class VkUsers extends PureComponent {
 						addVkUsers={this.props.addVkUsers}
 						loading={this.props.form.get('loading')}
 						error={this.props.form.get('error')}
+						checkAllUsers={this.props.checkAllUsers}
+						checkAllUsersLoading={this.props.form.get('checkAllUsersLoading')}
 					/>
 					<List
 						items={this.props.list}
@@ -43,12 +51,21 @@ class VkUsers extends PureComponent {
 
 const mapDispatchToProps = dispatch => ({
 	addVkUsers: data => dispatch(createRequest(data)),
+	checkAllUsers: () => dispatch(createCheckAllUsersRequest()),
 	remove: id => dispatch(removeRequest(id)),
 	resume: id => dispatch(resumeRequest(id)),
 });
 
 const mapStateToProps = state => ({
-	form: loaderSelector({ VK_USERS__CREATE: 'loading' }, 'vkUsersPage', state, ['form']),
+	form: loaderSelector(
+		{
+			VK_USERS__CREATE_ADD_TASK: 'loading',
+			VK_USERS__CREATE_CHECK_ALL_USERS: 'checkAllUsersLoading',
+		},
+		'vkUsersPage',
+		state,
+		['form'],
+	),
 	list: loaderSelector(
 		{
 			VK_USERS__REMOVE: 'remove_loading',

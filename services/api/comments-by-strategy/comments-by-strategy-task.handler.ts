@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { uniqBy } from 'lodash';
+import bluebird from 'bluebird';
 import { TaskHandlerInterface } from '../task/task-handler.interface';
 import { CommentService } from '../comments/comment.service';
 import { LoggerInterface } from '../../../lib/logger.interface';
@@ -8,6 +9,10 @@ import { ProxyService } from '../proxies/proxy.service';
 import { LikeService } from '../likes/like.service';
 import { CommentsByStrategyTask } from './comments-by-strategy-task';
 import { PostCommentResponse } from '../comments/post-comment.response';
+import { GroupJoinTaskService } from '../vk-users/group-join-task.service';
+import { User } from '../users/user';
+import { groupIdByPostLink } from '../../../lib/helper';
+import { CommentsClosedException } from './comments-closed.exception';
 
 @injectable()
 export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
@@ -17,6 +22,7 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 		@inject('Logger') private readonly logger: LoggerInterface,
 		@inject(VkUserService) private readonly vkUserService: VkUserService,
 		@inject(ProxyService) private readonly proxyService: ProxyService,
+		@inject(GroupJoinTaskService) private readonly groupJoinTaskService: GroupJoinTaskService,
 	) {}
 
 	buildPostLink(commonPostLink) {
@@ -29,18 +35,19 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 	}
 
 	async setCommentsWithRetry({
+		taskOwnerUser,
 		postLink,
 		task,
 		replyTo,
 		proxy,
-		users,
+		vkUsers,
 		commentResults,
 		tryNumber = 0,
 	}): Promise<PostCommentResponse> {
 		if (tryNumber > 4) {
 			throw new Error('retries exceed');
 		}
-		const currentUser = users[task.userFakeId];
+		const currentUser = vkUsers[task.userFakeId];
 
 		try {
 			return await this.commentsService.postComment({
@@ -59,6 +66,10 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 				},
 			});
 		} catch (error) {
+			if (error.code === 'comments_closed') {
+				throw new CommentsClosedException(error, task.text);
+			}
+
 			if (
 				error.code === 'blocked' ||
 				error.code === 'login_failed' ||
@@ -80,16 +91,22 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 						task.replyToCommentNumber
 					];
 
-					exceptReplyToUser = users[userFakeIdReplyTo];
+					exceptReplyToUser = vkUsers[userFakeIdReplyTo];
 				}
 				const newUser = await this.vkUserService.getRandom(exceptReplyToUser);
 				if (!newUser) {
 					throw new Error('There is no actual users left');
 				}
 
-				users[task.userFakeId] = newUser;
+				await this.groupJoinTaskService.createTask(taskOwnerUser, {
+					groupId: groupIdByPostLink(postLink),
+					vkUserCredentials: newUser,
+				});
+
+				vkUsers[task.userFakeId] = newUser;
 				return this.setCommentsWithRetry({
-					users,
+					taskOwnerUser,
+					vkUsers,
 					task,
 					replyTo,
 					postLink,
@@ -109,7 +126,8 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 				const newProxy = await this.proxyService.getRandom();
 
 				return this.setCommentsWithRetry({
-					users,
+					taskOwnerUser,
+					vkUsers,
 					task,
 					replyTo,
 					postLink,
@@ -128,12 +146,19 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 	 * @param {string} postLink
 	 * @param {string} rawStrategy
 	 */
-	async handle({ postLink, commentsStrategy: strategy }: CommentsByStrategyTask) {
+	async handle({ postLink, commentsStrategy: strategy, user }: CommentsByStrategyTask) {
 		const accountsLength = uniqBy(strategy, item => item.userFakeId).length;
-		const users = await this.vkUserService.findActive(accountsLength);
-		if (users.length < accountsLength) {
+		const vkUsers = await this.vkUserService.findActive(accountsLength);
+		if (vkUsers.length < accountsLength) {
 			throw new Error(`There is not enough accounts | need: ${accountsLength}`);
 		}
+
+		await bluebird.map(vkUsers, vkUser =>
+			this.groupJoinTaskService.createTask(user as User, {
+				vkUserCredentials: vkUser,
+				groupId: groupIdByPostLink(postLink),
+			}),
+		);
 
 		const commentResults = [];
 
@@ -149,11 +174,12 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 			const proxy = await this.proxyService.getRandom();
 
 			const { commentId } = await this.setCommentsWithRetry({
+				taskOwnerUser: user,
 				proxy,
 				postLink,
 				replyTo,
 				task,
-				users,
+				vkUsers,
 				commentResults,
 			});
 
@@ -164,15 +190,31 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 			});
 
 			if (task.likesCount > 0) {
-				await this.likeService.setLikesToComment({
-					count: task.likesCount,
-					url: `${this.buildPostLink(postLink)}?reply=${commentId.replace(/.*_/, '')}`,
-				});
+				await this.setLikesToComment(
+					task.likesCount,
+					`${this.buildPostLink(postLink)}?reply=${commentId.replace(/.*_/, '')}`,
+				);
 			}
 
 			commentResults.push({
 				commentId,
 				userFakeId: task.userFakeId,
+			});
+		}
+	}
+
+	private async setLikesToComment(count: number, url: string) {
+		try {
+			await this.likeService.setLikesToComment({
+				count,
+				url,
+			});
+		} catch (error) {
+			const errorData = typeof error.toObject === 'function' ? error.toObject() : {};
+			this.logger.warn({
+				message: 'Ошибка при накрутке лайков на комменты',
+				error,
+				errorData,
 			});
 		}
 	}

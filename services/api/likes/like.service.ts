@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify';
 import { AxiosInstance } from 'axios';
 import { LoggerInterface } from '../../../lib/logger.interface';
 import { ConfigInterface } from '../../../config/config.interface';
+import { SetLikeException } from './set-like.exception';
 
 @injectable()
 export class LikeService {
@@ -34,11 +35,7 @@ export class LikeService {
 			data,
 		});
 		if (data.error) {
-			if (data.error.descr) {
-				throw new Error(data.error.descr);
-			}
-
-			throw data.error;
+			throw new SetLikeException(data.error.code, data.error.descr);
 		}
 
 		return data;
