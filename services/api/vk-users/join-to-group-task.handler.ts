@@ -48,6 +48,10 @@ export class JoinToGroupTaskHandler implements TaskHandlerInterface {
 		try {
 			await this.rpcClient.call(rpcRequest);
 		} catch (error) {
+			if (error.code === 'login_failed' || error.code === 'blocked') {
+				await this.vkUserService.setInactive(vkUserCredentials.login, { code: error.code });
+			}
+
 			if (error.code !== 'already_joined') {
 				throw new UnhandledJoinToGroupException(error, vkUserCredentials.login, groupId);
 			}
