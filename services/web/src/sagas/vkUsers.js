@@ -14,6 +14,9 @@ import {
 	CREATE_CHECK_ALL_USERS_REQUEST,
 	createCheckAllUsersFailure,
 	createCheckAllUsersSuccess,
+	ADD_GROUP_REQUEST,
+	addGroupFailure,
+	addGroupSuccess,
 } from '../actions/vkUsers';
 import { fatalError } from '../actions/fatalError';
 import { callApi } from './api';
@@ -58,6 +61,30 @@ export default function*() {
 		} catch (error) {
 			if (error.response && error.response.data) {
 				yield put(createCheckAllUsersFailure(error.response.data));
+				return;
+			}
+
+			yield put(fatalError(error));
+		}
+	});
+
+	yield takeEvery(ADD_GROUP_REQUEST, function*({ payload: data }) {
+		try {
+			const result = yield call(callApi, {
+				url: 'vk-users/join',
+				method: 'post',
+				data,
+			});
+
+			if (!result.success) {
+				yield put(addGroupFailure(result.data));
+				return;
+			}
+
+			yield put(addGroupSuccess(result.data));
+		} catch (error) {
+			if (error.response && error.response.data) {
+				yield put(addGroupFailure(error.response.data));
 				return;
 			}
 

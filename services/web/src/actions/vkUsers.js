@@ -18,6 +18,26 @@ export const createRequest = data => ({
 	payload: data,
 });
 
+// Создание задачи - приходит от саги
+export const ADD_GROUP_SUCCESS = 'VK_USERS__ADD_GROUP_SUCCESS';
+export const addGroupSuccess = task => ({
+	type: ADD_GROUP_SUCCESS,
+	payload: { task },
+});
+
+export const ADD_GROUP_FAILURE = 'VK_USERS__ADD_GROUP_FAILURE';
+export const addGroupFailure = error => ({
+	type: ADD_GROUP_FAILURE,
+	payload: { error },
+});
+
+// Для редьюсера
+export const ADD_GROUP_REQUEST = 'VK_USERS__ADD_GROUP_REQUEST';
+export const addGroupRequest = data => ({
+	type: ADD_GROUP_REQUEST,
+	payload: data,
+});
+
 export const CREATE_CHECK_ALL_USERS_SUCCESS = 'VK_USERS__CREATE_CHECK_ALL_USERS_SUCCESS';
 export const createCheckAllUsersSuccess = task => ({
 	type: CREATE_CHECK_ALL_USERS_SUCCESS,

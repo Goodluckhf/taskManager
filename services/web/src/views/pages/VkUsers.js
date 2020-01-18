@@ -12,6 +12,7 @@ import {
 	createRequest,
 	resumeRequest,
 	createCheckAllUsersRequest,
+	addGroupRequest,
 } from '../../actions/vkUsers';
 import { getLoaderState, loaderSelector } from '../../lib/loader';
 
@@ -19,6 +20,7 @@ class VkUsers extends PureComponent {
 	static propTypes = {
 		addVkUsers: propTypes.func,
 		checkAllUsers: propTypes.func,
+		addGroup: propTypes.func,
 		remove: propTypes.func,
 		resume: propTypes.func,
 		form: propTypes.instanceOf(Immutable.Map),
@@ -32,10 +34,12 @@ class VkUsers extends PureComponent {
 				<Container fluid={true}>
 					<Form
 						addVkUsers={this.props.addVkUsers}
+						addGroup={this.props.addGroup}
 						loading={this.props.form.get('loading')}
 						error={this.props.form.get('error')}
 						checkAllUsers={this.props.checkAllUsers}
 						checkAllUsersLoading={this.props.form.get('checkAllUsersLoading')}
+						addGroupLoading={this.props.form.get('addGroupLoading')}
 					/>
 					<List
 						items={this.props.list}
@@ -52,6 +56,7 @@ class VkUsers extends PureComponent {
 const mapDispatchToProps = dispatch => ({
 	addVkUsers: data => dispatch(createRequest(data)),
 	checkAllUsers: () => dispatch(createCheckAllUsersRequest()),
+	addGroup: data => dispatch(addGroupRequest(data)),
 	remove: id => dispatch(removeRequest(id)),
 	resume: id => dispatch(resumeRequest(id)),
 });
@@ -61,6 +66,7 @@ const mapStateToProps = state => ({
 		{
 			VK_USERS__CREATE_ADD_TASK: 'loading',
 			VK_USERS__CREATE_CHECK_ALL_USERS: 'checkAllUsersLoading',
+			VK_USERS__ADD_GROUP: 'addGroupLoading',
 		},
 		'vkUsersPage',
 		state,

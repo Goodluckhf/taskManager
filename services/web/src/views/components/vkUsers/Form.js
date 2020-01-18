@@ -21,15 +21,18 @@ class Form extends PureComponent {
 		super(props);
 		this.state = {
 			usersCredentials: '',
+			groupId: '',
 		};
 	}
 
 	static propTypes = {
 		addVkUsers: PropTypes.func.isRequired,
 		checkAllUsers: PropTypes.func.isRequired,
+		addGroup: PropTypes.func.isRequired,
 		loading: PropTypes.bool,
 		error: PropTypes.object,
 		checkAllUsersLoading: PropTypes.bool,
+		addGroupLoading: PropTypes.bool,
 	};
 
 	handleList = e => {
@@ -59,6 +62,20 @@ class Form extends PureComponent {
 		this.props.checkAllUsers();
 	};
 
+	onClickAddGroup = e => {
+		e.preventDefault();
+		if (this.state.groupId.length === 0) {
+			return;
+		}
+
+		this.props.addGroup({ groupId: this.state.groupId });
+		this.setState({ groupId: '' });
+	};
+
+	handleGroupIdInput = e => {
+		this.setState({ groupId: e.target.value.trim() });
+	};
+
 	render() {
 		return (
 			<Card>
@@ -80,7 +97,29 @@ class Form extends PureComponent {
 										style={{ height: '200px' }}
 									/>
 								</Col>
-								<Col md="6">
+								<Col md="3">
+									<Label>Добавить группу</Label>
+									<Row>
+										<Col xs="12">
+											<Input
+												placeholder="id группы (-12345)"
+												onChange={this.handleGroupIdInput}
+												type="text"
+												value={this.state.groupId}
+											/>
+										</Col>
+										<Col style={{ marginTop: '15px' }}>
+											<LoadingButton
+												data-size={XS}
+												data-color="green"
+												loading={this.props.addGroupLoading}
+												onClick={this.onClickAddGroup}>
+												Добавить
+											</LoadingButton>
+										</Col>
+									</Row>
+								</Col>
+								<Col md="3">
 									<Label>Проверка всех аккаунтов</Label>
 									<Row>
 										<Col>
