@@ -12,6 +12,7 @@ import { PostCommentResponse } from '../comments/post-comment.response';
 import { GroupJoinTaskService } from '../vk-users/group-join-task.service';
 import { User } from '../users/user';
 import { groupIdByPostLink } from '../../../lib/helper';
+import { CommentsClosedException } from './comments-closed.exception';
 
 @injectable()
 export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
@@ -65,6 +66,10 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 				},
 			});
 		} catch (error) {
+			if (error.code === 'comments_closed') {
+				throw new CommentsClosedException(error, task.text);
+			}
+
 			if (
 				error.code === 'blocked' ||
 				error.code === 'login_failed' ||
