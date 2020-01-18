@@ -44,6 +44,18 @@ module.exports = {
 		prefetch: 1,
 	},
 
+	// В секундах
+	groupJoinTask: {
+		background: {
+			min: parseInt(process.env.GROUP_JOIN_TASK__BG__MIN, 10),
+			max: parseInt(process.env.GROUP_JOIN_TASK__BG__MAX, 10),
+		},
+		allUsers: {
+			min: parseInt(process.env.GROUP_JOIN_TASK__ALL_USERS__MIN, 10),
+			max: parseInt(process.env.GROUP_JOIN_TASK__ALL_USERS__MAX, 10),
+		},
+	},
+
 	postCommentsTask: {
 		retriesLimit: process.env.POST_COMMENTS_TASK__RETRY_LIMIT,
 	},
