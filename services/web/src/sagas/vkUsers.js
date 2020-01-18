@@ -11,6 +11,9 @@ import {
 	removeFailure,
 	ACTIVE_USERS_REQUEST,
 	activeUsersSuccess,
+	CREATE_CHECK_ALL_USERS_REQUEST,
+	createCheckAllUsersFailure,
+	createCheckAllUsersSuccess,
 } from '../actions/vkUsers';
 import { fatalError } from '../actions/fatalError';
 import { callApi } from './api';
@@ -32,6 +35,29 @@ export default function*() {
 		} catch (error) {
 			if (error.response && error.response.data) {
 				yield put(createFailure(error.response.data));
+				return;
+			}
+
+			yield put(fatalError(error));
+		}
+	});
+
+	yield takeEvery(CREATE_CHECK_ALL_USERS_REQUEST, function*() {
+		try {
+			const result = yield call(callApi, {
+				url: 'vk-users-task/all',
+				method: 'post',
+			});
+
+			if (!result.success) {
+				yield put(createCheckAllUsersFailure(result.data));
+				return;
+			}
+
+			yield put(createCheckAllUsersSuccess(result.data));
+		} catch (error) {
+			if (error.response && error.response.data) {
+				yield put(createCheckAllUsersFailure(error.response.data));
 				return;
 			}
 
