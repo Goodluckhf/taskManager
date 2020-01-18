@@ -55,6 +55,14 @@ export class VkUserService {
 		return shuffle(shuffle(users)).slice(0, count);
 	}
 
+	async getAllActive(): Promise<VkUser[]> {
+		return this.VkUsersModel.find({
+			isActive: true,
+		})
+			.lean()
+			.exec();
+	}
+
 	async getRandom(exceptUser: VkUser): Promise<VkUser> {
 		const query: { isActive: boolean; login?: object } = { isActive: true };
 

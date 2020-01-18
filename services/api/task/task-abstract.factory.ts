@@ -5,6 +5,7 @@ import { CommentsByStrategyTaskHandler } from '../comments-by-strategy/comments-
 import { ClassType } from '../../../lib/internal.types';
 import { CheckAndAddUserTaskHandler } from '../vk-users/check-and-add-user-task.handler';
 import { JoinToGroupTaskHandler } from '../vk-users/join-to-group-task.handler';
+import { CheckAllUsersTaskHandler } from '../vk-users/check-all-users-task.handler';
 
 type MapperToInstance = {
 	[key: string]: TaskHandlerInterface;
@@ -22,6 +23,7 @@ export class TaskAbstractFactory implements TaskAbstractFactoryInterface {
 		CommentsByStrategyTask: CommentsByStrategyTaskHandler,
 		CheckAndAddUserTask: CheckAndAddUserTaskHandler,
 		JoinToGroupTask: JoinToGroupTaskHandler,
+		CheckAllUsersTask: CheckAllUsersTaskHandler,
 	};
 
 	constructor(
