@@ -70,7 +70,7 @@ export class GroupJoinTaskService {
 					await this.createTask(user, {
 						vkUserCredentials: vkUser,
 						groupId: groupJoinDto.groupId,
-						max: 20,
+						max: 20 * 60,
 					});
 				} catch (error) {
 					this.logger.error({
