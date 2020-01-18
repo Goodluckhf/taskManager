@@ -6,6 +6,7 @@ import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 import { JoinToGroupTask } from './join-to-group.task';
 import { VkUserService } from './vk-user.service';
 import { User } from '../users/user';
+import { getRandom } from '../../../lib/helper';
 
 @injectable()
 export class GroupJoinTaskService {
@@ -29,7 +30,9 @@ export class GroupJoinTaskService {
 		const task = new this.JoinToGroupTaskModel();
 		task.groupId = groupJoinTaskData.groupId;
 		task.vkUserCredentials = groupJoinTaskData.vkUserCredentials;
-		task.startAt = moment();
+		// От 0 => 7 минут
+		const randomSeconds = getRandom(0, 7 * 60);
+		task.startAt = moment().add(randomSeconds, 's');
 		task.user = user;
 		await task.save();
 	}
