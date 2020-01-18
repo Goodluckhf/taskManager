@@ -93,15 +93,10 @@ export const hrefByGroupObjVk = group => {
 	return `${href}${group.domain}`;
 };
 
-/**
- * @param {String|Number} _id
- * @return {string}
- */
-export const hrefByGroupId = _id => {
-	const href = 'https://vk.com/club';
+export const hrefByGroupId = (_id: string): string => {
 	const id = this.groupIdForLink(_id);
 
-	return `${href}${id}`;
+	return `https://vk.com/club${id}`;
 };
 
 /**
