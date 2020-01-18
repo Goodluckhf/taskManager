@@ -48,6 +48,19 @@ export class VkUserController extends BaseHttpController {
 		);
 	}
 
+	@httpPost('/vk-users-task/all', AuthMiddleware)
+	async createCheckAllUsersTask(@principal() principalUser: interfaces.Principal) {
+		return this.json(
+			{
+				success: true,
+				data: await this.vkUserTaskService.createCheckAllUsersTask(
+					principalUser.details as User,
+				),
+			},
+			200,
+		);
+	}
+
 	@httpGet('/vk-users-tasks', AuthMiddleware)
 	async getTasks(@principal() principalUser: interfaces.Principal) {
 		return this.json(

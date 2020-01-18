@@ -7,12 +7,16 @@ import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 import { CheckAndAddUserTask } from './check-and-add-user.task';
 import { User } from '../users/user';
 import { statuses } from '../task/status.constant';
+import { CheckAllUsersTask } from './check-all-users-task';
+import { CheckAllUsersAlreadyExistsException } from './check-all-users-already-exists.exception';
 
 @injectable()
 export class VkUserTaskService {
 	constructor(
 		@injectModel(CheckAndAddUserTask)
 		private readonly CheckAndAddUserTaskModel: ModelType<CheckAndAddUserTask>,
+		@injectModel(CheckAllUsersTask)
+		private readonly CheckAllUsersTaskModel: ModelType<CheckAllUsersTask>,
 	) {}
 
 	async createTask(user: User, dto: TaskCreationDto): Promise<CheckAndAddUserTask> {
@@ -22,6 +26,32 @@ export class VkUserTaskService {
 		newTask.startAt = moment();
 		await newTask.save();
 		return plainToClass(CheckAndAddUserTask, newTask.toObject());
+	}
+
+	async createCheckAllUsersTask(user: User) {
+		const count = await this.CheckAllUsersTaskModel.count({
+			$or: [{ status: statuses.waiting }, { status: statuses.pending }],
+		});
+
+		if (count > 0) {
+			throw new CheckAllUsersAlreadyExistsException();
+		}
+
+		const tasks = await this.CheckAllUsersTaskModel.find({
+			status: statuses.finished,
+		})
+			.sort({
+				startAt: -1,
+			})
+			.limit(1)
+			.exec();
+
+		const lastTask = tasks[0];
+		const nextStartAt = lastTask ? moment(lastTask.startAt).add(10, 'm') : moment();
+		const newTask = new this.CheckAllUsersTaskModel();
+		newTask.user = user;
+		newTask.startAt = nextStartAt;
+		await newTask.save();
 	}
 
 	async getTasksForUser(user: User): Promise<CheckAndAddUserTask[]> {
