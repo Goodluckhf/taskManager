@@ -29,14 +29,17 @@ export class GroupJoinTaskService {
 		@inject('Config') private readonly config: ConfigInterface,
 	) {}
 
-	async createTask(user: User, groupJoinTaskData: GroupJoinTaskInterface & TaskDistribution) {
+	async createTask(
+		user: User,
+		groupJoinTaskData: GroupJoinTaskInterface & TaskDistribution,
+	): Promise<boolean> {
 		if (
 			await this.vkUserService.hasUserJoinedGroup(
 				groupJoinTaskData.vkUserCredentials,
 				groupJoinTaskData.groupId,
 			)
 		) {
-			return;
+			return false;
 		}
 
 		const taskCount = await this.JoinToGroupTaskModel.count({
@@ -46,7 +49,7 @@ export class GroupJoinTaskService {
 		});
 
 		if (taskCount > 0) {
-			return;
+			return false;
 		}
 
 		const task = new this.JoinToGroupTaskModel();
@@ -60,21 +63,27 @@ export class GroupJoinTaskService {
 		task.startAt = moment().add(randomSeconds, 's');
 		task.user = user;
 		await task.save();
+		return true;
 	}
 
 	async createTasksForAllUsers(user: User, groupJoinDto: GroupJoinDto) {
 		const allActiveUsers = await this.vkUserService.getAllActive();
 
+		let usersToAdd = 0;
+
 		await bluebird.map(
 			allActiveUsers,
 			async vkUser => {
 				try {
-					await this.createTask(user, {
+					const willJoin = await this.createTask(user, {
 						vkUserCredentials: vkUser,
 						groupId: groupJoinDto.groupId,
 						min: this.config.get('groupJoinTask.allUsers.min'),
 						max: this.config.get('groupJoinTask.allUsers.max'),
 					});
+					if (willJoin) {
+						usersToAdd += 1;
+					}
 				} catch (error) {
 					this.logger.error({
 						message: 'Ошбика при создании задачи на вступления в группу',
@@ -86,5 +95,11 @@ export class GroupJoinTaskService {
 			},
 			{ concurrency: 20 },
 		);
+
+		this.logger.info({
+			message: 'Нужно добавить в группу',
+			usersCountToJoin: usersToAdd,
+			mark: 'join_all_users',
+		});
 	}
 }
