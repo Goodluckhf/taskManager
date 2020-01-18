@@ -7,10 +7,12 @@ import GracefulStop from '../../lib/graceful-stop';
 import { AbstractRpcHandler } from '../../lib/amqp/abstract-rpc-handler';
 import { PostCommentRpcHandler } from './rpc-handlers/post-comment-rpc.handler';
 import { CheckVkUserRpcHandler } from './rpc-handlers/check-vk-user-rpc.handler';
+import { JoinGroupRpcHandler } from './rpc-handlers/join-group-rpc.handler';
 
 const container = createContainer();
 container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(PostCommentRpcHandler);
 container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(CheckVkUserRpcHandler);
+container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(JoinGroupRpcHandler);
 
 const rpcServer = container.get<RpcServer>(RpcServer);
 const logger = container.get<LoggerInterface>('Logger');
