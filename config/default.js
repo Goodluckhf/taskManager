@@ -131,6 +131,7 @@ module.exports = {
 
 	cron: {
 		interval: process.env.CRON__INTERVAL,
+		tasksPrefetch: process.env.CRON__TASKS_PREFETCH,
 	},
 
 	prices: {
