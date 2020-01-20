@@ -16,14 +16,19 @@ import { RpcRequestFactory } from '../../../lib/amqp/rpc-request.factory';
 import { CheckAccountRpcRequest } from './check-account-rpc.request';
 import { ProxyInterface } from '../proxies/proxy.interface';
 import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
+import { GroupJoinTaskService } from './group-join-task.service';
+import { User } from '../users/user';
+import { ConfigInterface } from '../../../config/config.interface';
 
 @injectable()
 export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 	constructor(
 		@inject(VkUserService) private readonly vkUserService: VkUserService,
+		@inject(GroupJoinTaskService) private readonly groupJoinTaskService: GroupJoinTaskService,
 		@inject(ProxyService) private readonly proxyService: ProxyService,
 		@inject(RpcClient) private readonly rpcClient: RpcClient,
 		@inject(RpcRequestFactory) private readonly rpcRequestFactory: RpcRequestFactory,
+		@inject('Config') private readonly config: ConfigInterface,
 	) {}
 
 	private async checkAccount(
@@ -59,6 +64,7 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 						return;
 					}
 
+					await this.createTasksForGroupJoin(task.user as User, { login, password });
 					await this.vkUserService.addUser({ login, password });
 				} catch (error) {
 					errors.push(new UnhandledAddUserException(login, error));
@@ -70,5 +76,41 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 		if (errors.length) {
 			throw new SomeChecksFailedException(errors);
 		}
+	}
+
+	private async createTasksForGroupJoin(
+		user: User,
+		vkUserCredentials: VkUserCredentialsInterface,
+	) {
+		const groupIdsForJoin = await this.getGroupIds();
+		await bluebird.map(
+			groupIdsForJoin,
+			async groupId => {
+				await this.groupJoinTaskService.createTask(user, {
+					groupId,
+					vkUserCredentials,
+					min: this.config.get('groupJoinTask.allUsers.min'),
+					max: this.config.get('groupJoinTask.allUsers.max'),
+				});
+			},
+			{ concurrency: 10 },
+		);
+	}
+
+	private async getGroupIds(): Promise<string[]> {
+		const activeUsers = await this.vkUserService.getAllActive();
+		const maxGroupObject = activeUsers.reduce(
+			(obj, vkUser, key) => {
+				if (vkUser.groupIds.length > obj.max) {
+					obj.max = vkUser.groupIds.length;
+					obj.key = key;
+				}
+
+				return obj;
+			},
+			{ max: 0, key: 0 },
+		);
+
+		return activeUsers[maxGroupObject.key].groupIds;
 	}
 }
