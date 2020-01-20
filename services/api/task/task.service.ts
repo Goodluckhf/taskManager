@@ -37,15 +37,20 @@ export class TaskService implements TaskServiceInterface {
 		await this.CommonTaskModel.update({ _id: id }, { $set: { deletedAt: moment.now() } });
 	}
 
-	async getActive(): Promise<CommonTask[]> {
-		const tasks = await this.CommonTaskModel.find({
+	async getActive(count: number = null): Promise<CommonTask[]> {
+		let query = this.CommonTaskModel.find({
 			status: statuses.waiting,
 			deletedAt: null,
 			$or: [{ repeated: true }, { startAt: { $lte: new Date() } }],
 		})
 			.populate('user')
-			.lean()
-			.exec();
+			.lean();
+
+		if (count) {
+			query = query.limit(count);
+		}
+
+		const tasks = await query.exec();
 
 		return plainToClass(CommonTask, tasks);
 	}
