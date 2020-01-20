@@ -3,7 +3,7 @@ import { User } from '../users/user';
 import { CommonTask } from './common-task';
 
 export interface TaskServiceInterface {
-	getActive(): Promise<CommonTask[]>;
+	getActive(count: number): Promise<CommonTask[]>;
 
 	deleteOwnedByUser(user: User, id: string);
 
