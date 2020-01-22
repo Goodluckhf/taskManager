@@ -21,6 +21,9 @@ import { AuthMiddleware } from './auth/auth.middleware';
 import { CheckAndAddUserTaskHandler } from './vk-users/check-and-add-user-task.handler';
 import { JoinToGroupTaskHandler } from './vk-users/join-to-group-task.handler';
 import { CheckAllUsersTaskHandler } from './vk-users/check-all-users-task.handler';
+import { TaskStrategyInterface } from './task/task-strategy.interface';
+import { CompositeTaskStrategy } from './task/composite-task.strategy';
+import { AtomicTaskStrategy } from './task/atomic-task.strategy';
 
 export function createContainer() {
 	const container = new Container({
@@ -38,6 +41,8 @@ export function createContainer() {
 	container.bind<TaskHandlerInterface>('TaskHandlerInterface').to(CheckAndAddUserTaskHandler);
 	container.bind<TaskHandlerInterface>('TaskHandlerInterface').to(JoinToGroupTaskHandler);
 	container.bind<TaskHandlerInterface>('TaskHandlerInterface').to(CheckAllUsersTaskHandler);
+	container.bind<TaskStrategyInterface>('TaskStrategyInterface').to(CompositeTaskStrategy);
+	container.bind<TaskStrategyInterface>('TaskStrategyInterface').to(AtomicTaskStrategy);
 
 	modelAutoBind(container);
 	return container;
