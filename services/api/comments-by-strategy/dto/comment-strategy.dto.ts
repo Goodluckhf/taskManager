@@ -28,4 +28,7 @@ export class CommentStrategyDto implements CommentStrategyInterface {
 	@Transform(value => parseInt(value, 10))
 	@IsInt()
 	userFakeId: number;
+
+	@IsInt()
+	commentIndex: number;
 }

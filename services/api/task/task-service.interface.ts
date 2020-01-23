@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { ObjectableInterface } from '../../../lib/internal.types';
 import { User } from '../users/user';
 import { CommonTask } from './common-task';
@@ -12,4 +13,6 @@ export interface TaskServiceInterface {
 	finish(id: string);
 
 	finishWithError(id: string, error: ObjectableInterface);
+
+	skipAllSubTasks(parentTaskId: Types.ObjectId | string);
 }

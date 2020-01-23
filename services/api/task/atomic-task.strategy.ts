@@ -10,6 +10,7 @@ import { LoggerInterface } from '../../../lib/logger.interface';
 import { TaskMetricsService } from '../metrics/task-metrics.service';
 import { TaskMetricsServiceInterface } from '../metrics/task-metrics-service.interface';
 import { CommonTask } from './common-task';
+import { FatalableInterface } from './fatalable.interface';
 
 @injectable()
 export class AtomicTaskStrategy implements TaskStrategyInterface {
@@ -28,7 +29,7 @@ export class AtomicTaskStrategy implements TaskStrategyInterface {
 			await this.taskService.finish(task._id.toString());
 			this.taskMetricsService.increaseSuccess(task.__t.toString());
 		} catch (_error) {
-			let error: ObjectableInterface;
+			let error: ObjectableInterface & FatalableInterface;
 			if (typeof _error.toObject !== 'function') {
 				error = new UnhandledTaskException(_error);
 			} else {
@@ -45,6 +46,9 @@ export class AtomicTaskStrategy implements TaskStrategyInterface {
 			});
 			await this.taskService.finishWithError(task._id.toString(), error);
 			this.taskMetricsService.increaseError(task.__t.toString());
+			if (error.isFatal) {
+				await this.taskService.skipAllSubTasks(task.parentTaskId);
+			}
 		} finally {
 			this.taskMetricsService.addDuration(task.__t.toString(), Date.now() - startTime);
 		}

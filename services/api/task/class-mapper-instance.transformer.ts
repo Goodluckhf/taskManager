@@ -15,18 +15,17 @@ export class ClassMapperInstanceTransformer {
 		instances: InstanceType[],
 		mapperTypeToClass: MapperTypeToClass<InstanceType>,
 	): MapperToInstance<InstanceType> {
-		return instances.reduce((mapper: MapperToInstance<InstanceType>, instance) => {
-			const mappedTaskEntry = Object.entries(mapperTypeToClass).find(
-				([, HandlerClass]) => instance instanceof HandlerClass,
-			);
+		return Object.entries(mapperTypeToClass).reduce(
+			(mapper: MapperToInstance<InstanceType>, [key, HandlerClass]) => {
+				const foundInstance = instances.find(instance => instance instanceof HandlerClass);
 
-			if (!mappedTaskEntry) {
-				throw new Error(
-					`There is no registered instance Class: ${instance.constructor.name}`,
-				);
-			}
+				if (!foundInstance) {
+					throw new Error(`There is no registered instance Class: ${HandlerClass.name}`);
+				}
 
-			return { ...mapper, [mappedTaskEntry[0]]: instance };
-		}, {});
+				return { ...mapper, [key]: foundInstance };
+			},
+			{},
+		);
 	}
 }

@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import moment from 'moment';
 import { plainToClass } from 'class-transformer';
+import { Types } from 'mongoose';
 import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 import { CommonTask } from './common-task';
 import { statuses } from './status.constant';
@@ -35,6 +36,18 @@ export class TaskService implements TaskServiceInterface {
 		}
 
 		await this.CommonTaskModel.update({ _id: id }, { $set: { deletedAt: moment.now() } });
+	}
+
+	async skipAllSubTasks(parentTaskId: Types.ObjectId | string) {
+		return this.CommonTaskModel.updateMany(
+			{
+				parentTaskId,
+				status: statuses.waiting,
+			},
+			{
+				$set: { status: statuses.skipped },
+			},
+		);
 	}
 
 	async getActive(count: number = null): Promise<CommonTask[]> {

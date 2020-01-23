@@ -14,6 +14,7 @@ export class TaskStrategyAbstractFactory {
 
 	private readonly mapperTaskTypeToStrategyClass: MapperTypeToClass<TaskStrategyInterface> = {
 		CommentsByStrategyTask: CompositeTaskStrategy,
+		SetCommentTask: AtomicTaskStrategy,
 		CheckAndAddUserTask: AtomicTaskStrategy,
 		JoinToGroupTask: AtomicTaskStrategy,
 		CheckAllUsersTask: AtomicTaskStrategy,

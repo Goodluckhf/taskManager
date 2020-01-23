@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { prop, Ref } from '@typegoose/typegoose';
-import { Schema } from 'mongoose';
+import { Schema, Types } from 'mongoose';
 import { Base } from '@typegoose/typegoose/lib/defaultClasses';
 import { statuses } from './status.constant';
 import { User } from '../users/user';
@@ -26,4 +26,7 @@ export class CommonTask extends Base {
 
 	@prop({ ref: User, refType: Schema.Types.ObjectId })
 	user?: Ref<User>;
+
+	@prop()
+	parentTaskId?: Types.ObjectId;
 }

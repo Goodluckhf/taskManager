@@ -10,6 +10,7 @@ import {
 	MapperToInstance,
 	MapperTypeToClass,
 } from './class-mapper-instance.transformer';
+import { SetCommentTaskHandler } from '../comments/set-comment-task.handler';
 
 @injectable()
 export class TaskAbstractFactory implements TaskAbstractFactoryInterface {
@@ -17,6 +18,7 @@ export class TaskAbstractFactory implements TaskAbstractFactoryInterface {
 
 	private readonly mapperModelTypeToTaskHandler: MapperTypeToClass<TaskHandlerInterface> = {
 		CommentsByStrategyTask: CommentsByStrategyTaskHandler,
+		SetCommentTask: SetCommentTaskHandler,
 		CheckAndAddUserTask: CheckAndAddUserTaskHandler,
 		JoinToGroupTask: JoinToGroupTaskHandler,
 		CheckAllUsersTask: CheckAllUsersTaskHandler,

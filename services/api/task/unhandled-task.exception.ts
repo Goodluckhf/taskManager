@@ -1,7 +1,8 @@
 import { FormattableInterface, ObjectableInterface } from '../../../lib/internal.types';
+import { FatalableInterface } from './fatalable.interface';
 
 export class UnhandledTaskException extends Error
-	implements ObjectableInterface, FormattableInterface {
+	implements ObjectableInterface, FormattableInterface, FatalableInterface {
 	private readonly originalError: Error;
 
 	constructor(error: Error) {
@@ -20,4 +21,6 @@ export class UnhandledTaskException extends Error
 			formattedMessage: this.toFormattedString(),
 		};
 	}
+
+	isFatal = false;
 }
