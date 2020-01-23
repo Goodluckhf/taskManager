@@ -77,6 +77,10 @@ export class VkUserService {
 		return users[random(0, users.length - 1)];
 	}
 
+	async getCredentialsByLogin(login: string): Promise<VkUserCredentialsInterface> {
+		return this.VkUsersModel.findOne({ login }).lean();
+	}
+
 	async setInactive(login: string, reason: any) {
 		const user = await this.VkUsersModel.findOne({ login });
 		user.isActive = false;
