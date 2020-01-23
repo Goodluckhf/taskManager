@@ -48,6 +48,7 @@ export class AtomicTaskStrategy implements TaskStrategyInterface {
 			this.taskMetricsService.increaseError(task.__t.toString());
 			if (error.isFatal) {
 				await this.taskService.skipAllSubTasks(task.parentTaskId);
+				await this.taskService.finishWithError(task.parentTaskId.toString(), error);
 			}
 		} finally {
 			this.taskMetricsService.addDuration(task.__t.toString(), Date.now() - startTime);

@@ -71,6 +71,7 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 				newCommentsTask.likesCount = task.likesCount;
 				newCommentsTask.commentIndex = task.commentIndex;
 				newCommentsTask.userFakeId = task.userFakeId;
+				newCommentsTask.user = user;
 				newCommentsTask.startAt = moment(startMoment);
 				await newCommentsTask.save();
 				const extraSeconds = getRandom(

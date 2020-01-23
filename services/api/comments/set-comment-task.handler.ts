@@ -223,6 +223,7 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 			async commentStrategy => {
 				const newCommentsTask = new this.SetCommentTaskModel();
 				newCommentsTask.parentTaskId = commentTask.parentTaskId;
+				newCommentsTask.user = commentTask.user;
 				newCommentsTask.text = commentStrategy.text;
 				newCommentsTask.imageURL = commentStrategy.imageURL;
 				newCommentsTask.postLink = commentTask.postLink;
