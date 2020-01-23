@@ -24,6 +24,8 @@ class Item extends PureComponent {
 
 	static propTypes = {
 		strategy: propTypes.object,
+		tasksCount: propTypes.number,
+		finishedCount: propTypes.number,
 		createdAt: propTypes.string,
 		postLink: propTypes.string,
 		_id: propTypes.string,
@@ -64,6 +66,12 @@ class Item extends PureComponent {
 					</div>
 					<div>
 						<span className="h6">Статус:</span> {statusCodeToString[this.props.status]}
+					</div>
+					<div>
+						<span className="h6">Выполнено:</span>
+						<span style={{ fontStyle: 'italic' }}>
+							&nbsp;{this.props.finishedCount} / {this.props.tasksCount}
+						</span>
 					</div>
 					<div>
 						<span className="h6">Стратегия:</span>

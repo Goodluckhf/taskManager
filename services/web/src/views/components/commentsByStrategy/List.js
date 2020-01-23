@@ -20,6 +20,8 @@ class List extends PureComponent {
 					remove={this.props.remove}
 					resume={this.props.resume}
 					_id={item.get('_id')}
+					finishedCount={item.get('finishedCount')}
+					tasksCount={item.get('tasksCount')}
 					createdAt={item.get('createdAt')}
 					strategy={item.get('commentsStrategy')}
 					postLink={item.get('postLink')}
