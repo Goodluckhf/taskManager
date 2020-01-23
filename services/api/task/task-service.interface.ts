@@ -14,5 +14,7 @@ export interface TaskServiceInterface {
 
 	finishWithError(id: string, error: ObjectableInterface);
 
+	addSubTasksError(id: Types.ObjectId | string, error: ObjectableInterface);
+
 	skipAllSubTasks(parentTaskId: Types.ObjectId | string);
 }

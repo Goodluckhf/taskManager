@@ -18,6 +18,7 @@ export class UnhandledTaskException extends Error
 		return {
 			...this.originalError,
 			stack: this.originalError.stack,
+			isFatal: this.isFatal,
 			formattedMessage: this.toFormattedString(),
 		};
 	}

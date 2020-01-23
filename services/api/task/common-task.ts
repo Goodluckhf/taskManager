@@ -5,9 +5,10 @@ import { Base } from '@typegoose/typegoose/lib/defaultClasses';
 import { statuses } from './status.constant';
 import { User } from '../users/user';
 import { model } from '../../../lib/inversify-typegoose/model.decorator';
+import { CompositeTaskInterface } from './composite-task.interface';
 
 @model()
-export class CommonTask extends Base {
+export class CommonTask extends Base implements CompositeTaskInterface {
 	@prop({ default: moment.now, type: Date })
 	createdAt: Date | moment.Moment;
 
@@ -29,4 +30,13 @@ export class CommonTask extends Base {
 
 	@prop()
 	parentTaskId?: Types.ObjectId;
+
+	@prop({ default: [] })
+	subTasksErrors: object[];
+
+	@prop({ required: true, default: 0 })
+	finishedCount: number;
+
+	@prop({ required: true, default: 0 })
+	tasksCount: number;
 }

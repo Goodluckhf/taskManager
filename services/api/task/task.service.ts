@@ -39,7 +39,7 @@ export class TaskService implements TaskServiceInterface {
 	}
 
 	async skipAllSubTasks(parentTaskId: Types.ObjectId | string) {
-		return this.CommonTaskModel.updateMany(
+		await this.CommonTaskModel.updateMany(
 			{
 				parentTaskId,
 				status: statuses.waiting,
@@ -88,6 +88,17 @@ export class TaskService implements TaskServiceInterface {
 					_error: error.toObject(),
 					lastHandleAt: moment(),
 				},
+			},
+		);
+	}
+
+	async addSubTasksError(id: Types.ObjectId | string, error: ObjectableInterface) {
+		await this.CommonTaskModel.update(
+			{
+				_id: id,
+			},
+			{
+				$push: { subTasksErrors: error.toObject() },
 			},
 		);
 	}
