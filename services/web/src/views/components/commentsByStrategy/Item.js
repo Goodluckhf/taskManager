@@ -18,7 +18,8 @@ class Item extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			isOpen: false,
+			isStrategiesOpen: false,
+			isErrorsOpen: false,
 		};
 	}
 
@@ -28,6 +29,7 @@ class Item extends PureComponent {
 		finishedCount: propTypes.number,
 		createdAt: propTypes.string,
 		postLink: propTypes.string,
+		subTasksErrors: propTypes.array,
 		_id: propTypes.string,
 		status: propTypes.string,
 		error: propTypes.object,
@@ -46,7 +48,12 @@ class Item extends PureComponent {
 		this.setState({ isOpen: !this.state.isOpen });
 	};
 
+	toggleErrors = () => {
+		this.setState({ isErrorsOpen: !this.state.isErrorsOpen });
+	};
+
 	render() {
+		const subTasksErrors = this.props.subTasksErrors && this.props.subTasksErrors.toJS();
 		return (
 			<Row>
 				<Col xs={3}>
@@ -84,12 +91,38 @@ class Item extends PureComponent {
 								свернуть/развернуть
 							</Button>
 						</div>
-						<Collapse isOpen={this.state.isOpen}>
+						<Collapse isOpen={this.state.isStrategiesOpen}>
 							<pre style={{ backgroundColor: '#f0f3f5', padding: '15px' }}>
 								{JSON.stringify(this.props.strategy, null, 2)}
 							</pre>
 						</Collapse>
 					</div>
+					{subTasksErrors && !!subTasksErrors.length && (
+						<div>
+							<span style={{ color: 'red' }} className="h6">
+								Ошибки в подзадачах:
+							</span>
+							<div>
+								<Button
+									color="primary"
+									size="sm"
+									onClick={this.toggleErrors}
+									style={{ marginBottom: '1rem' }}>
+									свернуть/развернуть
+								</Button>
+							</div>
+
+							<Collapse isOpen={this.state.isErrorsOpen}>
+								{subTasksErrors.map((error, index) => (
+									<ApiError
+										key={index}
+										title={`Ошибка [${error.task.text}]`}
+										error={error}
+									/>
+								))}
+							</Collapse>
+						</div>
+					)}
 					{this.props._error && (
 						<ApiError title="Ошибка (Задача остановлена)" error={this.props._error} />
 					)}

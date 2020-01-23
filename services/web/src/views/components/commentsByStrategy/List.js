@@ -29,6 +29,7 @@ class List extends PureComponent {
 					remove_loading={item.get('remove_loading')}
 					resume_loading={item.get('resume_loading')}
 					error={item.get('error')}
+					subTasksErrors={item.get('subTasksErrors')}
 					_error={item.get('_error')}
 				/>
 				<hr />
