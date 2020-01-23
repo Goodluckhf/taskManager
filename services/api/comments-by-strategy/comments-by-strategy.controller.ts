@@ -28,6 +28,13 @@ export class CommentsByStrategyController extends BaseHttpController {
 			body,
 		);
 
+		taskCreationDto.commentsStrategy = taskCreationDto.commentsStrategy.map(
+			(strategy, index) => {
+				strategy.commentIndex = index;
+				return strategy;
+			},
+		);
+
 		const errors = validateSync(taskCreationDto, { validationError: { target: false } });
 
 		if (errors.length > 0) {

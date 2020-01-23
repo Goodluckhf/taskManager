@@ -8,4 +8,6 @@ export interface CommentStrategyInterface {
 	imageURL: string;
 
 	likesCount: number;
+
+	commentIndex: number;
 }

@@ -20,6 +20,7 @@ export class CommentByStrategyApi {
 		const newTask = new this.CommentsByStrategyTaskModel();
 		newTask.postLink = dto.postLink;
 		newTask.commentsStrategy = dto.commentsStrategy;
+		newTask.tasksCount = dto.commentsStrategy.length;
 		newTask.startAt = moment();
 		newTask.user = user;
 
