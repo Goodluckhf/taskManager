@@ -91,7 +91,7 @@ class Item extends PureComponent {
 						</Collapse>
 					</div>
 					{this.props._error && (
-						<ApiError title="Последняя ошибка" error={this.props._error} />
+						<ApiError title="Ошибка (Задача остановлена)" error={this.props._error} />
 					)}
 					{this.props.error && <ApiError error={this.props.error} />}
 				</Col>
