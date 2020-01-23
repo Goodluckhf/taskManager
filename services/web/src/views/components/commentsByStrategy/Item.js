@@ -102,7 +102,8 @@ class Item extends PureComponent {
 							data-size={XS}
 							data-color="red"
 							loading={this.props.remove_loading}
-							onClick={this.onRemove}>
+							onClick={this.onRemove}
+							disabled={this.props.status === 'pending'}>
 							Удалить
 						</LoadingButton>
 					</div>
