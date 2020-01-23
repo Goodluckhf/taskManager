@@ -185,7 +185,7 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 		}
 	}
 
-	private async handleTask(commentTask: SetCommentTask) {
+	async handle(commentTask: SetCommentTask) {
 		const rootTask = await this.CommentsByStrategyModel.findOne({
 			_id: commentTask.parentTaskId,
 		});
@@ -244,31 +244,5 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 			},
 			{ concurrency: 1 },
 		);
-	}
-
-	async handle(commentTask: SetCommentTask) {
-		try {
-			await this.handleTask(commentTask);
-		} finally {
-			await this.CommentsByStrategyModel.update(
-				{
-					_id: commentTask.parentTaskId,
-				},
-				{
-					$inc: { finishedCount: 1 },
-				},
-			);
-
-			const rootTask = await this.CommentsByStrategyModel.findOne({
-				_id: commentTask.parentTaskId,
-			});
-
-			if (rootTask.finishedCount >= rootTask.tasksCount) {
-				await this.CommentsByStrategyModel.update(
-					{ _id: commentTask.parentTaskId },
-					{ $set: { status: statuses.finished } },
-				);
-			}
-		}
 	}
 }

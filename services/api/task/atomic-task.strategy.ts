@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify';
+import { ModelType } from '@typegoose/typegoose/lib/types';
 import { TaskStrategyInterface } from './task-strategy.interface';
 import { TaskHandlerInterface } from './task-handler.interface';
 import { ObjectableInterface } from '../../../lib/internal.types';
@@ -11,10 +12,13 @@ import { TaskMetricsService } from '../metrics/task-metrics.service';
 import { TaskMetricsServiceInterface } from '../metrics/task-metrics-service.interface';
 import { CommonTask } from './common-task';
 import { FatalableInterface } from './fatalable.interface';
+import { statuses } from './status.constant';
+import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 
 @injectable()
 export class AtomicTaskStrategy implements TaskStrategyInterface {
 	constructor(
+		@injectModel(CommonTask) private readonly CommonTaskModel: ModelType<CommonTask>,
 		@inject(TaskService) private readonly taskService: TaskServiceInterface,
 		@inject('Logger') private readonly logger: LoggerInterface,
 		@inject(TaskMetricsService)
@@ -39,6 +43,7 @@ export class AtomicTaskStrategy implements TaskStrategyInterface {
 			const userId = (task.user as User)._id.toString();
 
 			this.logger.error({
+				_error,
 				message: 'Ошибка при выполнении задачи',
 				errorData: error.toObject(),
 				taskId: task._id.toString(),
@@ -49,8 +54,30 @@ export class AtomicTaskStrategy implements TaskStrategyInterface {
 			if (error.isFatal) {
 				await this.taskService.skipAllSubTasks(task.parentTaskId);
 				await this.taskService.finishWithError(task.parentTaskId.toString(), error);
+			} else {
+				await this.taskService.addSubTasksError(task.parentTaskId, error);
 			}
 		} finally {
+			await this.CommonTaskModel.update(
+				{
+					_id: task.parentTaskId,
+				},
+				{
+					$inc: { finishedCount: 1 },
+				},
+			);
+
+			const rootTask = await this.CommonTaskModel.findOne({
+				_id: task.parentTaskId,
+			});
+			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// @ts-ignore
+			if (rootTask.finishedCount + rootTask.subTasksErrors.length >= rootTask.tasksCount) {
+				await this.CommonTaskModel.update(
+					{ _id: task.parentTaskId },
+					{ $set: { status: statuses.finished } },
+				);
+			}
 			this.taskMetricsService.addDuration(task.__t.toString(), Date.now() - startTime);
 		}
 	}
