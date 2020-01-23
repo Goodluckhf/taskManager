@@ -35,7 +35,7 @@ export class AtomicTaskStrategy implements TaskStrategyInterface {
 		} catch (_error) {
 			let error: ObjectableInterface & FatalableInterface;
 			if (typeof _error.toObject !== 'function') {
-				error = new UnhandledTaskException(_error);
+				error = new UnhandledTaskException(_error, task);
 			} else {
 				error = _error;
 			}

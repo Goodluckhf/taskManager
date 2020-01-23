@@ -23,7 +23,7 @@ export class CompositeTaskStrategy implements TaskStrategyInterface {
 		} catch (_error) {
 			let error: ObjectableInterface;
 			if (typeof _error.toObject !== 'function') {
-				error = new UnhandledTaskException(_error);
+				error = new UnhandledTaskException(_error, task);
 			} else {
 				error = _error;
 			}
