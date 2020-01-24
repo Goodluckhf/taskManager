@@ -45,7 +45,7 @@ class Item extends PureComponent {
 	};
 
 	toggle = () => {
-		this.setState({ isOpen: !this.state.isOpen });
+		this.setState({ isStrategiesOpen: !this.state.isStrategiesOpen });
 	};
 
 	toggleErrors = () => {
