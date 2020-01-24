@@ -18,9 +18,9 @@ import './task/task.controller';
 import './vk-users/vk-user.controller';
 
 import { AuthMiddleware } from './auth/auth.middleware';
-import { CheckAndAddUserTaskHandler } from './vk-users/check-and-add-user-task.handler';
+import { CheckAndAddUserTaskHandler } from './vk-users/check-account/check-and-add-user-task.handler';
 import { JoinToGroupTaskHandler } from './vk-users/join-to-group-task.handler';
-import { CheckAllUsersTaskHandler } from './vk-users/check-all-users-task.handler';
+import { CheckAllUsersTaskHandler } from './vk-users/check-account/check-all-users-task.handler';
 import { TaskStrategyInterface } from './task/task-strategy.interface';
 import { CompositeTaskStrategy } from './task/composite-task.strategy';
 import { AtomicTaskStrategy } from './task/atomic-task.strategy';

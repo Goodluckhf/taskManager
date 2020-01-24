@@ -1,24 +1,24 @@
 import { inject, injectable } from 'inversify';
 import bluebird from 'bluebird';
 import { plainToClass } from 'class-transformer';
-import { TaskHandlerInterface } from '../task/task-handler.interface';
+import { TaskHandlerInterface } from '../../task/task-handler.interface';
 import { CheckAndAddUserTask } from './check-and-add-user.task';
-import { UserExistsException } from './user-exists.exception';
-import { VkUserService } from './vk-user.service';
-import { ProxyService } from '../proxies/proxy.service';
-import { UserAuthFailedException } from './user-auth-failed.exception';
+import { UserExistsException } from '../user-exists.exception';
+import { VkUserService } from '../vk-user.service';
+import { ProxyService } from '../../proxies/proxy.service';
+import { UserAuthFailedException } from '../user-auth-failed.exception';
 import { UnhandledAddUserException } from './unhandled-add-user.exception';
-import { FormattableInterface, ObjectableInterface } from '../../../lib/internal.types';
+import { FormattableInterface, ObjectableInterface } from '../../../../lib/internal.types';
 import { SomeChecksFailedException } from './some-checks-failed.exception';
-import RpcClient from '../../../lib/amqp/rpc-client';
+import RpcClient from '../../../../lib/amqp/rpc-client';
 import { CheckAccountRpcResponse } from './check-account-rpc.response';
-import { RpcRequestFactory } from '../../../lib/amqp/rpc-request.factory';
+import { RpcRequestFactory } from '../../../../lib/amqp/rpc-request.factory';
 import { CheckAccountRpcRequest } from './check-account-rpc.request';
-import { ProxyInterface } from '../proxies/proxy.interface';
-import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
-import { GroupJoinTaskService } from './group-join-task.service';
-import { User } from '../users/user';
-import { ConfigInterface } from '../../../config/config.interface';
+import { ProxyInterface } from '../../proxies/proxy.interface';
+import { VkUserCredentialsInterface } from '../vk-user-credentials.interface';
+import { GroupJoinTaskService } from '../group-join-task.service';
+import { User } from '../../users/user';
+import { ConfigInterface } from '../../../../config/config.interface';
 
 @injectable()
 export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {

@@ -2,9 +2,9 @@ import { inject, injectable, multiInject } from 'inversify';
 import { TaskAbstractFactoryInterface } from './task-abstract-factory.interface';
 import { TaskHandlerInterface } from './task-handler.interface';
 import { CommentsByStrategyTaskHandler } from '../comments-by-strategy/comments-by-strategy-task.handler';
-import { CheckAndAddUserTaskHandler } from '../vk-users/check-and-add-user-task.handler';
+import { CheckAndAddUserTaskHandler } from '../vk-users/check-account/check-and-add-user-task.handler';
 import { JoinToGroupTaskHandler } from '../vk-users/join-to-group-task.handler';
-import { CheckAllUsersTaskHandler } from '../vk-users/check-all-users-task.handler';
+import { CheckAllUsersTaskHandler } from '../vk-users/check-account/check-all-users-task.handler';
 import {
 	ClassMapperInstanceTransformer,
 	MapperToInstance,
