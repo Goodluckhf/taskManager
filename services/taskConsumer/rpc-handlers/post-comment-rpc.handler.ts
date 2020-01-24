@@ -259,7 +259,7 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 				message: 'ошибка при клике на "ответить"',
 				postLink,
 				login,
-				originalError: error,
+				error,
 			});
 			throw new CommentsClosedException(login, postLink);
 		}
