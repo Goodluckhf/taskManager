@@ -1,5 +1,10 @@
 import 'reflect-metadata';
-import { MapperTypeToClass, TaskAbstractFactory } from './task-abstract.factory';
+import { TaskAbstractFactory } from './task-abstract.factory';
+import {
+	ClassMapperInstanceTransformer,
+	MapperTypeToClass,
+} from './class-mapper-instance.transformer';
+import { TaskHandlerInterface } from './task-handler.interface';
 
 describe('TaskAbstractFactory', () => {
 	class TaskHandler1 {
@@ -14,7 +19,7 @@ describe('TaskAbstractFactory', () => {
 		taskHandler1Mock: TaskHandler1;
 		taskHandler2Mock: TaskHandler2;
 		taskAbstractFactory: TaskAbstractFactory;
-		mapper: MapperTypeToClass;
+		mapper: MapperTypeToClass<TaskHandlerInterface>;
 	};
 
 	beforeEach(() => {
@@ -24,7 +29,10 @@ describe('TaskAbstractFactory', () => {
 		const taskHandler2Mock = new TaskHandler2();
 		taskHandler2Mock.handle = jest.fn();
 
-		const taskAbstractFactory = new TaskAbstractFactory([taskHandler1Mock, taskHandler2Mock]);
+		const taskAbstractFactory = new TaskAbstractFactory(
+			[taskHandler1Mock, taskHandler2Mock],
+			new ClassMapperInstanceTransformer(),
+		);
 		const mapper = {
 			handlerName1: TaskHandler1,
 			handlerName2: TaskHandler2,

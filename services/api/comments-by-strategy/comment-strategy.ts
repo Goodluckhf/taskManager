@@ -16,4 +16,7 @@ export class CommentStrategy implements CommentStrategyInterface {
 
 	@prop({ default: 0 })
 	likesCount: number;
+
+	@prop({ required: true })
+	commentIndex: number;
 }

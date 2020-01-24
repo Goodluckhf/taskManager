@@ -1,4 +1,4 @@
-import { FormattableInterface, ObjectableInterface } from '../../../lib/internal.types';
+import { FormattableInterface, ObjectableInterface } from '../../../../lib/internal.types';
 
 export class UnhandledAddUserException extends Error
 	implements ObjectableInterface, FormattableInterface {

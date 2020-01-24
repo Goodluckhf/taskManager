@@ -1,7 +1,8 @@
 import { FormattableInterface, ObjectableInterface } from '../../../lib/internal.types';
+import { FatalableInterface } from '../task/fatalable.interface';
 
 export class CommentsClosedException extends Error
-	implements ObjectableInterface, FormattableInterface {
+	implements ObjectableInterface, FormattableInterface, FatalableInterface {
 	private readonly originalError: Error;
 
 	private readonly commentTextOnError: string;
@@ -24,4 +25,6 @@ export class CommentsClosedException extends Error
 			originalErrorStack: this.originalError.stack,
 		};
 	}
+
+	isFatal = true;
 }

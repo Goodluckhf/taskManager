@@ -20,6 +20,8 @@ class List extends PureComponent {
 					remove={this.props.remove}
 					resume={this.props.resume}
 					_id={item.get('_id')}
+					finishedCount={item.get('finishedCount')}
+					tasksCount={item.get('tasksCount')}
 					createdAt={item.get('createdAt')}
 					strategy={item.get('commentsStrategy')}
 					postLink={item.get('postLink')}
@@ -27,6 +29,7 @@ class List extends PureComponent {
 					remove_loading={item.get('remove_loading')}
 					resume_loading={item.get('resume_loading')}
 					error={item.get('error')}
+					subTasksErrors={item.get('subTasksErrors')}
 					_error={item.get('_error')}
 				/>
 				<hr />

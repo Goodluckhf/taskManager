@@ -1,6 +1,6 @@
-import { AbstractRpcRequest } from '../../../lib/amqp/abstract-rpc-request';
-import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
-import { ProxyInterface } from '../proxies/proxy.interface';
+import { AbstractRpcRequest } from '../../../../lib/amqp/abstract-rpc-request';
+import { VkUserCredentialsInterface } from '../vk-user-credentials.interface';
+import { ProxyInterface } from '../../proxies/proxy.interface';
 
 export class CheckAccountRpcRequest extends AbstractRpcRequest {
 	protected readonly method = 'checkVkUser';

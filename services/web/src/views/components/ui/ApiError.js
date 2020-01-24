@@ -21,6 +21,11 @@ class ApiError extends PureComponent {
 				this.props.error.getIn(['originalError', 'message']) ||
 				'';
 			title = _title ? `${_title}: ${message}` : message;
+
+			const text = this.props.error.getIn(['task', 'text']);
+			if (text) {
+				error = `${error}\nКомментарий: ["${text}"]`;
+			}
 		} else {
 			error = this.props.error.description || '';
 			const { message } = this.props.error;

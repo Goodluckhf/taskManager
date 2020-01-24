@@ -18,14 +18,18 @@ class Item extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			isOpen: false,
+			isStrategiesOpen: false,
+			isErrorsOpen: false,
 		};
 	}
 
 	static propTypes = {
 		strategy: propTypes.object,
+		tasksCount: propTypes.number,
+		finishedCount: propTypes.number,
 		createdAt: propTypes.string,
 		postLink: propTypes.string,
+		subTasksErrors: propTypes.object,
 		_id: propTypes.string,
 		status: propTypes.string,
 		error: propTypes.object,
@@ -41,7 +45,11 @@ class Item extends PureComponent {
 	};
 
 	toggle = () => {
-		this.setState({ isOpen: !this.state.isOpen });
+		this.setState({ isStrategiesOpen: !this.state.isStrategiesOpen });
+	};
+
+	toggleErrors = () => {
+		this.setState({ isErrorsOpen: !this.state.isErrorsOpen });
 	};
 
 	render() {
@@ -66,6 +74,12 @@ class Item extends PureComponent {
 						<span className="h6">Статус:</span> {statusCodeToString[this.props.status]}
 					</div>
 					<div>
+						<span className="h6">Выполнено:</span>
+						<span style={{ fontStyle: 'italic' }}>
+							&nbsp;{this.props.finishedCount} / {this.props.tasksCount}
+						</span>
+					</div>
+					<div>
 						<span className="h6">Стратегия:</span>
 						<div>
 							<Button
@@ -76,14 +90,36 @@ class Item extends PureComponent {
 								свернуть/развернуть
 							</Button>
 						</div>
-						<Collapse isOpen={this.state.isOpen}>
+						<Collapse isOpen={this.state.isStrategiesOpen}>
 							<pre style={{ backgroundColor: '#f0f3f5', padding: '15px' }}>
 								{JSON.stringify(this.props.strategy, null, 2)}
 							</pre>
 						</Collapse>
 					</div>
+					{this.props.subTasksErrors && !!this.props.subTasksErrors.size && (
+						<div>
+							<span style={{ color: 'red' }} className="h6">
+								Ошибки в подзадачах:
+							</span>
+							<div>
+								<Button
+									color="primary"
+									size="sm"
+									onClick={this.toggleErrors}
+									style={{ marginBottom: '1rem' }}>
+									свернуть/развернуть
+								</Button>
+							</div>
+
+							<Collapse isOpen={this.state.isErrorsOpen}>
+								{this.props.subTasksErrors.map((error, index) => (
+									<ApiError key={index} title={`Ошибка коммента`} error={error} />
+								))}
+							</Collapse>
+						</div>
+					)}
 					{this.props._error && (
-						<ApiError title="Последняя ошибка" error={this.props._error} />
+						<ApiError title="Ошибка (Задача остановлена)" error={this.props._error} />
 					)}
 					{this.props.error && <ApiError error={this.props.error} />}
 				</Col>
@@ -94,7 +130,8 @@ class Item extends PureComponent {
 							data-size={XS}
 							data-color="red"
 							loading={this.props.remove_loading}
-							onClick={this.onRemove}>
+							onClick={this.onRemove}
+							disabled={this.props.status === 'pending'}>
 							Удалить
 						</LoadingButton>
 					</div>

@@ -58,6 +58,10 @@ module.exports = {
 
 	postCommentsTask: {
 		retriesLimit: process.env.POST_COMMENTS_TASK__RETRY_LIMIT,
+		distribution: {
+			min: parseInt(process.env.POST_COMMENTS_TASK__DISTRIBUTION__MIN, 10),
+			max: parseInt(process.env.POST_COMMENTS_TASK__DISTRIBUTION__MAX, 10),
+		},
 	},
 
 	checkVkUserTask: {
@@ -131,6 +135,7 @@ module.exports = {
 
 	cron: {
 		interval: process.env.CRON__INTERVAL,
+		tasksPrefetch: process.env.CRON__TASKS_PREFETCH,
 	},
 
 	prices: {

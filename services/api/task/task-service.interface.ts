@@ -1,9 +1,10 @@
+import { Types } from 'mongoose';
 import { ObjectableInterface } from '../../../lib/internal.types';
 import { User } from '../users/user';
 import { CommonTask } from './common-task';
 
 export interface TaskServiceInterface {
-	getActive(): Promise<CommonTask[]>;
+	getActive(count: number): Promise<CommonTask[]>;
 
 	deleteOwnedByUser(user: User, id: string);
 
@@ -12,4 +13,8 @@ export interface TaskServiceInterface {
 	finish(id: string);
 
 	finishWithError(id: string, error: ObjectableInterface);
+
+	addSubTasksError(id: Types.ObjectId | string, error: ObjectableInterface);
+
+	skipAllSubTasks(parentTaskId: Types.ObjectId | string);
 }

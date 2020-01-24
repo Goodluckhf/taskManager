@@ -2,7 +2,7 @@ import {
 	FormattableInterface,
 	HttpStatusableInterface,
 	ObjectableInterface,
-} from '../../../lib/internal.types';
+} from '../../../../lib/internal.types';
 
 export class CheckAllUsersAlreadyExistsException extends Error
 	implements HttpStatusableInterface, ObjectableInterface, FormattableInterface {

@@ -4,11 +4,11 @@ import moment from 'moment';
 import { plainToClass } from 'class-transformer';
 import { TaskCreationDto } from './dto/task-creation.dto';
 import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
-import { CheckAndAddUserTask } from './check-and-add-user.task';
+import { CheckAndAddUserTask } from './check-account/check-and-add-user.task';
 import { User } from '../users/user';
 import { statuses } from '../task/status.constant';
-import { CheckAllUsersTask } from './check-all-users-task';
-import { CheckAllUsersAlreadyExistsException } from './check-all-users-already-exists.exception';
+import { CheckAllUsersTask } from './check-account/check-all-users-task';
+import { CheckAllUsersAlreadyExistsException } from './check-account/check-all-users-already-exists.exception';
 
 @injectable()
 export class VkUserTaskService {

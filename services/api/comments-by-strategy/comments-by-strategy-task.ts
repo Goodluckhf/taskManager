@@ -15,6 +15,9 @@ export class CommentsByStrategyTask extends CommonTask
 	@arrayProp({ items: CommentStrategy })
 	commentsStrategy: CommentStrategy[];
 
+	@arrayProp({ items: String })
+	vkUserLogins: string[];
+
 	@prop({ required: true, type: Date })
 	startAt: Date | moment.Moment;
 }
