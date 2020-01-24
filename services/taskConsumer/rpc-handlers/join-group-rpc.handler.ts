@@ -8,6 +8,7 @@ import { VkUserCredentialsInterface } from '../../api/vk-users/vk-user-credentia
 import { createBrowserPage } from '../actions/create-page';
 import { hrefByGroupId } from '../../../lib/helper';
 import { JoinGroupFailedException } from './join-group-failed.exception';
+import { AccountException } from './account.exception';
 
 type TaskArgsType = {
 	proxy: ProxyInterface;
@@ -70,6 +71,29 @@ export class JoinGroupRpcHandler extends AbstractRpcHandler {
 				throw new JoinGroupFailedException(
 					'already_joined',
 					groupLink,
+					userCredentials.login,
+					false,
+				);
+			}
+
+			await page.waitForFunction(() => {
+				const form = document.querySelector('#validation_phone_row');
+				if (form) {
+					return true;
+				}
+
+				return !!document.querySelector('#page_actions_btn');
+			});
+
+			const needPhoneConfirmation = await page.evaluate(() => {
+				const form = document.querySelector('#validation_phone_row');
+				return !!form;
+			});
+
+			if (needPhoneConfirmation) {
+				throw new AccountException(
+					'Account requires phone confirmation',
+					'phone_required',
 					userCredentials.login,
 					false,
 				);
