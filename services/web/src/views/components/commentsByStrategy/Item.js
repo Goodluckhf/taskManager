@@ -29,7 +29,7 @@ class Item extends PureComponent {
 		finishedCount: propTypes.number,
 		createdAt: propTypes.string,
 		postLink: propTypes.string,
-		subTasksErrors: propTypes.array,
+		subTasksErrors: propTypes.object,
 		_id: propTypes.string,
 		status: propTypes.string,
 		error: propTypes.object,
@@ -53,7 +53,6 @@ class Item extends PureComponent {
 	};
 
 	render() {
-		const subTasksErrors = this.props.subTasksErrors && this.props.subTasksErrors.toJS();
 		return (
 			<Row>
 				<Col xs={3}>
@@ -97,7 +96,7 @@ class Item extends PureComponent {
 							</pre>
 						</Collapse>
 					</div>
-					{subTasksErrors && !!subTasksErrors.length && (
+					{this.props.subTasksErrors && !!this.props.subTasksErrors.size && (
 						<div>
 							<span style={{ color: 'red' }} className="h6">
 								Ошибки в подзадачах:
@@ -113,12 +112,8 @@ class Item extends PureComponent {
 							</div>
 
 							<Collapse isOpen={this.state.isErrorsOpen}>
-								{subTasksErrors.map((error, index) => (
-									<ApiError
-										key={index}
-										title={`Ошибка [${error.task.text}]`}
-										error={error}
-									/>
+								{this.props.subTasksErrors.map((error, index) => (
+									<ApiError key={index} title={`Ошибка коммента`} error={error} />
 								))}
 							</Collapse>
 						</div>
