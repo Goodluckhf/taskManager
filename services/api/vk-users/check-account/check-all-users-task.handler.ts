@@ -30,7 +30,7 @@ export class CheckAllUsersTaskHandler implements TaskHandlerInterface {
 			async ({ login, password }) => {
 				try {
 					const randomStartAt = moment().add(
-						getRandom(0, (vkUsers.length * 60) / 40),
+						getRandom(0, (vkUsers.length * 60) / 20),
 						's',
 					);
 
