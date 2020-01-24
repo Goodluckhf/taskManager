@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { ModelType } from '@typegoose/typegoose/lib/types';
+import { Types } from 'mongoose';
 import { TaskStrategyInterface } from './task-strategy.interface';
 import { TaskHandlerInterface } from './task-handler.interface';
 import { ObjectableInterface } from '../../../lib/internal.types';
@@ -51,34 +52,48 @@ export class AtomicTaskStrategy implements TaskStrategyInterface {
 			});
 			await this.taskService.finishWithError(task._id.toString(), error);
 			this.taskMetricsService.increaseError(task.__t.toString());
-			if (error.isFatal) {
-				await this.taskService.skipAllSubTasks(task.parentTaskId);
-				await this.taskService.finishWithError(task.parentTaskId.toString(), error);
-			} else {
-				await this.taskService.addSubTasksError(task.parentTaskId, error);
+			if (task.parentTaskId) {
+				await this.catchFatalable(task.parentTaskId, error);
 			}
 		} finally {
-			await this.CommonTaskModel.update(
-				{
-					_id: task.parentTaskId,
-				},
-				{
-					$inc: { finishedCount: 1 },
-				},
-			);
-
-			const rootTask = await this.CommonTaskModel.findOne({
-				_id: task.parentTaskId,
-			});
-			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-			// @ts-ignore
-			if (rootTask.finishedCount + rootTask.subTasksErrors.length >= rootTask.tasksCount) {
-				await this.CommonTaskModel.update(
-					{ _id: task.parentTaskId },
-					{ $set: { status: statuses.finished } },
-				);
+			if (task.parentTaskId) {
+				await this.updateRootTask(task.parentTaskId);
 			}
 			this.taskMetricsService.addDuration(task.__t.toString(), Date.now() - startTime);
+		}
+	}
+
+	private async catchFatalable(
+		parentTaskId: Types.ObjectId,
+		error: FatalableInterface & ObjectableInterface,
+	) {
+		if (error.isFatal) {
+			await this.taskService.skipAllSubTasks(parentTaskId);
+			await this.taskService.finishWithError(parentTaskId.toString(), error);
+		} else {
+			await this.taskService.addSubTasksError(parentTaskId, error);
+		}
+	}
+
+	private async updateRootTask(parentTaskId: Types.ObjectId) {
+		await this.CommonTaskModel.update(
+			{
+				_id: parentTaskId,
+			},
+			{
+				$inc: { finishedCount: 1 },
+			},
+		);
+
+		const rootTask = await this.CommonTaskModel.findOne({
+			_id: parentTaskId,
+		});
+
+		if (rootTask.finishedCount + rootTask.subTasksErrors.length >= rootTask.tasksCount) {
+			await this.CommonTaskModel.update(
+				{ _id: parentTaskId },
+				{ $set: { status: statuses.finished } },
+			);
 		}
 	}
 }
