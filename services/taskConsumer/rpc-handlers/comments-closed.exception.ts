@@ -1,7 +1,7 @@
 export class CommentsClosedException extends Error {
 	public code = 'comments_closed';
 
-	public canRetry = false;
+	public canRetry = true;
 
 	public login: string;
 
