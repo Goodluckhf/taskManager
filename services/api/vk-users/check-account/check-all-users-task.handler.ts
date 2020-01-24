@@ -23,6 +23,8 @@ export class CheckAllUsersTaskHandler implements TaskHandlerInterface {
 		const vkUsers = await this.vkUserService.getAllActive();
 		const errors: Array<ObjectableInterface & FormattableInterface> = [];
 
+		await this.checkAccountTaskService.setSubTasksCount(task._id, vkUsers.length);
+
 		await bluebird.map(
 			vkUsers,
 			async ({ login, password }) => {

@@ -1,10 +1,11 @@
 import moment from 'moment';
-import { inject, injectable } from 'inversify';
+import { injectable } from 'inversify';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import { Types } from 'mongoose';
 import { VkUserCredentialsInterface } from '../vk-user-credentials.interface';
 import { CheckAccountTask } from './check-account-task';
 import { User } from '../../users/user';
+import { injectModel } from '../../../../lib/inversify-typegoose/inject-model';
 
 type CheckAccountTaskArgument = {
 	usersCredentials: VkUserCredentialsInterface;
@@ -16,7 +17,7 @@ type CheckAccountTaskArgument = {
 @injectable()
 export class CheckAccountTaskService {
 	constructor(
-		@inject(CheckAccountTask)
+		@injectModel(CheckAccountTask)
 		private readonly CheckAccountTaskModel: ModelType<CheckAccountTask>,
 	) {}
 
@@ -27,5 +28,16 @@ export class CheckAccountTaskService {
 		newTask.user = creationDto.user;
 		newTask.parentTaskId = creationDto.parentTaskId;
 		await newTask.save();
+	}
+
+	async setSubTasksCount(id: Types.ObjectId, count: number) {
+		await this.CheckAccountTaskModel.update(
+			{
+				_id: id,
+			},
+			{
+				$set: { tasksCount: count },
+			},
+		);
 	}
 }
