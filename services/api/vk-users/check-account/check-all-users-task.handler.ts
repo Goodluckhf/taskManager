@@ -1,43 +1,23 @@
 import { inject, injectable } from 'inversify';
 import bluebird from 'bluebird';
-import { plainToClass } from 'class-transformer';
+import moment from 'moment';
 import { TaskHandlerInterface } from '../../task/task-handler.interface';
 import { CheckAndAddUserTask } from './check-and-add-user.task';
 import { VkUserService } from '../vk-user.service';
-import { ProxyService } from '../../proxies/proxy.service';
-import { UserAuthFailedException } from '../user-auth-failed.exception';
 import { UnhandledAddUserException } from './unhandled-add-user.exception';
 import { FormattableInterface, ObjectableInterface } from '../../../../lib/internal.types';
 import { SomeChecksFailedException } from './some-checks-failed.exception';
-import RpcClient from '../../../../lib/amqp/rpc-client';
-import { CheckAccountRpcResponse } from './check-account-rpc.response';
-import { RpcRequestFactory } from '../../../../lib/amqp/rpc-request.factory';
-import { CheckAccountRpcRequest } from './check-account-rpc.request';
-import { ProxyInterface } from '../../proxies/proxy.interface';
-import { VkUserCredentialsInterface } from '../vk-user-credentials.interface';
+import { CheckAccountTaskService } from './check-account-task.service';
+import { getRandom } from '../../../../lib/helper';
+import { User } from '../../users/user';
 
 @injectable()
 export class CheckAllUsersTaskHandler implements TaskHandlerInterface {
 	constructor(
 		@inject(VkUserService) private readonly vkUserService: VkUserService,
-		@inject(ProxyService) private readonly proxyService: ProxyService,
-		@inject(RpcClient) private readonly rpcClient: RpcClient,
-		@inject(RpcRequestFactory) private readonly rpcRequestFactory: RpcRequestFactory,
+		@inject(CheckAccountTaskService)
+		private readonly checkAccountTaskService: CheckAccountTaskService,
 	) {}
-
-	private async checkAccount(
-		userCredentials: VkUserCredentialsInterface,
-		proxy: ProxyInterface,
-	): Promise<CheckAccountRpcResponse> {
-		const rpcRequest = this.rpcRequestFactory.create(CheckAccountRpcRequest);
-		rpcRequest.setArguments({
-			userCredentials,
-			proxy,
-		});
-
-		const response = await this.rpcClient.call<CheckAccountRpcResponse>(rpcRequest);
-		return plainToClass(CheckAccountRpcResponse, response);
-	}
 
 	async handle(task: CheckAndAddUserTask) {
 		const vkUsers = await this.vkUserService.getAllActive();
@@ -47,18 +27,22 @@ export class CheckAllUsersTaskHandler implements TaskHandlerInterface {
 			vkUsers,
 			async ({ login, password }) => {
 				try {
-					const proxy = await this.proxyService.getRandom();
+					const randomStartAt = moment().add(
+						getRandom(0, (vkUsers.length * 60) / 40),
+						's',
+					);
 
-					const { isActive, code } = await this.checkAccount({ login, password }, proxy);
-					if (!isActive) {
-						await this.vkUserService.setInactive(login, { code });
-						errors.push(new UserAuthFailedException(login, code));
-					}
+					await this.checkAccountTaskService.createTask({
+						usersCredentials: { login, password },
+						startAt: randomStartAt,
+						user: task.user as User,
+						parentTaskId: task._id,
+					});
 				} catch (error) {
 					errors.push(new UnhandledAddUserException(login, error));
 				}
 			},
-			{ concurrency: 20 },
+			{ concurrency: 30 },
 		);
 
 		if (errors.length) {

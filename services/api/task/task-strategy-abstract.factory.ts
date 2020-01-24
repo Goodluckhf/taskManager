@@ -14,10 +14,11 @@ export class TaskStrategyAbstractFactory {
 
 	private readonly mapperTaskTypeToStrategyClass: MapperTypeToClass<TaskStrategyInterface> = {
 		CommentsByStrategyTask: CompositeTaskStrategy,
+		CheckAllUsersTask: CompositeTaskStrategy,
 		SetCommentTask: AtomicTaskStrategy,
 		CheckAndAddUserTask: AtomicTaskStrategy,
 		JoinToGroupTask: AtomicTaskStrategy,
-		CheckAllUsersTask: AtomicTaskStrategy,
+		CheckAccountTask: AtomicTaskStrategy,
 	};
 
 	constructor(
