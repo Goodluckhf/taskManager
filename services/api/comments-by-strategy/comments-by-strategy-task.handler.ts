@@ -58,7 +58,7 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 
 		await bluebird.map(
 			strategy,
-			async task => {
+			async (task, index) => {
 				if (task.replyToCommentNumber !== null) {
 					return;
 				}
@@ -75,10 +75,13 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 				newCommentsTask.startAt = moment(startMoment);
 				await newCommentsTask.save();
 				const extraSeconds = getRandom(
-					this.config.get('postCommentsTask.distribution.min'),
-					this.config.get('postCommentsTask.distribution.max'),
+					0,
+					this.config.get('postCommentsTask.distribution.commonMax'),
 				);
-				startMoment.add(extraSeconds, 's');
+
+				if (index > this.config.get('postCommentsTask.distribution.countWithoutDelay')) {
+					startMoment.add(extraSeconds, 's');
+				}
 			},
 			{ concurrency: 1 },
 		);

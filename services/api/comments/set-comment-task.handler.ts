@@ -212,10 +212,7 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 		});
 
 		const startMoment = moment().add(
-			getRandom(
-				this.config.get('postCommentsTask.distribution.min'),
-				this.config.get('postCommentsTask.distribution.max'),
-			),
+			getRandom(0, this.config.get('postCommentsTask.distribution.replyMax')),
 			's',
 		);
 		await bluebird.map(
@@ -235,10 +232,7 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 				await newCommentsTask.save();
 
 				startMoment.add(
-					getRandom(
-						this.config.get('postCommentsTask.distribution.min'),
-						this.config.get('postCommentsTask.distribution.max'),
-					),
+					getRandom(0, this.config.get('postCommentsTask.distribution.commonMax')),
 					's',
 				);
 			},

@@ -59,8 +59,12 @@ module.exports = {
 	postCommentsTask: {
 		retriesLimit: process.env.POST_COMMENTS_TASK__RETRY_LIMIT,
 		distribution: {
-			min: parseInt(process.env.POST_COMMENTS_TASK__DISTRIBUTION__MIN, 10),
-			max: parseInt(process.env.POST_COMMENTS_TASK__DISTRIBUTION__MAX, 10),
+			replyMax: parseInt(process.env.POST_COMMENTS_TASK__DISTRIBUTION__REPLY_MAX, 10),
+			commonMax: parseInt(process.env.POST_COMMENTS_TASK__DISTRIBUTION__COMMON_MAX, 10),
+			countWithoutDelay: parseInt(
+				process.env.POST_COMMENTS_TASK__DISTRIBUTION__COUNT_WITHOU_DELAY,
+				10,
+			),
 		},
 	},
 
