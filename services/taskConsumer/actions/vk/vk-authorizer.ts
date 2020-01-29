@@ -44,7 +44,7 @@ export class VkAuthorizer {
 			password,
 		);
 
-		const loginNavigationPromise = page.waitForNavigation();
+		const loginNavigationPromise = page.waitForNavigation({ timeout: 10000 });
 		const waitForCaptchaPromise = page.waitFor(
 			() => !!document.querySelector('.recaptcha iframe'),
 		);
