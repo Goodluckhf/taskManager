@@ -111,6 +111,10 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 			{ max: 0, key: 0 },
 		);
 
+		if (activeUsers.length === 0) {
+			return [];
+		}
+
 		return activeUsers[maxGroupObject.key].groupIds;
 	}
 }

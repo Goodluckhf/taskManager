@@ -22,6 +22,7 @@ import { ConfigInterface } from '../../../config/config.interface';
 import { statuses } from '../task/status.constant';
 import { RetriesExceededException } from './retries-exceeded.exception';
 import { NoActiveUsersLeftException } from './no-active-users-left.exception';
+import { CommentsTranslitReplacer } from './comments-translit-replacer';
 
 type SetCommentWithRetryArgs = {
 	taskOwnerUser: User;
@@ -46,6 +47,8 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 		@inject(VkUserService) private readonly vkUserService: VkUserService,
 		@inject(ProxyService) private readonly proxyService: ProxyService,
 		@inject(GroupJoinTaskService) private readonly groupJoinTaskService: GroupJoinTaskService,
+		@inject(CommentsTranslitReplacer)
+		private readonly commentsTranslitReplacer: CommentsTranslitReplacer,
 	) {}
 
 	buildPostLink(commonPostLink) {
@@ -70,13 +73,17 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 		}
 
 		try {
+			const text = this.config.get('postCommentsTask.translitEnabled')
+				? this.commentsTranslitReplacer.randomReplace(commentTask.text)
+				: commentTask.text;
+
 			return await this.commentsService.postComment({
 				credentials: {
 					login: vkUserCredentials.login,
 					password: vkUserCredentials.password,
 				},
 				postLink: this.buildPostLink(commentTask.postLink),
-				text: commentTask.text,
+				text,
 				imageURL: commentTask.imageURL,
 				replyTo: commentTask.replyToCommentId,
 				proxy: {

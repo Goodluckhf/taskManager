@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { Page } from 'puppeteer';
-import bluebird from 'bluebird';
+import bluebird, { AggregateError } from 'bluebird';
 import { LoggerInterface } from '../../../../lib/logger.interface';
 import { ProxyInterface } from '../../proxy.interface';
 import { AccountException } from '../../rpc-handlers/account.exception';
@@ -44,15 +44,21 @@ export class VkAuthorizer {
 			password,
 		);
 
-		const loginNavigationPromise = page.waitForNavigation();
+		const loginNavigationPromise = page.waitForNavigation({ timeout: 10000 });
 		const waitForCaptchaPromise = page.waitFor(
 			() => !!document.querySelector('.recaptcha iframe'),
+			{ timeout: 10000 },
 		);
 		await page.click('#login_button');
-		await bluebird.any([
-			loginNavigationPromise as Promise<any>,
-			waitForCaptchaPromise as Promise<any>,
-		]);
+		await bluebird
+			.any([loginNavigationPromise as Promise<any>, waitForCaptchaPromise as Promise<any>])
+			.catch(async error => {
+				if (error instanceof AggregateError) {
+					return page.reload({ waitUntil: 'networkidle2' });
+				}
+
+				throw error;
+			});
 
 		const hasCaptcha = await page.evaluate(() => !!document.querySelector('.recaptcha iframe'));
 		if (hasCaptcha) {

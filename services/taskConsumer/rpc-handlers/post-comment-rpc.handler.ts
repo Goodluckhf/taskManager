@@ -141,11 +141,17 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 
 			const postsCountBefore = await page.evaluate(
 				userHref =>
-					[...document.querySelectorAll<HTMLElement>('._post.reply')].filter(
-						element =>
-							element.querySelector<HTMLAnchorElement>('a.reply_image').href ===
-							userHref,
-					).length,
+					[...document.querySelectorAll<HTMLElement>('._post.reply')].filter(element => {
+						const imageElement = element.querySelector<HTMLAnchorElement>(
+							'a.reply_image',
+						);
+
+						if (!imageElement) {
+							return false;
+						}
+
+						return imageElement.href === userHref;
+					}).length,
 				currentUserHref,
 			);
 
@@ -165,9 +171,6 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 				document.querySelector(selector).click();
 			}, `#reply_button${postId}`);
 
-			// После нажатия на опубликовать коммент
-			// Нельзя заново запускать задачу
-			canRetry = false;
 			await page.waitFor(
 				(beforeCount, userHref, _lastPostId) => {
 					const phoneConfirmationForm = document.querySelector('#validation_phone_row');
@@ -179,9 +182,17 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 					// @ts-ignore
 					const currentUserPosts = [...document.querySelectorAll('._post.reply')].filter(
-						element =>
-							element.querySelector<HTMLAnchorElement>('a.reply_image').href ===
-							userHref,
+						element => {
+							const imageElement = element.querySelector<HTMLAnchorElement>(
+								'a.reply_image',
+							);
+
+							if (!imageElement) {
+								return false;
+							}
+
+							return imageElement.href === userHref;
+						},
 					);
 
 					// в вк сначала ставится такой id "0_-1"
@@ -211,6 +222,10 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 				lastPostId,
 			);
 
+			// После нажатия на опубликовать коммент
+			// Нельзя заново запускать задачу
+			canRetry = false;
+
 			const needPhoneConfirmation = await page.evaluate(() => {
 				const form = document.querySelector('#validation_phone_row');
 				return !!form;
@@ -230,16 +245,33 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 					// @ts-ignore
 					[...document.querySelectorAll<HTMLElement>('._post.reply')]
-						.filter(
-							element =>
-								element.querySelector<HTMLAnchorElement>('a.reply_image').href ===
-								userHref,
-						)
+						.filter(element => {
+							const imageElement = element.querySelector<HTMLAnchorElement>(
+								'a.reply_image',
+							);
+
+							if (!imageElement) {
+								return false;
+							}
+
+							return imageElement.href === userHref;
+						})
 						.map(element => element.getAttribute('data-post-id')),
 				currentUserHref,
 			);
 
 			const newCommentId = maxBy(userCommentIds, id => parseInt(id.replace(/.*_/, ''), 10));
+			if (!newCommentId) {
+				this.logger.error({
+					message: 'new comment id is undefined',
+					userCommentIds,
+					postLink,
+					text,
+					login,
+				});
+
+				throw new Error('Unexpected lost new comment id');
+			}
 			return { commentId: newCommentId };
 		} catch (error) {
 			error.canRetry = typeof error.canRetry !== 'undefined' ? error.canRetry : canRetry;
