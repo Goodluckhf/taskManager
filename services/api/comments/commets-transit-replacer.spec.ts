@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { CommentsTranslitReplacer } from './comments-translit-replacer';
 
 describe('Транслитерация', () => {
