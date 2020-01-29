@@ -1,4 +1,5 @@
 import { getRandom } from '../../../lib/helper';
+import { injectable } from 'inversify';
 
 const alphabetMapper = {
 	a: 'а',
@@ -37,6 +38,7 @@ const alphabetMapper = {
 	c: 'с',
 };
 
+@injectable()
 export class CommentsTranslitReplacer {
 	private replaceText(text: string): string {
 		return [...text]
