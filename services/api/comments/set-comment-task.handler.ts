@@ -73,7 +73,10 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 		}
 
 		try {
-			const text = this.commentsTranslitReplacer.randomReplace(commentTask.text);
+			const text = this.config.get('postCommentsTask.translitEnabled')
+				? this.commentsTranslitReplacer.randomReplace(commentTask.text)
+				: commentTask.text;
+
 			return await this.commentsService.postComment({
 				credentials: {
 					login: vkUserCredentials.login,

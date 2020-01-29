@@ -58,6 +58,7 @@ module.exports = {
 
 	postCommentsTask: {
 		retriesLimit: process.env.POST_COMMENTS_TASK__RETRY_LIMIT,
+		translitEnabled: process.env.POST_COMMENTS_TASK__TRANSLIT_ENABLED === 'true',
 		distribution: {
 			replyMax: parseInt(process.env.POST_COMMENTS_TASK__DISTRIBUTION__REPLY_MAX, 10),
 			commonMax: parseInt(process.env.POST_COMMENTS_TASK__DISTRIBUTION__COMMON_MAX, 10),
