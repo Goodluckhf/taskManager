@@ -141,11 +141,17 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 
 			const postsCountBefore = await page.evaluate(
 				userHref =>
-					[...document.querySelectorAll<HTMLElement>('._post.reply')].filter(
-						element =>
-							element.querySelector<HTMLAnchorElement>('a.reply_image').href ===
-							userHref,
-					).length,
+					[...document.querySelectorAll<HTMLElement>('._post.reply')].filter(element => {
+						const imageElement = element.querySelector<HTMLAnchorElement>(
+							'a.reply_image',
+						);
+
+						if (!imageElement) {
+							return false;
+						}
+
+						return imageElement.href === userHref;
+					}).length,
 				currentUserHref,
 			);
 
@@ -179,9 +185,17 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 					// @ts-ignore
 					const currentUserPosts = [...document.querySelectorAll('._post.reply')].filter(
-						element =>
-							element.querySelector<HTMLAnchorElement>('a.reply_image').href ===
-							userHref,
+						element => {
+							const imageElement = element.querySelector<HTMLAnchorElement>(
+								'a.reply_image',
+							);
+
+							if (!imageElement) {
+								return false;
+							}
+
+							return imageElement.href === userHref;
+						},
 					);
 
 					// в вк сначала ставится такой id "0_-1"
@@ -230,11 +244,17 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 					// @ts-ignore
 					[...document.querySelectorAll<HTMLElement>('._post.reply')]
-						.filter(
-							element =>
-								element.querySelector<HTMLAnchorElement>('a.reply_image').href ===
-								userHref,
-						)
+						.filter(element => {
+							const imageElement = element.querySelector<HTMLAnchorElement>(
+								'a.reply_image',
+							);
+
+							if (!imageElement) {
+								return false;
+							}
+
+							return imageElement.href === userHref;
+						})
 						.map(element => element.getAttribute('data-post-id')),
 				currentUserHref,
 			);
