@@ -261,6 +261,17 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 			);
 
 			const newCommentId = maxBy(userCommentIds, id => parseInt(id.replace(/.*_/, ''), 10));
+			if (!newCommentId) {
+				this.logger.error({
+					message: 'new comment id is undefined',
+					userCommentIds,
+					postLink,
+					text,
+					login,
+				});
+
+				throw new Error('Unexpected lost new comment id');
+			}
 			return { commentId: newCommentId };
 		} catch (error) {
 			error.canRetry = typeof error.canRetry !== 'undefined' ? error.canRetry : canRetry;
