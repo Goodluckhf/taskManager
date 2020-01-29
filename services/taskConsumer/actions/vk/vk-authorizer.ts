@@ -47,6 +47,7 @@ export class VkAuthorizer {
 		const loginNavigationPromise = page.waitForNavigation({ timeout: 10000 });
 		const waitForCaptchaPromise = page.waitFor(
 			() => !!document.querySelector('.recaptcha iframe'),
+			{ timeout: 10000 },
 		);
 		await page.click('#login_button');
 		await bluebird
