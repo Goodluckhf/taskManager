@@ -171,9 +171,6 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 				document.querySelector(selector).click();
 			}, `#reply_button${postId}`);
 
-			// После нажатия на опубликовать коммент
-			// Нельзя заново запускать задачу
-			canRetry = false;
 			await page.waitFor(
 				(beforeCount, userHref, _lastPostId) => {
 					const phoneConfirmationForm = document.querySelector('#validation_phone_row');
@@ -224,6 +221,10 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 				currentUserHref,
 				lastPostId,
 			);
+
+			// После нажатия на опубликовать коммент
+			// Нельзя заново запускать задачу
+			canRetry = false;
 
 			const needPhoneConfirmation = await page.evaluate(() => {
 				const form = document.querySelector('#validation_phone_row');
