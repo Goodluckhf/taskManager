@@ -85,6 +85,8 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 					this.config.get('postCommentsTask.distribution.countWithoutDelay')
 				) {
 					startMoment.add(extraSeconds, 's');
+				} else {
+					startMoment.add(extraSeconds / 5, 's');
 				}
 			},
 			{ concurrency: 1 },
