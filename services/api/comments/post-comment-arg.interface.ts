@@ -2,6 +2,11 @@ export interface PostCommentArgInterface {
 	credentials: {
 		login: string;
 		password: string;
+		proxy: {
+			url: string;
+			login: string;
+			password: string;
+		};
 	};
 
 	postLink: string;
@@ -11,10 +16,4 @@ export interface PostCommentArgInterface {
 	imageURL: string;
 
 	replyTo: string;
-
-	proxy: {
-		url: string;
-		login: string;
-		password: string;
-	};
 }

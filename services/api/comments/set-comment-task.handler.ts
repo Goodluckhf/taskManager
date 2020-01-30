@@ -11,7 +11,6 @@ import { CommentService } from './comment.service';
 import { LikeService } from '../likes/like.service';
 import { LoggerInterface } from '../../../lib/logger.interface';
 import { VkUserService } from '../vk-users/vk-user.service';
-import { ProxyService } from '../proxies/proxy.service';
 import { GroupJoinTaskService } from '../vk-users/group-join-task.service';
 import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 import { CommentsByStrategyTask } from '../comments-by-strategy/comments-by-strategy-task';
@@ -19,7 +18,6 @@ import { User } from '../users/user';
 import { VkUserCredentialsInterface } from '../vk-users/vk-user-credentials.interface';
 import { ProxyInterface } from '../proxies/proxy.interface';
 import { ConfigInterface } from '../../../config/config.interface';
-import { statuses } from '../task/status.constant';
 import { RetriesExceededException } from './retries-exceeded.exception';
 import { NoActiveUsersLeftException } from './no-active-users-left.exception';
 import { CommentsTranslitReplacer } from './comments-translit-replacer';
@@ -29,7 +27,6 @@ type SetCommentWithRetryArgs = {
 	commentTask: SetCommentTask;
 	rootTask: CommentsByStrategyTask;
 	vkUserCredentials: VkUserCredentialsInterface;
-	proxy: ProxyInterface;
 	tryNumber?: number;
 };
 
@@ -45,7 +42,6 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 		@inject(LikeService) private readonly likeService: LikeService,
 		@inject('Logger') private readonly logger: LoggerInterface,
 		@inject(VkUserService) private readonly vkUserService: VkUserService,
-		@inject(ProxyService) private readonly proxyService: ProxyService,
 		@inject(GroupJoinTaskService) private readonly groupJoinTaskService: GroupJoinTaskService,
 		@inject(CommentsTranslitReplacer)
 		private readonly commentsTranslitReplacer: CommentsTranslitReplacer,
@@ -65,7 +61,6 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 		rootTask,
 		commentTask,
 		vkUserCredentials,
-		proxy,
 		tryNumber = 0,
 	}: SetCommentWithRetryArgs): Promise<PostCommentResponse> {
 		if (tryNumber > 4) {
@@ -81,16 +76,16 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 				credentials: {
 					login: vkUserCredentials.login,
 					password: vkUserCredentials.password,
+					proxy: {
+						url: vkUserCredentials.proxy.url,
+						login: vkUserCredentials.proxy.login,
+						password: vkUserCredentials.proxy.password,
+					},
 				},
 				postLink: this.buildPostLink(commentTask.postLink),
 				text,
 				imageURL: commentTask.imageURL,
 				replyTo: commentTask.replyToCommentId,
-				proxy: {
-					url: proxy.url,
-					login: proxy.login,
-					password: proxy.password,
-				},
 			});
 		} catch (error) {
 			if (error.code === 'comments_closed') {
@@ -148,7 +143,6 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 					taskOwnerUser,
 					vkUserCredentials: newUser,
 					commentTask,
-					proxy,
 					tryNumber: tryNumber + 1,
 				});
 			}
@@ -157,17 +151,15 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 				this.logger.warn({
 					message: 'проблема с прокси',
 					code: error.code,
-					proxy,
+					proxy: vkUserCredentials.proxy,
 				});
-				await this.proxyService.setInactive(proxy.url, error);
-				const newProxy = await this.proxyService.getRandom();
+				await bluebird.delay(10000);
 
 				return this.setCommentsWithRetry({
 					taskOwnerUser,
 					rootTask,
 					vkUserCredentials,
 					commentTask,
-					proxy: newProxy,
 					tryNumber: tryNumber + 1,
 				});
 			}
@@ -196,7 +188,7 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 		const rootTask = await this.CommentsByStrategyModel.findOne({
 			_id: commentTask.parentTaskId,
 		});
-		const proxy = await this.proxyService.getRandom();
+
 		const vkUserLogin = rootTask.vkUserLogins[commentTask.userFakeId];
 		const vkUserCredentials = await this.vkUserService.getCredentialsByLogin(vkUserLogin);
 
@@ -204,7 +196,6 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 			rootTask,
 			commentTask,
 			vkUserCredentials,
-			proxy,
 			taskOwnerUser: commentTask.user as User,
 		});
 
