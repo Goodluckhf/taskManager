@@ -27,7 +27,7 @@ export class CheckAllUsersTaskHandler implements TaskHandlerInterface {
 
 		await bluebird.map(
 			vkUsers,
-			async ({ login, password }) => {
+			async ({ login, password, proxy }) => {
 				try {
 					const randomStartAt = moment().add(
 						getRandom(0, (vkUsers.length * 60) / 20),
@@ -35,7 +35,7 @@ export class CheckAllUsersTaskHandler implements TaskHandlerInterface {
 					);
 
 					await this.checkAccountTaskService.createTask({
-						usersCredentials: { login, password },
+						usersCredentials: { login, password, proxy },
 						startAt: randomStartAt,
 						user: task.user as User,
 						parentTaskId: task._id,
