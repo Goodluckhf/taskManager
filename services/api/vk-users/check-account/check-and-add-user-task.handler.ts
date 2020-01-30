@@ -5,7 +5,6 @@ import { TaskHandlerInterface } from '../../task/task-handler.interface';
 import { CheckAndAddUserTask } from './check-and-add-user.task';
 import { UserExistsException } from '../user-exists.exception';
 import { VkUserService } from '../vk-user.service';
-import { ProxyService } from '../../proxies/proxy.service';
 import { UserAuthFailedException } from '../user-auth-failed.exception';
 import { UnhandledAddUserException } from './unhandled-add-user.exception';
 import { FormattableInterface, ObjectableInterface } from '../../../../lib/internal.types';
@@ -14,7 +13,6 @@ import RpcClient from '../../../../lib/amqp/rpc-client';
 import { CheckAccountRpcResponse } from './check-account-rpc.response';
 import { RpcRequestFactory } from '../../../../lib/amqp/rpc-request.factory';
 import { CheckAccountRpcRequest } from './check-account-rpc.request';
-import { ProxyInterface } from '../../proxies/proxy.interface';
 import { VkUserCredentialsInterface } from '../vk-user-credentials.interface';
 import { GroupJoinTaskService } from '../group-join-task.service';
 import { User } from '../../users/user';
@@ -25,7 +23,6 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 	constructor(
 		@inject(VkUserService) private readonly vkUserService: VkUserService,
 		@inject(GroupJoinTaskService) private readonly groupJoinTaskService: GroupJoinTaskService,
-		@inject(ProxyService) private readonly proxyService: ProxyService,
 		@inject(RpcClient) private readonly rpcClient: RpcClient,
 		@inject(RpcRequestFactory) private readonly rpcRequestFactory: RpcRequestFactory,
 		@inject('Config') private readonly config: ConfigInterface,
@@ -33,12 +30,10 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 
 	private async checkAccount(
 		userCredentials: VkUserCredentialsInterface,
-		proxy: ProxyInterface,
 	): Promise<CheckAccountRpcResponse> {
 		const rpcRequest = this.rpcRequestFactory.create(CheckAccountRpcRequest);
 		rpcRequest.setArguments({
 			userCredentials,
-			proxy,
 		});
 
 		const response = await this.rpcClient.call<CheckAccountRpcResponse>(rpcRequest);
@@ -49,23 +44,26 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 		const errors: Array<ObjectableInterface & FormattableInterface> = [];
 		await bluebird.map(
 			task.usersCredentials,
-			async ({ login, password }) => {
+			async ({ login, password, proxy }) => {
 				try {
 					if (await this.vkUserService.exists(login)) {
 						errors.push(new UserExistsException(login));
 						return;
 					}
 
-					const proxy = await this.proxyService.getRandom();
-
-					const { isActive, code } = await this.checkAccount({ login, password }, proxy);
+					const { isActive, code } = await this.checkAccount({ login, password, proxy });
 					if (!isActive) {
 						errors.push(new UserAuthFailedException(login, code));
 						return;
 					}
 
-					await this.createTasksForGroupJoin(task.user as User, { login, password });
-					await this.vkUserService.addUser({ login, password });
+					await this.createTasksForGroupJoin(task.user as User, {
+						login,
+						password,
+						proxy,
+					});
+
+					await this.vkUserService.addUser({ login, password, proxy });
 				} catch (error) {
 					errors.push(new UnhandledAddUserException(login, error));
 				}
