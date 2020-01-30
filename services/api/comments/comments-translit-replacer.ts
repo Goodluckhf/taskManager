@@ -1,5 +1,5 @@
-import { getRandom } from '../../../lib/helper';
 import { injectable } from 'inversify';
+import { getRandom } from '../../../lib/helper';
 
 const alphabetMapper = {
 	a: 'а',
@@ -25,13 +25,11 @@ const alphabetMapper = {
 	е: 'e',
 	y: 'у',
 	у: 'y',
-	и: 'u',
 	o: 'о',
 	о: 'o',
 	p: 'р',
 	р: 'p',
 	k: 'к',
-	к: 'k',
 	х: 'x',
 	x: 'х',
 	с: 'c',
