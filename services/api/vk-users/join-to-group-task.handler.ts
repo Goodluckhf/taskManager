@@ -6,7 +6,6 @@ import { LoggerInterface } from '../../../lib/logger.interface';
 import RpcClient from '../../../lib/amqp/rpc-client';
 import { RpcRequestFactory } from '../../../lib/amqp/rpc-request.factory';
 import { JoinGroupRpcRequest } from './join-group-rpc.request';
-import { ProxyService } from '../proxies/proxy.service';
 import { UnhandledJoinToGroupException } from './unhandled-join-to-group.exception';
 import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
 
@@ -17,7 +16,6 @@ export class JoinToGroupTaskHandler implements TaskHandlerInterface {
 		@inject('Logger') private readonly logger: LoggerInterface,
 		@inject(RpcClient) private readonly rpcClient: RpcClient,
 		@inject(RpcRequestFactory) private readonly rpcRequestFactory: RpcRequestFactory,
-		@inject(ProxyService) private readonly proxyService: ProxyService,
 	) {}
 
 	async handle(task: JoinToGroupTask) {
@@ -36,11 +34,8 @@ export class JoinToGroupTaskHandler implements TaskHandlerInterface {
 	}
 
 	private async joinToGroup(vkUserCredentials: VkUserCredentialsInterface, groupId: string) {
-		const proxy = await this.proxyService.getRandom();
-
 		const rpcRequest = this.rpcRequestFactory.create(JoinGroupRpcRequest);
 		rpcRequest.setArguments({
-			proxy,
 			groupId,
 			userCredentials: vkUserCredentials,
 		});

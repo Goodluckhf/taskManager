@@ -7,11 +7,7 @@ export class JoinGroupRpcRequest extends AbstractRpcRequest {
 
 	protected readonly retriesLimit = 3;
 
-	setArguments(args: {
-		userCredentials: VkUserCredentialsInterface;
-		proxy: ProxyInterface;
-		groupId: string;
-	}) {
+	setArguments(args: { userCredentials: VkUserCredentialsInterface; groupId: string }) {
 		this.args = args;
 	}
 }
