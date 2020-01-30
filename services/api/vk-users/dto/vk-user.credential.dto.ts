@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsString, ValidateNested } from 'class-validator';
 import { prop } from '@typegoose/typegoose';
 import { Type } from 'class-transformer';
 import { VkUserCredentialsInterface } from '../vk-user-credentials.interface';
@@ -15,5 +15,7 @@ export class VkUserCredentialDto implements VkUserCredentialsInterface {
 	password: string;
 
 	@Type(() => ProxyCredentialsDto)
+	@ValidateNested()
+	@prop()
 	proxy: ProxyInterface;
 }
