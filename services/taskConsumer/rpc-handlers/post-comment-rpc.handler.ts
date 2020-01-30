@@ -16,15 +16,14 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 
 	protected readonly method = 'postComment';
 
-	async handle({ credentials: { login, password }, postLink, text, imageURL, replyTo, proxy }) {
+	async handle({ credentials: { login, password, proxy }, postLink, text, imageURL, replyTo }) {
 		this.logger.info({
 			message: 'Задача на коменты',
-			credentials: { login, password },
+			credentials: { login, password, proxy },
 			postLink,
 			text,
 			imageURL,
 			replyTo,
-			proxy,
 		});
 
 		let canRetry = true;

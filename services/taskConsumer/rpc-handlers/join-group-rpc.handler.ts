@@ -24,25 +24,24 @@ export class JoinGroupRpcHandler extends AbstractRpcHandler {
 
 	protected method = 'joinGroup';
 
-	async handle({ proxy, groupId, userCredentials }: TaskArgsType): Promise<object> {
+	async handle({ groupId, userCredentials }: TaskArgsType): Promise<object> {
 		const groupLink = hrefByGroupId(groupId);
 		this.logger.info({
 			message: 'Задача на вступление в группу пользователя vk',
 			credentials: userCredentials,
 			vkGroupLink: groupLink,
-			proxy,
 		});
 
 		let browser: Browser = null;
 		const canRetry = true;
 		try {
-			const { page, browser: _browser } = await createBrowserPage(proxy);
+			const { page, browser: _browser } = await createBrowserPage(userCredentials.proxy);
 			browser = _browser;
 
 			await this.vkAuthorizer.authorize(page, {
 				login: userCredentials.login,
 				password: userCredentials.password,
-				proxy,
+				proxy: userCredentials.proxy,
 			});
 
 			await page.goto(groupLink, {
@@ -105,7 +104,6 @@ export class JoinGroupRpcHandler extends AbstractRpcHandler {
 				message: 'Подписался в группу',
 				credentials: userCredentials,
 				vkGroupLink: groupLink,
-				proxy,
 			});
 
 			return {};

@@ -11,7 +11,7 @@ export class CheckVkUserRpcHandler extends AbstractRpcHandler {
 
 	protected method = 'checkVkUser';
 
-	async handle({ userCredentials: { login, password }, proxy }) {
+	async handle({ userCredentials: { login, password, proxy } }) {
 		this.logger.info({
 			message: 'Задача на проверку пользователя vk',
 			credentials: { login, password },
