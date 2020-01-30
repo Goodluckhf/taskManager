@@ -44,6 +44,7 @@ export class VkUserService {
 		const newUser = new this.VkUsersModel();
 		newUser.login = credentials.login;
 		newUser.password = credentials.password;
+		newUser.proxy = credentials.proxy;
 		await newUser.save();
 	}
 
