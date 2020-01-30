@@ -3,6 +3,7 @@ import { Schema } from 'mongoose';
 import moment from 'moment';
 import { model } from '../../../lib/inversify-typegoose/model.decorator';
 import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
+import { ProxyInterface } from '../proxies/proxy.interface';
 
 @model()
 export class VkUser implements VkUserCredentialsInterface {
@@ -23,4 +24,7 @@ export class VkUser implements VkUserCredentialsInterface {
 
 	@arrayProp({ items: String, default: [] })
 	groupIds: string[];
+
+	@prop({ required: true })
+	proxy: ProxyInterface;
 }
