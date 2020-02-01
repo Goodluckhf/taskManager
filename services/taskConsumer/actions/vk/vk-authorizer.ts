@@ -13,7 +13,7 @@ export class VkAuthorizer {
 		@inject(CaptchaService) private readonly captcha: CaptchaService,
 	) {}
 
-	async signInWithCooke(page: Page, remixsid: string) {
+	async signInWithCookie(page: Page, remixsid: string) {
 		const client = await page.target().createCDPSession();
 		await client.send('Network.setCookie', {
 			name: 'remixsid',
@@ -117,7 +117,7 @@ export class VkAuthorizer {
 		});
 
 		if (remixsid) {
-			await this.signInWithCooke(page, remixsid);
+			await this.signInWithCookie(page, remixsid);
 			this.logger.info({
 				message: 'авторизовались через куку',
 				remixsid,
