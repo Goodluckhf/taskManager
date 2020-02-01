@@ -83,11 +83,15 @@ class Form extends PureComponent {
 			proxiesCredentials.length / usersCredentials.length,
 		);
 
+		const userCredentialsWithProxy = [];
+
 		vkCredentialsChunks.forEach((vkUserChunk, index) => {
 			const proxy = proxiesCredentials[index];
-			vkUserChunk.forEach(vkUser => {
+			vkUserChunk.reduce((array, vkUser) => {
 				vkUser.proxy = proxy;
-			});
+				userCredentialsWithProxy.push(vkUser);
+				return userCredentialsWithProxy;
+			}, userCredentialsWithProxy);
 		});
 
 		this.props.addVkUsers({
