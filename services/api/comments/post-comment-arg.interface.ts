@@ -2,6 +2,7 @@ export interface PostCommentArgInterface {
 	credentials: {
 		login: string;
 		password: string;
+		remixsid: string;
 		proxy: {
 			url: string;
 			login: string;

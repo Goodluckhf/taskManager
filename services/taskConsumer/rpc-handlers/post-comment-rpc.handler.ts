@@ -25,7 +25,7 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 	}) {
 		this.logger.info({
 			message: 'Задача на коменты',
-			credentials: { login, password, proxy },
+			credentials: { login, password, proxy, remixsid },
 			postLink,
 			text,
 			imageURL,
