@@ -80,7 +80,7 @@ class Form extends PureComponent {
 
 		const vkCredentialsChunks = chunk(
 			usersCredentials,
-			proxiesCredentials.length / usersCredentials.length,
+			Math.ceil(usersCredentials.length / proxiesCredentials.length),
 		);
 
 		const userCredentialsWithProxy = [];
@@ -95,7 +95,7 @@ class Form extends PureComponent {
 		});
 
 		this.props.addVkUsers({
-			usersCredentials,
+			usersCredentials: userCredentialsWithProxy,
 		});
 	};
 
