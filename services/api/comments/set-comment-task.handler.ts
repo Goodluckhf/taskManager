@@ -16,7 +16,6 @@ import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 import { CommentsByStrategyTask } from '../comments-by-strategy/comments-by-strategy-task';
 import { User } from '../users/user';
 import { VkUserCredentialsInterface } from '../vk-users/vk-user-credentials.interface';
-import { ProxyInterface } from '../proxies/proxy.interface';
 import { ConfigInterface } from '../../../config/config.interface';
 import { RetriesExceededException } from './retries-exceeded.exception';
 import { NoActiveUsersLeftException } from './no-active-users-left.exception';
