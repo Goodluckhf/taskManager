@@ -39,6 +39,7 @@ export class CheckAccountTaskHandler implements TaskHandlerInterface {
 				login: task.usersCredentials.login,
 				password: task.usersCredentials.password,
 				proxy: task.usersCredentials.proxy,
+				remixsid: task.usersCredentials.remixsid,
 			});
 
 			if (!isActive) {
