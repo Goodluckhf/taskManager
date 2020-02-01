@@ -11,7 +11,7 @@ export class CheckVkUserRpcHandler extends AbstractRpcHandler {
 
 	protected method = 'checkVkUser';
 
-	async handle({ userCredentials: { login, password, proxy } }) {
+	async handle({ userCredentials: { login, password, proxy, remixsid: lastRemixsid } }) {
 		this.logger.info({
 			message: 'Задача на проверку пользователя vk',
 			credentials: { login, password },
@@ -27,12 +27,13 @@ export class CheckVkUserRpcHandler extends AbstractRpcHandler {
 			const { page, browser: _browser } = await createBrowserPage(proxy);
 			browser = _browser;
 			try {
-				await this.vkAuthorizer.authorize(page, {
+				const { remixsid } = await this.vkAuthorizer.authorize(page, {
 					login,
 					password,
 					proxy,
+					remixsid: lastRemixsid,
 				});
-				return { isActive: true };
+				return { isActive: true, remixsid };
 			} catch (error) {
 				if (error.code === 'login_failed' || error.code === 'blocked') {
 					return { isActive: false, code: error.code };

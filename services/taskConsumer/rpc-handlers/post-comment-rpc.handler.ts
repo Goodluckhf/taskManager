@@ -16,7 +16,13 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 
 	protected readonly method = 'postComment';
 
-	async handle({ credentials: { login, password, proxy }, postLink, text, imageURL, replyTo }) {
+	async handle({
+		credentials: { login, password, proxy, remixsid },
+		postLink,
+		text,
+		imageURL,
+		replyTo,
+	}) {
 		this.logger.info({
 			message: 'Задача на коменты',
 			credentials: { login, password, proxy },
@@ -36,6 +42,7 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 				login,
 				password,
 				proxy,
+				remixsid,
 			});
 
 			await page.goto(postLink, {
