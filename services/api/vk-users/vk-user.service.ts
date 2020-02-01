@@ -44,6 +44,8 @@ export class VkUserService {
 		const newUser = new this.VkUsersModel();
 		newUser.login = credentials.login;
 		newUser.password = credentials.password;
+		newUser.proxy = credentials.proxy;
+		newUser.remixsid = credentials.remixsid;
 		await newUser.save();
 	}
 
@@ -87,5 +89,14 @@ export class VkUserService {
 		user.errorComment = reason;
 		user.inactiveAt = moment();
 		await user.save();
+	}
+
+	async setRemixsid(login: string, remixsid: string) {
+		await this.VkUsersModel.update(
+			{ login },
+			{
+				$set: { remixsid },
+			},
+		);
 	}
 }

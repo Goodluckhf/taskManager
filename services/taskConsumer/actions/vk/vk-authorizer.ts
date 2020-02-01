@@ -13,28 +13,23 @@ export class VkAuthorizer {
 		@inject(CaptchaService) private readonly captcha: CaptchaService,
 	) {}
 
-	async authorize(
-		page: Page,
-		{ login, password, proxy }: { login: string; password: string; proxy: ProxyInterface },
-	) {
-		try {
-			await page.goto('https://vk.com/login', {
-				waitUntil: 'networkidle2',
-			});
-		} catch (error) {
-			if (/ERR_PROXY_CONNECTION_FAILED/.test(error.message)) {
-				error.code = 'proxy_failure';
-				error.proxy = proxy;
-			}
-
-			throw error;
-		}
-
-		this.logger.info({
-			message: 'Прокси жив (зашли на страницу авторизации)',
-			proxy,
+	async signInWithCookie(page: Page, remixsid: string) {
+		const client = await page.target().createCDPSession();
+		await client.send('Network.setCookie', {
+			name: 'remixsid',
+			value: remixsid,
+			domain: '.vk.com',
+			path: '/',
+			secure: true,
+			httpOnly: true,
 		});
+		await page.reload({ waitUntil: 'networkidle2' });
+	}
 
+	async signInWithCredentials(
+		page: Page,
+		{ login, password }: { login: string; password: string },
+	) {
 		await page.evaluate(
 			(_login, _password) => {
 				document.querySelector<HTMLInputElement>('#email').value = _login;
@@ -92,6 +87,50 @@ export class VkAuthorizer {
 				throw error;
 			}
 		}
+	}
+
+	async authorize(
+		page: Page,
+		{
+			login,
+			password,
+			proxy,
+			remixsid,
+		}: { login: string; password: string; remixsid?: string; proxy: ProxyInterface },
+	) {
+		try {
+			await page.goto('https://vk.com/login', {
+				waitUntil: 'networkidle2',
+			});
+		} catch (error) {
+			if (/ERR_PROXY_CONNECTION_FAILED/.test(error.message)) {
+				error.code = 'proxy_failure';
+				error.proxy = proxy;
+			}
+
+			throw error;
+		}
+
+		this.logger.info({
+			message: 'Прокси жив (зашли на страницу авторизации)',
+			proxy,
+		});
+
+		if (remixsid) {
+			await this.signInWithCookie(page, remixsid);
+			this.logger.info({
+				message: 'авторизовались через куку',
+				remixsid,
+				login,
+			});
+		} else {
+			await this.signInWithCredentials(page, { login, password });
+			this.logger.info({
+				message: 'авторизовались через логин пароль',
+				password,
+				login,
+			});
+		}
 
 		const loginFailedElement = await page.$('#login_message .error');
 		if (loginFailedElement) {
@@ -103,9 +142,15 @@ export class VkAuthorizer {
 			);
 		}
 
+		const client = await page.target().createCDPSession();
+		const response: any = await client.send('Network.getAllCookies');
+		const newRemixsid = response.cookies.find(c => c.name === 'remixsid').value;
+
 		const blockedElement = await page.$('#login_blocked_wrap');
 		if (blockedElement) {
 			throw new AccountException('Account is blocked', 'blocked', login, false);
 		}
+
+		return { remixsid: newRemixsid };
 	}
 }
