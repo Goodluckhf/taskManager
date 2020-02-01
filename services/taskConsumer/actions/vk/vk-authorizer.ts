@@ -142,13 +142,15 @@ export class VkAuthorizer {
 			);
 		}
 
+		const client = await page.target().createCDPSession();
+		const response: any = await client.send('Network.getAllCookies');
+		const newRemixsid = response.cookies.find(c => c.name === 'remixsid').value;
+
 		const blockedElement = await page.$('#login_blocked_wrap');
 		if (blockedElement) {
 			throw new AccountException('Account is blocked', 'blocked', login, false);
 		}
 
-		const client = await page.target().createCDPSession();
-		const response: any = await client.send('Network.getAllCookies');
-		return { remixsid: response.cookies.find(c => c.name === 'remixsid').value };
+		return { remixsid: newRemixsid };
 	}
 }
