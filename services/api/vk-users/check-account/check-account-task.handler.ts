@@ -35,7 +35,7 @@ export class CheckAccountTaskHandler implements TaskHandlerInterface {
 
 	async handle(task: CheckAccountTask) {
 		try {
-			const { isActive, code } = await this.checkAccount({
+			const { isActive, code, remixsid } = await this.checkAccount({
 				login: task.usersCredentials.login,
 				password: task.usersCredentials.password,
 				proxy: task.usersCredentials.proxy,
@@ -45,6 +45,8 @@ export class CheckAccountTaskHandler implements TaskHandlerInterface {
 				await this.vkUserService.setInactive(task.usersCredentials.login, { code });
 				throw new UserAuthFailedException(task.usersCredentials.login, code);
 			}
+
+			await this.vkUserService.setRemixsid(task.usersCredentials.login, remixsid);
 		} catch (error) {
 			if (!(error instanceof UserAuthFailedException)) {
 				throw new UnhandledAddUserException(task.usersCredentials.login, error);

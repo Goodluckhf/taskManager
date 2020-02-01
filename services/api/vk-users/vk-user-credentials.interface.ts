@@ -4,4 +4,5 @@ export interface VkUserCredentialsInterface {
 	login: string;
 	password: string;
 	proxy: ProxyInterface;
+	remixsid?: string;
 }

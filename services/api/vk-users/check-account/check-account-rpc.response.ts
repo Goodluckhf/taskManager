@@ -5,4 +5,6 @@ export class CheckAccountRpcResponse {
 	isActive: boolean;
 
 	code: string;
+
+	remixsid: string;
 }

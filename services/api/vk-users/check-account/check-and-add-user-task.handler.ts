@@ -51,7 +51,11 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 						return;
 					}
 
-					const { isActive, code } = await this.checkAccount({ login, password, proxy });
+					const { isActive, code, remixsid } = await this.checkAccount({
+						login,
+						password,
+						proxy,
+					});
 					if (!isActive) {
 						errors.push(new UserAuthFailedException(login, code));
 						return;
@@ -61,9 +65,10 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 						login,
 						password,
 						proxy,
+						remixsid,
 					});
 
-					await this.vkUserService.addUser({ login, password, proxy });
+					await this.vkUserService.addUser({ login, password, proxy, remixsid });
 				} catch (error) {
 					errors.push(new UnhandledAddUserException(login, error));
 				}

@@ -13,6 +13,9 @@ export class VkUser implements VkUserCredentialsInterface {
 	@prop({ required: true })
 	password: string;
 
+	@prop({ default: null })
+	remixsid: string;
+
 	@prop({ default: true })
 	isActive: boolean;
 
