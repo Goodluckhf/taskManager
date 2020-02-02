@@ -61,6 +61,7 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 						return;
 					}
 
+					await this.vkUserService.addUser({ login, password, proxy, remixsid });
 					await this.createTasksForGroupJoin(task.user as User, {
 						login,
 						password,
