@@ -20,6 +20,7 @@ import { ConfigInterface } from '../../../config/config.interface';
 import { RetriesExceededException } from './retries-exceeded.exception';
 import { NoActiveUsersLeftException } from './no-active-users-left.exception';
 import { CommentsTranslitReplacer } from './comments-translit-replacer';
+import { AuthExceptionCatcher } from '../vk-users/auth-exception.catcher';
 
 type SetCommentWithRetryArgs = {
 	taskOwnerUser: User;
@@ -44,6 +45,7 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 		@inject(GroupJoinTaskService) private readonly groupJoinTaskService: GroupJoinTaskService,
 		@inject(CommentsTranslitReplacer)
 		private readonly commentsTranslitReplacer: CommentsTranslitReplacer,
+		@inject(AuthExceptionCatcher) private readonly authExceptionCatcher: AuthExceptionCatcher,
 	) {}
 
 	buildPostLink(commonPostLink) {
@@ -93,18 +95,8 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 				throw new CommentsClosedException(error, commentTask.text);
 			}
 
-			if (
-				error.code === 'blocked' ||
-				error.code === 'login_failed' ||
-				error.code === 'phone_required' ||
-				error.code === 'captcha_failed'
-			) {
-				this.logger.warn({
-					message: 'проблема с пользователем vk',
-					code: error.code,
-					login: vkUserCredentials.login,
-				});
-				await this.vkUserService.setInactive(vkUserCredentials.login, error);
+			const catched = await this.authExceptionCatcher.catch(error, vkUserCredentials);
+			if (catched) {
 				let exceptReplyToUser = null;
 				if (
 					typeof commentTask.replyToCommentNumber !== 'undefined' &&
