@@ -8,6 +8,7 @@ import { RpcRequestFactory } from '../../../lib/amqp/rpc-request.factory';
 import { JoinGroupRpcRequest } from './join-group-rpc.request';
 import { UnhandledJoinToGroupException } from './unhandled-join-to-group.exception';
 import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
+import { AuthExceptionCatcher } from './auth-exception.catcher';
 
 @injectable()
 export class JoinToGroupTaskHandler implements TaskHandlerInterface {
@@ -16,6 +17,7 @@ export class JoinToGroupTaskHandler implements TaskHandlerInterface {
 		@inject('Logger') private readonly logger: LoggerInterface,
 		@inject(RpcClient) private readonly rpcClient: RpcClient,
 		@inject(RpcRequestFactory) private readonly rpcRequestFactory: RpcRequestFactory,
+		@inject(AuthExceptionCatcher) private readonly authExceptionCatcher: AuthExceptionCatcher,
 	) {}
 
 	async handle(task: JoinToGroupTask) {
@@ -43,13 +45,7 @@ export class JoinToGroupTaskHandler implements TaskHandlerInterface {
 		try {
 			await this.rpcClient.call(rpcRequest);
 		} catch (error) {
-			if (
-				error.code === 'login_failed' ||
-				error.code === 'blocked' ||
-				error.code === 'phone_required'
-			) {
-				await this.vkUserService.setInactive(vkUserCredentials.login, { code: error.code });
-			}
+			await this.authExceptionCatcher.catch(error, vkUserCredentials);
 
 			if (error.code !== 'already_joined') {
 				throw new UnhandledJoinToGroupException(error, vkUserCredentials.login, groupId);
