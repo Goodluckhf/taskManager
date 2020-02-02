@@ -12,6 +12,7 @@ import {
 } from './class-mapper-instance.transformer';
 import { SetCommentTaskHandler } from '../comments/set-comment-task.handler';
 import { CheckAccountTaskHandler } from '../vk-users/check-account/check-account-task.handler';
+import { FakeActivityTaskHandler } from '../fake-activity/fake-activity-task.handler';
 
 @injectable()
 export class TaskAbstractFactory implements TaskAbstractFactoryInterface {
@@ -24,6 +25,7 @@ export class TaskAbstractFactory implements TaskAbstractFactoryInterface {
 		JoinToGroupTask: JoinToGroupTaskHandler,
 		CheckAllUsersTask: CheckAllUsersTaskHandler,
 		CheckAccountTask: CheckAccountTaskHandler,
+		FakeActivityTask: FakeActivityTaskHandler,
 	};
 
 	constructor(
