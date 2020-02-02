@@ -51,7 +51,7 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 						return;
 					}
 
-					const { isActive, code, remixsid } = await this.checkAccount({
+					const { isActive, code, remixsid, userAgent } = await this.checkAccount({
 						login,
 						password,
 						proxy,
@@ -66,9 +66,16 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 						password,
 						proxy,
 						remixsid,
+						userAgent,
 					});
 
-					await this.vkUserService.addUser({ login, password, proxy, remixsid });
+					await this.vkUserService.addUser({
+						login,
+						password,
+						proxy,
+						remixsid,
+						userAgent,
+					});
 				} catch (error) {
 					errors.push(new UnhandledAddUserException(login, error));
 				}

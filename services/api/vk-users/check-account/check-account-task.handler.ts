@@ -35,11 +35,12 @@ export class CheckAccountTaskHandler implements TaskHandlerInterface {
 
 	async handle(task: CheckAccountTask) {
 		try {
-			const { isActive, code, remixsid } = await this.checkAccount({
+			const { isActive, code, remixsid, userAgent } = await this.checkAccount({
 				login: task.usersCredentials.login,
 				password: task.usersCredentials.password,
 				proxy: task.usersCredentials.proxy,
 				remixsid: task.usersCredentials.remixsid,
+				userAgent: task.usersCredentials.userAgent,
 			});
 
 			if (!isActive) {
@@ -47,7 +48,11 @@ export class CheckAccountTaskHandler implements TaskHandlerInterface {
 				throw new UserAuthFailedException(task.usersCredentials.login, code);
 			}
 
-			await this.vkUserService.setRemixsid(task.usersCredentials.login, remixsid);
+			await this.vkUserService.setSensativeCredentials(
+				task.usersCredentials.login,
+				remixsid,
+				userAgent,
+			);
 		} catch (error) {
 			if (!(error instanceof UserAuthFailedException)) {
 				throw new UnhandledAddUserException(task.usersCredentials.login, error);

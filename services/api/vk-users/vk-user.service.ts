@@ -46,6 +46,7 @@ export class VkUserService {
 		newUser.password = credentials.password;
 		newUser.proxy = credentials.proxy;
 		newUser.remixsid = credentials.remixsid;
+		newUser.userAgent = credentials.userAgent;
 		await newUser.save();
 	}
 
@@ -91,11 +92,11 @@ export class VkUserService {
 		await user.save();
 	}
 
-	async setRemixsid(login: string, remixsid: string) {
+	async setSensativeCredentials(login: string, remixsid: string, userAgent: string) {
 		await this.VkUsersModel.update(
 			{ login },
 			{
-				$set: { remixsid },
+				$set: { remixsid, userAgent },
 			},
 		);
 	}

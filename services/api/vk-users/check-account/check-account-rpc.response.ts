@@ -7,4 +7,6 @@ export class CheckAccountRpcResponse {
 	code: string;
 
 	remixsid: string;
+
+	userAgent: string;
 }
