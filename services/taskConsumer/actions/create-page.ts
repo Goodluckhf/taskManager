@@ -19,6 +19,7 @@ export async function createBrowserPage(proxy: ProxyInterface, userAgent?: strin
 		'--disable-dev-shm-usage',
 		'--disable-accelerated-2d-canvas',
 		'--disable-gpu',
+		`--user-agent=${userAgent}`,
 	];
 
 	if (proxy) {
@@ -32,7 +33,6 @@ export async function createBrowserPage(proxy: ProxyInterface, userAgent?: strin
 	});
 
 	const page = await browser.newPage();
-	await page.setUserAgent(userAgent);
 
 	if (proxy) {
 		await page.authenticate({ username: proxy.login, password: proxy.password });
