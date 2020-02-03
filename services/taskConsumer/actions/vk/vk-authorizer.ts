@@ -13,7 +13,7 @@ export class VkAuthorizer {
 		@inject(CaptchaService) private readonly captcha: CaptchaService,
 	) {}
 
-	async signInWithCookie(page: Page, remixsid: string) {
+	async signInWithCookie(page: Page, login: string, remixsid: string): Promise<boolean> {
 		const client = await page.target().createCDPSession();
 		await client.send('Network.setCookie', {
 			name: 'remixsid',
@@ -24,6 +24,27 @@ export class VkAuthorizer {
 			httpOnly: true,
 		});
 		await page.reload({ waitUntil: 'networkidle2' });
+		await this.checkAccount(page, login);
+
+		const loginForm = await page.$('#login_form_wrap');
+		return !loginForm;
+	}
+
+	private async checkAccount(page: Page, login: string) {
+		const loginFailedElement = await page.$('#login_message .error');
+		if (loginFailedElement) {
+			throw new AccountException(
+				'Account credentials is invalid',
+				'login_failed',
+				login,
+				false,
+			);
+		}
+
+		const blockedElement = await page.$('#login_blocked_wrap');
+		if (blockedElement) {
+			throw new AccountException('Account is blocked', 'blocked', login, false);
+		}
 	}
 
 	async signInWithCredentials(
@@ -87,6 +108,8 @@ export class VkAuthorizer {
 				throw error;
 			}
 		}
+
+		await this.checkAccount(page, login);
 	}
 
 	async authorize(
@@ -116,14 +139,21 @@ export class VkAuthorizer {
 			proxy,
 		});
 
+		let authorized = false;
+
 		if (remixsid) {
-			await this.signInWithCookie(page, remixsid);
-			this.logger.info({
-				message: 'авторизовались через куку',
-				remixsid,
-				login,
-			});
-		} else {
+			authorized = await this.signInWithCookie(page, login, remixsid);
+
+			if (authorized) {
+				this.logger.info({
+					message: 'авторизовались через куку',
+					remixsid,
+					login,
+				});
+			}
+		}
+
+		if (!authorized) {
 			await this.signInWithCredentials(page, { login, password });
 			this.logger.info({
 				message: 'авторизовались через логин пароль',
@@ -132,25 +162,10 @@ export class VkAuthorizer {
 			});
 		}
 
-		const loginFailedElement = await page.$('#login_message .error');
-		if (loginFailedElement) {
-			throw new AccountException(
-				'Account credentials is invalid',
-				'login_failed',
-				login,
-				false,
-			);
-		}
-
 		const client = await page.target().createCDPSession();
+
 		const response: any = await client.send('Network.getAllCookies');
 		const newRemixsid = response.cookies.find(c => c.name === 'remixsid').value;
-
-		const blockedElement = await page.$('#login_blocked_wrap');
-		if (blockedElement) {
-			throw new AccountException('Account is blocked', 'blocked', login, false);
-		}
-
 		return { remixsid: newRemixsid };
 	}
 }

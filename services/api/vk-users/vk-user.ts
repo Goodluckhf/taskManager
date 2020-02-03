@@ -30,4 +30,7 @@ export class VkUser implements VkUserCredentialsInterface {
 
 	@prop({ required: true })
 	proxy: ProxyInterface;
+
+	@prop({ default: null })
+	userAgent: string;
 }

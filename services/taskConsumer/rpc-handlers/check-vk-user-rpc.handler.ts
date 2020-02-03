@@ -3,6 +3,11 @@ import { AbstractRpcHandler } from '../../../lib/amqp/abstract-rpc-handler';
 import { LoggerInterface } from '../../../lib/logger.interface';
 import { VkAuthorizer } from '../actions/vk/vk-authorizer';
 import { createBrowserPage } from '../actions/create-page';
+import { VkUserCredentialsInterface } from '../../api/vk-users/vk-user-credentials.interface';
+
+type CheckVkUser = {
+	userCredentials: VkUserCredentialsInterface;
+};
 
 export class CheckVkUserRpcHandler extends AbstractRpcHandler {
 	@inject('Logger') private readonly logger: LoggerInterface;
@@ -11,10 +16,12 @@ export class CheckVkUserRpcHandler extends AbstractRpcHandler {
 
 	protected method = 'checkVkUser';
 
-	async handle({ userCredentials: { login, password, proxy, remixsid: lastRemixsid } }) {
+	async handle({
+		userCredentials: { login, password, proxy, remixsid: lastRemixsid, userAgent },
+	}: CheckVkUser) {
 		this.logger.info({
 			message: 'Задача на проверку пользователя vk',
-			credentials: { login, password },
+			credentials: { login, password, remixsid: lastRemixsid, userAgent },
 			proxy,
 		});
 
@@ -24,7 +31,10 @@ export class CheckVkUserRpcHandler extends AbstractRpcHandler {
 		 */
 		let browser = null;
 		try {
-			const { page, browser: _browser } = await createBrowserPage(proxy);
+			const { page, browser: _browser, userAgent: newUserAgent } = await createBrowserPage(
+				proxy,
+				userAgent,
+			);
 			browser = _browser;
 			try {
 				const { remixsid } = await this.vkAuthorizer.authorize(page, {
@@ -33,7 +43,7 @@ export class CheckVkUserRpcHandler extends AbstractRpcHandler {
 					proxy,
 					remixsid: lastRemixsid,
 				});
-				return { isActive: true, remixsid };
+				return { isActive: true, remixsid, userAgent: newUserAgent };
 			} catch (error) {
 				if (error.code === 'login_failed' || error.code === 'blocked') {
 					return { isActive: false, code: error.code };
