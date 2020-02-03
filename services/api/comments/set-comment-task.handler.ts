@@ -76,6 +76,7 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 					login: vkUserCredentials.login,
 					password: vkUserCredentials.password,
 					remixsid: vkUserCredentials.remixsid,
+					userAgent: vkUserCredentials.userAgent,
 					proxy: {
 						url: vkUserCredentials.proxy.url,
 						login: vkUserCredentials.proxy.login,
