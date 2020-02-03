@@ -31,25 +31,10 @@ export async function createBrowserPage(proxy: ProxyInterface, userAgent?: strin
 		handleSIGINT: false,
 		headless: process.env.NODE_ENV === 'production',
 	});
-
 	const page = await browser.newPage();
-
 	if (proxy) {
 		await page.authenticate({ username: proxy.login, password: proxy.password });
 	}
-
-	await page.setRequestInterception(true);
-	page.on('request', req => {
-		if (
-			req.resourceType() === 'stylesheet' ||
-			req.resourceType() === 'font' ||
-			req.resourceType() === 'image'
-		) {
-			req.abort();
-		} else {
-			req.continue();
-		}
-	});
 
 	return { page, browser, userAgent };
 }
