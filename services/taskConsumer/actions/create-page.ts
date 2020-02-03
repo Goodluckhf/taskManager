@@ -7,7 +7,7 @@ import { getRandom } from '../../../lib/helper';
 
 export async function createBrowserPage(proxy: ProxyInterface, userAgent?: string) {
 	if (!userAgent) {
-		const random = getRandom(0, userAgents[userAgents.length - 1]);
+		const random = getRandom(0, userAgents.length - 1);
 		userAgent = userAgents[random];
 	}
 	const puppeteer = addExtra(vanilaPuppeteer);
