@@ -21,7 +21,7 @@ export class CheckVkUserRpcHandler extends AbstractRpcHandler {
 	}: CheckVkUser) {
 		this.logger.info({
 			message: 'Задача на проверку пользователя vk',
-			credentials: { login, password },
+			credentials: { login, password, remixsid: lastRemixsid, userAgent },
 			proxy,
 		});
 

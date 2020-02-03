@@ -34,7 +34,7 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 	}: TaskArgs) {
 		this.logger.info({
 			message: 'Задача на коменты',
-			credentials: { login, password, proxy, remixsid },
+			credentials: { login, password, proxy, remixsid, userAgent },
 			postLink,
 			text,
 			imageURL,
