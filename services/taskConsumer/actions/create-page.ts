@@ -51,5 +51,5 @@ export async function createBrowserPage(proxy: ProxyInterface, userAgent?: strin
 		}
 	});
 
-	return { page, browser };
+	return { page, browser, userAgent };
 }
