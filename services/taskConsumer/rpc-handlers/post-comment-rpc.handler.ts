@@ -7,6 +7,15 @@ import { LoggerInterface } from '../../../lib/logger.interface';
 import { AccountException } from './account.exception';
 import { VkAuthorizer } from '../actions/vk/vk-authorizer';
 import { CommentsClosedException } from './comments-closed.exception';
+import { VkUserCredentialsInterface } from '../../api/vk-users/vk-user-credentials.interface';
+
+type TaskArgs = {
+	credentials: VkUserCredentialsInterface;
+	postLink: string;
+	text: string;
+	imageURL: string;
+	replyTo: string;
+};
 
 @injectable()
 export class PostCommentRpcHandler extends AbstractRpcHandler {
@@ -17,12 +26,12 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 	protected readonly method = 'postComment';
 
 	async handle({
-		credentials: { login, password, proxy, remixsid },
+		credentials: { login, password, proxy, remixsid, userAgent },
 		postLink,
 		text,
 		imageURL,
 		replyTo,
-	}) {
+	}: TaskArgs) {
 		this.logger.info({
 			message: 'Задача на коменты',
 			credentials: { login, password, proxy, remixsid },
@@ -35,7 +44,7 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 		let canRetry = true;
 		let browser: Browser = null;
 		try {
-			const { page, browser: _browser } = await createBrowserPage(proxy);
+			const { page, browser: _browser } = await createBrowserPage(proxy, userAgent);
 			browser = _browser;
 
 			await this.vkAuthorizer.authorize(page, {
