@@ -120,7 +120,7 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 			});
 
 			const input = await page.$(`#reply_field${postId}`);
-			await input.type(` ${text}`);
+			await input.type(` ${text}`, { delay: 40 });
 
 			if (imageURL) {
 				this.logger.info({
