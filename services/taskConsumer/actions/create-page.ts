@@ -2,8 +2,14 @@ import vanilaPuppeteer from 'puppeteer';
 import { addExtra } from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { ProxyInterface } from '../proxy.interface';
+import { userAgents } from '../../../lib/user-agents';
+import { getRandom } from '../../../lib/helper';
 
-export async function createBrowserPage(proxy: ProxyInterface) {
+export async function createBrowserPage(proxy: ProxyInterface, userAgent?: string) {
+	if (!userAgent) {
+		const random = getRandom(0, userAgents[userAgents.length - 1]);
+		userAgent = userAgents[random];
+	}
 	const puppeteer = addExtra(vanilaPuppeteer);
 	puppeteer.use(StealthPlugin());
 
@@ -26,6 +32,7 @@ export async function createBrowserPage(proxy: ProxyInterface) {
 	});
 
 	const page = await browser.newPage();
+	await page.setUserAgent(userAgent);
 
 	if (proxy) {
 		await page.authenticate({ username: proxy.login, password: proxy.password });
