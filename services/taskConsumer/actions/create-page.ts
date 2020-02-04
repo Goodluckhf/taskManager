@@ -36,5 +36,18 @@ export async function createBrowserPage(proxy: ProxyInterface, userAgent?: strin
 		await page.authenticate({ username: proxy.login, password: proxy.password });
 	}
 
+	await page.setRequestInterception(true);
+	page.on('request', req => {
+		if (
+			req.resourceType() === 'stylesheet' ||
+			req.resourceType() === 'font' ||
+			req.resourceType() === 'image'
+		) {
+			req.abort();
+		} else {
+			req.continue();
+		}
+	});
+
 	return { page, browser, userAgent };
 }
