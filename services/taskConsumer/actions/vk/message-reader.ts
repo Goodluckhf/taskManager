@@ -6,7 +6,7 @@ import { getRandom } from '../../../../lib/helper';
 @injectable()
 export class MessageReader {
 	async readMessages(page: Page) {
-		await page.click('#side_bar_inner #l_msg');
+		await page.click('#l_msg a');
 		await page.waitForSelector('#im_dialogs');
 		await page.click('#ui_rmenu_unread');
 		await bluebird.delay(1000);
