@@ -8,6 +8,19 @@ export class FeedBrowser {
 	async browse(page: Page) {
 		await page.goto('https://vk.com/feed', { waitUntil: 'networkidle2' });
 
+		const shouldLookNews = getRandom(0, 100) > 50;
+
+		if (shouldLookNews) {
+			const shouldSwitchSmartFeed = getRandom(0, 100) > 50;
+			if (shouldSwitchSmartFeed) {
+				await page.click('#feed_filters div.hot');
+				await bluebird.delay(1000);
+			}
+		} else {
+			await page.click('#ui_rmenu_recommended');
+			await bluebird.delay(1000);
+		}
+
 		await bluebird.some(
 			[this.lookThroughPosts(page), bluebird.delay(120000) as Promise<any>],
 			1,
@@ -15,12 +28,6 @@ export class FeedBrowser {
 	}
 
 	private async lookThroughPosts(page: Page) {
-		const shouldSwitchSmartFeed = getRandom(0, 100) > 50;
-		if (shouldSwitchSmartFeed) {
-			await page.click('#feed_filters div.hot');
-			await bluebird.delay(1000);
-		}
-
 		const posts = await page.$$('.post');
 		return bluebird.map(
 			posts,
