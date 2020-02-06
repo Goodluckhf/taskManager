@@ -16,7 +16,7 @@ export class GroupBrowser {
 		await bluebird.delay(2000);
 		await this.lookGroups(page);
 
-		const shouldGoToGroup = getRandom(0, 100) > 50;
+		const shouldGoToGroup = getRandom(0, 100) > 30;
 		if (!shouldGoToGroup) {
 			return;
 		}
