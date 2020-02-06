@@ -117,6 +117,6 @@ export class FeedBrowser {
 			await likeButton.click();
 		}
 
-		await page.click('#wk_close');
+		await page.click('#wk_close .wk_close_inner');
 	}
 }
