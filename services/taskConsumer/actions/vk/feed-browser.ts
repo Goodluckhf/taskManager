@@ -29,7 +29,7 @@ export class FeedBrowser {
 
 	private async lookThroughPosts(page: Page) {
 		const posts = await page.$$('.post');
-		return bluebird.map(
+		await bluebird.map(
 			posts,
 			async post => {
 				const shouldLikePost = getRandom(0, 100) > 70;
@@ -46,6 +46,20 @@ export class FeedBrowser {
 				if (shouldRepost) {
 					await this.repost(page, post);
 				}
+			},
+			{ concurrency: 1 },
+		);
+
+		const scrollCount = getRandom(1, 10);
+		await bluebird.map(
+			Array.from({ length: scrollCount }),
+			async () => {
+				await page.evaluate(() => {
+					window.scrollBy(0, 450);
+				});
+
+				const randomDelay = getRandom(0, 5000);
+				await bluebird.delay(randomDelay);
 			},
 			{ concurrency: 1 },
 		);
