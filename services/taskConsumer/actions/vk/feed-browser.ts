@@ -1,10 +1,13 @@
 import { ElementHandle, Page } from 'puppeteer';
 import bluebird from 'bluebird';
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { getRandom } from '../../../../lib/helper';
+import { LoggerInterface } from '../../../../lib/logger.interface';
 
 @injectable()
 export class FeedBrowser {
+	constructor(@inject('Logger') private readonly logger: LoggerInterface) {}
+
 	async browse(page: Page) {
 		await page.goto('https://vk.com/feed', { waitUntil: 'networkidle2' });
 
@@ -14,11 +17,11 @@ export class FeedBrowser {
 			const shouldSwitchSmartFeed = getRandom(0, 100) > 50;
 			if (shouldSwitchSmartFeed) {
 				await page.click('#feed_filters div.hot');
-				await bluebird.delay(1000);
+				await bluebird.delay(5000);
 			}
 		} else {
 			await page.click('#ui_rmenu_recommended');
-			await bluebird.delay(1000);
+			await bluebird.delay(5000);
 		}
 
 		await bluebird.some(
@@ -89,19 +92,22 @@ export class FeedBrowser {
 		const postLinkElement = await post.$('a.post_link');
 		await postLinkElement.click();
 		await page.waitForSelector('#wk_box #wl_post');
-		let timeSpendReadingComments = 0;
 		await page.evaluate(() => {
 			document.querySelector('.wl_replies').scrollIntoView();
 		});
-		while (timeSpendReadingComments < 10000) {
-			timeSpendReadingComments += 1500;
-			await page.evaluate(() => {
-				document.querySelector('#wk_layer_wrap').scrollBy(0, 200);
-			});
+		const scrollCount = getRandom(1, 20);
+		await bluebird.map(
+			Array.from({ length: scrollCount }),
+			async () => {
+				await page.evaluate(() => {
+					document.querySelector('#wk_layer_wrap').scrollBy(0, 200);
+				});
 
-			const randomDelay = getRandom(0, 4000);
-			await bluebird.delay(randomDelay);
-		}
+				const randomDelay = getRandom(0, 4000);
+				await bluebird.delay(randomDelay);
+			},
+			{ concurrency: 1 },
+		);
 
 		const shouldLike = getRandom(0, 100) > 80;
 		if (shouldLike) {
