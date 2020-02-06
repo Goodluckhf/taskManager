@@ -49,15 +49,18 @@ export class FakeActivityRpcHandler extends AbstractRpcHandler {
 
 			const randomNumber = getRandom(0, 100);
 			if (randomNumber < 30) {
+				this.logger.info({ message: 'Листаем ленту', login: userCredentials.login });
 				await this.feedBrowser.browse(page);
 				return {};
 			}
 
 			if (randomNumber < 60) {
+				this.logger.info({ message: 'Читаем сообщения', login: userCredentials.login });
 				await this.messageReader.readMessages(page);
 				return {};
 			}
 
+			this.logger.info({ message: 'лазием по своим группам', login: userCredentials.login });
 			await this.groupBrowser.browse(page);
 
 			return {};
