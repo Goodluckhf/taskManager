@@ -50,7 +50,7 @@ export class GroupBrowser {
 	}
 
 	private async lookGroups(page: Page) {
-		const scrollCount = getRandom(1, 10);
+		const scrollCount = getRandom(1, 20);
 		await bluebird.map(
 			Array.from({ length: scrollCount }),
 			async () => {
@@ -58,7 +58,7 @@ export class GroupBrowser {
 					window.scrollBy(0, 350);
 				});
 
-				const randomDelay = getRandom(0, 5000);
+				const randomDelay = getRandom(0, 8000);
 				await bluebird.delay(randomDelay);
 			},
 			{ concurrency: 1 },
