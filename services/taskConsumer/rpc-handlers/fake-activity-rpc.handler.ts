@@ -37,7 +37,10 @@ export class FakeActivityRpcHandler extends AbstractRpcHandler {
 		let browser: Browser = null;
 		const canRetry = true;
 		try {
-			const { page, browser: _browser } = await createBrowserPage(userCredentials.proxy);
+			const { page, browser: _browser } = await createBrowserPage(
+				userCredentials.proxy,
+				userCredentials.userAgent,
+			);
 			browser = _browser;
 
 			await this.vkAuthorizer.authorize(page, {
