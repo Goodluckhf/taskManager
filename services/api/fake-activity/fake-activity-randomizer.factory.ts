@@ -8,48 +8,67 @@ import { ReedMessagesRpcRequest } from './reed-messages-rpc.request';
 import { GroupBrowseRpcRequest } from './group-browse-rpc.request';
 import { VkUserService } from '../vk-users/vk-user.service';
 import { GroupFeedBrowseRpcRequest } from './group-feed-browse-rpc.request';
+import { VkUser } from '../vk-users/vk-user';
 
 export class FakeActivityRandomizerFactory {
 	@inject(RpcRequestFactory) private readonly rpcRequestFactory: RpcRequestFactory;
 
 	@inject(VkUserService) private readonly vkUserService: VkUserService;
 
-	async getRandomTasks({
-		userCredentials,
-	}: {
-		userCredentials: VkUserCredentialsInterface;
-	}): Promise<AbstractRpcRequest[]> {
+	getRandomTasks({ userCredentials }: { userCredentials: VkUser }): AbstractRpcRequest[] {
 		const taskRpcRequests: AbstractRpcRequest[] = [];
-
+		const {
+			login,
+			password,
+			proxy,
+			userAgent,
+			remixsid,
+		}: VkUserCredentialsInterface = userCredentials;
 		const randomNumber = getRandom(0, 100);
 		if (randomNumber) {
-			taskRpcRequests.push(this.getFeedTask(userCredentials));
+			taskRpcRequests.push(
+				this.getFeedTask({
+					login,
+					password,
+					proxy,
+					userAgent,
+					remixsid,
+				}),
+			);
 		} else if (randomNumber < 70) {
-			taskRpcRequests.push(this.getMessageTask(userCredentials));
+			taskRpcRequests.push(
+				this.getMessageTask({
+					login,
+					password,
+					proxy,
+					userAgent,
+					remixsid,
+				}),
+			);
 		} else {
-			taskRpcRequests.push(this.getGroupTask(userCredentials));
+			taskRpcRequests.push(
+				this.getGroupTask({
+					login,
+					password,
+					proxy,
+					userAgent,
+					remixsid,
+				}),
+			);
 		}
 
-		if (randomNumber > 50) {
-			const rpcRequest = await this.getGroupFeedTask(userCredentials);
-			if (rpcRequest) {
-				taskRpcRequests.push(rpcRequest);
-			}
+		if (randomNumber > 50 && userCredentials.groupIds.length > 0) {
+			const rpcRequest = this.getGroupFeedTask(userCredentials);
+			taskRpcRequests.push(rpcRequest);
 		}
 
 		return taskRpcRequests;
 	}
 
-	async getGroupFeedTask(
-		userCredentials: VkUserCredentialsInterface,
-	): Promise<AbstractRpcRequest | null> {
+	getGroupFeedTask(userCredentials: VkUser): AbstractRpcRequest {
 		const scrollCount = getRandom(0, 20);
-		const vkUser = await this.vkUserService.getCredentialsByLogin(userCredentials.login);
-		if (vkUser.groupIds.length === 0) {
-			return null;
-		}
-
-		const randomGroup = vkUser.groupIds[getRandom(0, vkUser.groupIds.length - 1)];
+		const randomGroup =
+			userCredentials.groupIds[getRandom(0, userCredentials.groupIds.length - 1)];
 		const groupLink = hrefByGroupId(randomGroup);
 		const rpcRequestArgs = {
 			userCredentials,
