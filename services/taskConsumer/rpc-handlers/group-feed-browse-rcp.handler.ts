@@ -1,34 +1,32 @@
 import { inject, injectable } from 'inversify';
 import { VkAuthorizer } from '../actions/vk/vk-authorizer';
-import { FeedBrowser } from '../actions/vk/feed-browser';
 import { AbstractRpcHandler } from '../../../lib/amqp/abstract-rpc-handler';
 import { VkUserCredentialsInterface } from '../../api/vk-users/vk-user-credentials.interface';
 import { Browser } from 'puppeteer';
 import { createBrowserPage } from '../actions/create-page';
 import { LoggerInterface } from '../../../lib/logger.interface';
+import { GroupFeedBrowser } from '../actions/vk/group-feed-browser';
 
-type ReedFeedArgument = {
+type groupBrowseArgument = {
 	userCredentials: VkUserCredentialsInterface;
-	isSmart: boolean;
-	commonFeed: boolean;
-	recommend: boolean;
 	scrollCount: number;
+	groupLink: number;
 };
 
 @injectable()
-export class FeedBrowseRcpHandler extends AbstractRpcHandler {
-	protected method = 'reed_feed';
+export class GroupFeedBrowseRcpHandler extends AbstractRpcHandler {
+	protected method = 'browse_groups';
 
 	@inject(VkAuthorizer) private readonly vkAuthorizer: VkAuthorizer;
 
-	@inject(FeedBrowser) private readonly feedBrowser: FeedBrowser;
+	@inject(GroupFeedBrowser) private readonly groupFeedBrowser: GroupFeedBrowser;
 
 	@inject('Logger') private readonly logger: LoggerInterface;
 
-	async handle(args: ReedFeedArgument): Promise<object> {
-		const { userCredentials, ...feedOptions } = args;
+	async handle(args: groupBrowseArgument): Promise<object> {
+		const { userCredentials, groupLink, ...feedOptions } = args;
 		this.logger.info({
-			message: 'Задача на фейковую активность | чтение ленты',
+			message: 'Задача на фейковую активность | чтение ленты в группе',
 			taskArgs: args,
 		});
 
@@ -48,7 +46,7 @@ export class FeedBrowseRcpHandler extends AbstractRpcHandler {
 				remixsid: userCredentials.remixsid,
 			});
 
-			await this.feedBrowser.browse(page, feedOptions);
+			await this.groupFeedBrowser.browse(page, feedOptions);
 			return {};
 		} catch (error) {
 			error.canRetry = typeof error.canRetry !== 'undefined' ? error.canRetry : canRetry;

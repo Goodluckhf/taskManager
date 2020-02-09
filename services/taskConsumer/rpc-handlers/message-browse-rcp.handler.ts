@@ -51,7 +51,7 @@ export class MessageBrowseRcpHandler extends AbstractRpcHandler {
 			throw error;
 		} finally {
 			if (browser) {
-				// await browser.close();
+				await browser.close();
 			}
 		}
 	}
