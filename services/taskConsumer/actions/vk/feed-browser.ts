@@ -42,7 +42,7 @@ export class FeedBrowser {
 					window.scrollBy(0, 900);
 				});
 
-				const randomDelay = getRandom(0, 5000);
+				const randomDelay = getRandom(0, 4000);
 				await bluebird.delay(randomDelay);
 			},
 			{ concurrency: 1 },
@@ -111,7 +111,7 @@ export class FeedBrowser {
 					document.querySelector('#wk_layer_wrap').scrollBy(0, 450);
 				});
 
-				const randomDelay = getRandom(0, 4000);
+				const randomDelay = getRandom(0, 3000);
 				await bluebird.delay(randomDelay);
 			},
 			{ concurrency: 1 },
