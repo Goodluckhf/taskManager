@@ -41,15 +41,20 @@ export class GroupBrowser {
 	}
 
 	private async goToGroup(page: Page) {
-		const groups = await page.$$('.group_list_row');
+		let groups = await page.$$('.group_list_row');
+		if (groups.length === 0) {
+			groups = await page.$$('.groups_row');
+		}
+
 		if (groups.length === 0) {
 			return;
 		}
 
 		this.logger.info({ message: 'заходим в группу' });
 		const randomGroup = groups[getRandom(0, groups.length - 1)];
-		const groupTitle = await randomGroup.$('a.group_row_title');
-		await groupTitle.click();
+		await randomGroup.evaluate(node => {
+			node.querySelector<HTMLAnchorElement>('.img a').click();
+		});
 		await page.waitForSelector('#page_wall_posts');
 	}
 
@@ -58,10 +63,10 @@ export class GroupBrowser {
 			Array.from({ length: scrollCount }),
 			async () => {
 				await page.evaluate(() => {
-					window.scrollBy(0, 500);
+					window.scrollBy(0, 600);
 				});
 
-				const randomDelay = getRandom(0, 5000);
+				const randomDelay = getRandom(0, 4000);
 				await bluebird.delay(randomDelay);
 			},
 			{ concurrency: 1 },
