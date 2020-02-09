@@ -56,6 +56,10 @@ module.exports = {
 		},
 	},
 
+	fakeActivityTask: {
+		interval: parseInt(process.env.FAKE_ACTIVITY_TASK__INTERVAL, 10),
+	},
+
 	postCommentsTask: {
 		retriesLimit: process.env.POST_COMMENTS_TASK__RETRY_LIMIT,
 		translitEnabled: process.env.POST_COMMENTS_TASK__TRANSLIT_ENABLED === 'true',
