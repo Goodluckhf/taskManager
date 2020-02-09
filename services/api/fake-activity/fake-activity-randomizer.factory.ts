@@ -88,13 +88,19 @@ export class FakeActivityRandomizerFactory {
 			userCredentials,
 			isPopular: false,
 			isCommon: false,
+			shouldChangeCategory: false,
 			scrollCount,
 		};
 
 		const rpcRequest = this.rpcRequestFactory.create(GroupBrowseRpcRequest);
 		const shouldLookPopular = getRandom(0, 100) > 50;
 		if (shouldLookPopular) {
-			rpcRequest.setArguments({ ...rpcRequestArgs, isPopular: true });
+			const shouldChangeCategory = getRandom(0, 100) > 50;
+			rpcRequest.setArguments({
+				...rpcRequestArgs,
+				isPopular: true,
+				shouldChangeCategory,
+			});
 		} else {
 			rpcRequest.setArguments({ ...rpcRequestArgs, isCommon: true });
 		}

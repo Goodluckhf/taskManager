@@ -5,6 +5,7 @@ type GroupBrowseArgument = {
 	userCredentials: VkUserCredentialsInterface;
 	isPopular: boolean;
 	isCommon: boolean;
+	shouldChangeCategory: boolean;
 	scrollCount: number;
 };
 
