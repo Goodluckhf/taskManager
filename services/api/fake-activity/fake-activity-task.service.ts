@@ -16,7 +16,7 @@ export class FakeActivityTaskService {
 	async create(user: User, login: string) {
 		const newTask = new this.FakeActivityTaskModel();
 		newTask.login = login;
-		const random = getRandom(0, 60 * 60);
+		const random = getRandom(0, 60 * 60 * 2);
 		newTask.startAt = moment().add(random, 's');
 		await newTask.save();
 	}
