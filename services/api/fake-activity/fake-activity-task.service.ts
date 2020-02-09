@@ -5,6 +5,7 @@ import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 import { FakeActivityTask } from './fake-activity.task';
 import { User } from '../users/user';
 import { getRandom } from '../../../lib/helper';
+import { statuses } from '../task/status.constant';
 
 @injectable()
 export class FakeActivityTaskService {
@@ -19,5 +20,19 @@ export class FakeActivityTaskService {
 		const random = getRandom(0, 60 * 60 * 2);
 		newTask.startAt = moment().add(random, 's');
 		await newTask.save();
+	}
+
+	async createIfNotExists(user: User, login: string) {
+		const taskCount = await this.FakeActivityTaskModel.count({
+			$or: [{ status: statuses.waiting }, { status: statuses.pending }],
+			deletedAt: null,
+			login,
+		});
+
+		if (taskCount > 0) {
+			return;
+		}
+
+		await this.create(user, login);
 	}
 }
