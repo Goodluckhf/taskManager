@@ -109,8 +109,9 @@ export class FeedBrowser {
 	}
 
 	private async readPreview(page: Page, post: ElementHandle) {
-		const postLinkElement = await post.$('a.post_link');
-		await postLinkElement.click();
+		await post.evaluate(node => {
+			node.querySelector<HTMLButtonElement>('a.post_link').click();
+		});
 		await page.waitForSelector('#wk_box #wl_post');
 		await page.evaluate(() => {
 			document.querySelector('.wl_replies').scrollIntoView();
