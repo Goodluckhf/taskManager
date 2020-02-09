@@ -14,13 +14,13 @@ import { GroupBrowseRcpHandler } from './rpc-handlers/group-browse-rcp.handler';
 import { GroupFeedBrowseRcpHandler } from './rpc-handlers/group-feed-browse-rcp.handler';
 
 const container = createContainer();
-container.bind<AbstractRpcHandler>(AbstractRpcHandler).toConstructor(PostCommentRpcHandler);
-container.bind<AbstractRpcHandler>(AbstractRpcHandler).toConstructor(CheckVkUserRpcHandler);
-container.bind<AbstractRpcHandler>(AbstractRpcHandler).toConstructor(JoinGroupRpcHandler);
-container.bind<AbstractRpcHandler>(AbstractRpcHandler).toConstructor(FeedBrowseRcpHandler);
-container.bind<AbstractRpcHandler>(AbstractRpcHandler).toConstructor(MessageBrowseRcpHandler);
-container.bind<AbstractRpcHandler>(AbstractRpcHandler).toConstructor(GroupBrowseRcpHandler);
-container.bind<AbstractRpcHandler>(AbstractRpcHandler).toConstructor(GroupFeedBrowseRcpHandler);
+container.bind(AbstractRpcHandler).toConstructor(PostCommentRpcHandler);
+container.bind(AbstractRpcHandler).toConstructor(CheckVkUserRpcHandler);
+container.bind(AbstractRpcHandler).toConstructor(JoinGroupRpcHandler);
+container.bind(AbstractRpcHandler).toConstructor(FeedBrowseRcpHandler);
+container.bind(AbstractRpcHandler).toConstructor(MessageBrowseRcpHandler);
+container.bind(AbstractRpcHandler).toConstructor(GroupBrowseRcpHandler);
+container.bind(AbstractRpcHandler).toConstructor(GroupFeedBrowseRcpHandler);
 
 container
 	.bind<AbstractRpcHandler>(PostCommentRpcHandler)

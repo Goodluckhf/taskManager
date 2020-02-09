@@ -57,9 +57,10 @@ export class RpcServer {
 				const { method, args } = JSON.parse(msg.content.toString());
 				const handlerClass = this.rpcHandlerMap.get(method);
 				const traceId = msg.properties.headers['X-Trace-Id'];
-				container.bind('TraceId').toConstantValue(traceId);
-				container.rebind('Logger').toConstantValue(this.logger.child({ traceId }));
-				const handler = container.get<AbstractRpcHandler>(handlerClass);
+				const childContainer = container.createChild();
+				childContainer.bind('TraceId').toConstantValue(traceId);
+				childContainer.bind('Logger').toConstantValue(this.logger.child({ traceId }));
+				const handler = childContainer.get<AbstractRpcHandler>(handlerClass);
 				if (!handler) {
 					throw new HandlerNotRegisterException(method, args);
 				}
