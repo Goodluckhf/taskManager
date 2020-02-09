@@ -33,7 +33,7 @@ export class GroupBrowser {
 	private async lookPopular(page: Page, options: Options) {
 		await page.click('#ui_rmenu_category0');
 		if (options.shouldChangeCategory) {
-			const categories = await page.$$('#ui_rmenu_category0_list ._ui_rmenu_sublist');
+			const categories = await page.$$('#ui_rmenu_category0_list .ui_rmenu_subitem');
 
 			const randomCategory = categories[getRandom(0, categories.length - 1)];
 			await randomCategory.click();
@@ -53,9 +53,14 @@ export class GroupBrowser {
 		this.logger.info({ message: 'заходим в группу' });
 		const randomGroup = groups[getRandom(0, groups.length - 1)];
 		await randomGroup.evaluate(node => {
-			node.querySelector<HTMLAnchorElement>('.img a').click();
+			let href = node.querySelector<HTMLAnchorElement>('.img a');
+			if (!href) {
+				href = node.querySelector<HTMLAnchorElement>('a.group_row_photo');
+			}
+			href.click();
 		});
 		await page.waitForSelector('#page_wall_posts');
+		await bluebird.delay(2000);
 	}
 
 	private async lookGroups(page: Page, scrollCount: number) {
