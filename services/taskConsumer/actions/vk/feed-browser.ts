@@ -50,6 +50,17 @@ export class FeedBrowser {
 	}
 
 	private async lookThroughPosts(page: Page) {
+		const isEmpty = await page.evaluate(() => {
+			return document.querySelector('#main_feed.feed_is_empty');
+		});
+		if (isEmpty) {
+			const recommendations = await page.$$('.feed_asc_user_row');
+			const randomSubElement = recommendations[getRandom(0, recommendations.length - 1)];
+			await randomSubElement.evaluate(node => {
+				node.querySelector<HTMLButtonElement>('button.feed_asc_user_subscribe_btn').click();
+			});
+			return;
+		}
 		const posts = await page.$$('.post');
 		await bluebird.map(
 			posts,
