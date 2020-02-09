@@ -90,6 +90,13 @@ export class FeedBrowser {
 		const repostElement = await post.$('a.like_btn.share');
 		await repostElement.click();
 		await page.waitForSelector('#box_layer .like_share_wrap');
+		const canShare = await page.evaluate(() => {
+			return !document.querySelector('#like_share_my.disabled');
+		});
+
+		if (!canShare) {
+			return;
+		}
 		await page.click('#like_share_my');
 		const shouldShareToFriendsOnly = getRandom(0, 100) > 50;
 		if (shouldShareToFriendsOnly) {
