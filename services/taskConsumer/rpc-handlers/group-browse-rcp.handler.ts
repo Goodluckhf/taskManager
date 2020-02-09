@@ -29,7 +29,7 @@ export class GroupBrowseRcpHandler extends AbstractRpcHandler {
 	async handle(args: groupBrowseArgument): Promise<object> {
 		const { userCredentials, ...feedOptions } = args;
 		this.logger.info({
-			message: 'Задача на фейковую активность | чтение ленты',
+			message: 'Задача на фейковую активность | просмотр групп',
 			taskArgs: args,
 		});
 

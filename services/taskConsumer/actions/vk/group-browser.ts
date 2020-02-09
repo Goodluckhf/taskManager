@@ -1,7 +1,8 @@
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { Page } from 'puppeteer';
 import bluebird from 'bluebird';
 import { getRandom } from '../../../../lib/helper';
+import { LoggerInterface } from '../../../../lib/logger.interface';
 
 type Options = {
 	isPopular: boolean;
@@ -13,6 +14,8 @@ type Options = {
 
 @injectable()
 export class GroupBrowser {
+	constructor(@inject('Logger') private readonly logger: LoggerInterface) {}
+
 	async browse(page: Page, options: Options) {
 		await page.click('#l_gr a');
 		await page.waitForSelector('#groups_list_content');
@@ -43,6 +46,7 @@ export class GroupBrowser {
 			return;
 		}
 
+		this.logger.info({ message: 'заходим в группу' });
 		const randomGroup = groups[getRandom(0, groups.length - 1)];
 		const groupTitle = await randomGroup.$('a.group_row_title');
 		await groupTitle.click();
@@ -54,10 +58,10 @@ export class GroupBrowser {
 			Array.from({ length: scrollCount }),
 			async () => {
 				await page.evaluate(() => {
-					window.scrollBy(0, 350);
+					window.scrollBy(0, 500);
 				});
 
-				const randomDelay = getRandom(0, 8000);
+				const randomDelay = getRandom(0, 5000);
 				await bluebird.delay(randomDelay);
 			},
 			{ concurrency: 1 },
