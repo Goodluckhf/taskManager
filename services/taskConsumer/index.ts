@@ -9,12 +9,14 @@ import { PostCommentRpcHandler } from './rpc-handlers/post-comment-rpc.handler';
 import { CheckVkUserRpcHandler } from './rpc-handlers/check-vk-user-rpc.handler';
 import { JoinGroupRpcHandler } from './rpc-handlers/join-group-rpc.handler';
 import { FeedBrowseRcpHandler } from './rpc-handlers/feed-browse-rcp.handler';
+import { MessageBrowseRcpHandler } from './rpc-handlers/message-browse-rcp.handler';
 
 const container = createContainer();
 container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(PostCommentRpcHandler);
 container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(CheckVkUserRpcHandler);
 container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(JoinGroupRpcHandler);
 container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(FeedBrowseRcpHandler);
+container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(MessageBrowseRcpHandler);
 
 const rpcServer = container.get<RpcServer>(RpcServer);
 const logger = container.get<LoggerInterface>('Logger');
