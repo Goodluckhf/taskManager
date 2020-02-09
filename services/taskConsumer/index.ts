@@ -14,13 +14,42 @@ import { GroupBrowseRcpHandler } from './rpc-handlers/group-browse-rcp.handler';
 import { GroupFeedBrowseRcpHandler } from './rpc-handlers/group-feed-browse-rcp.handler';
 
 const container = createContainer();
-container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(PostCommentRpcHandler);
-container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(CheckVkUserRpcHandler);
-container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(JoinGroupRpcHandler);
-container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(FeedBrowseRcpHandler);
-container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(MessageBrowseRcpHandler);
-container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(GroupBrowseRcpHandler);
-container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(GroupFeedBrowseRcpHandler);
+container.bind<AbstractRpcHandler>(AbstractRpcHandler).toConstructor(PostCommentRpcHandler);
+container.bind<AbstractRpcHandler>(AbstractRpcHandler).toConstructor(CheckVkUserRpcHandler);
+container.bind<AbstractRpcHandler>(AbstractRpcHandler).toConstructor(JoinGroupRpcHandler);
+container.bind<AbstractRpcHandler>(AbstractRpcHandler).toConstructor(FeedBrowseRcpHandler);
+container.bind<AbstractRpcHandler>(AbstractRpcHandler).toConstructor(MessageBrowseRcpHandler);
+container.bind<AbstractRpcHandler>(AbstractRpcHandler).toConstructor(GroupBrowseRcpHandler);
+container.bind<AbstractRpcHandler>(AbstractRpcHandler).toConstructor(GroupFeedBrowseRcpHandler);
+
+container
+	.bind<AbstractRpcHandler>(PostCommentRpcHandler)
+	.toSelf()
+	.inRequestScope();
+container
+	.bind<AbstractRpcHandler>(CheckVkUserRpcHandler)
+	.toSelf()
+	.inRequestScope();
+container
+	.bind<AbstractRpcHandler>(JoinGroupRpcHandler)
+	.toSelf()
+	.inRequestScope();
+container
+	.bind<AbstractRpcHandler>(FeedBrowseRcpHandler)
+	.toSelf()
+	.inRequestScope();
+container
+	.bind<AbstractRpcHandler>(MessageBrowseRcpHandler)
+	.toSelf()
+	.inRequestScope();
+container
+	.bind<AbstractRpcHandler>(GroupBrowseRcpHandler)
+	.toSelf()
+	.inRequestScope();
+container
+	.bind<AbstractRpcHandler>(GroupFeedBrowseRcpHandler)
+	.toSelf()
+	.inRequestScope();
 
 const rpcServer = container.get<RpcServer>(RpcServer);
 const logger = container.get<LoggerInterface>('Logger');
@@ -28,7 +57,7 @@ const gracefulStop = container.get<GracefulStop>(GracefulStop);
 
 (async () => {
 	try {
-		await rpcServer.start();
+		await rpcServer.start(container);
 		logger.info('rpc server started');
 	} catch (error) {
 		logger.error({ error });

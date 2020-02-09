@@ -1,4 +1,4 @@
-import { inject, injectable, multiInject } from 'inversify';
+import { inject, injectable, interfaces, multiInject } from 'inversify';
 import { Channel, Connection } from 'amqplib';
 import { AmqpAdapter } from './amqp-adapter';
 import { LoggerInterface } from '../logger.interface';
@@ -15,28 +15,29 @@ export class RpcServer {
 
 	private readonly queue: string;
 
-	private rpcHandlerMap: Map<string, AbstractRpcHandler> = new Map();
-
 	private connection: Connection = null;
 
 	private channel: Channel = null;
+
+	private rpcHandlerMap: Map<string, typeof AbstractRpcHandler> = new Map();
 
 	constructor(
 		@inject(AmqpAdapter) private readonly amqpAdapter: AmqpAdapter,
 		@inject('Logger') private readonly logger: LoggerInterface,
 		@inject(GracefulStop) private readonly gracefulStop: GracefulStop,
 		@inject('Config') private readonly config: ConfigInterface,
-		@multiInject(AbstractRpcHandler) private readonly rpcHandlers: AbstractRpcHandler[],
+		@multiInject(AbstractRpcHandler)
+		private readonly rpcHandlerClasses: typeof AbstractRpcHandler[],
 	) {
 		this.prefetch = this.config.get('tasksQueue.prefetch');
 		this.timeout = this.config.get('tasksQueue.timeout') || 10000;
 		this.queue = this.config.get('tasksQueue.name');
-		rpcHandlers.forEach((rpcHandler: AbstractRpcHandler) => {
-			this.rpcHandlerMap.set(rpcHandler.getMethod(), rpcHandler);
+		rpcHandlerClasses.forEach((rpcHandler: typeof AbstractRpcHandler) => {
+			this.rpcHandlerMap.set(rpcHandler.method, rpcHandler);
 		});
 	}
 
-	async start() {
+	async start(container: interfaces.Container) {
 		this.connection = await this.amqpAdapter.connect();
 		this.channel = await this.connection.createChannel();
 
@@ -54,7 +55,11 @@ export class RpcServer {
 			const result: { data?: object; error?: Error } = {};
 			try {
 				const { method, args } = JSON.parse(msg.content.toString());
-				const handler = this.rpcHandlerMap.get(method);
+				const handlerClass = this.rpcHandlerMap.get(method);
+				const traceId = msg.properties.headers['X-Trace-Id'];
+				container.bind('TraceId').toConstantValue(traceId);
+				container.rebind('Logger').toConstantValue(this.logger.child({ traceId }));
+				const handler = container.get<AbstractRpcHandler>(handlerClass);
 				if (!handler) {
 					throw new HandlerNotRegisterException(method, args);
 				}

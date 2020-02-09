@@ -114,7 +114,7 @@ class RpcClient {
 				try {
 					await this.channel.assertQueue(request.getQueue());
 					this.channel.sendToQueue(request.getQueue(), Buffer.from(message), {
-						headers: { 'X-Retry-Limit': request.getRetriesLimit() },
+						headers: { 'X-Retry-Limit': request.getRetriesLimit(), 'X-Trace-Id': id },
 						correlationId: id,
 						replyTo: this.answerQueue,
 						persistent: true,

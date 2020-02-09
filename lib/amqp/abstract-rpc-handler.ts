@@ -4,6 +4,8 @@ import { injectable } from 'inversify';
 export abstract class AbstractRpcHandler {
 	protected abstract method: string;
 
+	static readonly method: string;
+
 	getMethod(): string {
 		return this.method;
 	}
