@@ -65,7 +65,7 @@ export class FakeActivityRandomizerFactory {
 		return taskRpcRequests;
 	}
 
-	getGroupFeedTask(userCredentials: VkUser): AbstractRpcRequest {
+	private getGroupFeedTask(userCredentials: VkUser): AbstractRpcRequest {
 		const scrollCount = getRandom(0, 20);
 		const randomGroup =
 			userCredentials.groupIds[getRandom(0, userCredentials.groupIds.length - 1)];
@@ -81,7 +81,7 @@ export class FakeActivityRandomizerFactory {
 		return rpcRequest;
 	}
 
-	getGroupTask(userCredentials: VkUserCredentialsInterface): AbstractRpcRequest {
+	private getGroupTask(userCredentials: VkUserCredentialsInterface): AbstractRpcRequest {
 		const scrollCount = getRandom(0, 20);
 		const rpcRequestArgs = {
 			userCredentials,
@@ -101,13 +101,13 @@ export class FakeActivityRandomizerFactory {
 		return rpcRequest;
 	}
 
-	getMessageTask(userCredentials: VkUserCredentialsInterface): AbstractRpcRequest {
+	private getMessageTask(userCredentials: VkUserCredentialsInterface): AbstractRpcRequest {
 		const messageRpcTask = this.rpcRequestFactory.create(ReedMessagesRpcRequest);
 		messageRpcTask.setArguments({ userCredentials });
 		return messageRpcTask;
 	}
 
-	getFeedTask(userCredentials: VkUserCredentialsInterface): AbstractRpcRequest {
+	private getFeedTask(userCredentials: VkUserCredentialsInterface): AbstractRpcRequest {
 		const scrollCount = getRandom(0, 20);
 		const rpcRequestArgs = {
 			userCredentials,
