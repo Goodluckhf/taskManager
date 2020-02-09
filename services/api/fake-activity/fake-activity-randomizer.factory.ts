@@ -1,4 +1,4 @@
-import { inject } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { getRandom, hrefByGroupId } from '../../../lib/helper';
 import { AbstractRpcRequest } from '../../../lib/amqp/abstract-rpc-request';
 import { RpcRequestFactory } from '../../../lib/amqp/rpc-request.factory';
@@ -10,6 +10,7 @@ import { VkUserService } from '../vk-users/vk-user.service';
 import { GroupFeedBrowseRpcRequest } from './group-feed-browse-rpc.request';
 import { VkUser } from '../vk-users/vk-user';
 
+@injectable()
 export class FakeActivityRandomizerFactory {
 	@inject(RpcRequestFactory) private readonly rpcRequestFactory: RpcRequestFactory;
 
