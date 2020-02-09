@@ -7,7 +7,7 @@ import { createBrowserPage } from '../actions/create-page';
 import { LoggerInterface } from '../../../lib/logger.interface';
 import { MessageReader } from '../actions/vk/message-reader';
 
-type ReedFeedArgument = {
+type MessageBrowseArguments = {
 	userCredentials: VkUserCredentialsInterface;
 };
 
@@ -21,7 +21,7 @@ export class MessageBrowseRcpHandler extends AbstractRpcHandler {
 
 	@inject('Logger') private readonly logger: LoggerInterface;
 
-	async handle(args: ReedFeedArgument): Promise<object> {
+	async handle(args: MessageBrowseArguments): Promise<object> {
 		const { userCredentials } = args;
 		this.logger.info({
 			message: 'Задача на фейковую активность | чтение сообщений',
