@@ -7,10 +7,10 @@ import { createBrowserPage } from '../actions/create-page';
 import { LoggerInterface } from '../../../lib/logger.interface';
 import { GroupFeedBrowser } from '../actions/vk/group-feed-browser';
 
-type groupBrowseArgument = {
+type groupBrowseFeedArgument = {
 	userCredentials: VkUserCredentialsInterface;
 	scrollCount: number;
-	groupLink: number;
+	groupLink: string;
 };
 
 @injectable()
@@ -23,7 +23,7 @@ export class GroupFeedBrowseRcpHandler extends AbstractRpcHandler {
 
 	@inject('Logger') private readonly logger: LoggerInterface;
 
-	async handle(args: groupBrowseArgument): Promise<object> {
+	async handle(args: groupBrowseFeedArgument): Promise<object> {
 		const { userCredentials, groupLink, ...feedOptions } = args;
 		this.logger.info({
 			message: 'Задача на фейковую активность | чтение ленты в группе',
@@ -45,7 +45,7 @@ export class GroupFeedBrowseRcpHandler extends AbstractRpcHandler {
 				proxy: userCredentials.proxy,
 				remixsid: userCredentials.remixsid,
 			});
-
+			await page.goto(groupLink, { waitUntil: 'networkidle2' });
 			await this.groupFeedBrowser.browse(page, feedOptions);
 			return {};
 		} catch (error) {
