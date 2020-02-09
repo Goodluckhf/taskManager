@@ -39,7 +39,7 @@ export class FeedBrowser {
 			Array.from({ length: scrollCount }),
 			async () => {
 				await page.evaluate(() => {
-					window.scrollBy(0, 450);
+					window.scrollBy(0, 600);
 				});
 
 				const randomDelay = getRandom(0, 8000);
@@ -58,14 +58,17 @@ export class FeedBrowser {
 				const shouldOpenPreview = getRandom(0, 100) > 80;
 				const shouldRepost = getRandom(0, 100) > 90;
 				if (shouldLikePost) {
+					this.logger.info({ message: 'ставим лайк' });
 					await this.likePost(post);
 				}
 
 				if (shouldOpenPreview) {
+					this.logger.info({ message: 'читаем пост' });
 					await this.readPreview(page, post);
 				}
 
 				if (shouldRepost) {
+					this.logger.info({ message: 'делаем репост' });
 					await this.repost(page, post);
 				}
 			},
@@ -100,12 +103,12 @@ export class FeedBrowser {
 		await page.evaluate(() => {
 			document.querySelector('.wl_replies').scrollIntoView();
 		});
-		const scrollCount = getRandom(1, 20);
+		const scrollCount = getRandom(1, 10);
 		await bluebird.map(
 			Array.from({ length: scrollCount }),
 			async () => {
 				await page.evaluate(() => {
-					document.querySelector('#wk_layer_wrap').scrollBy(0, 200);
+					document.querySelector('#wk_layer_wrap').scrollBy(0, 450);
 				});
 
 				const randomDelay = getRandom(0, 4000);
@@ -115,13 +118,15 @@ export class FeedBrowser {
 		);
 
 		const shouldLike = getRandom(0, 100) > 80;
-		if (shouldLike) {
-			const comments = await page.$$('.reply');
+		const comments = await page.$$('.reply');
+		if (shouldLike && comments.length > 0) {
 			const commentToLike = comments[getRandom(0, comments.length - 1)];
 			const likeButton = await commentToLike.$('a.like_btn.like');
 			await likeButton.click();
 		}
 
-		await page.click('#wk_close .wk_close_inner');
+		this.logger.info({ message: 'закрываем попап поста' });
+
+		await page.click('#wk_close');
 	}
 }
