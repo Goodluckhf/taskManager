@@ -43,6 +43,7 @@ export class FakeActivityTaskHandler implements TaskHandlerInterface {
 					this.logger.error({
 						message: 'Ошибка при фейковой активности',
 						taskId: task._id.toString(),
+						method: rpcRequest.getMethod(),
 						taskArguments: rpcRequest.getArguments(),
 						login: task.login,
 						error,

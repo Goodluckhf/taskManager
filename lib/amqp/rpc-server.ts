@@ -52,14 +52,18 @@ export class RpcServer {
 			}
 
 			this.gracefulStop.setProcessing(this.queue);
+			const childContainer = container.createChild();
 			const result: { data?: object; error?: Error } = {};
 			try {
 				const { method, args } = JSON.parse(msg.content.toString());
 				const handlerClass = this.rpcHandlerMap.get(method);
 				const traceId = msg.properties.headers['X-Trace-Id'];
-				const childContainer = container.createChild();
 				childContainer.bind('TraceId').toConstantValue(traceId);
 				childContainer.bind('Logger').toConstantValue(this.logger.child({ traceId }));
+				if (!handlerClass) {
+					throw new HandlerNotRegisterException(method, args);
+				}
+
 				const handler = childContainer.get<AbstractRpcHandler>(handlerClass);
 				if (!handler) {
 					throw new HandlerNotRegisterException(method, args);
@@ -85,7 +89,8 @@ export class RpcServer {
 					clearTimeout(timeout);
 				}
 			} catch (error) {
-				this.logger.error({ error });
+				const logger = childContainer.get<LoggerInterface>('Logger');
+				logger.error({ error });
 				result.error = {
 					message: error.message,
 					...error,
