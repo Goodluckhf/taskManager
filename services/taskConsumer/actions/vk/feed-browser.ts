@@ -71,6 +71,11 @@ export class FeedBrowser {
 					this.logger.info({ message: 'делаем репост' });
 					await this.repost(page, post);
 				}
+
+				if (shouldRepost || shouldLikePost) {
+					const randomDelay = getRandom(0, 3000);
+					await bluebird.delay(randomDelay);
+				}
 			},
 			{ concurrency: 1 },
 		);
