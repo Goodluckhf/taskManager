@@ -1,6 +1,5 @@
 import { AbstractRpcRequest } from '../../../lib/amqp/abstract-rpc-request';
 import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
-import { ProxyInterface } from '../proxies/proxy.interface';
 
 export class JoinGroupRpcRequest extends AbstractRpcRequest {
 	protected readonly method = 'joinGroup';

@@ -20,7 +20,9 @@ export class JoinGroupRpcHandler extends AbstractRpcHandler {
 
 	@inject(VkAuthorizer) private readonly vkAuthorizer: VkAuthorizer;
 
-	protected method = 'joinGroup';
+	protected readonly method = 'joinGroup';
+
+	static readonly method = 'joinGroup';
 
 	async handle({ groupId, userCredentials }: TaskArgsType): Promise<object> {
 		const groupLink = hrefByGroupId(groupId);

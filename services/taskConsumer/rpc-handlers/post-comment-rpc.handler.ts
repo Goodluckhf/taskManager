@@ -25,6 +25,8 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 
 	protected readonly method = 'postComment';
 
+	static readonly method = 'postComment';
+
 	async handle({
 		credentials: { login, password, proxy, remixsid, userAgent },
 		postLink,

@@ -19,6 +19,7 @@ export class TaskStrategyAbstractFactory {
 		CheckAndAddUserTask: AtomicTaskStrategy,
 		JoinToGroupTask: AtomicTaskStrategy,
 		CheckAccountTask: AtomicTaskStrategy,
+		FakeActivityTask: AtomicTaskStrategy,
 	};
 
 	constructor(

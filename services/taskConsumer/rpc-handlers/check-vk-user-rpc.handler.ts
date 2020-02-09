@@ -14,7 +14,9 @@ export class CheckVkUserRpcHandler extends AbstractRpcHandler {
 
 	@inject(VkAuthorizer) private readonly vkAuthorizer: VkAuthorizer;
 
-	protected method = 'checkVkUser';
+	protected readonly method = 'checkVkUser';
+
+	static readonly method = 'checkVkUser';
 
 	async handle({
 		userCredentials: { login, password, proxy, remixsid: lastRemixsid, userAgent },

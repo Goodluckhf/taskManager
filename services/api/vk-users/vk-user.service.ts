@@ -80,7 +80,7 @@ export class VkUserService {
 		return users[random(0, users.length - 1)];
 	}
 
-	async getCredentialsByLogin(login: string): Promise<VkUserCredentialsInterface> {
+	async getCredentialsByLogin(login: string): Promise<VkUser> {
 		return this.VkUsersModel.findOne({ login }).lean();
 	}
 

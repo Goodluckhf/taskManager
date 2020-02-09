@@ -24,6 +24,7 @@ export class CommentService {
 		} catch (error) {
 			this.logger.error({
 				mark: 'setComments',
+				traceId: rpcRequest.getId(),
 				arguments: args,
 				error,
 			});

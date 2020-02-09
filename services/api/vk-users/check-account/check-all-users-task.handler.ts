@@ -10,6 +10,7 @@ import { SomeChecksFailedException } from './some-checks-failed.exception';
 import { CheckAccountTaskService } from './check-account-task.service';
 import { getRandom } from '../../../../lib/helper';
 import { User } from '../../users/user';
+import { FakeActivityTaskService } from '../../fake-activity/fake-activity-task.service';
 
 @injectable()
 export class CheckAllUsersTaskHandler implements TaskHandlerInterface {
@@ -17,6 +18,8 @@ export class CheckAllUsersTaskHandler implements TaskHandlerInterface {
 		@inject(VkUserService) private readonly vkUserService: VkUserService,
 		@inject(CheckAccountTaskService)
 		private readonly checkAccountTaskService: CheckAccountTaskService,
+		@inject(FakeActivityTaskService)
+		private readonly fakeActivityTaskService: FakeActivityTaskService,
 	) {}
 
 	async handle(task: CheckAndAddUserTask) {
@@ -40,6 +43,8 @@ export class CheckAllUsersTaskHandler implements TaskHandlerInterface {
 						user: task.user as User,
 						parentTaskId: task._id,
 					});
+
+					await this.fakeActivityTaskService.createIfNotExists(task.user as User, login);
 				} catch (error) {
 					errors.push(new UnhandledAddUserException(login, error));
 				}

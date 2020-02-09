@@ -17,6 +17,7 @@ import { VkUserCredentialsInterface } from '../vk-user-credentials.interface';
 import { GroupJoinTaskService } from '../group-join-task.service';
 import { User } from '../../users/user';
 import { ConfigInterface } from '../../../../config/config.interface';
+import { FakeActivityTaskService } from '../../fake-activity/fake-activity-task.service';
 
 @injectable()
 export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
@@ -26,6 +27,8 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 		@inject(RpcClient) private readonly rpcClient: RpcClient,
 		@inject(RpcRequestFactory) private readonly rpcRequestFactory: RpcRequestFactory,
 		@inject('Config') private readonly config: ConfigInterface,
+		@inject(FakeActivityTaskService)
+		private readonly fakeActivityTaskService: FakeActivityTaskService,
 	) {}
 
 	private async checkAccount(
@@ -61,6 +64,7 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 						return;
 					}
 
+					await this.vkUserService.addUser({ login, password, proxy, remixsid });
 					await this.createTasksForGroupJoin(task.user as User, {
 						login,
 						password,
@@ -76,6 +80,7 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 						remixsid,
 						userAgent,
 					});
+					await this.fakeActivityTaskService.create(task.user as User, login);
 				} catch (error) {
 					errors.push(new UnhandledAddUserException(login, error));
 				}
