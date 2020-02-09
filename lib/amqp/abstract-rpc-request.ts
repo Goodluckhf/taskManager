@@ -16,6 +16,14 @@ export abstract class AbstractRpcRequest {
 		});
 	}
 
+	getMethod(): string {
+		return this.method;
+	}
+
+	getArguments(): object {
+		return this.args;
+	}
+
 	setQueue(queue: string): this {
 		this.queue = queue;
 		return this;
