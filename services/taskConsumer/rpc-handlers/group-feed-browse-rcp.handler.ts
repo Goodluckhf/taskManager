@@ -15,9 +15,9 @@ type groupBrowseFeedArgument = {
 
 @injectable()
 export class GroupFeedBrowseRcpHandler extends AbstractRpcHandler {
-	protected readonly method = 'browse_groups';
+	protected readonly method = 'browse_feed_group';
 
-	static readonly method = 'browse_groups';
+	static readonly method = 'browse_feed_group';
 
 	@inject(VkAuthorizer) private readonly vkAuthorizer: VkAuthorizer;
 
