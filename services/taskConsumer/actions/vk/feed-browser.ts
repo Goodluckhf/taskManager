@@ -127,6 +127,6 @@ export class FeedBrowser {
 
 		this.logger.info({ message: 'закрываем попап поста' });
 
-		await page.click('#wk_close');
+		await page.click('.wk_close');
 	}
 }
