@@ -4,25 +4,29 @@ import { inject, injectable } from 'inversify';
 import { getRandom } from '../../../../lib/helper';
 import { LoggerInterface } from '../../../../lib/logger.interface';
 
+export type FeedOptions = {
+	isSmart: boolean;
+	commonFeed: boolean;
+	recommend: boolean;
+	scrollCount: number;
+};
+
 @injectable()
 export class FeedBrowser {
 	constructor(@inject('Logger') private readonly logger: LoggerInterface) {}
 
-	async browse(page: Page) {
+	async browse(page: Page, feedOptions: FeedOptions) {
 		await page.goto('https://vk.com/feed', { waitUntil: 'networkidle2' });
 
-		const shouldLookNews = getRandom(0, 100) > 50;
-
-		if (shouldLookNews) {
-			const shouldSwitchSmartFeed = getRandom(0, 100) > 50;
-			if (shouldSwitchSmartFeed) {
-				await page.click('#feed_filters div.hot');
-				await bluebird.delay(5000);
-			}
-		} else {
+		if (feedOptions.recommend) {
 			await page.click('#ui_rmenu_recommended');
 			await bluebird.delay(5000);
+		} else if (feedOptions.isSmart) {
+			await page.click('#feed_filters div.hot');
+			await bluebird.delay(5000);
 		}
+
+		await this.scrollPosts(page, feedOptions.scrollCount);
 
 		await bluebird.some(
 			[this.lookThroughPosts(page), bluebird.delay(120000) as Promise<any>],
@@ -30,30 +34,7 @@ export class FeedBrowser {
 		);
 	}
 
-	private async lookThroughPosts(page: Page) {
-		const posts = await page.$$('.post');
-		await bluebird.map(
-			posts,
-			async post => {
-				const shouldLikePost = getRandom(0, 100) > 70;
-				const shouldOpenPreview = getRandom(0, 100) > 80;
-				const shouldRepost = getRandom(0, 100) > 90;
-				if (shouldLikePost) {
-					await this.likePost(page, post);
-				}
-
-				if (shouldOpenPreview) {
-					await this.readPreview(page, post);
-				}
-
-				if (shouldRepost) {
-					await this.repost(page, post);
-				}
-			},
-			{ concurrency: 1 },
-		);
-
-		const scrollCount = getRandom(1, 20);
+	private async scrollPosts(page: Page, scrollCount) {
 		await bluebird.map(
 			Array.from({ length: scrollCount }),
 			async () => {
@@ -68,7 +49,31 @@ export class FeedBrowser {
 		);
 	}
 
-	private async likePost(page: Page, post: ElementHandle) {
+	private async lookThroughPosts(page: Page) {
+		const posts = await page.$$('.post');
+		await bluebird.map(
+			posts,
+			async post => {
+				const shouldLikePost = getRandom(0, 100) > 70;
+				const shouldOpenPreview = getRandom(0, 100) > 80;
+				const shouldRepost = getRandom(0, 100) > 90;
+				if (shouldLikePost) {
+					await this.likePost(post);
+				}
+
+				if (shouldOpenPreview) {
+					await this.readPreview(page, post);
+				}
+
+				if (shouldRepost) {
+					await this.repost(page, post);
+				}
+			},
+			{ concurrency: 1 },
+		);
+	}
+
+	private async likePost(post: ElementHandle) {
 		const likeElement = await post.$('a.like_btn.like');
 		await likeElement.click();
 	}

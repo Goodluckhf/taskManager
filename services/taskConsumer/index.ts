@@ -8,13 +8,13 @@ import { AbstractRpcHandler } from '../../lib/amqp/abstract-rpc-handler';
 import { PostCommentRpcHandler } from './rpc-handlers/post-comment-rpc.handler';
 import { CheckVkUserRpcHandler } from './rpc-handlers/check-vk-user-rpc.handler';
 import { JoinGroupRpcHandler } from './rpc-handlers/join-group-rpc.handler';
-import { FakeActivityRpcHandler } from './rpc-handlers/fake-activity-rpc.handler';
+import { FeedBrowseRcpHandler } from './rpc-handlers/feed-browse-rcp.handler';
 
 const container = createContainer();
 container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(PostCommentRpcHandler);
 container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(CheckVkUserRpcHandler);
 container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(JoinGroupRpcHandler);
-container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(FakeActivityRpcHandler);
+container.bind<AbstractRpcHandler>(AbstractRpcHandler).to(FeedBrowseRcpHandler);
 
 const rpcServer = container.get<RpcServer>(RpcServer);
 const logger = container.get<LoggerInterface>('Logger');
