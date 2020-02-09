@@ -17,7 +17,9 @@ type ReedFeedArgument = {
 
 @injectable()
 export class FeedBrowseRcpHandler extends AbstractRpcHandler {
-	protected method = 'reed_feed';
+	protected readonly method = 'reed_feed';
+
+	static readonly method = 'reed_feed';
 
 	@inject(VkAuthorizer) private readonly vkAuthorizer: VkAuthorizer;
 

@@ -13,7 +13,9 @@ type MessageBrowseArguments = {
 
 @injectable()
 export class MessageBrowseRcpHandler extends AbstractRpcHandler {
-	protected method = 'reed_messages';
+	protected readonly method = 'reed_messages';
+
+	static readonly method = 'reed_messages';
 
 	@inject(VkAuthorizer) private readonly vkAuthorizer: VkAuthorizer;
 
