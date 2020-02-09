@@ -63,6 +63,7 @@ export class JoinToGroupTaskHandler implements TaskHandlerInterface {
 			this.logger.warn({
 				message: 'Пользователь уже состоит в группе',
 				vkGroupId: groupId,
+				traceId: rpcRequest.getId(),
 				userCredentials: vkUserCredentials,
 			});
 		}
