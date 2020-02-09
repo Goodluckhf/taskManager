@@ -102,10 +102,9 @@ class RpcClient {
 		return new Promise(async (resolve, reject) => {
 			try {
 				const message = request.getMessageJSON();
-				const id = uuid();
 
 				this.registerCallback(
-					id,
+					request.getId(),
 					(error, result) => (error ? reject(error) : resolve(result)),
 					request.getTimeout(),
 					{ message: JSON.parse(message) },
@@ -114,8 +113,11 @@ class RpcClient {
 				try {
 					await this.channel.assertQueue(request.getQueue());
 					this.channel.sendToQueue(request.getQueue(), Buffer.from(message), {
-						headers: { 'X-Retry-Limit': request.getRetriesLimit(), 'X-Trace-Id': id },
-						correlationId: id,
+						headers: {
+							'X-Retry-Limit': request.getRetriesLimit(),
+							'X-Trace-Id': request.getId(),
+						},
+						correlationId: request.getId(),
 						replyTo: this.answerQueue,
 						persistent: true,
 					});

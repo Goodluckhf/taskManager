@@ -1,3 +1,5 @@
+import uuid from 'uuid';
+
 export abstract class AbstractRpcRequest {
 	protected args: object;
 
@@ -8,6 +10,16 @@ export abstract class AbstractRpcRequest {
 	private queue: string;
 
 	private timeout: number;
+
+	private readonly id: string;
+
+	constructor() {
+		this.id = uuid();
+	}
+
+	getId(): string {
+		return this.id;
+	}
 
 	getMessageJSON(): string {
 		return JSON.stringify({
