@@ -39,10 +39,10 @@ export class FeedBrowser {
 			Array.from({ length: scrollCount }),
 			async () => {
 				await page.evaluate(() => {
-					window.scrollBy(0, 600);
+					window.scrollBy(0, 900);
 				});
 
-				const randomDelay = getRandom(0, 8000);
+				const randomDelay = getRandom(0, 5000);
 				await bluebird.delay(randomDelay);
 			},
 			{ concurrency: 1 },
