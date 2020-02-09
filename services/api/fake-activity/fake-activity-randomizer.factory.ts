@@ -89,6 +89,7 @@ export class FakeActivityRandomizerFactory {
 			isPopular: false,
 			isCommon: false,
 			shouldChangeCategory: false,
+			shouldGotoGroup: false,
 			scrollCount,
 		};
 
@@ -96,10 +97,12 @@ export class FakeActivityRandomizerFactory {
 		const shouldLookPopular = getRandom(0, 100) > 50;
 		if (shouldLookPopular) {
 			const shouldChangeCategory = getRandom(0, 100) > 50;
+			const shouldGotoGroup = getRandom(0, 100) > 40;
 			rpcRequest.setArguments({
 				...rpcRequestArgs,
 				isPopular: true,
 				shouldChangeCategory,
+				shouldGotoGroup,
 			});
 		} else {
 			rpcRequest.setArguments({ ...rpcRequestArgs, isCommon: true });

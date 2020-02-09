@@ -6,6 +6,7 @@ type GroupBrowseArgument = {
 	isPopular: boolean;
 	isCommon: boolean;
 	shouldChangeCategory: boolean;
+	shouldGotoGroup: boolean;
 	scrollCount: number;
 };
 

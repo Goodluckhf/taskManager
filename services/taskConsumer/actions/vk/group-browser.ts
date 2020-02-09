@@ -3,31 +3,33 @@ import { Page } from 'puppeteer';
 import bluebird from 'bluebird';
 import { getRandom } from '../../../../lib/helper';
 
+type Options = {
+	isPopular: boolean;
+	isCommon: boolean;
+	scrollCount: number;
+	shouldChangeCategory: boolean;
+	shouldGotoGroup: boolean;
+};
+
 @injectable()
 export class GroupBrowser {
-	async browse(page: Page) {
+	async browse(page: Page, options: Options) {
 		await page.click('#l_gr a');
 		await page.waitForSelector('#groups_list_content');
-		const shouldLookPopular = getRandom(0, 100) > 50;
-		if (shouldLookPopular) {
-			await this.lookPopular(page);
+		if (options.isPopular) {
+			await this.lookPopular(page, options);
 		}
 
 		await bluebird.delay(2000);
-		await this.lookGroups(page);
-
-		const shouldGoToGroup = getRandom(0, 100) > 30;
-		if (!shouldGoToGroup) {
-			return;
+		await this.lookGroups(page, options.scrollCount);
+		if (options.shouldGotoGroup) {
+			await this.goToGroup(page);
 		}
-
-		await this.goToGroup(page);
 	}
 
-	private async lookPopular(page: Page) {
+	private async lookPopular(page: Page, options: Options) {
 		await page.click('#ui_rmenu_category0');
-		const shouldChangeCategory = getRandom(0, 100) > 50;
-		if (shouldChangeCategory) {
+		if (options.shouldChangeCategory) {
 			const categories = await page.$$('#ui_rmenu_category0_list ._ui_rmenu_sublist');
 
 			const randomCategory = categories[getRandom(0, categories.length - 1)];
@@ -45,12 +47,9 @@ export class GroupBrowser {
 		const groupTitle = await randomGroup.$('a.group_row_title');
 		await groupTitle.click();
 		await page.waitForSelector('#page_wall_posts');
-
-		await this.scrollWall(page);
 	}
 
-	private async lookGroups(page: Page) {
-		const scrollCount = getRandom(1, 20);
+	private async lookGroups(page: Page, scrollCount: number) {
 		await bluebird.map(
 			Array.from({ length: scrollCount }),
 			async () => {
@@ -59,27 +58,6 @@ export class GroupBrowser {
 				});
 
 				const randomDelay = getRandom(0, 8000);
-				await bluebird.delay(randomDelay);
-			},
-			{ concurrency: 1 },
-		);
-	}
-
-	private async scrollWall(page: Page) {
-		const shouldScrollPosts = getRandom(0, 100) > 50;
-		if (!shouldScrollPosts) {
-			return;
-		}
-		const scrollCount = getRandom(0, 15);
-
-		await bluebird.map(
-			Array.from({ length: scrollCount }),
-			async () => {
-				await page.evaluate(() => {
-					window.scrollBy(0, 400);
-				});
-
-				const randomDelay = getRandom(0, 5000);
 				await bluebird.delay(randomDelay);
 			},
 			{ concurrency: 1 },
