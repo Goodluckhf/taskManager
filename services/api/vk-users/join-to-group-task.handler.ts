@@ -31,6 +31,15 @@ export class JoinToGroupTaskHandler implements TaskHandlerInterface {
 			return;
 		}
 
+		const vkUser = await this.vkUserService.getCredentialsByLogin(task.vkUserCredentials.login);
+		if (!vkUser.isActive) {
+			this.logger.warn({
+				message: 'этого пользователя уже забанили',
+				userCredentials: task.vkUserCredentials,
+			});
+			return;
+		}
+
 		await this.joinToGroup(task.vkUserCredentials, task.groupId);
 		await this.vkUserService.addGroup(task.vkUserCredentials, task.groupId);
 	}
