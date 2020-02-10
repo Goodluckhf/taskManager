@@ -118,26 +118,28 @@ export class FakeActivityRandomizerFactory {
 	}
 
 	private getFeedTask(userCredentials: VkUserCredentialsInterface): AbstractRpcRequest {
-		const scrollCount = getRandom(0, 20);
+		const scrollCount = getRandom(0, 40);
 		const rpcRequestArgs = {
 			userCredentials,
 			isSmart: false,
 			commonFeed: false,
 			recommend: false,
+			skipPosts: 0,
 			scrollCount,
 		};
 		const feedRpcRequest = this.rpcRequestFactory.create(ReedFeedRpcRequest);
 		const shouldReedRecommended = getRandom(0, 100) > 70;
+		const skipPosts = getRandom(0, 100);
 		if (shouldReedRecommended) {
-			feedRpcRequest.setArguments({ ...rpcRequestArgs, recommend: true });
+			feedRpcRequest.setArguments({ ...rpcRequestArgs, recommend: true, skipPosts });
 			return feedRpcRequest;
 		}
 
 		const shouldSwitchSmartFeed = getRandom(0, 100) > 50;
 		if (shouldSwitchSmartFeed) {
-			feedRpcRequest.setArguments({ ...rpcRequestArgs, isSmart: true });
+			feedRpcRequest.setArguments({ ...rpcRequestArgs, isSmart: true, skipPosts });
 		} else {
-			feedRpcRequest.setArguments({ ...rpcRequestArgs, commonFeed: true });
+			feedRpcRequest.setArguments({ ...rpcRequestArgs, commonFeed: true, skipPosts });
 		}
 
 		return feedRpcRequest;

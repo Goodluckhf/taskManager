@@ -13,6 +13,7 @@ type ReedFeedArgument = {
 	commonFeed: boolean;
 	recommend: boolean;
 	scrollCount: number;
+	skipPosts: number;
 };
 
 @injectable()

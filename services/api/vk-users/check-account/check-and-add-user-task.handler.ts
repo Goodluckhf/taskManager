@@ -72,14 +72,6 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 						remixsid,
 						userAgent,
 					});
-
-					await this.vkUserService.addUser({
-						login,
-						password,
-						proxy,
-						remixsid,
-						userAgent,
-					});
 					await this.fakeActivityTaskService.create(task.user as User, login);
 				} catch (error) {
 					errors.push(new UnhandledAddUserException(login, error));

@@ -9,6 +9,7 @@ export type FeedOptions = {
 	commonFeed: boolean;
 	recommend: boolean;
 	scrollCount: number;
+	skipPosts: number;
 };
 
 @injectable()
@@ -26,30 +27,30 @@ export class FeedBrowser {
 			await bluebird.delay(5000);
 		}
 
-		await this.scrollPosts(page, feedOptions.scrollCount);
+		await this.scrollPosts(page, feedOptions);
 
 		await bluebird.some(
-			[this.lookThroughPosts(page), bluebird.delay(120000) as Promise<any>],
+			[this.lookThroughPosts(page, feedOptions), bluebird.delay(120000) as Promise<any>],
 			1,
 		);
 	}
 
-	private async scrollPosts(page: Page, scrollCount) {
+	private async scrollPosts(page: Page, options: FeedOptions) {
 		await bluebird.map(
-			Array.from({ length: scrollCount }),
+			Array.from({ length: options.scrollCount }),
 			async () => {
 				await page.evaluate(() => {
 					window.scrollBy(0, 900);
 				});
 
-				const randomDelay = getRandom(0, 4000);
+				const randomDelay = getRandom(0, 3000);
 				await bluebird.delay(randomDelay);
 			},
 			{ concurrency: 1 },
 		);
 	}
 
-	private async lookThroughPosts(page: Page) {
+	private async lookThroughPosts(page: Page, feedOptions: FeedOptions) {
 		const isEmpty = await page.evaluate(() => {
 			return document.querySelector('#main_feed.feed_is_empty');
 		});
@@ -61,15 +62,15 @@ export class FeedBrowser {
 			});
 			return;
 		}
-		const posts = await page.$$('.post');
+		let posts = await page.$$('.post');
+		posts = posts.slice(feedOptions.skipPosts);
 		await bluebird.map(
 			posts,
 			async post => {
-				const shouldLikePost = getRandom(0, 100) > 70;
+				const shouldLikePost = getRandom(0, 100) > 60;
 				const shouldOpenPreview = getRandom(0, 100) > 80;
-				const shouldRepost = getRandom(0, 100) > 90;
+				const shouldRepost = getRandom(0, 100) > 80;
 				if (shouldLikePost) {
-					this.logger.info({ message: 'ставим лайк' });
 					await this.likePost(post);
 				}
 
@@ -93,6 +94,18 @@ export class FeedBrowser {
 	}
 
 	private async likePost(post: ElementHandle) {
+		const alreadyLiked = await post.evaluate(node => {
+			return node.querySelector('a.like_btn.like.active');
+		});
+
+		if (alreadyLiked) {
+			this.logger.info({
+				message: 'Уже лайкнул ранее',
+			});
+			return;
+		}
+
+		this.logger.info({ message: 'ставим лайк' });
 		const likeElement = await post.$('a.like_btn.like');
 		await likeElement.click();
 	}
@@ -127,21 +140,21 @@ export class FeedBrowser {
 		await page.evaluate(() => {
 			document.querySelector('.wl_replies').scrollIntoView();
 		});
-		const scrollCount = getRandom(1, 10);
+		const scrollCount = getRandom(1, 5);
 		await bluebird.map(
 			Array.from({ length: scrollCount }),
 			async () => {
 				await page.evaluate(() => {
-					document.querySelector('#wk_layer_wrap').scrollBy(0, 450);
+					document.querySelector('#wk_layer_wrap').scrollBy(0, 600);
 				});
 
-				const randomDelay = getRandom(0, 3000);
+				const randomDelay = getRandom(0, 2000);
 				await bluebird.delay(randomDelay);
 			},
 			{ concurrency: 1 },
 		);
 
-		const shouldLike = getRandom(0, 100) > 80;
+		const shouldLike = getRandom(0, 100) > 70;
 		const comments = await page.$$('.reply');
 		if (shouldLike && comments.length > 0) {
 			const commentToLike = comments[getRandom(0, comments.length - 1)];
