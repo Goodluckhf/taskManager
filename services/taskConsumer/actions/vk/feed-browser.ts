@@ -65,11 +65,10 @@ export class FeedBrowser {
 		await bluebird.map(
 			posts,
 			async post => {
-				const shouldLikePost = getRandom(0, 100) > 70;
+				const shouldLikePost = getRandom(0, 100) > 50;
 				const shouldOpenPreview = getRandom(0, 100) > 80;
-				const shouldRepost = getRandom(0, 100) > 90;
+				const shouldRepost = getRandom(0, 100) > 80;
 				if (shouldLikePost) {
-					this.logger.info({ message: 'ставим лайк' });
 					await this.likePost(post);
 				}
 
@@ -93,6 +92,18 @@ export class FeedBrowser {
 	}
 
 	private async likePost(post: ElementHandle) {
+		const alreadyLiked = await post.evaluate(node => {
+			return node.querySelector('a.like_btn.like.active');
+		});
+
+		if (alreadyLiked) {
+			this.logger.info({
+				message: 'Уже лайкнул ранее',
+			});
+			return;
+		}
+
+		this.logger.info({ message: 'ставим лайк' });
 		const likeElement = await post.$('a.like_btn.like');
 		await likeElement.click();
 	}
