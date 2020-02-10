@@ -3,7 +3,6 @@ import bluebird from 'bluebird';
 import { inject, injectable } from 'inversify';
 import { getRandom } from '../../../../lib/helper';
 import { LoggerInterface } from '../../../../lib/logger.interface';
-import { post } from '@typegoose/typegoose';
 
 export type FeedOptions = {
 	isSmart: boolean;
@@ -68,7 +67,7 @@ export class FeedBrowser {
 		await bluebird.map(
 			posts,
 			async post => {
-				const shouldLikePost = getRandom(0, 100) > 50;
+				const shouldLikePost = getRandom(0, 100) > 60;
 				const shouldOpenPreview = getRandom(0, 100) > 80;
 				const shouldRepost = getRandom(0, 100) > 80;
 				if (shouldLikePost) {
