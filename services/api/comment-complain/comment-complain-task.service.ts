@@ -28,7 +28,7 @@ export class CommentComplainTaskService {
 		);
 
 		const secondsDistributionTop =
-			(usersForTask.length / 60) * this.config.get('commentComplainTask.tasksPerMinute');
+			(usersForTask.length * 60) / this.config.get('commentComplainTask.tasksPerMinute');
 
 		await bluebird.map(
 			usersForTask,
