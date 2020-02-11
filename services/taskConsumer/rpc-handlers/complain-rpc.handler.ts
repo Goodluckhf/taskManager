@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify';
+import bluebird from 'bluebird';
 import { AbstractRpcHandler } from '../../../lib/amqp/abstract-rpc-handler';
 import { LoggerInterface } from '../../../lib/logger.interface';
 import { VkAuthorizer } from '../actions/vk/vk-authorizer';
@@ -49,6 +50,18 @@ export class ComplainRpcHandler extends AbstractRpcHandler {
 			const url = new URL(commentLink);
 			const replyId = url.searchParams.get('reply');
 			const postId = url.pathname.replace(/.+wall/, '').replace(/_.+/, '');
+			this.logger.info({
+				message: 'commentId для жалобы',
+				commentId: `#reply_delete${postId}_${replyId}`,
+			});
+			const commentExists = await page.$(`#reply_delete${postId}_${replyId}`);
+			if (!commentExists) {
+				this.logger.info({
+					message: 'Коммент уже удалили',
+					commentLink,
+				});
+				return {};
+			}
 			await page.click(`#reply_delete${postId}_${replyId}`);
 			await page.waitForSelector('.wall_reasons_result');
 			await page.evaluate(() => {
@@ -59,6 +72,7 @@ export class ComplainRpcHandler extends AbstractRpcHandler {
 			await page.waitForSelector('.ReportConfirmationPopup');
 			await page.click('.ReportConfirmationPopup__footer__submit-button');
 			await page.waitForSelector('#notifiers_wrap');
+			await bluebird.delay(1000);
 			return {};
 		} catch (error) {
 			error.canRetry = typeof error.canRetry !== 'undefined' ? error.canRetry : canRetry;
