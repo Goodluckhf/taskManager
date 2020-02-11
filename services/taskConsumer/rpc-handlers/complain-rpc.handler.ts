@@ -62,7 +62,10 @@ export class ComplainRpcHandler extends AbstractRpcHandler {
 				});
 				return {};
 			}
-			await page.click(`#reply_delete${postId}_${replyId}`);
+			await page.evaluate(selector => {
+				document.querySelector(selector).click();
+			}, `#reply_delete${postId}_${replyId}`);
+
 			await page.waitForSelector('.wall_reasons_result');
 			await page.evaluate(() => {
 				document
@@ -70,9 +73,11 @@ export class ComplainRpcHandler extends AbstractRpcHandler {
 					.click();
 			});
 			await page.waitForSelector('.ReportConfirmationPopup');
-			await page.click('.ReportConfirmationPopup__footer__submit-button');
-			await page.waitForSelector('#notifiers_wrap');
-			await bluebird.delay(1000);
+			await page.evaluate(selector => {
+				document.querySelector(selector).click();
+			}, '.ReportConfirmationPopup__footer__submit-button');
+
+			await page.waitForSelector('#notifiers_wrap .notifier_baloon_msg');
 			return {};
 		} catch (error) {
 			error.canRetry = typeof error.canRetry !== 'undefined' ? error.canRetry : canRetry;
