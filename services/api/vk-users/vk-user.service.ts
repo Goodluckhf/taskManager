@@ -89,7 +89,7 @@ export class VkUserService {
 			filter.isActive = true;
 		}
 
-		const query = this.VkUsersModel.findOne(strictActive)
+		const query = this.VkUsersModel.findOne(filter)
 			.lean()
 			.select({ login: 1, password: 1, userAgent: 1, proxy: 1, remixsid: 1, isActive: 1 });
 
