@@ -61,7 +61,7 @@ module.exports = {
 	},
 
 	commentComplainTask: {
-		usersRatio: parseInt(process.env.COMMENT_COMPLAIN_TASK__RATIO, 10),
+		usersRatio: parseFloat(process.env.COMMENT_COMPLAIN_TASK__RATIO),
 		tasksPerMinute: parseInt(process.env.COMMENT_COMPLAIN_TASK__TASKS_PER_MINUTE, 10),
 	},
 
