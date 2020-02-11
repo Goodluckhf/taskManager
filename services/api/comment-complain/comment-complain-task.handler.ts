@@ -7,6 +7,7 @@ import { LoggerInterface } from '../../../lib/logger.interface';
 import { RpcRequestFactory } from '../../../lib/amqp/rpc-request.factory';
 import { CommentComplainRpcRequest } from './comment-complain-rpc.request';
 import { VkUserService } from '../vk-users/vk-user.service';
+import { AuthExceptionCatcher } from '../vk-users/auth-exception.catcher';
 
 @injectable()
 export class CommentComplainTaskHandler implements TaskHandlerInterface {
@@ -16,6 +17,7 @@ export class CommentComplainTaskHandler implements TaskHandlerInterface {
 		@inject('Logger') private readonly logger: LoggerInterface,
 		@inject(RpcRequestFactory) private readonly rpcRequestFactory: RpcRequestFactory,
 		@inject(VkUserService) private readonly vkUserService: VkUserService,
+		@inject(AuthExceptionCatcher) private readonly authExceptionCatcher: AuthExceptionCatcher,
 	) {}
 
 	async handle(task: CommentComplainTask) {
@@ -26,6 +28,11 @@ export class CommentComplainTaskHandler implements TaskHandlerInterface {
 		try {
 			await this.rpcClient.call(rpcRequest);
 		} catch (error) {
+			const catched = await this.authExceptionCatcher.catch(error, userCredentials);
+			if (catched) {
+				return;
+			}
+
 			this.logger.error({
 				message: 'Ошибка при жалобе на коммент',
 				login: task.login,
