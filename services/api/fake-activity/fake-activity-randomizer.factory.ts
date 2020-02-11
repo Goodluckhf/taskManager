@@ -26,7 +26,7 @@ export class FakeActivityRandomizerFactory {
 			remixsid,
 		}: VkUserCredentialsInterface = userCredentials;
 		const randomNumber = getRandom(0, 100);
-		if (randomNumber) {
+		if (randomNumber < 50) {
 			taskRpcRequests.push(
 				this.getFeedTask({
 					login,
