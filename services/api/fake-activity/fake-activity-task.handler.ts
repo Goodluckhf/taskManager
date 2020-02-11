@@ -24,7 +24,7 @@ export class FakeActivityTaskHandler implements TaskHandlerInterface {
 	) {}
 
 	async handle(task: FakeActivityTask) {
-		const vkUser = await this.vkUserService.getCredentialsByLogin(task.login);
+		const vkUser = await this.vkUserService.findByLogin(task.login);
 		const rpcRequests = this.fakeActivityRandomizerFactory.getRandomTasks({
 			userCredentials: vkUser,
 		});

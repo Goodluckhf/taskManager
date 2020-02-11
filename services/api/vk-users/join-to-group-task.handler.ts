@@ -32,7 +32,7 @@ export class JoinToGroupTaskHandler implements TaskHandlerInterface {
 		}
 
 		const vkUser = await this.vkUserService.getCredentialsByLogin(task.vkUserCredentials.login);
-		if (!vkUser.isActive) {
+		if (!vkUser) {
 			this.logger.warn({
 				message: 'этого пользователя уже забанили',
 				userCredentials: task.vkUserCredentials,

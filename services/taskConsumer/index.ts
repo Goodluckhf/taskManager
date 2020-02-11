@@ -12,6 +12,7 @@ import { FeedBrowseRcpHandler } from './rpc-handlers/feed-browse-rcp.handler';
 import { MessageBrowseRcpHandler } from './rpc-handlers/message-browse-rcp.handler';
 import { GroupBrowseRcpHandler } from './rpc-handlers/group-browse-rcp.handler';
 import { GroupFeedBrowseRcpHandler } from './rpc-handlers/group-feed-browse-rcp.handler';
+import { ComplainRpcHandler } from './rpc-handlers/complain-rpc.handler';
 
 const container = createContainer();
 container.bind(AbstractRpcHandler).toConstructor(PostCommentRpcHandler);
@@ -21,9 +22,15 @@ container.bind(AbstractRpcHandler).toConstructor(FeedBrowseRcpHandler);
 container.bind(AbstractRpcHandler).toConstructor(MessageBrowseRcpHandler);
 container.bind(AbstractRpcHandler).toConstructor(GroupBrowseRcpHandler);
 container.bind(AbstractRpcHandler).toConstructor(GroupFeedBrowseRcpHandler);
+container.bind(AbstractRpcHandler).toConstructor(ComplainRpcHandler);
 
 container
 	.bind<AbstractRpcHandler>(PostCommentRpcHandler)
+	.toSelf()
+	.inRequestScope();
+
+container
+	.bind<AbstractRpcHandler>(ComplainRpcHandler)
 	.toSelf()
 	.inRequestScope();
 container

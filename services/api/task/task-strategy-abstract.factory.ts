@@ -20,6 +20,7 @@ export class TaskStrategyAbstractFactory {
 		JoinToGroupTask: AtomicTaskStrategy,
 		CheckAccountTask: AtomicTaskStrategy,
 		FakeActivityTask: AtomicTaskStrategy,
+		CommentComplainTask: AtomicTaskStrategy,
 	};
 
 	constructor(
