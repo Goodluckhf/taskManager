@@ -11,12 +11,14 @@ import { UnhandledJoinToGroupException } from './unhandled-join-to-group.excepti
 import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
 import { AuthExceptionCatcher } from './auth-exception.catcher';
 import { statuses } from '../task/status.constant';
+import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 
 @injectable()
 export class JoinToGroupTaskHandler implements TaskHandlerInterface {
 	constructor(
 		@inject(VkUserService) private readonly vkUserService: VkUserService,
-		@inject(JoinToGroupTask) private readonly JoinToGroupTaskModel: ModelType<JoinToGroupTask>,
+		@injectModel(JoinToGroupTask)
+		private readonly JoinToGroupTaskModel: ModelType<JoinToGroupTask>,
 		@inject('Logger') private readonly logger: LoggerInterface,
 		@inject(RpcClient) private readonly rpcClient: RpcClient,
 		@inject(RpcRequestFactory) private readonly rpcRequestFactory: RpcRequestFactory,
