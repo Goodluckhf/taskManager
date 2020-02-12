@@ -29,14 +29,21 @@ export class FakeActivityTaskHandler implements TaskHandlerInterface {
 			userCredentials: vkUser,
 		});
 
+		let catchedAuthFailed = false;
+
 		await bluebird.map(
 			rpcRequests,
 			async rpcRequest => {
+				if (catchedAuthFailed) {
+					return;
+				}
+
 				try {
 					await this.rpcClient.call(rpcRequest);
 				} catch (error) {
 					const catched = await this.authExceptionCatcher.catch(error, vkUser);
 					if (catched) {
+						catchedAuthFailed = true;
 						return;
 					}
 
@@ -52,6 +59,10 @@ export class FakeActivityTaskHandler implements TaskHandlerInterface {
 			},
 			{ concurrency: 1 },
 		);
+
+		if (catchedAuthFailed) {
+			return;
+		}
 
 		await this.fakeActivityTaskService.create(task.user as User, task.login);
 	}

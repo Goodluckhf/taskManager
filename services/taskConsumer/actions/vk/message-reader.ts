@@ -12,7 +12,9 @@ export class MessageReader {
 		await bluebird.delay(1000);
 		const unreadDialogs = await page.$$('.nim-dialog_unread');
 		if (unreadDialogs.length === 0) {
-			await page.click('a.top_home_link');
+			await page.evaluate(selector => {
+				document.querySelector(selector).click();
+			}, 'a.top_home_link');
 			return;
 		}
 

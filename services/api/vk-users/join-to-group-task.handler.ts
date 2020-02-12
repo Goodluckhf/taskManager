@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify';
+import { ModelType } from '@typegoose/typegoose/lib/types';
 import { TaskHandlerInterface } from '../task/task-handler.interface';
 import { JoinToGroupTask } from './join-to-group.task';
 import { VkUserService } from './vk-user.service';
@@ -9,11 +10,15 @@ import { JoinGroupRpcRequest } from './join-group-rpc.request';
 import { UnhandledJoinToGroupException } from './unhandled-join-to-group.exception';
 import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
 import { AuthExceptionCatcher } from './auth-exception.catcher';
+import { statuses } from '../task/status.constant';
+import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 
 @injectable()
 export class JoinToGroupTaskHandler implements TaskHandlerInterface {
 	constructor(
 		@inject(VkUserService) private readonly vkUserService: VkUserService,
+		@injectModel(JoinToGroupTask)
+		private readonly JoinToGroupTaskModel: ModelType<JoinToGroupTask>,
 		@inject('Logger') private readonly logger: LoggerInterface,
 		@inject(RpcClient) private readonly rpcClient: RpcClient,
 		@inject(RpcRequestFactory) private readonly rpcRequestFactory: RpcRequestFactory,
@@ -31,12 +36,23 @@ export class JoinToGroupTaskHandler implements TaskHandlerInterface {
 			return;
 		}
 
-		const vkUser = await this.vkUserService.getCredentialsByLogin(task.vkUserCredentials.login);
+		const vkUser = await this.vkUserService.getCredentialsByLogin(
+			task.vkUserCredentials.login,
+			true,
+		);
+
 		if (!vkUser) {
 			this.logger.warn({
 				message: 'этого пользователя уже забанили',
 				userCredentials: task.vkUserCredentials,
 			});
+			await this.JoinToGroupTaskModel.updateMany(
+				{
+					'vkUserCredentials.login': task.vkUserCredentials.login,
+					status: statuses.waiting,
+				},
+				{ $set: { status: statuses.finished } },
+			);
 			return;
 		}
 
