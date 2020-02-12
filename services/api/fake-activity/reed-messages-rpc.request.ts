@@ -8,7 +8,7 @@ type ReedMessageArgument = {
 export class ReedMessagesRpcRequest extends AbstractRpcRequest {
 	protected readonly method = 'reed_messages';
 
-	protected readonly retriesLimit = 2;
+	protected readonly retriesLimit = 1;
 
 	setArguments(args: ReedMessageArgument) {
 		this.args = args;

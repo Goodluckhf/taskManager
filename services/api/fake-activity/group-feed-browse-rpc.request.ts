@@ -10,7 +10,7 @@ type GroupFeedBrowseArgument = {
 export class GroupFeedBrowseRpcRequest extends AbstractRpcRequest {
 	protected readonly method = 'browse_feed_group';
 
-	protected readonly retriesLimit = 2;
+	protected readonly retriesLimit = 1;
 
 	setArguments(args: GroupFeedBrowseArgument) {
 		this.args = args;

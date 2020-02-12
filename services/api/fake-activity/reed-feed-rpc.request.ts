@@ -13,7 +13,7 @@ type ReedFeedArgument = {
 export class ReedFeedRpcRequest extends AbstractRpcRequest {
 	protected readonly method = 'reed_feed';
 
-	protected readonly retriesLimit = 2;
+	protected readonly retriesLimit = 1;
 
 	setArguments(args: ReedFeedArgument) {
 		this.args = args;
