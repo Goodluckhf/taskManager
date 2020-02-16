@@ -7,8 +7,19 @@ x-default-logging: &default-logging
     max-file: '1'
 
 services:
+  process-exporter:
+    image: ncabatoff/process-exporter
+    container_name: process-exporter
+    privileged: true
+    restart: always
+    networks:
+      - app-net
+    volumes:
+      - /proc:/host/proc
+      - ./process-exporter:/config
+    command: --procfs /host/proc -config.path /config/all.yml --web.listen-address=:9256
   prometheus:
-    image: just1ce/tasks_prometheus:v0.1.0
+    image: just1ce/tasks_prometheus:v0.2.0
     container_name: prometheus
     networks:
       - app-net
