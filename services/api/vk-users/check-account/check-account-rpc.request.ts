@@ -6,6 +6,8 @@ export class CheckAccountRpcRequest extends AbstractRpcRequest {
 
 	protected readonly retriesLimit = 3;
 
+	protected priority = 2;
+
 	setArguments(args: { userCredentials: VkUserCredentialsInterface }) {
 		this.args = args;
 	}

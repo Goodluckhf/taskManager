@@ -6,6 +6,8 @@ export class JoinGroupRpcRequest extends AbstractRpcRequest {
 
 	protected readonly retriesLimit = 3;
 
+	protected priority = 2;
+
 	setArguments(args: { userCredentials: VkUserCredentialsInterface; groupId: string }) {
 		this.args = args;
 	}
