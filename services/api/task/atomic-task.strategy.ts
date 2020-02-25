@@ -85,11 +85,12 @@ export class AtomicTaskStrategy implements TaskStrategyInterface {
 			},
 		);
 
-		const rootTask = await this.CommonTaskModel.findOne({
-			_id: parentTaskId,
+		const subTasksLeftForProcessCount = await this.CommonTaskModel.count({
+			parentTaskId,
+			$or: [{ status: statuses.waiting }, { status: statuses.pending }],
 		});
 
-		if (rootTask.finishedCount + rootTask.subTasksErrors.length >= rootTask.tasksCount) {
+		if (subTasksLeftForProcessCount === 0) {
 			await this.CommonTaskModel.update(
 				{ _id: parentTaskId },
 				{ $set: { status: statuses.finished } },
