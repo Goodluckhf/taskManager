@@ -12,6 +12,7 @@ import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
 import { AuthExceptionCatcher } from './auth-exception.catcher';
 import { statuses } from '../task/status.constant';
 import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
+import { SessionTokenRpcResponseInterface } from './session-token-rpc-response.interface';
 
 @injectable()
 export class JoinToGroupTaskHandler implements TaskHandlerInterface {
@@ -68,7 +69,11 @@ export class JoinToGroupTaskHandler implements TaskHandlerInterface {
 		});
 
 		try {
-			await this.rpcClient.call(rpcRequest);
+			const response = await this.rpcClient.call<SessionTokenRpcResponseInterface>(
+				rpcRequest,
+			);
+
+			await this.vkUserService.updateSession(vkUserCredentials.login, response.remixsid);
 		} catch (error) {
 			await this.authExceptionCatcher.catch(error, vkUserCredentials);
 
