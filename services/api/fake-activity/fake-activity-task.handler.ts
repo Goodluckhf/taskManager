@@ -9,6 +9,7 @@ import { FakeActivityTaskService } from './fake-activity-task.service';
 import { User } from '../users/user';
 import { AuthExceptionCatcher } from '../vk-users/auth-exception.catcher';
 import { FakeActivityRandomizerFactory } from './fake-activity-randomizer.factory';
+import { SessionTokenRpcResponseInterface } from '../vk-users/session-token-rpc-response.interface';
 
 @injectable()
 export class FakeActivityTaskHandler implements TaskHandlerInterface {
@@ -39,7 +40,11 @@ export class FakeActivityTaskHandler implements TaskHandlerInterface {
 				}
 
 				try {
-					await this.rpcClient.call(rpcRequest);
+					const response = await this.rpcClient.call<SessionTokenRpcResponseInterface>(
+						rpcRequest,
+					);
+
+					await this.vkUserService.updateSession(task.login, response.remixsid);
 				} catch (error) {
 					const catched = await this.authExceptionCatcher.catch(error, vkUser);
 					if (catched) {

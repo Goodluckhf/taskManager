@@ -111,7 +111,11 @@ class RpcClient {
 				);
 
 				try {
-					await this.channel.assertQueue(request.getQueue());
+					await this.channel.assertQueue(request.getQueue(), {
+						durable: true,
+						maxPriority: 5,
+					});
+
 					this.channel.sendToQueue(request.getQueue(), Buffer.from(message), {
 						headers: {
 							'X-Retry-Limit': request.getRetriesLimit(),
@@ -120,6 +124,7 @@ class RpcClient {
 						correlationId: request.getId(),
 						replyTo: this.answerQueue,
 						persistent: true,
+						priority: request.getPriority(),
 					});
 				} catch (error) {
 					this.logger.error({ error });

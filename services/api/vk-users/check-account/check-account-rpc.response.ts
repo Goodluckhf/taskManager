@@ -1,6 +1,7 @@
 import { Transform } from 'class-transformer';
+import { SessionTokenRpcResponseInterface } from '../session-token-rpc-response.interface';
 
-export class CheckAccountRpcResponse {
+export class CheckAccountRpcResponse implements SessionTokenRpcResponseInterface {
 	@Transform(value => !!value)
 	isActive: boolean;
 

@@ -19,6 +19,15 @@ export class VkUserService {
 		return count > 0;
 	}
 
+	async updateSession(login: string, remixsid: string) {
+		const user = await this.findByLogin(login);
+		if (user.remixsid === remixsid) {
+			return;
+		}
+
+		await this.VkUsersModel.update({ login }, { $set: { remixsid } });
+	}
+
 	async hasUserJoinedGroup(
 		credentials: VkUserCredentialsInterface,
 		groupId: string,
@@ -103,11 +112,10 @@ export class VkUserService {
 	}
 
 	async setInactive(login: string, reason: any) {
-		const user = await this.VkUsersModel.findOne({ login });
-		user.isActive = false;
-		user.errorComment = reason;
-		user.inactiveAt = moment();
-		await user.save();
+		await this.VkUsersModel.update(
+			{ login },
+			{ $set: { isActive: false, errorComment: reason, inactiveAt: moment() } },
+		);
 	}
 
 	async setSensativeCredentials(login: string, remixsid: string, userAgent: string) {

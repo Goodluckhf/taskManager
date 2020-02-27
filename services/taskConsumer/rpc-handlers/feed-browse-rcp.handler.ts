@@ -44,7 +44,7 @@ export class FeedBrowseRcpHandler extends AbstractRpcHandler {
 			);
 			browser = _browser;
 
-			await this.vkAuthorizer.authorize(page, {
+			const { remixsid } = await this.vkAuthorizer.authorize(page, {
 				login: userCredentials.login,
 				password: userCredentials.password,
 				proxy: userCredentials.proxy,
@@ -52,7 +52,7 @@ export class FeedBrowseRcpHandler extends AbstractRpcHandler {
 			});
 
 			await this.feedBrowser.browse(page, feedOptions);
-			return {};
+			return { remixsid };
 		} catch (error) {
 			error.canRetry = typeof error.canRetry !== 'undefined' ? error.canRetry : canRetry;
 			throw error;

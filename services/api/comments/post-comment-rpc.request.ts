@@ -6,6 +6,8 @@ export class PostCommentRpcRequest extends AbstractRpcRequest {
 
 	protected readonly retriesLimit = 4;
 
+	protected priority = 5;
+
 	setArguments(args: PostCommentArgInterface) {
 		this.args = args;
 	}

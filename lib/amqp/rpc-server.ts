@@ -41,7 +41,10 @@ export class RpcServer {
 		this.connection = await this.amqpAdapter.connect();
 		this.channel = await this.connection.createChannel();
 
-		await this.channel.assertQueue(this.queue);
+		await this.channel.assertQueue(this.queue, {
+			durable: true,
+			maxPriority: 5,
+		});
 		await this.channel.prefetch(this.prefetch);
 
 		return this.channel.consume(this.queue, async msg => {

@@ -7,6 +7,8 @@ export abstract class AbstractRpcRequest {
 
 	protected abstract readonly retriesLimit: number;
 
+	protected priority = 0;
+
 	private queue: string;
 
 	private timeout: number;
@@ -43,6 +45,15 @@ export abstract class AbstractRpcRequest {
 
 	getQueue(): string {
 		return this.queue;
+	}
+
+	setPriority(priority: number): this {
+		this.priority = priority;
+		return this;
+	}
+
+	getPriority(): number {
+		return this.priority;
 	}
 
 	getRetriesLimit(): number {
