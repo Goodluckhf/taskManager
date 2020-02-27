@@ -19,6 +19,15 @@ export class VkUserService {
 		return count > 0;
 	}
 
+	async updateSession(login: string, remixsid: string) {
+		const user = await this.findByLogin(login);
+		if (user.remixsid === remixsid) {
+			return;
+		}
+
+		await this.VkUsersModel.update({ login }, { $set: { remixsid } });
+	}
+
 	async hasUserJoinedGroup(
 		credentials: VkUserCredentialsInterface,
 		groupId: string,
