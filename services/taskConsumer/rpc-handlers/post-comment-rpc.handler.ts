@@ -49,7 +49,7 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 			const { page, browser: _browser } = await createBrowserPage(proxy, userAgent);
 			browser = _browser;
 
-			await this.vkAuthorizer.authorize(page, {
+			const { remixsid: newRemixsid } = await this.vkAuthorizer.authorize(page, {
 				login,
 				password,
 				proxy,
@@ -289,7 +289,7 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 
 				throw new Error('Unexpected lost new comment id');
 			}
-			return { commentId: newCommentId };
+			return { commentId: newCommentId, remixsid: newRemixsid };
 		} catch (error) {
 			error.canRetry = typeof error.canRetry !== 'undefined' ? error.canRetry : canRetry;
 			throw error;

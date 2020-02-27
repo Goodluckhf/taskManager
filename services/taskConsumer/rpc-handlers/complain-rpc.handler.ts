@@ -39,7 +39,7 @@ export class ComplainRpcHandler extends AbstractRpcHandler {
 		try {
 			const { page, browser: _browser } = await createBrowserPage(proxy, userAgent);
 			browser = _browser;
-			await this.vkAuthorizer.authorize(page, {
+			const { remixsid: newRemixsid } = await this.vkAuthorizer.authorize(page, {
 				login,
 				password,
 				proxy,
@@ -60,7 +60,7 @@ export class ComplainRpcHandler extends AbstractRpcHandler {
 					message: 'Коммент уже удалили',
 					commentLink,
 				});
-				return {};
+				return { remixsid: newRemixsid };
 			}
 			await page.evaluate(selector => {
 				document.querySelector(selector).click();
@@ -78,7 +78,7 @@ export class ComplainRpcHandler extends AbstractRpcHandler {
 			}, '.ReportConfirmationPopup__footer__submit-button');
 
 			await page.waitForSelector('#notifiers_wrap .notifier_baloon_msg');
-			return {};
+			return { remixsid: newRemixsid };
 		} catch (error) {
 			error.canRetry = typeof error.canRetry !== 'undefined' ? error.canRetry : canRetry;
 			throw error;
