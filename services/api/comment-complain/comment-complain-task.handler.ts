@@ -8,6 +8,7 @@ import { RpcRequestFactory } from '../../../lib/amqp/rpc-request.factory';
 import { CommentComplainRpcRequest } from './comment-complain-rpc.request';
 import { VkUserService } from '../vk-users/vk-user.service';
 import { AuthExceptionCatcher } from '../vk-users/auth-exception.catcher';
+import { SessionTokenRpcResponseInterface } from '../vk-users/session-token-rpc-response.interface';
 
 @injectable()
 export class CommentComplainTaskHandler implements TaskHandlerInterface {
@@ -26,7 +27,11 @@ export class CommentComplainTaskHandler implements TaskHandlerInterface {
 		const userCredentials = await this.vkUserService.getCredentialsByLogin(task.login);
 		rpcRequest.setArguments({ commentLink: task.commentLink, userCredentials });
 		try {
-			await this.rpcClient.call(rpcRequest);
+			const response = await this.rpcClient.call<SessionTokenRpcResponseInterface>(
+				rpcRequest,
+			);
+
+			await this.vkUserService.updateSession(task.login, response.remixsid);
 		} catch (error) {
 			const catched = await this.authExceptionCatcher.catch(error, userCredentials);
 			if (catched) {
