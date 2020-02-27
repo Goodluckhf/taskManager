@@ -112,11 +112,10 @@ export class VkUserService {
 	}
 
 	async setInactive(login: string, reason: any) {
-		const user = await this.VkUsersModel.findOne({ login });
-		user.isActive = false;
-		user.errorComment = reason;
-		user.inactiveAt = moment();
-		await user.save();
+		await this.VkUsersModel.update(
+			{ login },
+			{ $set: { isActive: false, errorComment: reason, inactiveAt: moment() } },
+		);
 	}
 
 	async setSensativeCredentials(login: string, remixsid: string, userAgent: string) {
