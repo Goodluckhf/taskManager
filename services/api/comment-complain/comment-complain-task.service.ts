@@ -36,7 +36,7 @@ export class CommentComplainTaskService {
 				const newTask = new this.CommentComplainTaskModel();
 				newTask.user = user;
 				newTask.login = vkUser.login;
-				newTask.commentLink = dto.commentLink;
+				newTask.postLink = dto.postLink;
 				newTask.startAt = moment().add(getRandom(0, secondsDistributionTop), 's');
 				await newTask.save();
 			},
