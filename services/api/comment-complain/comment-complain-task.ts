@@ -10,7 +10,7 @@ export class CommentComplainTask extends CommonTask implements DelayableTaskInte
 	startAt: Date | moment.Moment;
 
 	@prop({ required: true })
-	commentLink: string;
+	postLink: string;
 
 	@prop({ required: true })
 	login: string;
