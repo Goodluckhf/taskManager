@@ -21,9 +21,9 @@ export class ComplainRpcHandler extends AbstractRpcHandler {
 
 	@inject(PageTransitor) private readonly pageTransitor: PageTransitor;
 
-	protected readonly method = 'complain_comment';
+	protected readonly method = 'complain_post';
 
-	static readonly method = 'complain_comment';
+	static readonly method = 'complain_post';
 
 	async handle({
 		userCredentials: { login, password, proxy, remixsid, userAgent },
@@ -33,6 +33,7 @@ export class ComplainRpcHandler extends AbstractRpcHandler {
 			message: 'Задача жалобы на коммент',
 			credentials: { login, password, remixsid, userAgent },
 			proxy,
+			postLink,
 		});
 
 		const canRetry = true;
@@ -49,7 +50,7 @@ export class ComplainRpcHandler extends AbstractRpcHandler {
 				proxy,
 				remixsid,
 			});
-
+			console.log(postLink);
 			await this.pageTransitor.goto(page, postLink);
 
 			const commentIds = page.evaluate(() => {
@@ -102,7 +103,7 @@ export class ComplainRpcHandler extends AbstractRpcHandler {
 			throw error;
 		} finally {
 			if (browser) {
-				// await browser.close();
+				await browser.close();
 			}
 		}
 	}
