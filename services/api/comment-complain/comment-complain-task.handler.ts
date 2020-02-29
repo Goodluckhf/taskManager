@@ -25,7 +25,7 @@ export class CommentComplainTaskHandler implements TaskHandlerInterface {
 		const rpcRequest = this.rpcRequestFactory.create(CommentComplainRpcRequest);
 
 		const userCredentials = await this.vkUserService.getCredentialsByLogin(task.login);
-		rpcRequest.setArguments({ commentLink: task.postLink, userCredentials });
+		rpcRequest.setArguments({ postLink: task.postLink, userCredentials });
 		try {
 			const response = await this.rpcClient.call<SessionTokenRpcResponseInterface>(
 				rpcRequest,
