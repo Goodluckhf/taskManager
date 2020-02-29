@@ -25,7 +25,7 @@ export class CommentComplainTaskHandler implements TaskHandlerInterface {
 		const rpcRequest = this.rpcRequestFactory.create(CommentComplainRpcRequest);
 
 		const userCredentials = await this.vkUserService.getCredentialsByLogin(task.login);
-		rpcRequest.setArguments({ commentLink: task.commentLink, userCredentials });
+		rpcRequest.setArguments({ commentLink: task.postLink, userCredentials });
 		try {
 			const response = await this.rpcClient.call<SessionTokenRpcResponseInterface>(
 				rpcRequest,
@@ -39,7 +39,7 @@ export class CommentComplainTaskHandler implements TaskHandlerInterface {
 			}
 
 			this.logger.error({
-				message: 'Ошибка при жалобе на коммент',
+				message: 'Ошибка при жалобе на пост',
 				login: task.login,
 				taskId: task._id.toString(),
 				traceId: rpcRequest.getId(),
