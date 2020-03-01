@@ -70,6 +70,7 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 						proxy,
 						remixsid,
 						userAgent,
+						tags: task.tags,
 					});
 					await this.createTasksForGroupJoin(task.user as User, {
 						login,

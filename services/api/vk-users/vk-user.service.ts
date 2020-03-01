@@ -57,9 +57,10 @@ export class VkUserService {
 		await user.save();
 	}
 
-	async addUser(credentials: VkUserCredentialsInterface) {
+	async addUser(credentials: VkUserCredentialsInterface & { tags?: tagsEnum[] }) {
 		const newUser = new this.VkUsersModel();
 		newUser.login = credentials.login;
+		newUser.tags = credentials.tags;
 		newUser.password = credentials.password;
 		newUser.proxy = credentials.proxy;
 		newUser.remixsid = credentials.remixsid;
