@@ -21,6 +21,7 @@ import { RetriesExceededException } from './retries-exceeded.exception';
 import { NoActiveUsersLeftException } from './no-active-users-left.exception';
 import { CommentsTranslitReplacer } from './comments-translit-replacer';
 import { AuthExceptionCatcher } from '../vk-users/auth-exception.catcher';
+import { tagsEnum } from '../vk-users/tags-enum.constant';
 
 type SetCommentWithRetryArgs = {
 	taskOwnerUser: User;
@@ -108,7 +109,10 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 
 					exceptReplyToUser = rootTask.vkUserLogins[userFakeIdReplyTo];
 				}
-				const newUser = await this.vkUserService.getRandom(exceptReplyToUser);
+				const newUser = await this.vkUserService.getRandom(exceptReplyToUser, [
+					tagsEnum.female,
+					tagsEnum.complete,
+				]);
 				if (!newUser) {
 					throw new NoActiveUsersLeftException();
 				}
