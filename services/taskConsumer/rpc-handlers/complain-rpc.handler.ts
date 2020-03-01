@@ -50,12 +50,14 @@ export class ComplainRpcHandler extends AbstractRpcHandler {
 				proxy,
 				remixsid,
 			});
-			console.log(postLink);
+
 			await this.pageTransitor.goto(page, postLink);
 
 			const commentIds = page.evaluate(() => {
 				const replies = document.querySelectorAll('#page_wall_posts .replies .reply');
-				return [...replies].map(reply => reply.id);
+				return [...replies]
+					.filter(reply => !reply.classList.contains('reply_deleted'))
+					.map(reply => reply.id);
 			});
 
 			await bluebird.map(
