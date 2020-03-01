@@ -21,7 +21,7 @@ export class VkUser implements VkUserCredentialsInterface {
 	isActive: boolean;
 
 	@arrayProp({ enum: tagsEnum, type: String })
-	pool: tagsEnum;
+	tags: tagsEnum;
 
 	@prop()
 	errorComment: Schema.Types.Mixed;
