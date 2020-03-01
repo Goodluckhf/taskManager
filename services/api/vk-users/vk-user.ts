@@ -4,6 +4,7 @@ import moment from 'moment';
 import { model } from '../../../lib/inversify-typegoose/model.decorator';
 import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
 import { ProxyInterface } from '../proxies/proxy.interface';
+import { tagsEnum } from './tags-enum.constant';
 
 @model()
 export class VkUser implements VkUserCredentialsInterface {
@@ -18,6 +19,9 @@ export class VkUser implements VkUserCredentialsInterface {
 
 	@prop({ default: true })
 	isActive: boolean;
+
+	@arrayProp({ enum: tagsEnum, type: String })
+	pool: tagsEnum;
 
 	@prop()
 	errorComment: Schema.Types.Mixed;
