@@ -16,8 +16,10 @@ import {
 	Collapse,
 	Button,
 } from 'reactstrap';
+import Multiselect from 'react-widgets/lib/Multiselect';
 import LoadingButton, { S } from '../ui/LoadingButton';
 import ApiError from '../ui/ApiError';
+import { tagsArray } from '../../../constants';
 
 class Form extends PureComponent {
 	constructor(props) {
@@ -27,6 +29,7 @@ class Form extends PureComponent {
 			csvStrategy: '',
 			json: null,
 			strategyOpen: false,
+			botTags: [],
 		};
 	}
 
@@ -70,11 +73,16 @@ class Form extends PureComponent {
 		this.props.addCommentsStrategy({
 			postLink: this.state.postLink,
 			commentsStrategy: this.state.json,
+			userTags: this.state.botTags,
 		});
 	};
 
 	toggleStrategy = () => {
 		this.setState({ strategyOpen: !this.state.strategyOpen });
+	};
+
+	onChangeTags = value => {
+		this.setState({ botTags: value.map(o => o.value) });
 	};
 
 	render() {
@@ -95,13 +103,23 @@ class Form extends PureComponent {
 										placeholder="https://vk.com/wall-107952301_459"
 									/>
 								</Col>
-								<Col>
+								<Col md="6">
 									<Label>csv стратегия комментов</Label>
 									<Input
 										onChange={this.handleCsv}
 										type="textarea"
 										value={this.state.csvStrategy}
 										style={{ height: '200px' }}
+									/>
+								</Col>
+								<Col md="2">
+									<Label>Тэги</Label>
+									<Multiselect
+										defaultValue={['female', 'complete']}
+										valueField={'value'}
+										textField={'name'}
+										data={tagsArray}
+										onChange={this.onChangeTags}
 									/>
 								</Col>
 							</Row>

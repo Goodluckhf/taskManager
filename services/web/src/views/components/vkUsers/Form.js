@@ -18,12 +18,7 @@ import {
 } from 'reactstrap';
 import LoadingButton, { S, XS } from '../ui/LoadingButton';
 import ApiError from '../ui/ApiError';
-
-const tagsData = [
-	{ name: 'Женские', value: 'female' },
-	{ name: 'Заполененные', value: 'complete' },
-	{ name: 'Мужские', value: 'male' },
-];
+import { tagsArray } from '../../../constants';
 
 class Form extends PureComponent {
 	constructor(props) {
@@ -171,7 +166,7 @@ class Form extends PureComponent {
 									<Multiselect
 										valueField={'value'}
 										textField={'name'}
-										data={tagsData}
+										data={tagsArray}
 										onChange={this.onChangeTags}
 									/>
 								</Col>
