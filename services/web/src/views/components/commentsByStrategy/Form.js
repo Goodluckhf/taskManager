@@ -13,6 +13,8 @@ import {
 	Label,
 	Row,
 	Col,
+	Collapse,
+	Button,
 } from 'reactstrap';
 import LoadingButton, { S } from '../ui/LoadingButton';
 import ApiError from '../ui/ApiError';
@@ -24,6 +26,7 @@ class Form extends PureComponent {
 			postLink: '',
 			csvStrategy: '',
 			json: null,
+			strategyOpen: false,
 		};
 	}
 
@@ -70,6 +73,10 @@ class Form extends PureComponent {
 		});
 	};
 
+	toggleStrategy = () => {
+		this.setState({ strategyOpen: !this.state.strategyOpen });
+	};
+
 	render() {
 		return (
 			<Card>
@@ -101,11 +108,26 @@ class Form extends PureComponent {
 							{this.state.json && (
 								<Row>
 									<Col>
+										<span className="h6">Спарешенная стратегия:</span>
 										<hr />
-										<pre
-											style={{ backgroundColor: '#f0f3f5', padding: '15px' }}>
-											{JSON.stringify(this.state.json, null, 2)}
-										</pre>
+										<div>
+											<Button
+												color="primary"
+												size="sm"
+												onClick={this.toggleStrategy}
+												style={{ marginBottom: '1rem' }}>
+												свернуть/развернуть
+											</Button>
+										</div>
+										<Collapse isOpen={this.state.strategyOpen}>
+											<pre
+												style={{
+													backgroundColor: '#f0f3f5',
+													padding: '15px',
+												}}>
+												{JSON.stringify(this.state.json, null, 2)}
+											</pre>
+										</Collapse>
 									</Col>
 								</Row>
 							)}
