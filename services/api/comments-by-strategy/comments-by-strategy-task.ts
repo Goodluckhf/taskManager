@@ -22,6 +22,6 @@ export class CommentsByStrategyTask extends CommonTask
 	@prop({ required: true, type: Date })
 	startAt: Date | moment.Moment;
 
-	@arrayProp({ item: tagsEnum })
+	@arrayProp({ enum: tagsEnum, type: String })
 	userTags: tagsEnum[];
 }
