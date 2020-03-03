@@ -33,12 +33,15 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 	 * @param {string} postLink
 	 * @param {string} rawStrategy
 	 */
-	async handle({ postLink, commentsStrategy: strategy, user, _id }: CommentsByStrategyTask) {
+	async handle({
+		postLink,
+		commentsStrategy: strategy,
+		user,
+		_id,
+		userTags,
+	}: CommentsByStrategyTask) {
 		const accountsLength = uniqBy(strategy, item => item.userFakeId).length;
-		const vkUsers = await this.vkUserService.findActive(accountsLength, [
-			tagsEnum.complete,
-			tagsEnum.female,
-		]);
+		const vkUsers = await this.vkUserService.findActive(accountsLength, userTags);
 		if (vkUsers.length < accountsLength) {
 			throw new Error(`There is not enough accounts | need: ${accountsLength}`);
 		}
