@@ -1,6 +1,7 @@
 import { injectable } from 'inversify';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import moment from 'moment';
+import { uniq } from 'lodash';
 import { plainToClass } from 'class-transformer';
 import { CommentByStrategyTaskInterface } from './comment-by-strategy-task.interface';
 import { CommentsByStrategyTask } from './comments-by-strategy-task';
@@ -51,5 +52,20 @@ export class CommentByStrategyApi {
 			...plainToClass(CommonTask, activeTasks),
 			...plainToClass(CommonTask, lastInactiveTasks),
 		];
+	}
+
+	async getRecentPostLinks(): Promise<string[]> {
+		const tasks: CommentsByStrategyTask[] = await this.CommentsByStrategyTaskModel.find({
+			status: { $in: [statuses.finished, statuses.pending] },
+			createdAt: {
+				$gte: moment()
+					.startOf('d')
+					.subtract(3, 'd'),
+			},
+		})
+			.lean()
+			.exec();
+
+		return uniq(tasks.map(t => t.postLink));
 	}
 }
