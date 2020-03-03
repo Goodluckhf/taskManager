@@ -23,6 +23,7 @@ export class CommentByStrategyApi {
 		newTask.commentsStrategy = dto.commentsStrategy;
 		newTask.tasksCount = dto.commentsStrategy.length;
 		newTask.startAt = moment();
+		newTask.userTags = dto.userTags;
 		newTask.user = user;
 
 		await newTask.save();
