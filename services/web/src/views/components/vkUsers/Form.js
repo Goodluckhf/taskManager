@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import chunk from 'lodash/chunk';
+import 'react-widgets/dist/css/react-widgets.css';
+import Multiselect from 'react-widgets/lib/Multiselect';
 
 import {
 	Card,
@@ -16,12 +18,14 @@ import {
 } from 'reactstrap';
 import LoadingButton, { S, XS } from '../ui/LoadingButton';
 import ApiError from '../ui/ApiError';
+import { tagsArray } from '../../../constants';
 
 class Form extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
 			usersCredentials: '',
+			tags: [],
 			proxiesCredentials: '',
 			groupId: '',
 		};
@@ -96,6 +100,7 @@ class Form extends PureComponent {
 
 		this.props.addVkUsers({
 			usersCredentials: userCredentialsWithProxy,
+			tags: this.state.tags,
 		});
 	};
 
@@ -116,6 +121,10 @@ class Form extends PureComponent {
 
 	handleGroupIdInput = e => {
 		this.setState({ groupId: e.target.value.trim() });
+	};
+
+	onChangeTags = value => {
+		this.setState({ tags: value.map(o => o.value) });
 	};
 
 	render() {
@@ -140,7 +149,7 @@ class Form extends PureComponent {
 										style={{ height: '200px' }}
 									/>
 								</Col>
-								<Col md="7">
+								<Col md="5">
 									<Label>
 										Список проксей пример: <b>ip:port:login:password</b> каждый
 										с новой строки
@@ -152,7 +161,15 @@ class Form extends PureComponent {
 										style={{ height: '200px' }}
 									/>
 								</Col>
-
+								<Col md="2">
+									<Label>Тэги</Label>
+									<Multiselect
+										valueField={'value'}
+										textField={'name'}
+										data={tagsArray}
+										onChange={this.onChangeTags}
+									/>
+								</Col>
 								{/*<Col md="2" style={{displa}}>*/}
 								{/*	<Label>Добавить группу</Label>*/}
 								{/*	<Row>*/}

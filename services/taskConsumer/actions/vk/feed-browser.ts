@@ -93,7 +93,7 @@ export class FeedBrowser {
 		);
 	}
 
-	private async likePost(post: ElementHandle) {
+	async likePost(post: ElementHandle) {
 		const alreadyLiked = await post.evaluate(node => {
 			return node.querySelector('a.like_btn.like.active');
 		});
@@ -110,7 +110,7 @@ export class FeedBrowser {
 		await likeElement.click();
 	}
 
-	private async repost(page: Page, post: ElementHandle) {
+	async repost(page: Page, post: ElementHandle) {
 		const repostElement = await post.$('a.like_btn.share');
 		await repostElement.click();
 		await page.waitForSelector('#box_layer .like_share_wrap');

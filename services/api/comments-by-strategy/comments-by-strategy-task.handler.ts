@@ -13,6 +13,7 @@ import { getRandom, groupIdByPostLink } from '../../../lib/helper';
 import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 import { SetCommentTask } from '../comments/set-comment-task';
 import { ConfigInterface } from '../../../config/config.interface';
+import { tagsEnum } from '../vk-users/tags-enum.constant';
 
 @injectable()
 export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
@@ -32,9 +33,15 @@ export class CommentsByStrategyTaskHandler implements TaskHandlerInterface {
 	 * @param {string} postLink
 	 * @param {string} rawStrategy
 	 */
-	async handle({ postLink, commentsStrategy: strategy, user, _id }: CommentsByStrategyTask) {
+	async handle({
+		postLink,
+		commentsStrategy: strategy,
+		user,
+		_id,
+		userTags,
+	}: CommentsByStrategyTask) {
 		const accountsLength = uniqBy(strategy, item => item.userFakeId).length;
-		const vkUsers = await this.vkUserService.findActive(accountsLength);
+		const vkUsers = await this.vkUserService.findActive(accountsLength, userTags);
 		if (vkUsers.length < accountsLength) {
 			throw new Error(`There is not enough accounts | need: ${accountsLength}`);
 		}

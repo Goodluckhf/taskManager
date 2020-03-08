@@ -4,7 +4,7 @@ import { CommentComplainRpcArgsInterface } from './comment-complain-rpc-args.int
 export class CommentComplainRpcRequest extends AbstractRpcRequest {
 	protected readonly method = 'complain_post';
 
-	protected readonly retriesLimit = 2;
+	protected readonly retriesLimit = 0;
 
 	setArguments(args: CommentComplainRpcArgsInterface) {
 		this.args = args;

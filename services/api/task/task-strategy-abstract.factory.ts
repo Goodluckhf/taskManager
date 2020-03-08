@@ -21,6 +21,7 @@ export class TaskStrategyAbstractFactory {
 		CheckAccountTask: AtomicTaskStrategy,
 		FakeActivityTask: AtomicTaskStrategy,
 		CommentComplainTask: AtomicTaskStrategy,
+		CoverageImprovementTask: AtomicTaskStrategy,
 	};
 
 	constructor(

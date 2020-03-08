@@ -108,7 +108,10 @@ export class SetCommentTaskHandler implements TaskHandlerInterface {
 
 					exceptReplyToUser = rootTask.vkUserLogins[userFakeIdReplyTo];
 				}
-				const newUser = await this.vkUserService.getRandom(exceptReplyToUser);
+				const newUser = await this.vkUserService.getRandom(
+					exceptReplyToUser,
+					rootTask.userTags,
+				);
 				if (!newUser) {
 					throw new NoActiveUsersLeftException();
 				}

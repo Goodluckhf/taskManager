@@ -65,6 +65,11 @@ module.exports = {
 		tasksPerMinute: parseInt(process.env.COMMENT_COMPLAIN_TASK__TASKS_PER_MINUTE, 10),
 	},
 
+	coverageImprovementTask: {
+		tasksPerMinute: parseInt(process.env.COVERAGE_IMPROVEMENT_TASK__TASKS_PER_MINUTE, 10),
+		baseDelay: parseInt(process.env.COVERAGE_IMPROVEMENT_TASK__BASE_DELAY, 10),
+	},
+
 	postCommentsTask: {
 		retriesLimit: process.env.POST_COMMENTS_TASK__RETRY_LIMIT,
 		translitEnabled: process.env.POST_COMMENTS_TASK__TRANSLIT_ENABLED === 'true',

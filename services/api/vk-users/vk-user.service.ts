@@ -5,13 +5,21 @@ import moment from 'moment';
 import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 import { VkUser } from './vk-user';
 import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
+import { tagsEnum } from './tags-enum.constant';
 
 @injectable()
 export class VkUserService {
 	constructor(@injectModel(VkUser) private readonly VkUsersModel: ModelType<VkUser>) {}
 
-	async countActive(): Promise<number> {
-		return this.VkUsersModel.count({ isActive: true });
+	async countActive(tags: tagsEnum[] = []): Promise<number> {
+		const query: { isActive: boolean; tags?: object } = {
+			isActive: true,
+		};
+
+		if (tags.length > 0) {
+			query.tags = { $all: tags };
+		}
+		return this.VkUsersModel.count(query);
 	}
 
 	async exists(login: string): Promise<boolean> {
@@ -49,9 +57,10 @@ export class VkUserService {
 		await user.save();
 	}
 
-	async addUser(credentials: VkUserCredentialsInterface) {
+	async addUser(credentials: VkUserCredentialsInterface & { tags?: tagsEnum[] }) {
 		const newUser = new this.VkUsersModel();
 		newUser.login = credentials.login;
+		newUser.tags = credentials.tags;
 		newUser.password = credentials.password;
 		newUser.proxy = credentials.proxy;
 		newUser.remixsid = credentials.remixsid;
@@ -59,27 +68,45 @@ export class VkUserService {
 		await newUser.save();
 	}
 
-	async findActive(count: number): Promise<VkUser[]> {
-		const users = await this.VkUsersModel.find({ isActive: true })
+	async findActive(count: number, tags: tagsEnum[] = []): Promise<VkUser[]> {
+		const query: { isActive: boolean; tags?: object } = {
+			isActive: true,
+		};
+
+		if (tags.length > 0) {
+			query.tags = { $all: tags };
+		}
+
+		const users = await this.VkUsersModel.find(query)
 			.lean()
 			.exec();
 
 		return shuffle(shuffle(users)).slice(0, count);
 	}
 
-	async getAllActive(): Promise<VkUser[]> {
-		return this.VkUsersModel.find({
+	async getAllActive(tags: tagsEnum[] = []): Promise<VkUser[]> {
+		const query: { isActive: boolean; tags?: object } = {
 			isActive: true,
-		})
+		};
+
+		if (tags.length > 0) {
+			query.tags = { $all: tags };
+		}
+
+		return this.VkUsersModel.find(query)
 			.lean()
 			.exec();
 	}
 
-	async getRandom(exceptUser: VkUser): Promise<VkUser> {
-		const query: { isActive: boolean; login?: object } = { isActive: true };
+	async getRandom(exceptUser: VkUser, tags: tagsEnum[] = []): Promise<VkUser> {
+		const query: { isActive: boolean; login?: object; tags?: object } = { isActive: true };
 
 		if (exceptUser) {
 			query.login = { $ne: exceptUser.login };
+		}
+
+		if (tags.length > 0) {
+			query.tags = { $all: tags };
 		}
 
 		const users = await this.VkUsersModel.find(query)

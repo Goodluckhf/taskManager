@@ -3,9 +3,9 @@ import {
 	controller,
 	httpGet,
 	httpPost,
-	requestBody,
-	principal,
 	interfaces,
+	principal,
+	requestBody,
 } from 'inversify-express-utils';
 import { inject } from 'inversify';
 import { plainToClass } from 'class-transformer';
@@ -18,6 +18,7 @@ import { VkUserTaskService } from './vk-user-task.service';
 import { User } from '../users/user';
 import { GroupJoinDto } from './dto/group-join.dto';
 import { GroupJoinTaskService } from './group-join-task.service';
+import { tagsEnum } from './tags-enum.constant';
 
 @controller('/api')
 export class VkUserController extends BaseHttpController {
@@ -29,7 +30,13 @@ export class VkUserController extends BaseHttpController {
 
 	@httpGet('/vk-users/active', AuthMiddleware)
 	async getActiveCount() {
-		return this.json({ success: true, data: await this.vkUserService.countActive() }, 200);
+		return this.json(
+			{
+				success: true,
+				data: await this.vkUserService.countActive([tagsEnum.female, tagsEnum.complete]),
+			},
+			200,
+		);
 	}
 
 	@httpPost('/vk-users-task', AuthMiddleware)

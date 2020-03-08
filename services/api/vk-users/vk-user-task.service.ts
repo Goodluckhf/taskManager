@@ -24,6 +24,8 @@ export class VkUserTaskService {
 		newTask.usersCredentials = dto.usersCredentials;
 		newTask.user = user;
 		newTask.startAt = moment();
+		newTask.tags = dto.tags;
+
 		await newTask.save();
 		return plainToClass(CheckAndAddUserTask, newTask.toObject());
 	}

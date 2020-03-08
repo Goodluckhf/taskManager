@@ -17,6 +17,7 @@ import './auth/auth.controller';
 import './task/task.controller';
 import './vk-users/vk-user.controller';
 import './comment-complain/comment-complain.controller';
+import './coverage-improvement/coverage-improvement.controller';
 
 import { AuthMiddleware } from './auth/auth.middleware';
 import { CheckAndAddUserTaskHandler } from './vk-users/check-account/check-and-add-user-task.handler';
@@ -29,6 +30,7 @@ import { SetCommentTaskHandler } from './comments/set-comment-task.handler';
 import { CheckAccountTaskHandler } from './vk-users/check-account/check-account-task.handler';
 import { FakeActivityTaskHandler } from './fake-activity/fake-activity-task.handler';
 import { CommentComplainTaskHandler } from './comment-complain/comment-complain-task.handler';
+import { CoverageImprovementTaskHandler } from './coverage-improvement/coverage-improvement-task.handler';
 
 export function createContainer() {
 	const container = new Container({
@@ -50,6 +52,7 @@ export function createContainer() {
 	container.bind<TaskHandlerInterface>('TaskHandlerInterface').to(CheckAccountTaskHandler);
 	container.bind<TaskHandlerInterface>('TaskHandlerInterface').to(FakeActivityTaskHandler);
 	container.bind<TaskHandlerInterface>('TaskHandlerInterface').to(CommentComplainTaskHandler);
+	container.bind<TaskHandlerInterface>('TaskHandlerInterface').to(CoverageImprovementTaskHandler);
 	container.bind<TaskStrategyInterface>('TaskStrategyInterface').to(CompositeTaskStrategy);
 	container.bind<TaskStrategyInterface>('TaskStrategyInterface').to(AtomicTaskStrategy);
 

@@ -5,6 +5,7 @@ import { CommonTask } from '../task/common-task';
 import { CommentStrategy } from './comment-strategy';
 import { CommentByStrategyTaskInterface } from './comment-by-strategy-task.interface';
 import { DelayableTaskInterface } from '../task/delayable-task.interface';
+import { tagsEnum } from '../vk-users/tags-enum.constant';
 
 @model({ discriminatorClass: CommonTask })
 export class CommentsByStrategyTask extends CommonTask
@@ -20,4 +21,7 @@ export class CommentsByStrategyTask extends CommonTask
 
 	@prop({ required: true, type: Date })
 	startAt: Date | moment.Moment;
+
+	@arrayProp({ enum: tagsEnum, type: String })
+	userTags: tagsEnum[];
 }
