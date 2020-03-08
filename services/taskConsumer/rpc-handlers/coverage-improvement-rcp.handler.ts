@@ -60,7 +60,7 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 			throw error;
 		} finally {
 			if (browser) {
-				// await browser.close();
+				await browser.close();
 			}
 		}
 	}
@@ -95,6 +95,7 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 		}, {});
 
 		const posts = await page.$$('.post');
+		let processedPosts = 0;
 		await bluebird.map(
 			posts,
 			async post => {
@@ -108,11 +109,18 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 				await post.evaluate(node =>
 					node.querySelector<HTMLAnchorElement>('a.replies_next_main').click(),
 				);
+
+				processedPosts += 1;
 				const randomDelay = getRandom(0, 3000);
 				await bluebird.delay(randomDelay);
 			},
 			{ concurrency: 1 },
 		);
+
+		this.logger.info({
+			message: 'обработано постов | увеличение охвата',
+			count: processedPosts,
+		});
 	}
 
 	async preloadPosts(page: Page) {
