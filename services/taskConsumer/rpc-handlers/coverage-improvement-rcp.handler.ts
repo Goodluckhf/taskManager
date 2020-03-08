@@ -60,7 +60,7 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 			throw error;
 		} finally {
 			if (browser) {
-				await browser.close();
+				// await browser.close();
 			}
 		}
 	}
@@ -70,11 +70,16 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 		await page.evaluate(() => {
 			window.scrollBy(0, 500);
 		});
-		await page.click('#feed_filters div.hot');
-		// неявно дожидаемся, пока обновится список постов
-		await page.waitForFunction(() => {
-			return window.scrollY === 0;
-		});
+
+		const isHot = await page.$('#feed_filters .hot ._ui_toggler.on');
+
+		if (!isHot) {
+			await page.click('#feed_filters div.hot');
+			// неявно дожидаемся, пока обновится список постов
+			await page.waitForFunction(() => {
+				return window.scrollY === 0;
+			});
+		}
 
 		await this.preloadPosts(page);
 		await page.evaluate(() => {
