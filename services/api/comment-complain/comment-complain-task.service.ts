@@ -21,7 +21,7 @@ export class CommentComplainTaskService {
 	) {}
 
 	async createTasks(user: User, dto: CommentComplainCreationDto) {
-		const allActiveUsers = await this.vkUserService.getAllActive();
+		const allActiveUsers = await this.vkUserService.getAllActive(dto.userTags);
 		const usersForTask = shuffle(allActiveUsers).slice(
 			0,
 			allActiveUsers.length * this.config.get('commentComplainTask.usersRatio'),
