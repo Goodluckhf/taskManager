@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import bluebird from 'bluebird';
+import { shuffle } from 'lodash';
 import { AbstractRpcHandler } from '../../../lib/amqp/abstract-rpc-handler';
 import { LoggerInterface } from '../../../lib/logger.interface';
 import { VkAuthorizer } from '../actions/vk/vk-authorizer';
@@ -53,12 +54,16 @@ export class ComplainRpcHandler extends AbstractRpcHandler {
 
 			await this.pageTransitor.goto(page, postLink);
 
-			const commentIds = page.evaluate(() => {
+			let commentIds = await page.evaluate(() => {
 				const replies = document.querySelectorAll('#page_wall_posts .replies .reply');
 				return [...replies]
 					.filter(reply => !reply.classList.contains('reply_deleted'))
 					.map(reply => reply.id);
 			});
+
+			if (commentIds.length > 50) {
+				commentIds = shuffle(shuffle(commentIds)).slice(0, 50);
+			}
 
 			await bluebird.map(
 				commentIds,
@@ -85,7 +90,7 @@ export class ComplainRpcHandler extends AbstractRpcHandler {
 							replyId: id,
 							postLink,
 						});
-						const randomDelay = getRandom(0, 5000);
+						const randomDelay = getRandom(0, 4000);
 						await bluebird.delay(randomDelay);
 					} catch (error) {
 						this.logger.warn({
