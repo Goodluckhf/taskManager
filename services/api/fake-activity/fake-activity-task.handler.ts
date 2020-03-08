@@ -64,11 +64,11 @@ export class FakeActivityTaskHandler implements TaskHandlerInterface {
 			},
 			{ concurrency: 1 },
 		);
-
-		if (catchedAuthFailed) {
-			return;
-		}
-
-		await this.fakeActivityTaskService.create(task.user as User, task.login);
+		// Выключил fake activity
+		// if (catchedAuthFailed) {
+		// 	return;
+		// }
+		//
+		// await this.fakeActivityTaskService.create(task.user as User, task.login);
 	}
 }
