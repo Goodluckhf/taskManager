@@ -45,6 +45,7 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 
 	async handle(task: CheckAndAddUserTask) {
 		const errors: Array<ObjectableInterface & FormattableInterface> = [];
+
 		await bluebird.map(
 			task.usersCredentials,
 			async ({ login, password, proxy }) => {
@@ -72,19 +73,23 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 						userAgent,
 						tags: task.tags,
 					});
-					await this.createTasksForGroupJoin(task.user as User, {
-						login,
-						password,
-						proxy,
-						remixsid,
-						userAgent,
-					});
+					await this.createTasksForGroupJoin(
+						task.user as User,
+						{
+							login,
+							password,
+							proxy,
+							remixsid,
+							userAgent,
+						},
+						task.usersCredentials.length,
+					);
 					await this.fakeActivityTaskService.create(task.user as User, login);
 				} catch (error) {
 					errors.push(new UnhandledAddUserException(login, error));
 				}
 			},
-			{ concurrency: 10 },
+			{ concurrency: 5 },
 		);
 
 		if (errors.length) {
@@ -95,6 +100,7 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 	private async createTasksForGroupJoin(
 		user: User,
 		vkUserCredentials: VkUserCredentialsInterface,
+		allUsersToJoin: number,
 	) {
 		const groupIdsForJoin = await this.getGroupIds();
 		await bluebird.map(
@@ -103,11 +109,11 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 				await this.groupJoinTaskService.createTask(user, {
 					groupId,
 					vkUserCredentials,
-					min: this.config.get('groupJoinTask.allUsers.min'),
-					max: this.config.get('groupJoinTask.allUsers.max'),
+					min: 0,
+					max: (allUsersToJoin * groupIdsForJoin.length * 60) / 25,
 				});
 			},
-			{ concurrency: 10 },
+			{ concurrency: 5 },
 		);
 	}
 
