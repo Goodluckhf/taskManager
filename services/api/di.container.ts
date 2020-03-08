@@ -17,6 +17,7 @@ import './auth/auth.controller';
 import './task/task.controller';
 import './vk-users/vk-user.controller';
 import './comment-complain/comment-complain.controller';
+import './coverage-improvement/coverage-improvement.controller';
 
 import { AuthMiddleware } from './auth/auth.middleware';
 import { CheckAndAddUserTaskHandler } from './vk-users/check-account/check-and-add-user-task.handler';
