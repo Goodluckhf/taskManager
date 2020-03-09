@@ -18,6 +18,7 @@ export class AuthExceptionCatcher {
 			error.code === 'blocked' ||
 			error.code === 'login_failed' ||
 			error.code === 'phone_required' ||
+			error.code === 'wrong date' ||
 			error.code === 'captcha_failed'
 		) {
 			this.logger.warn({

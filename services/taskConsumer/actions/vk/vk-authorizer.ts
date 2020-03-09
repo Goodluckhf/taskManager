@@ -27,6 +27,12 @@ export class VkAuthorizer {
 		await this.checkAccount(page, login);
 
 		const loginForm = await page.$('#login_form_wrap');
+		if (loginForm) {
+			await client.send('Network.deleteCookies', {
+				name: 'remixsid',
+				domain: '.vk.com',
+			});
+		}
 		return !loginForm;
 	}
 
@@ -165,7 +171,20 @@ export class VkAuthorizer {
 		const client = await page.target().createCDPSession();
 
 		const response: any = await client.send('Network.getAllCookies');
-		const newRemixsid = response.cookies.find(c => c.name === 'remixsid').value;
-		return { remixsid: newRemixsid };
+		try {
+			const newRemixsid = response.cookies.find(c => c.name === 'remixsid').value;
+			return { remixsid: newRemixsid };
+		} catch (error) {
+			this.logger.error({
+				message: 'Ошибка при авторизации',
+				error,
+			});
+			throw new AccountException(
+				'Account requires phone confirmation',
+				'wrong date',
+				login,
+				false,
+			);
+		}
 	}
 }
