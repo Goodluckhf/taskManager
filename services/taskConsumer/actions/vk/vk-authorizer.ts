@@ -165,7 +165,20 @@ export class VkAuthorizer {
 		const client = await page.target().createCDPSession();
 
 		const response: any = await client.send('Network.getAllCookies');
-		const newRemixsid = response.cookies.find(c => c.name === 'remixsid').value;
-		return { remixsid: newRemixsid };
+		try {
+			const newRemixsid = response.cookies.find(c => c.name === 'remixsid').value;
+			return { remixsid: newRemixsid };
+		} catch (error) {
+			this.logger.error({
+				message: 'Ошибка при авторизации',
+				error,
+			});
+			throw new AccountException(
+				'Account requires phone confirmation',
+				'wrong date',
+				login,
+				false,
+			);
+		}
 	}
 }
