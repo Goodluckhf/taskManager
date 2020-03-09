@@ -52,6 +52,17 @@ export class JoinGroupRpcHandler extends AbstractRpcHandler {
 				waitUntil: 'networkidle2',
 			});
 
+			const hasDisclaimer = await page.evaluate(() => {
+				return !!document.querySelector('.group_age_disclaimer');
+			});
+
+			if (hasDisclaimer) {
+				await page.evaluate(() => {
+					document.querySelector<HTMLButtonElement>('.group_age_checkbox').click();
+					document.querySelector<HTMLButtonElement>('.flat_button').click();
+				});
+			}
+
 			const subscribeClicked = await page.evaluate(() => {
 				const subscribeButton = document.querySelector<HTMLButtonElement>(
 					'#public_subscribe',
