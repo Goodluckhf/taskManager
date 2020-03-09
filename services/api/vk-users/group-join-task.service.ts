@@ -79,7 +79,9 @@ export class GroupJoinTaskService {
 						vkUserCredentials: vkUser,
 						groupId: groupJoinDto.groupId,
 						min: this.config.get('groupJoinTask.allUsers.min'),
-						max: this.config.get('groupJoinTask.allUsers.max'),
+						max:
+							groupJoinDto.maxDistribution ||
+							this.config.get('groupJoinTask.allUsers.max'),
 					});
 					if (willJoin) {
 						usersToAdd += 1;
