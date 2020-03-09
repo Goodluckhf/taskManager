@@ -84,7 +84,6 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 						},
 						task.usersCredentials.length,
 					);
-					await this.fakeActivityTaskService.create(task.user as User, login);
 				} catch (error) {
 					errors.push(new UnhandledAddUserException(login, error));
 				}
@@ -110,7 +109,7 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 					groupId,
 					vkUserCredentials,
 					min: 0,
-					max: (allUsersToJoin * groupIdsForJoin.length * 60) / 25,
+					max: (allUsersToJoin * groupIdsForJoin.length * 60) / 20,
 				});
 			},
 			{ concurrency: 5 },
