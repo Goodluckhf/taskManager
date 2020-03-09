@@ -7,7 +7,7 @@ export class GroupJoinDto {
 	groupId: string;
 
 	@IsDefined()
-	tags: tagsEnum[];
+	userTags: tagsEnum[];
 
 	@Transform(value => {
 		const intVal = parseInt(value, 10);

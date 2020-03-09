@@ -67,7 +67,7 @@ export class GroupJoinTaskService {
 	}
 
 	async createTasksForAllUsers(user: User, groupJoinDto: GroupJoinDto) {
-		const allActiveUsers = await this.vkUserService.getAllActive(groupJoinDto.tags);
+		const allActiveUsers = await this.vkUserService.getAllActive(groupJoinDto.userTags);
 
 		let usersToAdd = 0;
 
