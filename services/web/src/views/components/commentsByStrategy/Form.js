@@ -29,7 +29,7 @@ class Form extends PureComponent {
 			csvStrategy: '',
 			json: null,
 			strategyOpen: false,
-			botTags: [],
+			botTags: ['female', 'complete'],
 		};
 	}
 
@@ -115,7 +115,7 @@ class Form extends PureComponent {
 								<Col md="2">
 									<Label>Тэги</Label>
 									<Multiselect
-										defaultValue={['female', 'complete']}
+										defaultValue={this.state.botTags}
 										valueField={'value'}
 										textField={'name'}
 										data={tagsArray}
