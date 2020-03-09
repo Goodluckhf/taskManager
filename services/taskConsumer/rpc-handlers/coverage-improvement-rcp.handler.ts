@@ -96,6 +96,7 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 
 		const posts = await page.$$('.post');
 		let processedPosts = 0;
+		let seenPosts = 0;
 		await bluebird.map(
 			posts,
 			async post => {
@@ -104,13 +105,16 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 					return;
 				}
 
-				await this.feedBrowser.likePost(post);
+				const liked = await this.feedBrowser.likePost(post);
 				await this.feedBrowser.repost(page, post);
 				await post.evaluate(node =>
 					node.querySelector<HTMLAnchorElement>('a.replies_next_main').click(),
 				);
 
-				processedPosts += 1;
+				if (liked) {
+					processedPosts += 1;
+				}
+				seenPosts += 1;
 				const randomDelay = getRandom(0, 3000);
 				await bluebird.delay(randomDelay);
 			},
@@ -120,6 +124,7 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 		this.logger.info({
 			message: 'обработано постов | увеличение охвата',
 			count: processedPosts,
+			seenCount: seenPosts,
 		});
 	}
 

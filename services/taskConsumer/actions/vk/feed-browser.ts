@@ -102,24 +102,27 @@ export class FeedBrowser {
 			this.logger.info({
 				message: 'Уже лайкнул ранее',
 			});
-			return;
+			return false;
 		}
 
 		this.logger.info({ message: 'ставим лайк' });
-		const likeElement = await post.$('a.like_btn.like');
-		await likeElement.click();
+		await post.evaluate(node => {
+			node.querySelector<HTMLAnchorElement>('a.like_btn.like').click();
+		});
+		return true;
 	}
 
 	async repost(page: Page, post: ElementHandle) {
-		const repostElement = await post.$('a.like_btn.share');
-		await repostElement.click();
+		await post.evaluate(node => {
+			node.querySelector<HTMLAnchorElement>('a.like_btn.share').click();
+		});
 		await page.waitForSelector('#box_layer .like_share_wrap');
 		const canShare = await page.evaluate(() => {
 			return !document.querySelector('#like_share_my.disabled');
 		});
 
 		if (!canShare) {
-			return;
+			return false;
 		}
 		await page.click('#like_share_my');
 		const shouldShareToFriendsOnly = getRandom(0, 100) > 50;
@@ -130,6 +133,8 @@ export class FeedBrowser {
 		await page.waitForFunction(() => {
 			return !document.querySelector('#box_layer .like_share_wrap');
 		});
+
+		return true;
 	}
 
 	private async readPreview(page: Page, post: ElementHandle) {
