@@ -27,6 +27,12 @@ export class VkAuthorizer {
 		await this.checkAccount(page, login);
 
 		const loginForm = await page.$('#login_form_wrap');
+		if (loginForm) {
+			await client.send('Network.deleteCookies', {
+				name: 'remixsid',
+				domain: '.vk.com',
+			});
+		}
 		return !loginForm;
 	}
 
