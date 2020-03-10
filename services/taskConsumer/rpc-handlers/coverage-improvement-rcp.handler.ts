@@ -77,9 +77,12 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 		if (!isHot) {
 			await page.click('#feed_filters div.hot');
 			// неявно дожидаемся, пока обновится список постов
-			await page.waitForFunction(() => {
-				return window.scrollY === 0;
-			});
+			await page.waitForFunction(
+				() => {
+					return window.scrollY === 0;
+				},
+				{ timeout: 5000 },
+			);
 		}
 
 		await this.preloadPosts(page);
@@ -108,7 +111,12 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 
 				try {
 					const liked = await this.feedBrowser.likePost(post);
-					await this.feedBrowser.repost(page, post);
+					try {
+						await this.feedBrowser.repost(page, post);
+					} catch (error) {
+						this.logger.warn({ message: 'не смогли репостнуть', postId: id });
+					}
+
 					const repliesCount = await post.evaluate(node => {
 						return node.querySelectorAll('.reply').length;
 					});
@@ -127,7 +135,7 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 								const currentLength = node.querySelectorAll('.reply').length;
 								return currentLength > beforeCount;
 							},
-							{},
+							{ timeout: 5000 },
 							post,
 							repliesCount,
 						);
@@ -145,6 +153,7 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 				} catch (error) {
 					this.logger.warn({
 						message: 'ошибка в найденном посте',
+						postId: id,
 						error,
 					});
 				}

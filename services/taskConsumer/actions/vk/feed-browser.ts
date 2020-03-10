@@ -116,7 +116,7 @@ export class FeedBrowser {
 		await post.evaluate(node => {
 			node.querySelector<HTMLAnchorElement>('a.like_btn.share').click();
 		});
-		await page.waitForSelector('#box_layer .like_share_wrap');
+		await page.waitForSelector('#box_layer .like_share_wrap', { timeout: 5000 });
 		const canShare = await page.evaluate(() => {
 			return !document.querySelector('#like_share_my.disabled');
 		});
@@ -124,12 +124,19 @@ export class FeedBrowser {
 		if (!canShare) {
 			return false;
 		}
-		await page.click('#like_share_my');
+
+		await page.evaluate(() =>
+			document.querySelector<HTMLAnchorElement>('#like_share_my').click(),
+		);
 		const shouldShareToFriendsOnly = getRandom(0, 100) > 50;
 		if (shouldShareToFriendsOnly) {
-			await page.click('#like_share_friends_only');
+			await page.evaluate(() =>
+				document.querySelector<HTMLAnchorElement>('#like_share_friends_only').click(),
+			);
 		}
-		await page.click('#like_share_send');
+		await page.evaluate(() =>
+			document.querySelector<HTMLAnchorElement>('#like_share_send').click(),
+		);
 		await page.waitForFunction(() => {
 			return !document.querySelector('#box_layer .like_share_wrap');
 		});
