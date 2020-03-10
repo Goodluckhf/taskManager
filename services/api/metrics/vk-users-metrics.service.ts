@@ -26,9 +26,9 @@ export class VkUsersMetricsService {
 		]);
 		const male = await this.vkUserService.countActive([tagsEnum.male]);
 		const broot = await this.vkUserService.countActive([tagsEnum.broot]);
-		this.uMetrics.activeVkAccounts.inc(femaleCount, { tag: 'female' });
-		this.uMetrics.activeVkAccounts.inc(broot, { tag: 'broot' });
-		this.uMetrics.activeVkAccounts.inc(femaleCompleteCount, { tag: 'female_complete' });
-		this.uMetrics.activeVkAccounts.inc(male, { tag: 'male' });
+		this.uMetrics.activeVkAccounts.set(femaleCount, { tag: 'female' });
+		this.uMetrics.activeVkAccounts.set(broot, { tag: 'broot' });
+		this.uMetrics.activeVkAccounts.set(femaleCompleteCount, { tag: 'female_complete' });
+		this.uMetrics.activeVkAccounts.set(male, { tag: 'male' });
 	}
 }
