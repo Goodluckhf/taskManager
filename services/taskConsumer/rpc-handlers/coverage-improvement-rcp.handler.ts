@@ -106,36 +106,48 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 					return;
 				}
 
-				const liked = await this.feedBrowser.likePost(post);
-				await this.feedBrowser.repost(page, post);
-				const repliesCount = await post.evaluate(node => {
-					return node.querySelectorAll('.reply').length;
-				});
-				await post.evaluate(node => {
-					const button = node.querySelector<HTMLAnchorElement>('a.replies_next_main');
-					if (button) {
-						button.click();
+				try {
+					const liked = await this.feedBrowser.likePost(post);
+					await this.feedBrowser.repost(page, post);
+					const repliesCount = await post.evaluate(node => {
+						return node.querySelectorAll('.reply').length;
+					});
+					const commentsOpened = await post.evaluate(node => {
+						const button = node.querySelector<HTMLAnchorElement>('a.replies_next_main');
+						if (button) {
+							button.click();
+							return true;
+						}
+						return false;
+					});
+
+					if (commentsOpened) {
+						await page.waitForFunction(
+							(node, beforeCount) => {
+								const currentLength = node.querySelectorAll('.reply').length;
+								return currentLength > beforeCount;
+							},
+							{},
+							post,
+							repliesCount,
+						);
+
+						await this.setLikesToRandomComments(post);
 					}
-				});
 
-				await page.waitForFunction(
-					(node, beforeCount) => {
-						const currentLength = node.querySelectorAll('.reply').length;
-						return currentLength > beforeCount;
-					},
-					{},
-					post,
-					repliesCount,
-				);
+					if (liked) {
+						processedPosts += 1;
+					}
+					seenPosts += 1;
 
-				await this.setLikesToRandomComments(post);
-
-				if (liked) {
-					processedPosts += 1;
+					const randomDelay = getRandom(0, 3000);
+					await bluebird.delay(randomDelay);
+				} catch (error) {
+					this.logger.warn({
+						message: 'ошибка в найденном посте',
+						error,
+					});
 				}
-				seenPosts += 1;
-				const randomDelay = getRandom(0, 3000);
-				await bluebird.delay(randomDelay);
 			},
 			{ concurrency: 1 },
 		);
