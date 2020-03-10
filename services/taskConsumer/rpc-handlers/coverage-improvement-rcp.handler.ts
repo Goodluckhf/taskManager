@@ -1,9 +1,10 @@
 import { inject, injectable } from 'inversify';
 import bluebird from 'bluebird';
+import { shuffle } from 'lodash';
 import { VkAuthorizer } from '../actions/vk/vk-authorizer';
 import { AbstractRpcHandler } from '../../../lib/amqp/abstract-rpc-handler';
 import { VkUserCredentialsInterface } from '../../api/vk-users/vk-user-credentials.interface';
-import { Browser, Page } from 'puppeteer';
+import { Browser, Page, ElementHandle } from 'puppeteer';
 import { createBrowserPage } from '../actions/create-page';
 import { LoggerInterface } from '../../../lib/logger.interface';
 import { PageTransitor } from '../actions/vk/page-transitor';
@@ -107,12 +108,27 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 
 				const liked = await this.feedBrowser.likePost(post);
 				await this.feedBrowser.repost(page, post);
+				const repliesCount = await post.evaluate(node => {
+					return node.querySelectorAll('.reply').length;
+				});
 				await post.evaluate(node => {
 					const button = node.querySelector<HTMLAnchorElement>('a.replies_next_main');
 					if (button) {
 						button.click();
 					}
 				});
+
+				await page.waitForFunction(
+					(node, beforeCount) => {
+						const currentLength = node.querySelectorAll('.reply').length;
+						return currentLength > beforeCount;
+					},
+					{},
+					post,
+					repliesCount,
+				);
+
+				await this.setLikesToRandomComments(post);
 
 				if (liked) {
 					processedPosts += 1;
@@ -129,6 +145,24 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 			count: processedPosts,
 			seenCount: seenPosts,
 		});
+	}
+
+	async setLikesToRandomComments(post: ElementHandle<Element>) {
+		const replies = await post.$$('.reply');
+		const likesCount = getRandom(1, 5);
+		const repliesToLike = shuffle(replies).slice(0, likesCount);
+		await bluebird.map(
+			repliesToLike,
+			async reply => {
+				await reply.evaluate(node => {
+					const likeButton = node.querySelector<HTMLAnchorElement>('a.like_btn');
+					if (likeButton && !likeButton.classList.contains('active')) {
+						likeButton.click();
+					}
+				});
+			},
+			{ concurrency: 1 },
+		);
 	}
 
 	async preloadPosts(page: Page) {
