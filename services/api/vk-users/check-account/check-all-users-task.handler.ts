@@ -43,8 +43,6 @@ export class CheckAllUsersTaskHandler implements TaskHandlerInterface {
 						user: task.user as User,
 						parentTaskId: task._id,
 					});
-
-					await this.fakeActivityTaskService.createIfNotExists(task.user as User, login);
 				} catch (error) {
 					errors.push(new UnhandledAddUserException(login, error));
 				}
