@@ -107,9 +107,12 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 
 				const liked = await this.feedBrowser.likePost(post);
 				await this.feedBrowser.repost(page, post);
-				await post.evaluate(node =>
-					node.querySelector<HTMLAnchorElement>('a.replies_next_main').click(),
-				);
+				await post.evaluate(node => {
+					const button = node.querySelector<HTMLAnchorElement>('a.replies_next_main');
+					if (button) {
+						button.click();
+					}
+				});
 
 				if (liked) {
 					processedPosts += 1;
