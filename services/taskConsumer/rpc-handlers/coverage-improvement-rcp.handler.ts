@@ -112,24 +112,28 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 					const repliesCount = await post.evaluate(node => {
 						return node.querySelectorAll('.reply').length;
 					});
-					await post.evaluate(node => {
+					const commentsOpened = await post.evaluate(node => {
 						const button = node.querySelector<HTMLAnchorElement>('a.replies_next_main');
 						if (button) {
 							button.click();
+							return true;
 						}
+						return false;
 					});
 
-					await page.waitForFunction(
-						(node, beforeCount) => {
-							const currentLength = node.querySelectorAll('.reply').length;
-							return currentLength > beforeCount;
-						},
-						{},
-						post,
-						repliesCount,
-					);
+					if (commentsOpened) {
+						await page.waitForFunction(
+							(node, beforeCount) => {
+								const currentLength = node.querySelectorAll('.reply').length;
+								return currentLength > beforeCount;
+							},
+							{},
+							post,
+							repliesCount,
+						);
 
-					await this.setLikesToRandomComments(post);
+						await this.setLikesToRandomComments(post);
+					}
 
 					if (liked) {
 						processedPosts += 1;
