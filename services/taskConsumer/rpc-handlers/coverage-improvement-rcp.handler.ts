@@ -153,6 +153,7 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 				} catch (error) {
 					this.logger.warn({
 						message: 'ошибка в найденном посте',
+						postId: id,
 						error,
 					});
 				}
