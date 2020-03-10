@@ -108,7 +108,7 @@ services:
     build:
       context: .
       dockerfile: ./services/taskConsumer/Dockerfile
-    scale: 6
+    scale: 15
     stop_grace_period: 120s
     stop_signal: SIGINT
     restart: always
