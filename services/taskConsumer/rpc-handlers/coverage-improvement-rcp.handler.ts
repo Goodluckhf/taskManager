@@ -111,11 +111,6 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 
 				try {
 					const liked = await this.feedBrowser.likePost(post);
-					try {
-						await this.feedBrowser.repost(page, post);
-					} catch (error) {
-						this.logger.warn({ message: 'не смогли репостнуть', postId: id });
-					}
 
 					const repliesCount = await post.evaluate(node => {
 						return node.querySelectorAll('.reply').length;
