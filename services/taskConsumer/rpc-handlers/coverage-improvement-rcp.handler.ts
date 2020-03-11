@@ -165,7 +165,7 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 
 	async setLikesToRandomComments(post: ElementHandle<Element>) {
 		const replies = await post.$$('.reply');
-		const likesCount = getRandom(1, 5);
+		const likesCount = getRandom(1, 2);
 		const repliesToLike = shuffle(replies).slice(0, likesCount);
 		await bluebird.map(
 			repliesToLike,
