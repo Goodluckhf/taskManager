@@ -182,7 +182,7 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 	}
 
 	async preloadPosts(page: Page) {
-		const getMoreCount = getRandom(5, 14);
+		const getMoreCount = getRandom(4, 10);
 
 		await bluebird.map(
 			Array.from({ length: getMoreCount }),
