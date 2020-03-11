@@ -111,11 +111,6 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 
 				try {
 					const liked = await this.feedBrowser.likePost(post);
-					try {
-						await this.feedBrowser.repost(page, post);
-					} catch (error) {
-						this.logger.warn({ message: 'не смогли репостнуть', postId: id });
-					}
 
 					const repliesCount = await post.evaluate(node => {
 						return node.querySelectorAll('.reply').length;
@@ -170,7 +165,7 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 
 	async setLikesToRandomComments(post: ElementHandle<Element>) {
 		const replies = await post.$$('.reply');
-		const likesCount = getRandom(1, 5);
+		const likesCount = getRandom(1, 2);
 		const repliesToLike = shuffle(replies).slice(0, likesCount);
 		await bluebird.map(
 			repliesToLike,
@@ -187,7 +182,7 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 	}
 
 	async preloadPosts(page: Page) {
-		const getMoreCount = getRandom(5, 14);
+		const getMoreCount = getRandom(4, 10);
 
 		await bluebird.map(
 			Array.from({ length: getMoreCount }),
