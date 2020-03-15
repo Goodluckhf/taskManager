@@ -7,7 +7,7 @@ import { VkUserCredentialsInterface } from '../../api/vk-users/vk-user-credentia
 import { createBrowserPage } from '../actions/create-page';
 import { hrefByGroupId } from '../../../lib/helper';
 import { JoinGroupFailedException } from './join-group-failed.exception';
-import { AccountException } from './account.exception';
+import { ActionApplier } from '../actions/vk/action-applier';
 
 type TaskArgsType = {
 	userCredentials: VkUserCredentialsInterface;
@@ -19,6 +19,8 @@ export class JoinGroupRpcHandler extends AbstractRpcHandler {
 	@inject('Logger') private readonly logger: LoggerInterface;
 
 	@inject(VkAuthorizer) private readonly vkAuthorizer: VkAuthorizer;
+
+	@inject(ActionApplier) private readonly actionApplier: ActionApplier;
 
 	protected readonly method = 'joinGroup';
 
@@ -63,22 +65,31 @@ export class JoinGroupRpcHandler extends AbstractRpcHandler {
 				});
 			}
 
-			const subscribeClicked = await page.evaluate(() => {
-				const subscribeButton = document.querySelector<HTMLButtonElement>(
-					'#public_subscribe',
-				);
-				const joinButton = document.querySelector<HTMLButtonElement>('#join_button');
-				if (subscribeButton) {
-					subscribeButton.click();
-					return true;
-				}
+			const subscribeClicked = await this.actionApplier.callback({
+				callback: () => {
+					return page.evaluate(() => {
+						const subscribeButton = document.querySelector<HTMLButtonElement>(
+							'#public_subscribe',
+						);
+						const joinButton = document.querySelector<HTMLButtonElement>(
+							'#join_button',
+						);
+						if (subscribeButton) {
+							subscribeButton.click();
+							return true;
+						}
 
-				if (joinButton) {
-					joinButton.click();
-					return true;
-				}
+						if (joinButton) {
+							joinButton.click();
+							return true;
+						}
 
-				return false;
+						return false;
+					});
+				},
+				login: userCredentials.login,
+				goalAction: () => page.waitForSelector('#page_actions_btn'),
+				page,
 			});
 
 			if (!subscribeClicked) {
@@ -89,31 +100,6 @@ export class JoinGroupRpcHandler extends AbstractRpcHandler {
 					false,
 				);
 			}
-
-			await page.waitForFunction(() => {
-				const form = document.querySelector('#validation_phone_row');
-				if (form) {
-					return true;
-				}
-
-				return !!document.querySelector('#page_actions_btn');
-			});
-
-			const needPhoneConfirmation = await page.evaluate(() => {
-				const form = document.querySelector('#validation_phone_row');
-				return !!form;
-			});
-
-			if (needPhoneConfirmation) {
-				throw new AccountException(
-					'Account requires phone confirmation',
-					'phone_required',
-					userCredentials.login,
-					false,
-				);
-			}
-
-			await page.waitForSelector('#page_actions_btn');
 
 			this.logger.info({
 				message: 'Подписался в группу',
