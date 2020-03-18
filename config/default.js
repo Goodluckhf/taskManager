@@ -51,6 +51,7 @@ module.exports = {
 			max: parseInt(process.env.GROUP_JOIN_TASK__BG__MAX, 10),
 		},
 		allUsers: {
+			perMinute: parseInt(process.env.GROUP_JOIN_TASK__ALL_USERS__PER_MINUTE, 10),
 			min: parseInt(process.env.GROUP_JOIN_TASK__ALL_USERS__MIN, 10),
 			max: parseInt(process.env.GROUP_JOIN_TASK__ALL_USERS__MAX, 10),
 		},
