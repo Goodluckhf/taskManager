@@ -109,7 +109,9 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 					groupId,
 					vkUserCredentials,
 					min: 0,
-					max: (allUsersToJoin * groupIdsForJoin.length * 60) / 20,
+					max:
+						(allUsersToJoin * groupIdsForJoin.length * 60) /
+						this.config.get('groupJoinTask.allUsers.perMinute'),
 				});
 			},
 			{ concurrency: 5 },
