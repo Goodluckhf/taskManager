@@ -11,6 +11,7 @@ import { ConfigInterface } from '../../../../config/config.interface';
 import { UserAuthFailedException } from '../user-auth-failed.exception';
 import { UnhandledAddUserException } from './unhandled-add-user.exception';
 import { VkUserService } from '../vk-user.service';
+import { VkUsersBanMetricsService } from '../../metrics/vk-users-ban-metrics.service';
 
 @injectable()
 export class CheckAccountTaskHandler implements TaskHandlerInterface {
@@ -19,6 +20,8 @@ export class CheckAccountTaskHandler implements TaskHandlerInterface {
 		@inject(RpcClient) private readonly rpcClient: RpcClient,
 		@inject(RpcRequestFactory) private readonly rpcRequestFactory: RpcRequestFactory,
 		@inject('Config') private readonly config: ConfigInterface,
+		@inject(VkUsersBanMetricsService)
+		private readonly vkUsersBanMetricsService: VkUsersBanMetricsService,
 	) {}
 
 	private async checkAccount(
@@ -45,6 +48,7 @@ export class CheckAccountTaskHandler implements TaskHandlerInterface {
 
 			if (!isActive) {
 				await this.vkUserService.setInactive(task.usersCredentials.login, { code });
+				await this.vkUsersBanMetricsService.increaseBannedBot(task.usersCredentials.login);
 				throw new UserAuthFailedException(task.usersCredentials.login, code);
 			}
 
