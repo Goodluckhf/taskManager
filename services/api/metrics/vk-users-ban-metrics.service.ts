@@ -7,9 +7,10 @@ import { CommentsByStrategyTask } from '../comments-by-strategy/comments-by-stra
 import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 import { JoinToGroupTask } from '../vk-users/join-to-group.task';
 import { CoverageImprovementTask } from '../coverage-improvement/coverage-improvement.task';
+import { VkUserBanMetricsInterface } from './vk-user-ban-metrics.interface';
 
 @injectable()
-export class VkUsersBanMetricsService {
+export class VkUsersBanMetricsService implements VkUserBanMetricsInterface {
 	private readonly uMetrics: UMetrics;
 
 	constructor(
