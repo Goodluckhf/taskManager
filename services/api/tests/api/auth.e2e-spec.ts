@@ -8,6 +8,9 @@ import { createApplication } from '../../create-application';
 import { TaskMetricsServiceInterface } from '../../metrics/task-metrics-service.interface';
 import { TaskMetricsService } from '../../metrics/task-metrics.service';
 import { taskMetricsServiceMock } from '../mocks/task-metrics-service.mock';
+import { VkUsersBanMetricsService } from '../../metrics/vk-users-ban-metrics.service';
+import { vkUserBanMetricServiceMock } from '../mocks/vk-user-ban-metric-service.mock';
+import { VkUserBanMetricsInterface } from '../../metrics/vk-user-ban-metrics.interface';
 
 describe('Auth API', () => {
 	let ctx;
@@ -18,6 +21,10 @@ describe('Auth API', () => {
 		container
 			.bind<TaskMetricsServiceInterface>(TaskMetricsService)
 			.toConstantValue(taskMetricsServiceMock);
+		container
+			.bind<VkUserBanMetricsInterface>(VkUsersBanMetricsService)
+			.toConstantValue(vkUserBanMetricServiceMock);
+
 		const database = container.get(Database);
 
 		await database.connect();
