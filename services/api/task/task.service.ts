@@ -35,7 +35,7 @@ export class TaskService implements TaskServiceInterface {
 			throw new PendingTaskException(id);
 		}
 
-		await this.CommonTaskModel.update({ _id: id }, { $set: { deletedAt: moment.now() } });
+		await this.CommonTaskModel.update({ _id: id }, { $set: { deletedAt: moment() } });
 	}
 
 	async skipAllSubTasks(parentTaskId: Types.ObjectId | string) {
