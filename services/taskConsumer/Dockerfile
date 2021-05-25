@@ -13,7 +13,7 @@ RUN npm i
 COPY . .
 
 ENV NODE_ENV=production
-RUN npm i puppeteer@2.0.0 && npm i puppeteer-extra@3.1.7 && npm i puppeteer-extra-plugin-stealth@2.4.5
+RUN npm i puppeteer@7.1.0 && npm i puppeteer-extra@3.1.18 && npm i puppeteer-extra-plugin-stealth@2.7.8
 RUN npx tsc --skipLibCheck -p ./services/taskConsumer/tsconfig.build.json
 RUN npm prune
 

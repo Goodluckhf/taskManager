@@ -53,9 +53,9 @@ export class GroupBrowser {
 		this.logger.info({ message: 'заходим в группу' });
 		const randomGroup = groups[getRandom(0, groups.length - 1)];
 		await randomGroup.evaluate(node => {
-			let href = node.querySelector<HTMLAnchorElement>('.img a');
+			let href = node.querySelector('.img a');
 			if (!href) {
-				href = node.querySelector<HTMLAnchorElement>('a.group_row_photo');
+				href = node.querySelector('a.group_row_photo');
 			}
 			href.click();
 		});
