@@ -10,8 +10,13 @@ export async function createBrowserPage(proxy: ProxyInterface, userAgent?: strin
 		const random = getRandom(0, userAgents.length - 1);
 		userAgent = userAgents[random];
 	}
+
+	// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+	// @ts-ignore
 	const puppeteer = addExtra(vanilaPuppeteer);
-	puppeteer.use(StealthPlugin());
+	const stealth = StealthPlugin();
+	stealth.enabledEvasions.delete('user-agent-override');
+	puppeteer.use(stealth);
 
 	const puppeteerArgs = [
 		'--no-sandbox',
@@ -30,6 +35,8 @@ export async function createBrowserPage(proxy: ProxyInterface, userAgent?: strin
 	}
 
 	const browser = await puppeteer.launch({
+		// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+		// @ts-ignore
 		args: puppeteerArgs,
 		handleSIGINT: false,
 		headless: process.env.NODE_ENV === 'production',

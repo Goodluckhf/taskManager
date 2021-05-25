@@ -1,10 +1,10 @@
 import { inject, injectable } from 'inversify';
 import bluebird from 'bluebird';
 import { shuffle } from 'lodash';
+import { Browser, Page, ElementHandle } from 'puppeteer';
 import { VkAuthorizer } from '../actions/vk/vk-authorizer';
 import { AbstractRpcHandler } from '../../../lib/amqp/abstract-rpc-handler';
 import { VkUserCredentialsInterface } from '../../api/vk-users/vk-user-credentials.interface';
-import { Browser, Page, ElementHandle } from 'puppeteer';
 import { createBrowserPage } from '../actions/create-page';
 import { LoggerInterface } from '../../../lib/logger.interface';
 import { PageTransitor } from '../actions/vk/page-transitor';
@@ -116,7 +116,7 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 						return node.querySelectorAll('.reply').length;
 					});
 					const commentsOpened = await post.evaluate(node => {
-						const button = node.querySelector<HTMLAnchorElement>('a.replies_next_main');
+						const button = node.querySelector('a.replies_next_main');
 						if (button) {
 							button.click();
 							return true;
@@ -163,7 +163,7 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 		});
 	}
 
-	async setLikesToRandomComments(post: ElementHandle<Element>) {
+	async setLikesToRandomComments(post: ElementHandle) {
 		const replies = await post.$$('.reply');
 		const likesCount = getRandom(1, 2);
 		const repliesToLike = shuffle(replies).slice(0, likesCount);
@@ -171,7 +171,7 @@ export class CoverageImprovementRcpHandler extends AbstractRpcHandler {
 			repliesToLike,
 			async reply => {
 				await reply.evaluate(node => {
-					const likeButton = node.querySelector<HTMLAnchorElement>('a.like_btn');
+					const likeButton = node.querySelector('a.like_btn');
 					if (likeButton && !likeButton.classList.contains('active')) {
 						likeButton.click();
 					}

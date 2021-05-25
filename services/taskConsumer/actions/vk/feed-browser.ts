@@ -58,7 +58,7 @@ export class FeedBrowser {
 			const recommendations = await page.$$('.feed_asc_user_row');
 			const randomSubElement = recommendations[getRandom(0, recommendations.length - 1)];
 			await randomSubElement.evaluate(node => {
-				node.querySelector<HTMLButtonElement>('button.feed_asc_user_subscribe_btn').click();
+				node.querySelector('button.feed_asc_user_subscribe_btn').click();
 			});
 			return;
 		}
@@ -107,14 +107,14 @@ export class FeedBrowser {
 
 		this.logger.info({ message: 'ставим лайк' });
 		await post.evaluate(node => {
-			node.querySelector<HTMLAnchorElement>('a.like_btn.like').click();
+			node.querySelector('a.like_btn.like').click();
 		});
 		return true;
 	}
 
 	async repost(page: Page, post: ElementHandle) {
 		await post.evaluate(node => {
-			node.querySelector<HTMLAnchorElement>('a.like_btn.share').click();
+			node.querySelector('a.like_btn.share').click();
 		});
 		await page.waitForSelector('#box_layer .like_share_wrap', { timeout: 5000 });
 		const canShare = await page.evaluate(() => {
@@ -146,7 +146,7 @@ export class FeedBrowser {
 
 	private async readPreview(page: Page, post: ElementHandle) {
 		await post.evaluate(node => {
-			node.querySelector<HTMLButtonElement>('a.post_link').click();
+			node.querySelector('a.post_link').click();
 		});
 		await page.waitForSelector('#wk_box #wl_post');
 		await page.evaluate(() => {

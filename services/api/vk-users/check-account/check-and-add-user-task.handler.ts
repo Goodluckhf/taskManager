@@ -73,17 +73,6 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 						userAgent,
 						tags: task.tags,
 					});
-					await this.createTasksForGroupJoin(
-						task.user as User,
-						{
-							login,
-							password,
-							proxy,
-							remixsid,
-							userAgent,
-						},
-						task.usersCredentials.length,
-					);
 				} catch (error) {
 					errors.push(new UnhandledAddUserException(login, error));
 				}
