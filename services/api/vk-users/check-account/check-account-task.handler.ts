@@ -12,11 +12,15 @@ import { UserAuthFailedException } from '../user-auth-failed.exception';
 import { UnhandledAddUserException } from './unhandled-add-user.exception';
 import { VkUserService } from '../vk-user.service';
 import { VkUsersBanMetricsService } from '../../metrics/vk-users-ban-metrics.service';
+import { RetriesExceededException } from '../../comments/retries-exceeded.exception';
+import { UserAgentService } from '../../user-agents/user-agent.service';
+import { UserAgentServiceInterface } from '../../user-agents/user-agent-service.interface';
 
 @injectable()
 export class CheckAccountTaskHandler implements TaskHandlerInterface {
 	constructor(
 		@inject(VkUserService) private readonly vkUserService: VkUserService,
+		@inject(UserAgentService) private readonly userAgentService: UserAgentServiceInterface,
 		@inject(RpcClient) private readonly rpcClient: RpcClient,
 		@inject(RpcRequestFactory) private readonly rpcRequestFactory: RpcRequestFactory,
 		@inject('Config') private readonly config: ConfigInterface,
@@ -36,9 +40,33 @@ export class CheckAccountTaskHandler implements TaskHandlerInterface {
 		return plainToClass(CheckAccountRpcResponse, response);
 	}
 
+	private async checkAccountWithRetry(
+		userCredentials: VkUserCredentialsInterface,
+		tryNumber = 0,
+	): Promise<CheckAccountRpcResponse & { userAgent: string }> {
+		if (tryNumber > 4) {
+			throw new RetriesExceededException();
+		}
+
+		try {
+			const checkAccountResult = await this.checkAccount(userCredentials);
+			return { ...checkAccountResult, userAgent: userCredentials.userAgent };
+		} catch (error) {
+			if (error.code === 'old_user_agent') {
+				await this.vkUserService.updateUserAgent(userCredentials.login);
+				const newCredentials = await this.vkUserService.getCredentialsByLogin(
+					userCredentials.login,
+				);
+				return this.checkAccountWithRetry(newCredentials, tryNumber + 1);
+			}
+
+			throw error;
+		}
+	}
+
 	async handle(task: CheckAccountTask) {
 		try {
-			const { isActive, code, remixsid, userAgent } = await this.checkAccount({
+			const { isActive, code, remixsid, userAgent } = await this.checkAccountWithRetry({
 				login: task.usersCredentials.login,
 				password: task.usersCredentials.password,
 				proxy: task.usersCredentials.proxy,

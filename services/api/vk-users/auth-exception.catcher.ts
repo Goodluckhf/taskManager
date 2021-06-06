@@ -8,6 +8,7 @@ import { VkUsersBanMetricsService } from '../metrics/vk-users-ban-metrics.servic
 export class AuthExceptionCatcher {
 	constructor(
 		@inject(VkUserService) private readonly vkUserService: VkUserService,
+
 		@inject(VkUsersBanMetricsService)
 		private readonly vkUsersBanMetricsService: VkUsersBanMetricsService,
 		@inject('Logger') private readonly logger: LoggerInterface,
@@ -32,6 +33,18 @@ export class AuthExceptionCatcher {
 
 			await this.vkUserService.setInactive(vkUserCredentials.login, error);
 			await this.vkUsersBanMetricsService.increaseBannedBot(vkUserCredentials.login);
+			return true;
+		}
+
+		if (error.code === 'old_user_agent') {
+			this.logger.warn({
+				message: 'проблема с пользователем vk',
+				code: error.code,
+				login: vkUserCredentials.login,
+				userAgent: vkUserCredentials.userAgent,
+			});
+
+			await this.vkUserService.updateUserAgent(vkUserCredentials.login);
 			return true;
 		}
 

@@ -87,7 +87,9 @@ export class PostCommentRpcHandler extends AbstractRpcHandler {
 
 			await this.withCatchingClosedComments(
 				async () => {
-					await page.click('.reply_fakebox');
+					await page.evaluate(() => {
+						document.querySelector<HTMLButtonElement>('.reply_fakebox').click();
+					});
 				},
 				login,
 				postLink,

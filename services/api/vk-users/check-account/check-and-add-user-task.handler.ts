@@ -18,11 +18,16 @@ import { GroupJoinTaskService } from '../group-join-task.service';
 import { User } from '../../users/user';
 import { ConfigInterface } from '../../../../config/config.interface';
 import { FakeActivityTaskService } from '../../fake-activity/fake-activity-task.service';
+import { UserAgentService } from '../../user-agents/user-agent.service';
+import { UserAgentServiceInterface } from '../../user-agents/user-agent-service.interface';
+import { RetriesExceededException } from '../../comments/retries-exceeded.exception';
+import { LackOfUserAgentsException } from '../../user-agents/lack-of-user-agents.exception';
 
 @injectable()
 export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 	constructor(
 		@inject(VkUserService) private readonly vkUserService: VkUserService,
+		@inject(UserAgentService) private readonly userAgentService: UserAgentServiceInterface,
 		@inject(GroupJoinTaskService) private readonly groupJoinTaskService: GroupJoinTaskService,
 		@inject(RpcClient) private readonly rpcClient: RpcClient,
 		@inject(RpcRequestFactory) private readonly rpcRequestFactory: RpcRequestFactory,
@@ -43,6 +48,32 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 		return plainToClass(CheckAccountRpcResponse, response);
 	}
 
+	private async checkAccountWithRetry(
+		userCredentials: VkUserCredentialsInterface,
+		tryNumber = 0,
+	): Promise<CheckAccountRpcResponse & { userAgent: string }> {
+		if (tryNumber > 4) {
+			throw new RetriesExceededException();
+		}
+
+		const userAgent = await this.userAgentService.getRandom();
+		if (!userAgent) {
+			throw new LackOfUserAgentsException();
+		}
+
+		try {
+			const checkAccountResult = await this.checkAccount({ ...userCredentials, userAgent });
+			return { ...checkAccountResult, userAgent };
+		} catch (error) {
+			if (error.code === 'old_user_agent') {
+				await this.userAgentService.setInactive(userAgent);
+				return this.checkAccountWithRetry(userCredentials, tryNumber + 1);
+			}
+
+			throw error;
+		}
+	}
+
 	async handle(task: CheckAndAddUserTask) {
 		const errors: Array<ObjectableInterface & FormattableInterface> = [];
 
@@ -55,7 +86,12 @@ export class CheckAndAddUserTaskHandler implements TaskHandlerInterface {
 						return;
 					}
 
-					const { isActive, code, remixsid, userAgent } = await this.checkAccount({
+					const {
+						isActive,
+						code,
+						remixsid,
+						userAgent,
+					} = await this.checkAccountWithRetry({
 						login,
 						password,
 						proxy,

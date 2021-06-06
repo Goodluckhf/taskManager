@@ -51,6 +51,11 @@ export class VkAuthorizer {
 		if (blockedElement) {
 			throw new AccountException('Account is blocked', 'blocked', login, false);
 		}
+
+		const oldBrowserElement = await page.$('.bad_browser');
+		if (oldBrowserElement) {
+			throw new AccountException('Bad browser', 'old_user_agent', login, false);
+		}
 	}
 
 	async signInWithCredentials(
