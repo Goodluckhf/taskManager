@@ -2,15 +2,8 @@ import vanilaPuppeteer from 'puppeteer';
 import { addExtra } from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { ProxyInterface } from '../proxy.interface';
-import { userAgents } from '../../../lib/user-agents';
-import { getRandom } from '../../../lib/helper';
 
-export async function createBrowserPage(proxy: ProxyInterface, userAgent?: string) {
-	if (!userAgent) {
-		const random = getRandom(0, userAgents.length - 1);
-		userAgent = userAgents[random];
-	}
-
+export async function createBrowserPage(proxy: ProxyInterface, userAgent: string) {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 	// @ts-ignore
 	const puppeteer = addExtra(vanilaPuppeteer);
