@@ -1,15 +1,20 @@
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import { random, shuffle, uniq } from 'lodash';
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import moment from 'moment';
 import { injectModel } from '../../../lib/inversify-typegoose/inject-model';
 import { VkUser } from './vk-user';
 import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
 import { tagsEnum } from './tags-enum.constant';
+import { UserAgentService } from '../user-agents/user-agent.service';
+import { UserAgentServiceInterface } from '../user-agents/user-agent-service.interface';
 
 @injectable()
 export class VkUserService {
-	constructor(@injectModel(VkUser) private readonly VkUsersModel: ModelType<VkUser>) {}
+	constructor(
+		@injectModel(VkUser) private readonly VkUsersModel: ModelType<VkUser>,
+		@inject(UserAgentService) private readonly userAgentService: UserAgentServiceInterface,
+	) {}
 
 	async countActive(tags: tagsEnum[] = []): Promise<number> {
 		const query: { isActive: boolean; tags?: object } = {
@@ -136,6 +141,23 @@ export class VkUserService {
 		return this.VkUsersModel.findOne({ login })
 			.lean()
 			.exec();
+	}
+
+	async updateUserAgent(login: string) {
+		const credentials = await this.getCredentialsByLogin(login);
+		await this.userAgentService.setInactive(credentials.userAgent);
+		const newUserAgent = await this.userAgentService.getRandom();
+
+		await this.VkUsersModel.update(
+			{
+				login,
+			},
+			{
+				$set: {
+					userAgent: newUserAgent,
+				},
+			},
+		);
 	}
 
 	async setInactive(login: string, reason: any) {

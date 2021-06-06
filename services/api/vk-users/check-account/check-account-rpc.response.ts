@@ -8,6 +8,4 @@ export class CheckAccountRpcResponse implements SessionTokenRpcResponseInterface
 	code: string;
 
 	remixsid: string;
-
-	userAgent: string;
 }

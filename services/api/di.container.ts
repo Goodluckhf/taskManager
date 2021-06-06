@@ -18,6 +18,7 @@ import './task/task.controller';
 import './vk-users/vk-user.controller';
 import './comment-complain/comment-complain.controller';
 import './coverage-improvement/coverage-improvement.controller';
+import './user-agents/user-agent.controller';
 
 import { AuthMiddleware } from './auth/auth.middleware';
 import { CheckAndAddUserTaskHandler } from './vk-users/check-account/check-and-add-user-task.handler';
@@ -31,6 +32,8 @@ import { CheckAccountTaskHandler } from './vk-users/check-account/check-account-
 import { FakeActivityTaskHandler } from './fake-activity/fake-activity-task.handler';
 import { CommentComplainTaskHandler } from './comment-complain/comment-complain-task.handler';
 import { CoverageImprovementTaskHandler } from './coverage-improvement/coverage-improvement-task.handler';
+import { UserAgentServiceInterface } from './user-agents/user-agent-service.interface';
+import { UserAgentService } from './user-agents/user-agent.service';
 
 export function createContainer() {
 	const container = new Container({
@@ -43,6 +46,7 @@ export function createContainer() {
 	container.bind<LoggerInterface>('Logger').toConstantValue(logger);
 	container.bind<mongoose.Mongoose>('Mongoose').toConstantValue(mongoose);
 	container.bind<TaskAbstractFactoryInterface>(TaskAbstractFactory).toSelf();
+	container.bind<UserAgentServiceInterface>(UserAgentService).toSelf();
 	container.bind(AuthMiddleware).toSelf();
 	container.bind<TaskHandlerInterface>('TaskHandlerInterface').to(CommentsByStrategyTaskHandler);
 	container.bind<TaskHandlerInterface>('TaskHandlerInterface').to(CheckAndAddUserTaskHandler);
