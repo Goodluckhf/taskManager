@@ -1,7 +1,8 @@
 import { FormattableInterface, ObjectableInterface } from '../../../lib/internal.types';
+import { FatalableInterface } from '../task/fatalable.interface';
 
 export class LackOfUserAgentsException extends Error
-	implements ObjectableInterface, FormattableInterface {
+	implements ObjectableInterface, FormattableInterface, FatalableInterface {
 	constructor() {
 		super('Юзер агенты кончились');
 	}
@@ -11,6 +12,11 @@ export class LackOfUserAgentsException extends Error
 	}
 
 	toObject(): object {
-		return {};
+		return {
+			message: this.message,
+			formattedMessage: this.toFormattedString(),
+		};
 	}
+
+	isFatal = true;
 }

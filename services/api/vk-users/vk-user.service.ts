@@ -8,6 +8,7 @@ import { VkUserCredentialsInterface } from './vk-user-credentials.interface';
 import { tagsEnum } from './tags-enum.constant';
 import { UserAgentService } from '../user-agents/user-agent.service';
 import { UserAgentServiceInterface } from '../user-agents/user-agent-service.interface';
+import { LackOfUserAgentsException } from '../user-agents/lack-of-user-agents.exception';
 
 @injectable()
 export class VkUserService {
@@ -147,6 +148,10 @@ export class VkUserService {
 		const credentials = await this.getCredentialsByLogin(login);
 		await this.userAgentService.setInactive(credentials.userAgent);
 		const newUserAgent = await this.userAgentService.getRandom();
+
+		if (!newUserAgent) {
+			throw new LackOfUserAgentsException();
+		}
 
 		await this.VkUsersModel.update(
 			{
