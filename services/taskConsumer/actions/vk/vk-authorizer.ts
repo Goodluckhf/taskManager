@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { Page } from 'puppeteer';
 import { AggregateError } from 'bluebird';
+import bluebird from 'bluebird';
 import { LoggerInterface } from '../../../../lib/logger.interface';
 import { ProxyInterface } from '../../proxy.interface';
 import { AccountException } from '../../rpc-handlers/account.exception';
@@ -26,27 +27,18 @@ export class VkAuthorizer {
 		await page.reload({ waitUntil: 'networkidle2' });
 		await this.checkAccount(page, login);
 
-		const loginForm = await page.$('#login_form_wrap');
-		if (loginForm) {
+		const oldLoginForm = await page.$('#login_form_wrap');
+		const newVkIDLoginForm = await page.$('.VkIdForm__form');
+		if (oldLoginForm || newVkIDLoginForm) {
 			await client.send('Network.deleteCookies', {
 				name: 'remixsid',
 				domain: '.vk.com',
 			});
 		}
-		return !loginForm;
+		return !oldLoginForm && !newVkIDLoginForm;
 	}
 
 	private async checkAccount(page: Page, login: string) {
-		const loginFailedElement = await page.$('#login_message .error');
-		if (loginFailedElement) {
-			throw new AccountException(
-				'Account credentials is invalid',
-				'login_failed',
-				login,
-				false,
-			);
-		}
-
 		const blockedElement = await page.$('#login_blocked_wrap');
 		if (blockedElement) {
 			throw new AccountException('Account is blocked', 'blocked', login, false);
@@ -58,10 +50,11 @@ export class VkAuthorizer {
 		}
 	}
 
-	async signInWithCredentials(
-		page: Page,
-		{ login, password }: { login: string; password: string },
-	) {
+	async signInOldForm(page: Page, { login, password }: { login: string; password: string }) {
+		this.logger.info({
+			message: 'Логинимся через старую форму',
+			login,
+		});
 		await page.evaluate(
 			(_login, _password) => {
 				document.querySelector<HTMLInputElement>('#email').value = _login;
@@ -86,7 +79,95 @@ export class VkAuthorizer {
 			await page.reload({ waitUntil: 'networkidle2' });
 		}
 
+		const loginFailedElement = await page.$('#login_message .error');
+		if (loginFailedElement) {
+			throw new AccountException(
+				'Account credentials is invalid',
+				'login_failed',
+				login,
+				false,
+			);
+		}
 		await this.checkAccount(page, login);
+	}
+
+	async signInNewVkIDForm(page: Page, { login, password }: { login: string; password: string }) {
+		this.logger.info({
+			message: 'Логинимся через новую форму',
+			login,
+		});
+		await this.actionApplier.click({
+			page,
+			goalAction: () => page.waitForNavigation({ timeout: 10000 }),
+			selector: '.VkIdForm__signInButton',
+			login,
+		});
+
+		await page.type('input[name=login]', login);
+
+		await this.actionApplier.click({
+			page,
+			goalAction: () => page.waitForSelector('input[name=password]'),
+			selector: 'button[type=submit]',
+			login,
+		});
+
+		await page.type('input[name=password]', password);
+
+		try {
+			await this.actionApplier.click({
+				page,
+				goalAction: () =>
+					bluebird.any([
+						page.waitForSelector('.vkc__Password__Wrapper .vkc__TextField__errorIcon'),
+						page.waitForNavigation({ timeout: 10000 }) as Promise<any>,
+					]),
+				selector: 'button[type=submit]',
+				login,
+			});
+		} catch (error) {
+			if (!(error instanceof AggregateError)) {
+				throw error;
+			}
+
+			this.logger.warn({
+				message: 'Warning при авторизации (нажатие на кнопку авторизоваться)',
+				error,
+			});
+
+			await page.reload({ waitUntil: 'networkidle2' });
+		}
+
+		const loginFailedElement = await page.$(
+			'.vkc__Password__Wrapper .vkc__TextField__errorIcon',
+		);
+
+		if (loginFailedElement) {
+			const errorMessageElement = await page.$(
+				'.vkc__TextField__tooltip .vkc__TextField__text',
+			);
+			const errorMessage = await page.evaluate(el => el.textContent, errorMessageElement);
+			throw new AccountException(
+				`Account credentials is invalid: [${errorMessage}]`,
+				'login_failed',
+				login,
+				false,
+			);
+		}
+
+		await this.checkAccount(page, login);
+	}
+
+	async signInWithCredentials(
+		page: Page,
+		{ login, password }: { login: string; password: string },
+	) {
+		const isOldForm = await page.$('#login_form_wrap');
+		if (isOldForm) {
+			await this.signInOldForm(page, { login, password });
+		} else {
+			await this.signInNewVkIDForm(page, { login, password });
+		}
 	}
 
 	async authorize(
