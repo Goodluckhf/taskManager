@@ -42,21 +42,34 @@ export class ActionApplier {
 		);
 
 		const waitForPhoneConfirmation = page.waitForFunction(
+			() => !!document.querySelector('.vkc__ConfirmPhone__input'),
+			{ timeout: 10000 },
+		);
+
+		const waitForOldPhoneConfirmation = page.waitForFunction(
 			() => !!document.querySelector('#validation_phone_row'),
 			{ timeout: 10000 },
 		);
 
 		const result = await callback();
 
-		await bluebird.any([waitForCaptchaPromise, goalAction(), waitForPhoneConfirmation]);
+		await bluebird.any([
+			waitForCaptchaPromise,
+			goalAction(),
+			waitForPhoneConfirmation,
+			waitForOldPhoneConfirmation,
+		]);
 		try {
 			await this.captchaSolver.solveIfHas(page);
 		} catch (error) {
 			error.login = login;
 			throw error;
 		}
+
 		const needPhoneConfirmation = await page.evaluate(
-			() => !!document.querySelector('#validation_phone_row'),
+			() =>
+				!!document.querySelector('.vkc__ConfirmPhone__input') ||
+				!!document.querySelector('#validation_phone_row'),
 		);
 
 		if (needPhoneConfirmation) {
