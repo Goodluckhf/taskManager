@@ -84,11 +84,18 @@ process.on('SIGINT', () => {
 });
 
 process.on('uncaughtException', error => {
-	logger.error({ error });
+	logger.error({ error, stack: error.stack, message: 'uncaughtException' });
 	gracefulStop.forceStop();
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-	logger.error({ reason, promise });
+	logger.error({
+		reason,
+		// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+		// @ts-ignore
+		stack: reason.stack || undefined,
+		promise,
+		message: 'unhandledRejection',
+	});
 	gracefulStop.forceStop(1);
 });
